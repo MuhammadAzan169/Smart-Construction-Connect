@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction Company Registration</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-hard-hat"></i>
+                <h1>Construction Company Registration</h1>
+            </div>
+            <p class="subtitle">Register your construction company for our platform</p>
+        </header>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="progress-steps">
+                <div class="step active" data-step="1">1</div>
+                <div class="step" data-step="2">2</div>
+                <div class="step" data-step="3">3</div>
+                <div class="step" data-step="4">4</div>
+                <div class="step" data-step="5">5</div>
+                <div class="step" data-step="6">6</div>
+                <div class="step" data-step="7">7</div>
+                <div class="step" data-step="8">8</div>
+                <div class="step" data-step="9">9</div>
+                <div class="step" data-step="10">10</div>
+                <div class="step" data-step="11">11</div>
+                <div class="step" data-step="12">12</div>
+                <div class="step" data-step="13">13</div>
+                <div class="step" data-step="14">14</div>
+                <div class="step" data-step="15">15</div>
+                <div class="step" data-step="16">16</div>
+            </div>
+        </div>
+
+        <form id="registrationForm">
+            <!-- Step 1: Basic Company Information -->
+            <div class="form-step active" id="step1">
+                <h2><i class="fas fa-building"></i> Basic Company Information</h2>
+                <div class="form-group">
+                    <label for="companyName">Company Name *</label>
+                    <input type="text" id="companyName" name="companyName" required 
+                           placeholder="Enter your company name">
+                    <div class="hint">This will be used as the primary identifier and display name.</div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn-next" data-next="2">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 2: Legal & Registration Information -->
+            <div class="form-step" id="step2">
+                <h2><i class="fas fa-balance-scale"></i> Legal & Registration Information</h2>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="isLegallyRegistered" name="isLegallyRegistered">
+                        <span>Is the company legally registered?</span>
+                    </label>
+                    <div class="warning" id="legalWarning" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i> Unregistered companies may not be recommended to users.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="secpRegistered" name="secpRegistered">
+                        <span>SECP Registered?</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="ntnNumber">NTN Number</label>
+                    <div class="input-with-format">
+                        <input type="text" id="ntnNumber" name="ntnNumber" 
+                               placeholder="1234567-8" 
+                               data-format="xxxxxxx-x">
+                        <span class="format-display">Format: 1234567-8</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="yearEstablished">Year Established</label>
+                    <select id="yearEstablished" name="yearEstablished">
+                        <option value="">Select Year</option>
+                        <!-- Years will be populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="1"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="3">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 3: Contact Information -->
+            <div class="form-step" id="step3">
+                <h2><i class="fas fa-address-book"></i> Contact Information</h2>
+                
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number *</label>
+                    <div class="input-with-format">
+                        <input type="tel" id="phoneNumber" name="phoneNumber" required 
+                               placeholder="+92-300-1234567"
+                               data-format="+92-xxx-xxxxxxx">
+                        <span class="format-display">Format: +92-300-1234567</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required 
+                           placeholder="company@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="website">Website URL (Optional)</label>
+                    <input type="url" id="website" name="website" 
+                           placeholder="https://example.com">
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="2"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="4">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 4: Operational Areas -->
+            <div class="form-step" id="step4">
+                <h2><i class="fas fa-map-marked-alt"></i> Operational Areas</h2>
+                <div class="section-note">This section is very important. Add cities, societies, and phases where you operate.</div>
+                
+                <div id="operationalAreasContainer">
+                    <!-- Dynamic content will be added here -->
+                </div>
+                
+                <button type="button" id="addCityBtn" class="btn-add">
+                    <i class="fas fa-plus-circle"></i> Add Another City
+                </button>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="3"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="5">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 5: Construction Capability -->
+            <div class="form-step" id="step5">
+                <h2><i class="fas fa-tools"></i> Construction Capability</h2>
+                
+                <div class="form-group">
+                    <label>Available Plot Sizes (Select all that apply) *</label>
+                    <div class="plot-sizes-container">
+                        <div class="plot-sizes-group">
+                            <!-- Marla options -->
+                            <div class="plot-size-category">
+                                <h4><i class="fas fa-home"></i> Marla Plots</h4>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="1 Marla">
+                                        <span>1 Marla</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="3 Marla">
+                                        <span>3 Marla</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="5 Marla" checked>
+                                        <span>5 Marla</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="7 Marla">
+                                        <span>7 Marla</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="10 Marla" checked>
+                                        <span>10 Marla</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="12 Marla">
+                                        <span>12 Marla</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="15 Marla">
+                                        <span>15 Marla</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="20 Marla">
+                                        <span>20 Marla</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Kanal options -->
+                            <div class="plot-size-category">
+                                <h4><i class="fas fa-building"></i> Kanal Plots</h4>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="1 Kanal (20 Marla)">
+                                        <span>1 Kanal (20 Marla)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="2 Kanal (40 Marla)">
+                                        <span>2 Kanal (40 Marla)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="3 Kanal (60 Marla)">
+                                        <span>3 Kanal (60 Marla)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="4 Kanal (80 Marla)">
+                                        <span>4 Kanal (80 Marla)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="5 Kanal (100 Marla)">
+                                        <span>5 Kanal (100 Marla)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="6 Kanal (120 Marla)">
+                                        <span>6 Kanal (120 Marla)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="7 Kanal (140 Marla)">
+                                        <span>7 Kanal (140 Marla)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="plotSizes" value="8 Kanal (160 Marla)">
+                                        <span>8 Kanal (160 Marla)</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Custom size input -->
+                            <div class="plot-size-category custom-size-section">
+                                <h4><i class="fas fa-plus-circle"></i> Custom Sizes</h4>
+                                <div class="form-group">
+                                    <div class="custom-size-input-container">
+                                        <input type="text" id="customPlotSize" 
+                                               placeholder="Enter custom size (e.g., 8 Marla, 1.5 Kanal)" 
+                                               class="custom-size-input">
+                                        <button type="button" id="addCustomPlotSize" class="btn-add-small">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    </div>
+                                    <div class="hint">Press Enter or click Add to include custom size</div>
+                                </div>
+                                <div id="customPlotSizesList" class="custom-sizes-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="maxFloors">Maximum Floors Supported *</label>
+                    <div class="styled-select">
+                        <select id="maxFloors" name="maxFloors" required>
+                            <option value="">Select Maximum Floors</option>
+                            <option value="1">1 Floor (Ground)</option>
+                            <option value="2">2 Floors (G+1)</option>
+                            <option value="3" selected>3 Floors (G+2)</option>
+                            <option value="4">4 Floors (G+3)</option>
+                            <option value="5">5+ Floors (G+4 or more)</option>
+                        </select>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label highlight">
+                        <input type="checkbox" id="basementSupported" name="basementSupported">
+                        <span><i class="fas fa-layer-group"></i> Basement Construction Supported</span>
+                    </label>
+                    <div class="hint">Check if you can construct basement floors</div>
+                </div>
+
+                <div class="form-group">
+                    <label>House Types (Select all that apply) *</label>
+                    <div class="house-types-container">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label card-option">
+                                <input type="checkbox" name="houseTypes" value="Residential" checked>
+                                <div class="option-content">
+                                    <i class="fas fa-home"></i>
+                                    <span>Residential Houses</span>
+                                </div>
+                            </label>
+                            <label class="checkbox-label card-option">
+                                <input type="checkbox" name="houseTypes" value="Small Commercial">
+                                <div class="option-content">
+                                    <i class="fas fa-store"></i>
+                                    <span>Small Commercial</span>
+                                </div>
+                            </label>
+                            <label class="checkbox-label card-option">
+                                <input type="checkbox" name="houseTypes" value="Commercial Plaza">
+                                <div class="option-content">
+                                    <i class="fas fa-building"></i>
+                                    <span>Commercial Plaza</span>
+                                </div>
+                            </label>
+                            <label class="checkbox-label card-option">
+                                <input type="checkbox" name="houseTypes" value="Apartments">
+                                <div class="option-content">
+                                    <i class="fas fa-building"></i>
+                                    <span>Apartments</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="4"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="6">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 6: Services Offered -->
+            <div class="form-step" id="step6">
+                <h2><i class="fas fa-concierge-bell"></i> Services Offered</h2>
+                
+                <div class="services-section">
+                    <h3>Construction Services</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="constructionServices" value="Turnkey" checked>
+                            <span>Turnkey</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="constructionServices" value="Grey Structure" checked>
+                            <span>Grey Structure</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="services-section">
+                    <h3>Design Services</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="designServices" value="Architectural">
+                            <span>Architectural</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="designServices" value="Structural">
+                            <span>Structural</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="designServices" value="Interior">
+                            <span>Interior (optional)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="services-section">
+                    <h3>Approval Support</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="approvalSupport" value="KDA">
+                            <span>KDA</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="approvalSupport" value="DHA">
+                            <span>DHA</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="approvalSupport" value="LDA">
+                            <span>LDA</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="approvalSupport" value="CDA">
+                            <span>CDA</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="approvalSupport" value="Bahria Town">
+                            <span>Bahria Town</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="services-section">
+                    <h3>Extra Services</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="extraServices" value="Landscaping">
+                            <span>Landscaping</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="extraServices" value="Smart Home">
+                            <span>Smart Home</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="extraServices" value="Solar">
+                            <span>Solar</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="extraServices" value="Interior Fit-outs">
+                            <span>Interior Fit-outs</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="5"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="7">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 7: Package Scope -->
+            <div class="form-step" id="step7">
+                <h2><i class="fas fa-box-open"></i> Package Scope</h2>
+                
+                <div class="package-tabs">
+                    <button type="button" class="package-tab active" data-package="standard">Standard</button>
+                    <button type="button" class="package-tab" data-package="premium">Premium</button>
+                    <button type="button" class="package-tab" data-package="executive">Executive</button>
+                </div>
+
+                <!-- Standard Package -->
+                <div class="package-content active" id="standardPackage">
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="standardDesignIncluded" checked>
+                            <span>Design Included</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="standardFixturesQuality">Fixtures Quality</label>
+                        <select id="standardFixturesQuality" name="standardFixturesQuality">
+                            <option value="">Select Quality</option>
+                            <option value="Economy">Economy</option>
+                            <option value="Local" selected>Local</option>
+                            <option value="Branded">Branded</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="standardCeilingType">Ceiling Type</label>
+                        <select id="standardCeilingType" name="standardCeilingType">
+                            <option value="">Select Type</option>
+                            <option value="No POP">No POP</option>
+                            <option value="Simple POP" selected>Simple POP</option>
+                            <option value="Designer POP">Designer POP</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="standardKitchenType">Kitchen Type</label>
+                        <select id="standardKitchenType" name="standardKitchenType">
+                            <option value="">Select Type</option>
+                            <option value="Basic" selected>Basic</option>
+                            <option value="Modular">Modular</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="standardBathroomFittings">Bathroom Fittings</label>
+                        <select id="standardBathroomFittings" name="standardBathroomFittings">
+                            <option value="">Select Quality</option>
+                            <option value="Economy">Economy</option>
+                            <option value="Standard" selected>Standard</option>
+                            <option value="Branded">Branded</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Premium Package -->
+                <div class="package-content" id="premiumPackage">
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="premiumDesignIncluded" checked>
+                            <span>Design Included</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="premiumFixturesQuality">Fixtures Quality</label>
+                        <select id="premiumFixturesQuality" name="premiumFixturesQuality">
+                            <option value="">Select Quality</option>
+                            <option value="Economy">Economy</option>
+                            <option value="Local">Local</option>
+                            <option value="Branded" selected>Branded</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="premiumCeilingType">Ceiling Type</label>
+                        <select id="premiumCeilingType" name="premiumCeilingType">
+                            <option value="">Select Type</option>
+                            <option value="No POP">No POP</option>
+                            <option value="Simple POP">Simple POP</option>
+                            <option value="Designer POP" selected>Designer POP</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="premiumKitchenType">Kitchen Type</label>
+                        <select id="premiumKitchenType" name="premiumKitchenType">
+                            <option value="">Select Type</option>
+                            <option value="Basic">Basic</option>
+                            <option value="Modular" selected>Modular</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="premiumBathroomFittings">Bathroom Fittings</label>
+                        <select id="premiumBathroomFittings" name="premiumBathroomFittings">
+                            <option value="">Select Quality</option>
+                            <option value="Economy">Economy</option>
+                            <option value="Standard">Standard</option>
+                            <option value="Branded" selected>Branded</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Executive Package -->
+                <div class="package-content" id="executivePackage">
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="executiveDesignIncluded" checked>
+                            <span>Design Included</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="executiveFixturesQuality">Fixtures Quality</label>
+                        <select id="executiveFixturesQuality" name="executiveFixturesQuality">
+                            <option value="">Select Quality</option>
+                            <option value="Economy">Economy</option>
+                            <option value="Local">Local</option>
+                            <option value="Branded" selected>Branded (International)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="executiveCeilingType">Ceiling Type</label>
+                        <select id="executiveCeilingType" name="executiveCeilingType">
+                            <option value="">Select Type</option>
+                            <option value="No POP">No POP</option>
+                            <option value="Simple POP">Simple POP</option>
+                            <option value="Designer POP" selected>Designer POP (Premium)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="executiveKitchenType">Kitchen Type</label>
+                        <select id="executiveKitchenType" name="executiveKitchenType">
+                            <option value="">Select Type</option>
+                            <option value="Basic">Basic</option>
+                            <option value="Modular">Modular</option>
+                            <option value="Custom" selected>Custom (Designer)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="executiveBathroomFittings">Bathroom Fittings</label>
+                        <select id="executiveBathroomFittings" name="executiveBathroomFittings">
+                            <option value="">Select Quality</option>
+                            <option value="Economy">Economy</option>
+                            <option value="Standard">Standard</option>
+                            <option value="Branded" selected>Branded (Luxury)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="6"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="8">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 8: Materials Used -->
+            <div class="form-step" id="step8">
+                <h2><i class="fas fa-cube"></i> Materials Used</h2>
+                
+                <div class="materials-tabs">
+                    <button type="button" class="materials-tab active" data-material="standard">Standard</button>
+                    <button type="button" class="materials-tab" data-material="premium">Premium</button>
+                    <button type="button" class="materials-tab" data-material="executive">Executive</button>
+                </div>
+
+                <div class="materials-table-container">
+                    <table class="materials-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Standard</th>
+                                <th>Premium</th>
+                                <th>Executive</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cement Brand</td>
+                                <td>
+                                    <select name="standardCementBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="Bestway">Bestway</option>
+                                        <option value="Lucky">Lucky</option>
+                                        <option value="DG Khan">DG Khan</option>
+                                        <option value="Maple Leaf">Maple Leaf</option>
+                                        <option value="Attock">Attock</option>
+                                        <option value="Cherat">Cherat</option>
+                                        <option value="Fauji">Fauji</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="standardCementBrandOther" placeholder="Other brand name" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="premiumCementBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="Bestway">Bestway</option>
+                                        <option value="Lucky">Lucky</option>
+                                        <option value="DG Khan">DG Khan</option>
+                                        <option value="Maple Leaf">Maple Leaf</option>
+                                        <option value="Attock">Attock</option>
+                                        <option value="Cherat">Cherat</option>
+                                        <option value="Fauji">Fauji</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="premiumCementBrandOther" placeholder="Other brand name" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="executiveCementBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="Bestway">Bestway</option>
+                                        <option value="Lucky">Lucky</option>
+                                        <option value="DG Khan">DG Khan</option>
+                                        <option value="Maple Leaf">Maple Leaf</option>
+                                        <option value="Attock">Attock</option>
+                                        <option value="Cherat">Cherat</option>
+                                        <option value="Fauji">Fauji</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="executiveCementBrandOther" placeholder="Other brand name" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Steel Grade</td>
+                                <td>
+                                    <select name="standardSteelGrade" class="material-select">
+                                        <option value="">Select Grade</option>
+                                        <option value="40 Grade">40 Grade</option>
+                                        <option value="60 Grade">60 Grade</option>
+                                        <option value="TOR Steel">TOR Steel</option>
+                                        <option value="ASTM A615">ASTM A615</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="standardSteelGradeOther" placeholder="Other grade" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="premiumSteelGrade" class="material-select">
+                                        <option value="">Select Grade</option>
+                                        <option value="40 Grade">40 Grade</option>
+                                        <option value="60 Grade">60 Grade</option>
+                                        <option value="TOR Steel">TOR Steel</option>
+                                        <option value="ASTM A615">ASTM A615</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="premiumSteelGradeOther" placeholder="Other grade" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="executiveSteelGrade" class="material-select">
+                                        <option value="">Select Grade</option>
+                                        <option value="40 Grade">40 Grade</option>
+                                        <option value="60 Grade">60 Grade</option>
+                                        <option value="TOR Steel">TOR Steel</option>
+                                        <option value="ASTM A615">ASTM A615</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="executiveSteelGradeOther" placeholder="Other grade" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Bricks Type</td>
+                                <td>
+                                    <select name="standardBricksType" class="material-select">
+                                        <option value="">Select Type</option>
+                                        <option value="Local Bricks">Local Bricks</option>
+                                        <option value="A+ Bricks">A+ Bricks</option>
+                                        <option value="Cement Blocks">Cement Blocks</option>
+                                        <option value="Concrete Blocks">Concrete Blocks</option>
+                                        <option value="Hollow Blocks">Hollow Blocks</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="standardBricksTypeOther" placeholder="Other type" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="premiumBricksType" class="material-select">
+                                        <option value="">Select Type</option>
+                                        <option value="Local Bricks">Local Bricks</option>
+                                        <option value="A+ Bricks">A+ Bricks</option>
+                                        <option value="Cement Blocks">Cement Blocks</option>
+                                        <option value="Concrete Blocks">Concrete Blocks</option>
+                                        <option value="Hollow Blocks">Hollow Blocks</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="premiumBricksTypeOther" placeholder="Other type" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="executiveBricksType" class="material-select">
+                                        <option value="">Select Type</option>
+                                        <option value="Local Bricks">Local Bricks</option>
+                                        <option value="A+ Bricks">A+ Bricks</option>
+                                        <option value="Cement Blocks">Cement Blocks</option>
+                                        <option value="Concrete Blocks">Concrete Blocks</option>
+                                        <option value="Hollow Blocks">Hollow Blocks</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="executiveBricksTypeOther" placeholder="Other type" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Wiring Brand</td>
+                                <td>
+                                    <select name="standardWiringBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="Pak Cable">Pak Cable</option>
+                                        <option value="DAWOOD">DAWOOD</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="ABB">ABB</option>
+                                        <option value="Siemens">Siemens</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="standardWiringBrandOther" placeholder="Other brand" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="premiumWiringBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="Pak Cable">Pak Cable</option>
+                                        <option value="DAWOOD">DAWOOD</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="ABB">ABB</option>
+                                        <option value="Siemens">Siemens</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="premiumWiringBrandOther" placeholder="Other brand" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="executiveWiringBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="Pak Cable">Pak Cable</option>
+                                        <option value="DAWOOD">DAWOOD</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="ABB">ABB</option>
+                                        <option value="Siemens">Siemens</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="executiveWiringBrandOther" placeholder="Other brand" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Plumbing Brand</td>
+                                <td>
+                                    <select name="standardPlumbingBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="Ashir">Ashir</option>
+                                        <option value="Grohe">Grohe</option>
+                                        <option value="Kohler">Kohler</option>
+                                        <option value="Jaquar">Jaquar</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="standardPlumbingBrandOther" placeholder="Other brand" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="premiumPlumbingBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="Ashir">Ashir</option>
+                                        <option value="Grohe">Grohe</option>
+                                        <option value="Kohler">Kohler</option>
+                                        <option value="Jaquar">Jaquar</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="premiumPlumbingBrandOther" placeholder="Other brand" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="executivePlumbingBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="Ashir">Ashir</option>
+                                        <option value="Grohe">Grohe</option>
+                                        <option value="Kohler">Kohler</option>
+                                        <option value="Jaquar">Jaquar</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="executivePlumbingBrandOther" placeholder="Other brand" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Paint Brand</td>
+                                <td>
+                                    <select name="standardPaintBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="ICI">ICI</option>
+                                        <option value="ICI Dulux">ICI Dulux</option>
+                                        <option value="Berger">Berger</option>
+                                        <option value="Nippon">Nippon</option>
+                                        <option value="Jotun">Jotun</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="standardPaintBrandOther" placeholder="Other brand" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="premiumPaintBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="ICI">ICI</option>
+                                        <option value="ICI Dulux">ICI Dulux</option>
+                                        <option value="Berger">Berger</option>
+                                        <option value="Nippon">Nippon</option>
+                                        <option value="Jotun">Jotun</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="premiumPaintBrandOther" placeholder="Other brand" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                                <td>
+                                    <select name="executivePaintBrand" class="material-select">
+                                        <option value="">Select Brand</option>
+                                        <option value="ICI">ICI</option>
+                                        <option value="ICI Dulux">ICI Dulux</option>
+                                        <option value="Berger">Berger</option>
+                                        <option value="Nippon">Nippon</option>
+                                        <option value="Jotun">Jotun</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" name="executivePaintBrandOther" placeholder="Other brand" 
+                                           class="other-input" style="display: none; margin-top: 5px;">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="7"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="9">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 9: Estimated Total Cost Range -->
+            <div class="form-step" id="step9">
+                <h2><i class="fas fa-calculator"></i> Estimated Total Cost Range (PKR)</h2>
+                <div class="section-note">Enter approximate cost ranges in Pakistani Rupees (PKR) - Leave blank if not applicable</div>
+                
+                <div class="cost-table-container">
+                    <table class="cost-table">
+                        <thead>
+                            <tr>
+                                <th>Plot Size</th>
+                                <th>Standard Package</th>
+                                <th>Premium Package</th>
+                                <th>Executive Package</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>3 Marla</td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="standard3MarlaMin" placeholder="Min" class="cost-input" 
+                                               step="50000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="standard3MarlaMax" placeholder="Max" class="cost-input"
+                                               step="50000" min="0">
+                                    </div>
+                                </td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="premium3MarlaMin" placeholder="Min" class="cost-input"
+                                               step="50000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="premium3MarlaMax" placeholder="Max" class="cost-input"
+                                               step="50000" min="0">
+                                    </div>
+                                </td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="executive3MarlaMin" placeholder="Min" class="cost-input"
+                                               step="50000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="executive3MarlaMax" placeholder="Max" class="cost-input"
+                                               step="50000" min="0">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5 Marla</td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="standard5MarlaMin" placeholder="Min" class="cost-input"
+                                               step="100000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="standard5MarlaMax" placeholder="Max" class="cost-input"
+                                               step="100000" min="0">
+                                    </div>
+                                </td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="premium5MarlaMin" placeholder="Min" class="cost-input"
+                                               step="100000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="premium5MarlaMax" placeholder="Max" class="cost-input"
+                                               step="100000" min="0">
+                                    </div>
+                                </td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="executive5MarlaMin" placeholder="Min" class="cost-input"
+                                               step="100000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="executive5MarlaMax" placeholder="Max" class="cost-input"
+                                               step="100000" min="0">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10 Marla</td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="standard10MarlaMin" placeholder="Min" class="cost-input"
+                                               step="200000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="standard10MarlaMax" placeholder="Max" class="cost-input"
+                                               step="200000" min="0">
+                                    </div>
+                                </td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="premium10MarlaMin" placeholder="Min" class="cost-input"
+                                               step="200000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="premium10MarlaMax" placeholder="Max" class="cost-input"
+                                               step="200000" min="0">
+                                    </div>
+                                </td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="executive10MarlaMin" placeholder="Min" class="cost-input"
+                                               step="200000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="executive10MarlaMax" placeholder="Max" class="cost-input"
+                                               step="200000" min="0">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1 Kanal (20 Marla)</td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="standard1KanalMin" placeholder="Min" class="cost-input"
+                                               step="500000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="standard1KanalMax" placeholder="Max" class="cost-input"
+                                               step="500000" min="0">
+                                    </div>
+                                </td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="premium1KanalMin" placeholder="Min" class="cost-input"
+                                               step="500000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="premium1KanalMax" placeholder="Max" class="cost-input"
+                                               step="500000" min="0">
+                                    </div>
+                                </td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="executive1KanalMin" placeholder="Min" class="cost-input"
+                                               step="500000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="executive1KanalMax" placeholder="Max" class="cost-input"
+                                               step="500000" min="0">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2 Kanal (40 Marla)</td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="standard2KanalMin" placeholder="Min" class="cost-input"
+                                               step="1000000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="standard2KanalMax" placeholder="Max" class="cost-input"
+                                               step="1000000" min="0">
+                                    </div>
+                                </td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="premium2KanalMin" placeholder="Min" class="cost-input"
+                                               step="1000000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="premium2KanalMax" placeholder="Max" class="cost-input"
+                                               step="1000000" min="0">
+                                    </div>
+                                </td>
+                                <td class="cost-range-cell">
+                                    <div class="cost-range-input">
+                                        <input type="number" name="executive2KanalMin" placeholder="Min" class="cost-input"
+                                               step="1000000" min="0">
+                                        <span class="cost-separator">to</span>
+                                        <input type="number" name="executive2KanalMax" placeholder="Max" class="cost-input"
+                                               step="1000000" min="0">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="8"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="10">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 10: Payment Terms -->
+            <div class="form-step" id="step10">
+                <h2><i class="fas fa-credit-card"></i> Payment Terms</h2>
+                
+                <div class="form-group">
+                    <label for="advancePercentage">Advance Percentage: <span id="advanceValue">30%</span></label>
+                    <input type="range" id="advancePercentage" name="advancePercentage" min="10" max="50" value="30" step="5">
+                    <div class="slider-labels">
+                        <span>10%</span>
+                        <span>50%</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="installmentType">Installment Type</label>
+                    <select id="installmentType" name="installmentType">
+                        <option value="">Select Type</option>
+                        <option value="Stage-wise" selected>Stage-wise</option>
+                        <option value="Monthly">Monthly</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="priceType">Price Type</label>
+                    <select id="priceType" name="priceType">
+                        <option value="">Select Type</option>
+                        <option value="Fixed" selected>Fixed</option>
+                        <option value="Mostly Fixed">Mostly Fixed</option>
+                        <option value="Variable">Variable</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="variationClauseExists" name="variationClauseExists" checked>
+                        <span>Variation Clause Exists</span>
+                    </label>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="9"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="11">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 11: Timeline Estimates -->
+            <div class="form-step" id="step11">
+                <h2><i class="fas fa-calendar-alt"></i> Timeline Estimates (Months)</h2>
+                
+                <div class="timeline-container">
+                    <div class="timeline-tabs">
+                        <button type="button" class="timeline-tab active" data-size="3Marla">3 Marla</button>
+                        <button type="button" class="timeline-tab" data-size="5Marla">5 Marla</button>
+                        <button type="button" class="timeline-tab" data-size="10Marla">10 Marla</button>
+                    </div>
+
+                    <div class="timeline-content active" id="timeline3Marla">
+                        <h3>Single Storey</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Minimum Time</label>
+                                <input type="number" name="single3MarlaMin" min="1" step="0.5" value="4">
+                            </div>
+                            <div class="form-group">
+                                <label>Typical Time</label>
+                                <input type="number" name="single3MarlaTypical" min="1" step="0.5" value="6">
+                            </div>
+                            <div class="form-group">
+                                <label>Maximum Time</label>
+                                <input type="number" name="single3MarlaMax" min="1" step="0.5" value="8">
+                            </div>
+                        </div>
+
+                        <h3>Double Storey</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Minimum Time</label>
+                                <input type="number" name="double3MarlaMin" min="1" step="0.5" value="6">
+                            </div>
+                            <div class="form-group">
+                                <label>Typical Time</label>
+                                <input type="number" name="double3MarlaTypical" min="1" step="0.5" value="9">
+                            </div>
+                            <div class="form-group">
+                                <label>Maximum Time</label>
+                                <input type="number" name="double3MarlaMax" min="1" step="0.5" value="12">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-content" id="timeline5Marla">
+                        <h3>Single Storey</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Minimum Time</label>
+                                <input type="number" name="single5MarlaMin" min="1" step="0.5" value="5">
+                            </div>
+                            <div class="form-group">
+                                <label>Typical Time</label>
+                                <input type="number" name="single5MarlaTypical" min="1" step="0.5" value="7">
+                            </div>
+                            <div class="form-group">
+                                <label>Maximum Time</label>
+                                <input type="number" name="single5MarlaMax" min="1" step="0.5" value="9">
+                            </div>
+                        </div>
+
+                        <h3>Double Storey</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Minimum Time</label>
+                                <input type="number" name="double5MarlaMin" min="1" step="0.5" value="7">
+                            </div>
+                            <div class="form-group">
+                                <label>Typical Time</label>
+                                <input type="number" name="double5MarlaTypical" min="1" step="0.5" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label>Maximum Time</label>
+                                <input type="number" name="double5MarlaMax" min="1" step="0.5" value="13">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-content" id="timeline10Marla">
+                        <h3>Single Storey</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Minimum Time</label>
+                                <input type="number" name="single10MarlaMin" min="1" step="0.5" value="6">
+                            </div>
+                            <div class="form-group">
+                                <label>Typical Time</label>
+                                <input type="number" name="single10MarlaTypical" min="1" step="0.5" value="9">
+                            </div>
+                            <div class="form-group">
+                                <label>Maximum Time</label>
+                                <input type="number" name="single10MarlaMax" min="1" step="0.5" value="12">
+                            </div>
+                        </div>
+
+                        <h3>Double Storey</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Minimum Time</label>
+                                <input type="number" name="double10MarlaMin" min="1" step="0.5" value="9">
+                            </div>
+                            <div class="form-group">
+                                <label>Typical Time</label>
+                                <input type="number" name="double10MarlaTypical" min="1" step="0.5" value="12">
+                            </div>
+                            <div class="form-group">
+                                <label>Maximum Time</label>
+                                <input type="number" name="double10MarlaMax" min="1" step="0.5" value="15">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="timelineNotes">Timeline Notes</label>
+                    <textarea id="timelineNotes" name="timelineNotes" rows="3" placeholder="Any additional notes about timelines..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="reliabilityScore">Reliability Score: <span id="reliabilityValue">0.7</span></label>
+                    <input type="range" id="reliabilityScore" name="reliabilityScore" min="0" max="1" step="0.1" value="0.7">
+                    <div class="slider-labels">
+                        <span>0 (Low)</span>
+                        <span>0.5</span>
+                        <span>1 (High)</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="10"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="12">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 12: Experience & Track Record -->
+            <div class="form-step" id="step12">
+                <h2><i class="fas fa-chart-line"></i> Experience & Track Record</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="totalProjects">Total Projects Completed</label>
+                        <select id="totalProjects" name="totalProjects">
+                            <option value="">Select Range</option>
+                            <option value="0-5">0-5 Projects</option>
+                            <option value="6-20">6-20 Projects</option>
+                            <option value="21-50" selected>21-50 Projects</option>
+                            <option value="51-100">51-100 Projects</option>
+                            <option value="100+">100+ Projects</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="housesCompleted">Houses Completed</label>
+                        <select id="housesCompleted" name="housesCompleted">
+                            <option value="">Select Range</option>
+                            <option value="0-10">0-10 Houses</option>
+                            <option value="11-30">11-30 Houses</option>
+                            <option value="31-100" selected>31-100 Houses</option>
+                            <option value="101-500">101-500 Houses</option>
+                            <option value="500+">500+ Houses</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="ongoingProjects">Ongoing Projects</label>
+                    <select id="ongoingProjects" name="ongoingProjects">
+                        <option value="">Select Number</option>
+                        <option value="0">0</option>
+                        <option value="1-3">1-3</option>
+                        <option value="4-10" selected>4-10</option>
+                        <option value="11-20">11-20</option>
+                        <option value="20+">20+</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Specializations (Select all that apply)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="specializations" value="Economy Housing" checked>
+                            <span>Economy Housing</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="specializations" value="Small Plots" checked>
+                            <span>Small Plots</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="specializations" value="Luxury Homes">
+                            <span>Luxury Homes</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="specializations" value="Commercial">
+                            <span>Commercial</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="11"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="13">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 13: Quality Control Practices -->
+            <div class="form-step" id="step13">
+                <h2><i class="fas fa-check-circle"></i> Quality Control Practices</h2>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="siteEngineerAssigned" name="siteEngineerAssigned" checked>
+                        <span>Site Engineer Assigned?</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="materialVerification" name="materialVerification" checked>
+                        <span>Material Verification?</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="weeklyReporting" name="weeklyReporting" checked>
+                        <span>Weekly Reporting?</span>
+                    </label>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="12"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="14">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 14: After-Handover Support -->
+            <div class="form-step" id="step14">
+                <h2><i class="fas fa-headset"></i> After-Handover Support</h2>
+                
+                <div class="form-group">
+                    <label for="defectLiabilityPeriod">Defect Liability Period (Months)</label>
+                    <select id="defectLiabilityPeriod" name="defectLiabilityPeriod">
+                        <option value="">Select Period</option>
+                        <option value="0">No Warranty</option>
+                        <option value="6">6 Months</option>
+                        <option value="12" selected>12 Months</option>
+                        <option value="24">24 Months</option>
+                        <option value="36">36 Months</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="maintenanceSupport" name="maintenanceSupport" checked>
+                        <span>Maintenance Support?</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="supportResponseTime">Support Response Time</label>
+                    <select id="supportResponseTime" name="supportResponseTime">
+                        <option value="">Select Time</option>
+                        <option value="1">Within 1 Day</option>
+                        <option value="3" selected>Within 3 Days</option>
+                        <option value="7">Within 7 Days</option>
+                        <option value="14">Within 14 Days</option>
+                        <option value="30">Within 30 Days</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="13"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="15">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 15: Legal & Contract Details -->
+            <div class="form-step" id="step15">
+                <h2><i class="fas fa-file-contract"></i> Legal & Contract Details</h2>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="writtenContractProvided" name="writtenContractProvided" checked>
+                        <span>Written Contract Provided?</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="boqProvided" name="boqProvided" checked>
+                        <span>BOQ Provided?</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="penaltyForDelay" name="penaltyForDelay" checked>
+                        <span>Penalty for Delay?</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="warrantyDuration">Warranty Duration (Years)</label>
+                    <select id="warrantyDuration" name="warrantyDuration">
+                        <option value="">Select Duration</option>
+                        <option value="1">1 Year</option>
+                        <option value="2" selected>2 Years</option>
+                        <option value="5">5 Years</option>
+                        <option value="10">10 Years</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="14"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn-next" data-next="16">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 16: Ideal Customer Profile -->
+            <div class="form-step" id="step16">
+                <h2><i class="fas fa-user-check"></i> Ideal Customer Profile</h2>
+                
+                <div class="form-group">
+                    <label>Best For (Select all that apply)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="bestFor" value="First Time Builders" checked>
+                            <span>First Time Builders</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="bestFor" value="Low Budget Projects" checked>
+                            <span>Low Budget Projects</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="bestFor" value="Fast Track Projects">
+                            <span>Fast Track Projects</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="bestFor" value="Investors">
+                            <span>Investors</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Not Ideal For (Select all that apply)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="notIdealFor" value="Luxury Homes">
+                            <span>Luxury Homes</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="notIdealFor" value="Large Commercial">
+                            <span>Large Commercial</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="notIdealFor" value="High-rise Buildings">
+                            <span>High-rise Buildings</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="notIdealFor" value="Urgent Projects">
+                            <span>Urgent Projects</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="acceptTerms" name="acceptTerms" required>
+                        <span>I accept the Terms & Conditions *</span>
+                    </label>
+                    <div class="hint">By checking this, you agree to our terms of service and privacy policy.</div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-prev" data-prev="15"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="submit" class="btn-submit">Submit for Admin Approval</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="notification" id="notification">
+            <span id="notificationText"></span>
+        </div>
+    </div>
+
+    <!-- Data lists for societies and phases -->
+    <datalist id="societiesList">
+        <option value="DHA">DHA</option>
+        <option value="Bahria Town">Bahria Town</option>
+        <option value="Gulshan-e-Iqbal">Gulshan-e-Iqbal</option>
+        <option value="Defence">Defence</option>
+        <option value="Clifton">Clifton</option>
+        <option value="Saddar">Saddar</option>
+        <option value="North Nazimabad">North Nazimabad</option>
+        <option value="Gulistan-e-Jauhar">Gulistan-e-Jauhar</option>
+        <option value="Malir">Malir</option>
+        <option value="Korangi">Korangi</option>
+        <option value="Model Town">Model Town</option>
+        <option value="Johar Town">Johar Town</option>
+        <option value="Garden Town">Garden Town</option>
+        <option value="Cantt">Cantt</option>
+        <option value="Faisal Town">Faisal Town</option>
+        <option value="Wapda Town">Wapda Town</option>
+        <option value="I-8">I-8</option>
+        <option value="I-10">I-10</option>
+        <option value="G-9">G-9</option>
+        <option value="G-10">G-10</option>
+        <option value="F-6">F-6</option>
+        <option value="F-7">F-7</option>
+        <option value="E-7">E-7</option>
+        <option value="D-12">D-12</option>
+    </datalist>
+
+    <datalist id="phasesList">
+        <option value="Phase 1">Phase 1</option>
+        <option value="Phase 2">Phase 2</option>
+        <option value="Phase 3">Phase 3</option>
+        <option value="Phase 4">Phase 4</option>
+        <option value="Phase 5">Phase 5</option>
+        <option value="Phase 6">Phase 6</option>
+        <option value="Phase 7">Phase 7</option>
+        <option value="Phase 8">Phase 8</option>
+        <option value="Phase 9">Phase 9</option>
+        <option value="Block A">Block A</option>
+        <option value="Block B">Block B</option>
+        <option value="Block C">Block C</option>
+        <option value="Block D">Block D</option>
+        <option value="Block E">Block E</option>
+        <option value="Block F">Block F</option>
+        <option value="Block G">Block G</option>
+        <option value="Block H">Block H</option>
+        <option value="Sector A">Sector A</option>
+        <option value="Sector B">Sector B</option>
+        <option value="Sector C">Sector C</option>
+        <option value="Sector D">Sector D</option>
+    </datalist>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
