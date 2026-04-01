@@ -35,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { companyDirectory, getPackageKeys, humanizeToken, type CompanyDirectoryItem } from "@/data/companyData";
 import { mockCompanies, mockMaterials } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
@@ -65,6 +66,16 @@ type SupplierSummary = {
   locationLabel: string;
   ratingLabel: string;
 };
+
+function previewList(items: string[], max: number) {
+  const cleaned = items.filter((x) => x && x !== "—");
+  const shown = cleaned.slice(0, max);
+  const more = Math.max(0, cleaned.length - shown.length);
+  return {
+    text: shown.join(" • "),
+    more,
+  };
+}
 
 function supplierId(name: string) {
   return name
@@ -157,25 +168,30 @@ function ClientCompaniesView() {
   }, []);
 
   const locationOptions = useMemo(() => {
-    return Array.from(new Set(mockCompanies.map((c) => c.location))).sort();
+    const allCities = companyDirectory.flatMap((c) => (c.cities.length ? c.cities : [c.location]));
+    return Array.from(new Set(allCities.filter((x) => x && x !== "—"))).sort();
   }, []);
 
   const specializationOptions = useMemo(() => {
-    return Array.from(new Set(mockCompanies.flatMap((c) => c.specialization))).sort();
+    return Array.from(new Set(companyDirectory.flatMap((c) => c.specialization))).sort();
   }, []);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
 
-    return mockCompanies.filter((c) => {
+    return companyDirectory.filter((c) => {
+      const cities = c.cities.length ? c.cities : [c.location];
+
       const matchesQuery =
         !q ||
         c.name.toLowerCase().includes(q) ||
-        c.location.toLowerCase().includes(q) ||
+        cities.some((x) => x.toLowerCase().includes(q)) ||
+        c.areas.some((x) => x.toLowerCase().includes(q)) ||
+        c.societies.some((x) => x.toLowerCase().includes(q)) ||
         c.specialization.some((s) => s.toLowerCase().includes(q));
 
       const matchesVerified = !onlyVerified || c.verified;
-      const matchesLocation = locations.length === 0 || locations.includes(c.location);
+      const matchesLocation = locations.length === 0 || locations.some((loc) => cities.includes(loc));
       const matchesSpecs =
         specializations.length === 0 ||
         c.specialization.some((s) => specializations.includes(s));
@@ -199,7 +215,7 @@ function ClientCompaniesView() {
   const suppliers = useMemo(() => buildSupplierSummaries(filteredMaterials, search), [filteredMaterials, search]);
 
   const selectedCompanies = useMemo(
-    () => mockCompanies.filter((c) => compareIds.includes(c.id)),
+    () => companyDirectory.filter((c) => compareIds.includes(c.id)),
     [compareIds],
   );
 
@@ -438,6 +454,9 @@ function ClientCompaniesView() {
                   {filtered.map((company) => {
                     const compareSelected = compareIds.includes(company.id);
                     const compareDisabled = !compareSelected && compareIds.length >= 3;
+                    const pkgKeys = getPackageKeys(company.raw);
+                    const citiesPreview = previewList(company.cities.length ? company.cities : [company.location], 2);
+                    const societiesPreview = previewList(company.societies, 2);
 
                     return (
                       <GlassCard
@@ -484,6 +503,20 @@ function ClientCompaniesView() {
                               </Badge>
                             ))}
                           </div>
+
+                          <p className="text-xs text-muted-foreground">
+                            Packages: <span className="text-foreground">{pkgKeys.map(humanizeToken).join(" • ")}</span>
+                          </p>
+
+                          <p className="text-xs text-muted-foreground">
+                            Cities: <span className="text-foreground">{citiesPreview.text || "—"}</span>
+                            {citiesPreview.more ? <span className="text-muted-foreground"> (+{citiesPreview.more})</span> : null}
+                          </p>
+
+                          <p className="text-xs text-muted-foreground">
+                            Societies: <span className="text-foreground">{societiesPreview.text || "—"}</span>
+                            {societiesPreview.more ? <span className="text-muted-foreground"> (+{societiesPreview.more})</span> : null}
+                          </p>
 
                           <div className="flex items-center justify-between text-xs">
                             <div className="flex items-center gap-1 text-muted-foreground">
@@ -758,7 +791,7 @@ function CompareDialog({
   companies,
   onClear,
 }: {
-  companies: typeof mockCompanies;
+  companies: CompanyDirectoryItem[];
   onClear: () => void;
 }) {
   return (
@@ -787,8 +820,24 @@ function CompareDialog({
             <CompareRow label="Match" values={companies.map((c) => `${c.matchScore}%`)} />
             <CompareRow label="Rating" values={companies.map((c) => `${c.rating} (${c.reviews})`)} />
             <CompareRow label="Price" values={companies.map((c) => c.priceRange)} />
-            <CompareRow label="Established" values={companies.map((c) => `${c.yearEstablished}`)} />
-            <CompareRow label="Completed" values={companies.map((c) => `${c.completedProjects}`)} />
+            <CompareRow
+              label="Cities"
+              values={companies.map((c) => {
+                const p = previewList(c.cities.length ? c.cities : [c.location], 3);
+                if (!p.text) return "—";
+                return p.more ? `${p.text} (+${p.more})` : p.text;
+              })}
+            />
+            <CompareRow
+              label="Societies"
+              values={companies.map((c) => {
+                const p = previewList(c.societies, 3);
+                if (!p.text) return "—";
+                return p.more ? `${p.text} (+${p.more})` : p.text;
+              })}
+            />
+            <CompareRow label="Established" values={companies.map((c) => (c.yearEstablished ? `${c.yearEstablished}` : "—"))} />
+            <CompareRow label="Completed" values={companies.map((c) => (c.completedProjects != null ? `${c.completedProjects}` : "—"))} />
             <CompareRow label="Specialization" values={companies.map((c) => c.specialization.join(", "))} />
           </TableBody>
         </Table>

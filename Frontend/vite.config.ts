@@ -8,6 +8,10 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    fs: {
+      // Allow importing the provided mock JSON dataset from the parent workspace folder.
+      allow: [path.resolve(__dirname, "..")],
+    },
     hmr: {
       overlay: false,
     },
