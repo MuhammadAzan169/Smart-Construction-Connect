@@ -3,7 +3,7 @@ import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, User, Send, Star, MapPin, ArrowRight } from "lucide-react";
 
@@ -21,31 +21,159 @@ const aiResponses = [
   "For your budget of 8-12M PKR, I suggest looking at companies with 4.5+ ratings that have completed similar projects. Check the recommendations on the right!",
 ];
 
+type Company = (typeof mockCompanies)[number];
+
+function normalizeText(text: string) {
+  return text.toLowerCase().replace(/[^a-z0-9\s-]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function pickAiResponse(userText: string) {
+  const t = normalizeText(userText);
+  const mentionsBudget = /\b(budget|pkr|rs)\b/.test(t) || /\b\d+(?:\.\d+)?\s*(?:m|mn|million|l|lac|lakh|k|thousand)\b/.test(t);
+  const mentionsCompare = /\b(compare|comparison|vs)\b/.test(t);
+  const mentionsRenovation = /\b(renovation|remodel|upgrade|repair)\b/.test(t);
+
+  if (mentionsCompare) return aiResponses[2];
+  if (mentionsRenovation) return aiResponses[3];
+  if (mentionsBudget) return aiResponses[4];
+  return aiResponses[Math.floor(Math.random() * aiResponses.length)];
+}
+
+function rankCompanies(companies: Company[], userText: string) {
+  const q = normalizeText(userText);
+  if (!q) return [...companies].sort((a, b) => b.matchScore - a.matchScore);
+
+  const keywords = new Set(q.split(" ").filter(Boolean));
+  const qHas = (s: string) => keywords.has(normalizeText(s));
+
+  return [...companies]
+    .map((c) => {
+      let score = c.matchScore;
+
+      // Strong signal: location
+      if (q.includes(normalizeText(c.location))) score += 30;
+
+      // Specialization signals (more forgiving: word-level)
+      const specWords = c.specialization.flatMap((s) => normalizeText(s).split(" "));
+      const specHits = specWords.reduce((acc, w) => (qHas(w) ? acc + 1 : acc), 0);
+      score += Math.min(40, specHits * 10);
+
+      // Quality signals
+      score += Math.round(c.rating * 2);
+      if (c.verified) score += 6;
+
+      // Intent signals
+      if (/\b(cheap|low|economy|basic)\b/.test(q) && /\b(luxury|executive|premium)\b/.test(normalizeText(c.priceRange))) {
+        score -= 8;
+      }
+      if (/\b(luxury|premium|executive)\b/.test(q) && /\b(luxury)\b/.test(normalizeText(c.specialization.join(" ")))) {
+        score += 10;
+      }
+
+      return { company: c, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .map((x) => x.company);
+}
+
 export default function AIChatPage() {
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, role: "ai", text: "Hello! 👋 I'm your AI Construction Assistant. Tell me about your project — budget, location, type — and I'll find the perfect match for you." },
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+
+  const nextIdRef = useRef(2);
+  const getNextId = useCallback(() => nextIdRef.current++, []);
+
+  const unmountedRef = useRef(false);
+  const activeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const aiQueueRef = useRef<string[]>([]);
+  const processingRef = useRef(false);
+
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const shouldAutoScrollRef = useRef(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    return () => {
+      unmountedRef.current = true;
+      if (activeTimeoutRef.current) {
+        clearTimeout(activeTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const threshold = 48; // px from bottom counts as "at bottom"
+      shouldAutoScrollRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+    };
+
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    return () => el.removeEventListener("scroll", update);
+  }, []);
+
+  useEffect(() => {
+    if (!shouldAutoScrollRef.current) return;
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    const userMsg: Message = { id: Date.now(), role: "user", text: input };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
+  const lastUserText = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i]?.role === "user") return messages[i]!.text;
+    }
+    return "";
+  }, [messages]);
+
+  const recommendedCompanies = useMemo(() => {
+    return rankCompanies(mockCompanies, lastUserText).slice(0, 4);
+  }, [lastUserText]);
+
+  const processQueue = useCallback(() => {
+    if (processingRef.current) return;
+
+    const nextUserText = aiQueueRef.current.shift();
+    if (!nextUserText) {
+      setIsTyping(false);
+      return;
+    }
+
+    processingRef.current = true;
     setIsTyping(true);
 
-    setTimeout(() => {
-      const aiText = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-      setMessages((prev) => [...prev, { id: Date.now() + 1, role: "ai", text: aiText }]);
-      setIsTyping(false);
-    }, 1500 + Math.random() * 1000);
-  };
+    const delayMs = 1500 + Math.random() * 1000;
+    activeTimeoutRef.current = setTimeout(() => {
+      if (unmountedRef.current) return;
+
+      const aiText = pickAiResponse(nextUserText);
+      setMessages((prev) => [...prev, { id: getNextId(), role: "ai", text: aiText }]);
+      processingRef.current = false;
+      processQueue();
+    }, delayMs);
+  }, [getNextId]);
+
+  const handleSend = useCallback(() => {
+    const text = input.trim();
+    if (!text) return;
+
+    setMessages((prev) => [...prev, { id: getNextId(), role: "user", text }]);
+    setInput("");
+    aiQueueRef.current.push(text);
+    processQueue();
+  }, [getNextId, input, processQueue]);
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      handleSend();
+    },
+    [handleSend],
+  );
 
   return (
     <div className="flex h-[calc(100svh-11rem)] gap-6">
@@ -67,7 +195,14 @@ export default function AIChatPage() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 space-y-4 overflow-y-auto p-6">
+        <div
+          ref={messagesContainerRef}
+          className="flex-1 space-y-4 overflow-y-auto p-6"
+          role="log"
+          aria-live="polite"
+          aria-relevant="additions"
+          aria-label="Chat messages"
+        >
           <AnimatePresence>
             {messages.map((msg) => (
               <motion.div
@@ -104,7 +239,13 @@ export default function AIChatPage() {
           </AnimatePresence>
 
           {isTyping && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex gap-3"
+              role="status"
+              aria-label="Assistant is typing"
+            >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-bg">
                 <Bot className="h-4 w-4 text-primary-foreground" />
               </div>
@@ -128,24 +269,24 @@ export default function AIChatPage() {
 
         {/* Input */}
         <div className="border-t border-border p-4">
-          <div className="flex gap-3">
+          <form className="flex gap-3" onSubmit={handleSubmit}>
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
               placeholder="Describe your construction project..."
               className="flex-1 bg-background/40"
+              aria-label="Message"
             />
             <Button
-              type="button"
+              type="submit"
               size="icon"
-              onClick={handleSend}
               disabled={!input.trim()}
               className="rounded-xl"
+              aria-label="Send message"
             >
               <Send className="h-4 w-4" />
             </Button>
-          </div>
+          </form>
         </div>
       </GlassCard>
 
@@ -153,7 +294,7 @@ export default function AIChatPage() {
       <div className="hidden w-96 flex-col gap-4 lg:flex">
         <h3 className="text-sm font-semibold text-foreground">Top Recommendations</h3>
         <div className="space-y-3 overflow-y-auto">
-          {mockCompanies.slice(0, 4).map((company, i) => (
+          {recommendedCompanies.map((company, i) => (
             <motion.div
               key={company.id}
               initial={{ opacity: 0, x: 12 }}
