@@ -32,7 +32,6 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
 
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
@@ -41,6 +40,7 @@ const App = () => (
             <Route path="/suppliers/:id" element={<SupplierProfilePage />} />
             <Route path="/requests" element={<RequestsPage />} />
             <Route path="/ai-chat" element={<AIChatPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
             <Route path="/products" element={<InventoryPage />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/approvals" element={<ApprovalsPage />} />

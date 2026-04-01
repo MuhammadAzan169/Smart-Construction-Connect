@@ -39,7 +39,7 @@ const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path
   company: [
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { label: "Requests", icon: FileText, path: "/requests" },
-    { label: "Pricing", icon: CreditCard, path: "/pricing" },
+    { label: "Packages & Pricing", icon: CreditCard, path: "/pricing" },
   ],
   supplier: [
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
