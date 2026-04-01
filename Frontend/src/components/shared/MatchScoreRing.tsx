@@ -8,7 +8,7 @@ export function MatchScoreRing({ score, size = 56 }: MatchScoreRingProps) {
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
 
-  const color = score >= 85 ? "hsl(var(--success))" : score >= 60 ? "hsl(var(--warning))" : "hsl(var(--destructive))";
+  const color = score >= 85 ? "rgb(var(--success))" : score >= 60 ? "rgb(var(--warning))" : "rgb(var(--destructive))";
 
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>

@@ -3,6 +3,8 @@ import { useAuthStore } from "@/stores/authStore";
 import { motion } from "framer-motion";
 import { HardHat, ArrowRight, Building2, Bot, Shield } from "lucide-react";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { GlassCard } from "@/components/shared/GlassCard";
 
 export default function Index() {
   const { isAuthenticated } = useAuthStore();
@@ -29,12 +31,12 @@ export default function Index() {
           <span className="text-lg font-bold text-foreground">Smart Connect</span>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => navigate("/login")} className="h-9 rounded-lg border border-border px-4 text-sm font-medium text-foreground transition-colors hover:bg-accent">
+          <Button variant="outline" onClick={() => navigate("/login")}>
             Sign In
-          </button>
-          <button onClick={() => navigate("/signup")} className="h-9 rounded-lg gradient-bg px-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90">
+          </Button>
+          <Button onClick={() => navigate("/signup")}>
             Get Started
-          </button>
+          </Button>
         </div>
       </nav>
 
@@ -58,18 +60,12 @@ export default function Index() {
             Connect with verified construction companies, compare quotes, and manage your projects — all powered by AI.
           </p>
           <div className="mt-10 flex justify-center gap-4">
-            <button
-              onClick={() => navigate("/signup")}
-              className="flex h-12 items-center gap-2 rounded-xl gradient-bg px-8 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-            >
+            <Button onClick={() => navigate("/signup")} className="h-12 rounded-xl px-8">
               Start Free <ArrowRight className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => navigate("/login")}
-              className="h-12 rounded-xl border border-border bg-card px-8 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
-            >
+            </Button>
+            <Button onClick={() => navigate("/login")} variant="outline" className="h-12 rounded-xl px-8">
               Sign In
-            </button>
+            </Button>
           </div>
         </motion.div>
 
@@ -82,13 +78,14 @@ export default function Index() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + i * 0.1 }}
               whileHover={{ y: -4 }}
-              className="rounded-2xl border border-border bg-card p-6 text-left card-shadow transition-shadow hover:card-shadow-hover"
             >
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                <f.icon className="h-5 w-5 text-primary" />
-              </div>
-              <h3 className="mb-2 font-semibold text-foreground">{f.title}</h3>
-              <p className="text-sm text-muted-foreground">{f.desc}</p>
+              <GlassCard className="p-6 text-left">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                  <f.icon className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="mb-2 font-semibold text-foreground">{f.title}</h3>
+                <p className="text-sm text-muted-foreground">{f.desc}</p>
+              </GlassCard>
             </motion.div>
           ))}
         </div>

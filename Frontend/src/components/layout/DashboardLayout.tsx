@@ -1,16 +1,15 @@
-import { ReactNode } from "react";
 import { AppSidebar } from "./AppSidebar";
 import { TopNavbar } from "./TopNavbar";
 import { useAuthStore } from "@/stores/authStore";
-import { Navigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { GlassCard } from "@/components/shared/GlassCard";
+import { Button } from "@/components/ui/button";
 
-interface DashboardLayoutProps {
-  children: ReactNode;
-}
-
-export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { isAuthenticated, user } = useAuthStore();
+export function DashboardLayout() {
+  const { isAuthenticated, user, logout } = useAuthStore();
+  const location = useLocation();
 
   if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
@@ -22,41 +21,44 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="mx-4 max-w-md rounded-2xl border border-border bg-card p-8 text-center card-shadow"
+          className="mx-4 w-full max-w-md"
         >
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-warning/10">
-            <span className="text-3xl">⏳</span>
-          </div>
-          <h2 className="mb-2 text-xl font-semibold text-foreground">Pending Approval</h2>
-          <p className="mb-6 text-muted-foreground">
-            Your {user.role} account is awaiting admin approval. You'll be notified once verified.
-          </p>
-          <button
-            onClick={() => useAuthStore.getState().logout()}
-            className="rounded-lg bg-secondary px-6 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-accent"
-          >
-            Sign Out
-          </button>
+          <GlassCard interactive={false} className="p-8 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-warning/10">
+              <span className="text-3xl">⏳</span>
+            </div>
+            <h2 className="mb-2 text-xl font-semibold text-foreground">Pending approval</h2>
+            <p className="mb-6 text-sm text-muted-foreground">
+              Your {user.role} account is awaiting admin verification. You’ll be notified once access is granted.
+            </p>
+            <Button variant="secondary" onClick={logout}>
+              Sign out
+            </Button>
+          </GlassCard>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
+    <SidebarProvider defaultOpen>
       <AppSidebar />
-      <div className="flex flex-1 flex-col">
+      <SidebarInset className="bg-background">
         <TopNavbar />
-        <main className="flex-1 overflow-auto p-6">
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {children}
-          </motion.div>
+        <main className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </main>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

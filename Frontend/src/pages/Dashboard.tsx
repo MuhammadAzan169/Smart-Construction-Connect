@@ -1,345 +1,475 @@
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
+
+import { GlassCard } from "@/components/shared/GlassCard";
+import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
 import { StatCard } from "@/components/shared/StatCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
-import { mockCompanies, mockRequests } from "@/data/mockData";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  mockCompanies,
+  mockMaterials,
+  mockNotifications,
+  mockRequests,
+  mockUsers,
+} from "@/data/mockData";
+import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 import { motion } from "framer-motion";
-import { Building2, FileText, Star, TrendingUp, Search, SlidersHorizontal, Heart } from "lucide-react";
-import { useState } from "react";
+import {
+  Activity,
+  ArrowRight,
+  Building2,
+  FileText,
+  Package,
+  ShieldCheck,
+  Star,
+  TrendingDown,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 
-function ClientContent() {
-  const [search, setSearch] = useState("");
-  const [saved, setSaved] = useState<string[]>([]);
+const formatPKR = (value: number) =>
+  new Intl.NumberFormat("en-PK", { style: "currency", currency: "PKR", maximumFractionDigits: 0 }).format(value);
 
-  const filtered = mockCompanies.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.location.toLowerCase().includes(search.toLowerCase())
-  );
+function ClientDashboard() {
+  const topPicks = useMemo(() => {
+    return [...mockCompanies].sort((a, b) => b.matchScore - a.matchScore).slice(0, 4);
+  }, []);
+
+  const bestMatchScore = topPicks[0]?.matchScore ?? 0;
+  const verifiedCount = useMemo(() => mockCompanies.filter((c) => c.verified).length, []);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Welcome back 👋</h1>
-        <p className="text-muted-foreground">Find the perfect construction partner for your project.</p>
-      </div>
-
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Companies Available" value={mockCompanies.length} icon={Building2} />
-        <StatCard title="My Requests" value={mockRequests.length} icon={FileText} />
-        <StatCard title="Avg. Rating" value="4.5" icon={Star} />
-        <StatCard title="Best Match" value="94%" icon={TrendingUp} trend="up" change="+2% this week" />
-      </div>
-
-      {/* Search + filters */}
-      <div className="flex gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search companies by name or location..."
-            className="h-10 w-full rounded-xl border border-input bg-background pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-          />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Client Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Browse companies, compare options, and track requests.</p>
         </div>
-        <button className="flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-accent">
-          <SlidersHorizontal className="h-4 w-4" />
-          Filters
-        </button>
-      </div>
-
-      {/* Company cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((company, i) => (
-          <motion.div
-            key={company.id}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            whileHover={{ y: -4 }}
-            className="group overflow-hidden rounded-2xl border border-border bg-card card-shadow transition-shadow hover:card-shadow-hover"
-          >
-            <div className="relative h-40 overflow-hidden">
-              <img src={company.image} alt={company.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
-              <div className="absolute right-3 top-3">
-                <button
-                  onClick={() => setSaved(s => s.includes(company.id) ? s.filter(x => x !== company.id) : [...s, company.id])}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-card/80 backdrop-blur-sm transition-colors hover:bg-card"
-                >
-                  <Heart className={`h-4 w-4 ${saved.includes(company.id) ? "fill-destructive text-destructive" : "text-foreground"}`} />
-                </button>
-              </div>
-              {company.verified && (
-                <div className="absolute left-3 top-3">
-                  <StatusBadge status="verified" />
-                </div>
-              )}
-            </div>
-            <div className="p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold text-foreground">{company.name}</h3>
-                  <p className="text-sm text-muted-foreground">{company.location}</p>
-                </div>
-                <MatchScoreRing score={company.matchScore} size={48} />
-              </div>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {company.specialization.map((s) => (
-                  <span key={s} className="rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">{s}</span>
-                ))}
-              </div>
-              <div className="mt-3 flex items-center justify-between text-sm">
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <Star className="h-3.5 w-3.5 fill-warning text-warning" />
-                  <span className="font-medium text-foreground">{company.rating}</span>
-                  <span>({company.reviews})</span>
-                </div>
-                <span className="text-xs text-muted-foreground">{company.priceRange}</span>
-              </div>
-              <button className="mt-4 h-9 w-full rounded-lg gradient-bg text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90">
-                Request Quote
-              </button>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function CompanyContent() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Company Dashboard</h1>
-        <p className="text-muted-foreground">Manage your requests, projects, and profile.</p>
+        <div className="flex gap-2">
+          <Button asChild variant="secondary">
+            <Link to="/companies">Browse companies</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/requests">My requests</Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Incoming Requests" value={5} icon={FileText} trend="up" change="+3 this week" />
-        <StatCard title="Active Projects" value={3} icon={Building2} />
-        <StatCard title="Average Rating" value="4.7" icon={Star} />
-        <StatCard title="Profile Views" value={247} icon={TrendingUp} trend="up" change="+18%" />
+        <StatCard title="Companies" value={mockCompanies.length} icon={Building2} />
+        <StatCard title="Verified" value={verifiedCount} icon={ShieldCheck} />
+        <StatCard title="Requests" value={mockRequests.length} icon={FileText} />
+        <StatCard title="Best Match" value={`${bestMatchScore}%`} icon={TrendingUp} trend="up" change="Recommended" />
       </div>
 
-      {/* Requests table */}
-      <div className="rounded-2xl border border-border bg-card card-shadow">
-        <div className="border-b border-border px-6 py-4">
-          <h2 className="font-semibold text-foreground">Recent Requests</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border text-left text-xs font-medium text-muted-foreground">
-                <th className="px-6 py-3">Client</th>
-                <th className="px-6 py-3">Project</th>
-                <th className="px-6 py-3">Location</th>
-                <th className="px-6 py-3">Budget</th>
-                <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mockRequests.map((req) => (
-                <tr key={req.id} className="border-b border-border/50 transition-colors hover:bg-accent/30">
-                  <td className="px-6 py-4 text-sm font-medium text-foreground">{req.clientName}</td>
-                  <td className="px-6 py-4 text-sm text-foreground">{req.project}</td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">{req.location}</td>
-                  <td className="px-6 py-4 text-sm text-foreground">{req.budget}</td>
-                  <td className="px-6 py-4"><StatusBadge status={req.status} /></td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">{req.date}</td>
-                </tr>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <GlassCard interactive={false} className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Top matches</p>
+                <p className="mt-1 text-xs text-muted-foreground">Fast shortlist based on match score and verification.</p>
+              </div>
+              <Button asChild variant="link" className="h-auto p-0 text-xs">
+                <Link to="/companies" className="flex items-center gap-1">
+                  View all <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {topPicks.map((c) => (
+                <GlassCard key={c.id} className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-foreground">{c.name}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{c.location}</p>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {c.specialization.slice(0, 2).map((s) => (
+                          <Badge key={s} variant="secondary" className="rounded-lg">
+                            {s}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <MatchScoreRing score={c.matchScore} size={44} />
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Star className="h-3.5 w-3.5 fill-warning text-warning" />
+                      <span className="font-semibold text-foreground">{c.rating}</span>
+                      <span>({c.reviews})</span>
+                    </div>
+                    <StatusBadge status={c.verified ? "verified" : "pending"} />
+                  </div>
+                </GlassCard>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Milestones */}
-      <div className="rounded-2xl border border-border bg-card p-6 card-shadow">
-        <h2 className="mb-4 font-semibold text-foreground">Active Project Progress</h2>
-        <div className="space-y-4">
-          {["Foundation", "Structure", "Electrical", "Finishing"].map((phase, i) => (
-            <div key={phase}>
-              <div className="mb-1 flex justify-between text-sm">
-                <span className="text-foreground">{phase}</span>
-                <span className="text-muted-foreground">{[100, 75, 30, 0][i]}%</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-secondary">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${[100, 75, 30, 0][i]}%` }}
-                  transition={{ duration: 0.8, delay: i * 0.1 }}
-                  className="h-full rounded-full gradient-bg"
-                />
-              </div>
             </div>
-          ))}
+          </GlassCard>
         </div>
+
+        <GlassCard interactive={false} className="p-5">
+          <p className="text-sm font-semibold text-foreground">Next steps</p>
+          <p className="mt-1 text-xs text-muted-foreground">Clear actions to keep your project moving.</p>
+
+          <div className="mt-4 space-y-3">
+            <Button asChild className="w-full">
+              <Link to="/companies" className="flex items-center justify-between">
+                Browse & compare <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="secondary" className="w-full">
+              <Link to="/requests" className="flex items-center justify-between">
+                View requests <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full">
+              <Link to="/pricing" className="flex items-center justify-between">
+                Upgrade tier <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </GlassCard>
       </div>
     </div>
   );
 }
 
-function SupplierContent() {
-  const materials = [
-    { name: "Bestway Cement 50kg", category: "Cement", price: "PKR 1,350", stock: 500, trend: "up" },
-    { name: "TOR Steel Bar 60G", category: "Steel", price: "PKR 285,000/ton", stock: 45, trend: "down" },
-    { name: "A+ Red Bricks", category: "Bricks", price: "PKR 18/pc", stock: 50000, trend: "up" },
-    { name: "ICI Dulux Paint 20L", category: "Paint", price: "PKR 12,500", stock: 120, trend: "up" },
-    { name: "Pak Cable 7/29", category: "Electrical", price: "PKR 28,000/roll", stock: 80, trend: "down" },
+function CompanyDashboard() {
+  const pending = useMemo(() => mockRequests.filter((r) => r.status === "pending"), []);
+  const accepted = useMemo(() => mockRequests.filter((r) => r.status === "accepted"), []);
+
+  const phases = [
+    { name: "Foundation", progress: 100 },
+    { name: "Structure", progress: 75 },
+    { name: "Electrical", progress: 30 },
+    { name: "Finishing", progress: 0 },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Supplier Dashboard</h1>
-          <p className="text-muted-foreground">Manage your inventory and pricing.</p>
+          <h1 className="text-2xl font-bold text-foreground">Company Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Manage requests, track work, and keep your profile premium.</p>
         </div>
-        <button className="h-10 rounded-xl gradient-bg px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90">
-          + Add Product
-        </button>
+        <Button asChild>
+          <Link to="/requests">Open requests</Link>
+        </Button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Products" value={8} icon={Building2} />
-        <StatCard title="Active Orders" value={12} icon={FileText} trend="up" change="+5 today" />
-        <StatCard title="Revenue (MTD)" value="PKR 2.4M" icon={TrendingUp} trend="up" change="+14%" />
-        <StatCard title="Low Stock Items" value={2} icon={Star} />
+        <StatCard title="Incoming Requests" value={pending.length} icon={FileText} trend="up" change={`${pending.length} pending`} />
+        <StatCard title="Accepted" value={accepted.length} icon={ShieldCheck} />
+        <StatCard title="Avg Rating" value="4.7" icon={Star} />
+        <StatCard title="Profile Views" value={247} icon={TrendingUp} trend="up" change="+18% (demo)" />
       </div>
 
-      <div className="rounded-2xl border border-border bg-card card-shadow">
-        <div className="border-b border-border px-6 py-4">
-          <h2 className="font-semibold text-foreground">Product Inventory</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border text-left text-xs font-medium text-muted-foreground">
-                <th className="px-6 py-3">Product</th>
-                <th className="px-6 py-3">Category</th>
-                <th className="px-6 py-3">Price</th>
-                <th className="px-6 py-3">Stock</th>
-                <th className="px-6 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {materials.map((m, i) => (
-                <tr key={i} className="border-b border-border/50 transition-colors hover:bg-accent/30">
-                  <td className="px-6 py-4 text-sm font-medium text-foreground">{m.name}</td>
-                  <td className="px-6 py-4"><span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">{m.category}</span></td>
-                  <td className="px-6 py-4 text-sm text-foreground">{m.price}</td>
-                  <td className="px-6 py-4 text-sm text-foreground">{m.stock.toLocaleString()}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <button className="rounded-md bg-primary/10 px-3 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary/20">Edit</button>
-                      <button className="rounded-md bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20">Delete</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+        <GlassCard className="p-0">
+          <div className="flex items-center justify-between border-b border-border p-5">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Incoming requests</p>
+              <p className="mt-1 text-xs text-muted-foreground">Respond quickly to improve conversion.</p>
+            </div>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/requests">View all</Link>
+            </Button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Client</TableHead>
+                  <TableHead>Project</TableHead>
+                  <TableHead>Budget</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {mockRequests.slice(0, 5).map((r) => (
+                  <TableRow key={r.id}>
+                    <TableCell className="font-medium text-foreground">{r.clientName}</TableCell>
+                    <TableCell className="text-foreground">{r.project}</TableCell>
+                    <TableCell className="text-muted-foreground">{r.budget}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={r.status} />
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{r.date}</TableCell>
+                    <TableCell className="text-right">
+                      <Button asChild size="sm" variant="secondary">
+                        <Link to="/requests">Review</Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </GlassCard>
+
+        <GlassCard interactive={false} className="p-5">
+          <p className="text-sm font-semibold text-foreground">Active project progress</p>
+          <p className="mt-1 text-xs text-muted-foreground">Phase snapshot (demo).</p>
+
+          <div className="mt-5 space-y-4">
+            {phases.map((p, idx) => (
+              <div key={p.name}>
+                <div className="mb-1 flex justify-between text-xs">
+                  <span className="text-foreground">{p.name}</span>
+                  <span className="text-muted-foreground">{p.progress}%</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-secondary">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${p.progress}%` }}
+                    transition={{ duration: 0.8, delay: idx * 0.08 }}
+                    className={cn("h-full rounded-full", p.progress >= 70 ? "gradient-bg" : "bg-primary/60")}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6">
+            <Button asChild variant="outline" className="w-full">
+              <Link to="/pricing" className="flex items-center justify-between">
+                Upgrade for Premium visibility <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </GlassCard>
       </div>
     </div>
   );
 }
 
-function AdminContent() {
-  const { mockUsers: users } = require("@/data/mockData");
-  return <AdminDashboard />;
+function SupplierDashboard() {
+  const lowStockThreshold = 50;
+
+  const lowStock = useMemo(() => mockMaterials.filter((m) => m.stock <= lowStockThreshold), []);
+  const categories = useMemo(() => new Set(mockMaterials.map((m) => m.category)).size, []);
+  const totalStock = useMemo(() => mockMaterials.reduce((acc, m) => acc + m.stock, 0), []);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Supplier Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Monitor stock levels and update pricing efficiently.</p>
+        </div>
+        <Button asChild>
+          <Link to="/products">Open inventory</Link>
+        </Button>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="Products" value={mockMaterials.length} icon={Package} />
+        <StatCard title="Categories" value={categories} icon={TrendingUp} />
+        <StatCard title="Total Stock" value={totalStock.toLocaleString()} icon={TrendingUp} trend="up" change="Stable" />
+        <StatCard title="Low Stock" value={lowStock.length} icon={TrendingDown} trend="down" change="Attention" />
+      </div>
+
+      <GlassCard className="p-0">
+        <div className="flex items-center justify-between border-b border-border p-5">
+          <div>
+            <p className="text-sm font-semibold text-foreground">Low stock alerts</p>
+            <p className="mt-1 text-xs text-muted-foreground">Items below {lowStockThreshold} units.</p>
+          </div>
+          <Button asChild variant="outline" size="sm">
+            <Link to="/products">Manage</Link>
+          </Button>
+        </div>
+
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Material</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Stock</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {lowStock.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="py-10 text-center text-sm text-muted-foreground">
+                    No low stock items.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                lowStock.map((m) => (
+                  <TableRow key={m.id}>
+                    <TableCell className="font-medium text-foreground">{m.name}</TableCell>
+                    <TableCell className="text-muted-foreground">{m.category}</TableCell>
+                    <TableCell className="text-foreground">{formatPKR(m.price)}</TableCell>
+                    <TableCell className="font-medium text-warning">
+                      {m.stock.toLocaleString()} {m.unit}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </GlassCard>
+    </div>
+  );
 }
 
 function AdminDashboard() {
-  const allUsers = [
-    { id: "U-001", name: "Ahmed Khan", email: "ahmed@example.com", role: "client", status: "active" as const, joinDate: "2026-01-15" },
-    { id: "U-002", name: "Karachi Builders", email: "info@001builders.com", role: "company", status: "active" as const, joinDate: "2026-01-10" },
-    { id: "U-003", name: "Punjab Cement Traders", email: "sales@pct.com", role: "supplier", status: "pending" as const, joinDate: "2026-03-01" },
-    { id: "U-004", name: "Fatima Ali", email: "fatima@example.com", role: "client", status: "active" as const, joinDate: "2026-02-20" },
-    { id: "U-005", name: "Elite Builders", email: "contact@elite.com", role: "company", status: "active" as const, joinDate: "2025-12-05" },
-    { id: "U-006", name: "Steel Hub PK", email: "info@steelhub.pk", role: "supplier", status: "banned" as const, joinDate: "2025-11-10" },
-    { id: "U-007", name: "Multan Homes", email: "info@multanhomes.pk", role: "company", status: "pending" as const, joinDate: "2026-03-25" },
-  ];
+  const pendingUsers = useMemo(() => mockUsers.filter((u) => u.status === "pending"), []);
+  const verifiedCompanies = useMemo(() => mockCompanies.filter((c) => c.verified).length, []);
+  const unverifiedCompanies = useMemo(() => mockCompanies.filter((c) => !c.verified).length, []);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
-        <p className="text-muted-foreground">Platform management and oversight.</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Oversight, approvals, and platform activity.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button asChild>
+            <Link to="/approvals">Review approvals</Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link to="/users">Users</Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Users" value={allUsers.length} icon={Building2} />
-        <StatCard title="Pending Approvals" value={allUsers.filter(u => u.status === "pending").length} icon={FileText} />
-        <StatCard title="Active Companies" value={allUsers.filter(u => u.role === "company" && u.status === "active").length} icon={Star} />
-        <StatCard title="Banned Accounts" value={allUsers.filter(u => u.status === "banned").length} icon={TrendingUp} />
+        <StatCard title="Total Users" value={mockUsers.length} icon={Users} />
+        <StatCard title="Pending Approvals" value={pendingUsers.length} icon={ShieldCheck} />
+        <StatCard title="Verified Companies" value={verifiedCompanies} icon={Building2} />
+        <StatCard title="Events" value={mockNotifications.length} icon={Activity} />
       </div>
 
-      <div className="rounded-2xl border border-border bg-card card-shadow">
-        <div className="border-b border-border px-6 py-4">
-          <h2 className="font-semibold text-foreground">User Management</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border text-left text-xs font-medium text-muted-foreground">
-                <th className="px-6 py-3">Name</th>
-                <th className="px-6 py-3">Email</th>
-                <th className="px-6 py-3">Role</th>
-                <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Joined</th>
-                <th className="px-6 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {allUsers.map((u) => (
-                <tr key={u.id} className="border-b border-border/50 transition-colors hover:bg-accent/30">
-                  <td className="px-6 py-4 text-sm font-medium text-foreground">{u.name}</td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">{u.email}</td>
-                  <td className="px-6 py-4"><span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-medium capitalize text-secondary-foreground">{u.role}</span></td>
-                  <td className="px-6 py-4"><StatusBadge status={u.status} /></td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">{u.joinDate}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      {u.status === "pending" && (
-                        <button className="rounded-md bg-success/10 px-3 py-1 text-xs font-medium text-success transition-colors hover:bg-success/20">Approve</button>
-                      )}
-                      {u.status !== "banned" ? (
-                        <button className="rounded-md bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20">Ban</button>
-                      ) : (
-                        <button className="rounded-md bg-success/10 px-3 py-1 text-xs font-medium text-success transition-colors hover:bg-success/20">Unban</button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <GlassCard className="p-0">
+          <div className="flex items-center justify-between border-b border-border p-5">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Pending approvals</p>
+              <p className="mt-1 text-xs text-muted-foreground">Companies and suppliers awaiting verification.</p>
+            </div>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/approvals">Open</Link>
+            </Button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pendingUsers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="py-10 text-center text-sm text-muted-foreground">
+                      No pending approvals.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  pendingUsers.slice(0, 4).map((u) => (
+                    <TableRow key={u.id}>
+                      <TableCell className="font-medium text-foreground">{u.name}</TableCell>
+                      <TableCell className="capitalize text-muted-foreground">{u.role}</TableCell>
+                      <TableCell>
+                        <StatusBadge status={u.status} />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button asChild size="sm" variant="secondary">
+                          <Link to="/approvals">Review</Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </GlassCard>
+
+        <GlassCard className="p-0">
+          <div className="flex items-center justify-between border-b border-border p-5">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Recent activity</p>
+              <p className="mt-1 text-xs text-muted-foreground">System notifications and events.</p>
+            </div>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/activity">View all</Link>
+            </Button>
+          </div>
+
+          <div className="divide-y divide-border">
+            {mockNotifications.slice(0, 5).map((n) => (
+              <div key={n.id} className="flex items-start justify-between gap-4 p-5">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{n.title}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{n.message}</p>
+                </div>
+                <div className="text-right">
+                  {n.read ? (
+                    <Badge variant="outline" className="rounded-lg">
+                      Read
+                    </Badge>
+                  ) : (
+                    <Badge className="rounded-lg">New</Badge>
+                  )}
+                  <p className="mt-2 whitespace-nowrap text-xs text-muted-foreground">{n.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
       </div>
+
+      <GlassCard interactive={false} className="p-5">
+        <p className="text-sm font-semibold text-foreground">Company verification status</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Verified: <span className="font-semibold text-foreground">{verifiedCompanies}</span> • Unverified:{" "}
+          <span className="font-semibold text-foreground">{unverifiedCompanies}</span>
+        </p>
+      </GlassCard>
     </div>
   );
 }
 
 export default function Dashboard() {
-  const { user } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
+  if (!user) return null;
 
-  const content = () => {
-    switch (user?.role) {
-      case "client": return <ClientContent />;
-      case "company": return <CompanyContent />;
-      case "supplier": return <SupplierContent />;
-      case "admin": return <AdminDashboard />;
-      default: return <ClientContent />;
-    }
-  };
-
-  return (
-    <DashboardLayout>
-      {content()}
-    </DashboardLayout>
-  );
+  switch (user.role) {
+    case "company":
+      return <CompanyDashboard />;
+    case "supplier":
+      return <SupplierDashboard />;
+    case "admin":
+      return <AdminDashboard />;
+    case "client":
+    default:
+      return <ClientDashboard />;
+  }
 }
