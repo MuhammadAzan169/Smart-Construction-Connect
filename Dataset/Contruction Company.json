@@ -702,20 +702,49 @@
       "ai_score_avg": 0.8166666666666668,
       "customer_rating": 4.2
     },
-    "unified_text_summary": "Karachi Builders & Developers. Established 2005. Plot 2-20 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating 4.2/5. AI scores: timeline_reliability:0.85, budget_accuracy:0.82, quality_consistency:0.78",
+    "unified_text_summary": "Karachi Builders & Developers. Established 2005. Operates in: Karachi. Areas covered: Bahria Town, Clifton, DHA, Gulshan-e-Iqbal, North Nazimabad. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 3,200,000 to 30,000,000. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating: 4.2/5 from 142 reviews. Best for: first_time_builders, low_budget_projects. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.82.",
     "search_tags": [
       "affordable",
+      "bahria_town",
       "basic_landscaping",
+      "boq_provided",
+      "clifton",
+      "dha",
       "economy_housing",
+      "established_company",
+      "experienced",
+      "fast_build",
       "fast_completion",
       "first_time_builders",
       "grey_structure",
+      "gulshan_e_iqbal",
+      "installment_available",
+      "karachi",
       "large_commercial",
       "low_budget_projects",
+      "low_rise",
       "luxury_homes",
+      "no_delay_penalty",
+      "north_nazimabad",
+      "registered_company",
       "small_plots",
-      "turnkey"
-    ]
+      "turnkey",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 3200000,
+    "overall_budget_max_pkr": 30000000,
+    "executive_cost_ceiling": {
+      "3_marla": 9000000,
+      "5_marla": 15000000,
+      "10_marla": 30000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-002",
@@ -1498,27 +1527,58 @@
       "ai_score_avg": 0.8933333333333334,
       "customer_rating": 4.6
     },
-    "unified_text_summary": "Lahore Elite Constructions. Established 2012. Plot 5-40 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating 4.6/5. AI scores: timeline_reliability:0.9, budget_accuracy:0.87, quality_consistency:0.91",
+    "unified_text_summary": "Lahore Elite Constructions. Established 2012. Operates in: Lahore. Areas covered: Bahria Town, DHA, Gulberg, Johar Town, Model Town, Wapda Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 8,500,000 to 75,000,000. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating: 4.6/5 from 210 reviews. Best for: mid_to_high_budget, luxury_homes, design_conscious. Not ideal for: very_low_budget, small_plots. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.89.",
     "search_tags": [
+      "bahria_town",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "contemporary",
+      "delay_penalty",
       "design_conscious",
       "design_expertise",
+      "dha",
+      "experienced",
       "grey_structure",
+      "gulberg",
       "home_automation",
+      "installment_available",
+      "johar_town",
+      "lahore",
       "landscaping",
+      "long_build",
       "luxury",
       "luxury_homes",
+      "mid_rise",
       "mid_to_high_budget",
+      "model_town",
       "modern",
       "quality",
+      "registered_company",
       "small_plots",
       "smart_home",
       "timely_updates",
       "top_rated",
       "turnkey",
-      "very_low_budget"
-    ]
+      "very_low_budget",
+      "wapda_town",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8500000,
+    "overall_budget_max_pkr": 75000000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 75000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-003",
@@ -2583,20 +2643,39 @@
       "ai_score_avg": 0.9066666666666667,
       "customer_rating": 4.7
     },
-    "unified_text_summary": "Islamabad Modern Builders. Established 2018. Plot 5-50 marla. Floors up to 4. Basement supported. Services: turnkey, grey_structure, renovation. Approvals: CDA, RDA, DHA. Rating 4.7/5. AI scores: timeline_reliability:0.88, budget_accuracy:0.91, quality_consistency:0.93",
+    "unified_text_summary": "Islamabad Modern Builders. Established 2018. Operates in: Islamabad, Rawalpindi. Areas covered: Bahria Town, Blue Area, DHA, DHA Rawalpindi, E-Sector, F-Sector, G-Sector, Gulraiz, I-Sector, Westridge. Plot sizes: 5 to 50 marla (1361 to 13612 sq ft). Up to 4 floors. Packages: standard, premium, executive. Budget range: PKR 9,500,000 to 90,000,000. Services: turnkey, grey_structure, renovation. Approvals: CDA, RDA, DHA. Rating: 4.7/5 from 98 reviews. Best for: high_end_clients, expatriates, corporate_housing. Not ideal for: budget_constrained, small_renovations. Installments: Yes. Warranty: 3 year(s). AI reliability score: 0.91.",
     "search_tags": [
+      "bahria_town",
       "basement_allowed",
+      "basement_supported",
+      "blue_area",
+      "boq_provided",
       "budget_constrained",
       "corporate_housing",
+      "delay_penalty",
+      "dha",
+      "dha_rawalpindi",
+      "e_sector",
       "eco_friendly",
       "excellent_design",
       "expatriates",
+      "f_sector",
+      "g_sector",
       "grey_structure",
+      "gulraiz",
       "high_end_clients",
+      "high_rise",
+      "i_sector",
+      "installment_available",
+      "islamabad",
+      "long_build",
       "modern_design",
+      "new_company",
       "pool",
       "professional",
       "quality_materials",
+      "rawalpindi",
+      "registered_company",
       "renovation",
       "security_systems",
       "small_renovations",
@@ -2604,8 +2683,25 @@
       "smart_homes",
       "solar",
       "top_rated",
-      "turnkey"
-    ]
+      "turnkey",
+      "weekly_updates",
+      "well_reviewed",
+      "westridge"
+    ],
+    "overall_budget_min_pkr": 9500000,
+    "overall_budget_max_pkr": 90000000,
+    "executive_cost_ceiling": {
+      "5_marla": 27000000,
+      "10_marla": 52500000,
+      "1_kanal": 90000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 13612
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 1.0
   },
   {
     "company_id": "CC-004",
@@ -3106,19 +3202,44 @@
       "ai_score_avg": 0.7433333333333333,
       "customer_rating": 4.0
     },
-    "unified_text_summary": "Faisalabad Construction Experts. Established 2015. Plot 2-25 marla. Floors up to 2. Services: grey_structure, basic_finishing. Approvals: FDA. Rating 4.0/5. AI scores: timeline_reliability:0.75, budget_accuracy:0.78, quality_consistency:0.7",
+    "unified_text_summary": "Faisalabad Construction Experts. Established 2015. Operates in: Faisalabad. Areas covered: D-Type Colony, Gulberg Faisalabad, Jinnah Colony, Madina Town. Plot sizes: 2 to 25 marla (544 to 6806 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 2,800,000 to 27,000,000. Services: grey_structure, basic_finishing. Approvals: FDA. Rating: 4.0/5 from 85 reviews. Best for: very_low_budget, first_time_builders. Not ideal for: quality_conscious, large_projects. Installments: Yes. Warranty: 0 year(s). AI reliability score: 0.74.",
     "search_tags": [
       "affordable",
       "basic_finishing",
+      "d_type_colony",
       "economy_housing",
+      "faisalabad",
+      "fast_build",
       "first_time_builders",
       "grey_structure",
+      "gulberg_faisalabad",
+      "installment_available",
+      "jinnah_colony",
       "large_projects",
+      "low_rise",
+      "madina_town",
+      "no_delay_penalty",
       "quality_conscious",
       "quick_start",
+      "registered_company",
       "small_plots",
-      "very_low_budget"
-    ]
+      "very_low_budget",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 2800000,
+    "overall_budget_max_pkr": 27000000,
+    "executive_cost_ceiling": {
+      "3_marla": 8300000,
+      "5_marla": 14300000,
+      "10_marla": 27000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 6806
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.16
   },
   {
     "company_id": "CC-005",
@@ -3617,21 +3738,49 @@
       "ai_score_avg": 0.8366666666666666,
       "customer_rating": 4.3
     },
-    "unified_text_summary": "Multan Traditional Builders. Established 2008. Plot 3-30 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: MDA. Rating 4.3/5. AI scores: timeline_reliability:0.82, budget_accuracy:0.85, quality_consistency:0.84",
+    "unified_text_summary": "Multan Traditional Builders. Established 2008. Operates in: Multan. Areas covered: Bosan Road, Gulgasht Colony, Shah Rukn-e-Alam, Shah Rukn-e-Alam Colony. Plot sizes: 3 to 30 marla (817 to 8168 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 6,500,000 to 63,000,000. Services: turnkey, grey_structure. Approvals: MDA. Rating: 4.3/5 from 110 reviews. Best for: mid_budget, traditional_families. Not ideal for: modern_design, commercial_complexes. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.84.",
     "search_tags": [
+      "boq_provided",
+      "bosan_road",
       "commercial_complexes",
       "cultural_appropriate",
+      "delay_penalty",
+      "established_company",
+      "experienced",
       "family_homes",
       "good_value",
       "grey_structure",
+      "gulgasht_colony",
+      "installment_available",
+      "low_rise",
       "mid_budget",
       "modern_design",
+      "multan",
+      "registered_company",
       "reliable",
+      "shah_rukn_e_alam",
+      "shah_rukn_e_alam_colony",
       "traditional_decoration",
       "traditional_design",
       "traditional_families",
-      "turnkey"
-    ]
+      "turnkey",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 6500000,
+    "overall_budget_max_pkr": 63000000,
+    "executive_cost_ceiling": {
+      "5_marla": 18000000,
+      "10_marla": 37500000,
+      "1_kanal": 63000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 8168
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.81
   },
   {
     "company_id": "CC-006",
@@ -4198,23 +4347,51 @@
       "ai_score_avg": 0.8166666666666668,
       "customer_rating": 4.2
     },
-    "unified_text_summary": "Peshawar Frontier Constructions. Established 2010. Plot 3-35 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating 4.2/5. AI scores: timeline_reliability:0.8, budget_accuracy:0.83, quality_consistency:0.82",
+    "unified_text_summary": "Peshawar Frontier Constructions. Established 2010. Operates in: Peshawar. Areas covered: Cantt Peshawar, Hayatabad, University Town, Warsak Road. Plot sizes: 3 to 35 marla (817 to 9529 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,000,000 to 67,500,000. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating: 4.2/5 from 95 reviews. Best for: mid_budget, security_conscious. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.82.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "boundary_walls",
+      "cantt_peshawar",
+      "established_company",
       "family_homes",
       "grey_structure",
+      "hayatabad",
+      "installment_available",
       "large_commercial",
       "local_knowledge",
+      "long_build",
       "luxury_homes",
       "mid_budget",
+      "mid_rise",
+      "no_delay_penalty",
+      "peshawar",
+      "registered_company",
       "renovation",
       "secure_construction",
       "secure_housing",
       "security_conscious",
       "security_gates",
-      "turnkey"
-    ]
+      "turnkey",
+      "university_town",
+      "warsak_road",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 7000000,
+    "overall_budget_max_pkr": 67500000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 40500000,
+      "1_kanal": 67500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 9529
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-007",
@@ -4644,20 +4821,44 @@
       "ai_score_avg": 0.77,
       "customer_rating": 4.1
     },
-    "unified_text_summary": "Quetta Mountain Builders. Established 2013. Plot 5-40 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: QDA. Rating 4.1/5. AI scores: timeline_reliability:0.72, budget_accuracy:0.8, quality_consistency:0.79",
+    "unified_text_summary": "Quetta Mountain Builders. Established 2013. Operates in: Quetta. Areas covered: Cantt Quetta, Jinnah Town, Satellite Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 8,000,000 to 82,500,000. Services: turnkey, grey_structure. Approvals: QDA. Rating: 4.1/5 from 65 reviews. Best for: local_residents, earthquake_zones. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.77.",
     "search_tags": [
+      "cantt_quetta",
       "cold_climate",
       "earthquake_resistant",
       "earthquake_zones",
       "fast_track",
       "grey_structure",
+      "installment_available",
       "insulation",
+      "jinnah_town",
       "local_expertise",
       "local_residents",
+      "long_build",
+      "low_rise",
       "modern_design",
+      "no_delay_penalty",
+      "quetta",
+      "satellite_town",
       "strong_construction",
-      "turnkey"
-    ]
+      "turnkey",
+      "unregistered",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8000000,
+    "overall_budget_max_pkr": 82500000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 82500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": false,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-008",
@@ -5058,20 +5259,43 @@
       "ai_score_avg": 0.7799999999999999,
       "customer_rating": 3.9
     },
-    "unified_text_summary": "Gujranwala Speed Builders. Established 2016. Plot 2-20 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: GDA. Rating 3.9/5. AI scores: timeline_reliability:0.9, budget_accuracy:0.76, quality_consistency:0.68",
+    "unified_text_summary": "Gujranwala Speed Builders. Established 2016. Operates in: Gujranwala. Areas covered: Cantt Area, College Road, Model Town. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 3,000,000 to 30,000,000. Services: turnkey, grey_structure. Approvals: GDA. Rating: 3.9/5 from 78 reviews. Best for: time_sensitive, low_budget. Not ideal for: quality_conscious, large_projects. Installments: Yes. Warranty: 0 year(s). AI reliability score: 0.78.",
     "search_tags": [
       "affordable",
+      "cantt_area",
+      "college_road",
       "economy_homes",
+      "fast_build",
       "fast_completion",
       "fast_construction",
       "fast_track",
       "grey_structure",
+      "gujranwala",
+      "installment_available",
       "large_projects",
       "low_budget",
+      "low_rise",
+      "model_town",
+      "no_delay_penalty",
       "quality_conscious",
+      "registered_company",
       "time_sensitive",
       "turnkey"
-    ]
+    ],
+    "overall_budget_min_pkr": 3000000,
+    "overall_budget_max_pkr": 30000000,
+    "executive_cost_ceiling": {
+      "3_marla": 8700000,
+      "5_marla": 14700000,
+      "10_marla": 30000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.09
   },
   {
     "company_id": "CC-009",
@@ -5506,23 +5730,51 @@
       "ai_score_avg": 0.88,
       "customer_rating": 4.4
     },
-    "unified_text_summary": "Sialkot Industrial Builders. Established 2003. Plot 5-100 marla. Floors up to 4. Basement supported. Services: turnkey, grey_structure. Approvals: SDA, SIE. Rating 4.4/5. AI scores: timeline_reliability:0.87, budget_accuracy:0.89, quality_consistency:0.88",
+    "unified_text_summary": "Sialkot Industrial Builders. Established 2003. Operates in: Sialkot. Areas covered: Cantt, Model Colony, Sambrial Road. Plot sizes: 5 to 100 marla (1361 to 27225 sq ft). Up to 4 floors. Packages: standard, premium, executive. Budget range: PKR 7,000,000 to 67,500,000. Services: turnkey, grey_structure. Approvals: SDA, SIE. Rating: 4.4/5 from 165 reviews. Best for: industrial_clients, commercial_buildings. Not ideal for: luxury_residential, small_plots. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.88.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
+      "cantt",
       "commercial",
       "commercial_buildings",
+      "delay_penalty",
+      "established_company",
+      "experienced",
       "grey_structure",
       "heavy_load",
+      "high_rise",
       "industrial",
       "industrial_clients",
       "industrial_expertise",
       "industrial_flooring",
+      "installment_available",
       "luxury_residential",
+      "model_colony",
+      "registered_company",
       "residential",
+      "sambrial_road",
+      "sialkot",
       "small_plots",
       "strong_construction",
-      "turnkey"
-    ]
+      "turnkey",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 7000000,
+    "overall_budget_max_pkr": 67500000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 40500000,
+      "1_kanal": 67500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 27225
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-010",
@@ -5952,20 +6204,45 @@
       "ai_score_avg": 0.8266666666666667,
       "customer_rating": 4.2
     },
-    "unified_text_summary": "Bahawalpur Desert Builders. Established 2014. Plot 3-30 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: BDA. Rating 4.2/5. AI scores: timeline_reliability:0.83, budget_accuracy:0.84, quality_consistency:0.81",
+    "unified_text_summary": "Bahawalpur Desert Builders. Established 2014. Operates in: Bahawalpur. Areas covered: Canal Colony, Model Colony, Model Town. Plot sizes: 3 to 30 marla (817 to 8168 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 6,500,000 to 63,000,000. Services: turnkey, grey_structure. Approvals: BDA. Rating: 4.2/5 from 88 reviews. Best for: local_residents, desert_climate. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.83.",
     "search_tags": [
+      "bahawalpur",
+      "boq_provided",
+      "canal_colony",
       "climate_appropriate",
       "desert_climate",
       "fast_track",
       "grey_structure",
       "heat_insulation",
       "heat_management",
+      "installment_available",
       "local_residents",
+      "long_build",
+      "low_rise",
+      "model_colony",
+      "model_town",
       "modern_design",
+      "no_delay_penalty",
+      "registered_company",
       "reliable",
       "turnkey",
-      "water_conservation"
-    ]
+      "water_conservation",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 6500000,
+    "overall_budget_max_pkr": 63000000,
+    "executive_cost_ceiling": {
+      "5_marla": 18000000,
+      "10_marla": 37500000,
+      "1_kanal": 63000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 8168
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-011",
@@ -6368,20 +6645,43 @@
       "ai_score_avg": 0.82,
       "customer_rating": 4.1
     },
-    "unified_text_summary": "Hyderabad Heritage Constructors. Established 2011. Plot 3-25 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: HDA. Rating 4.1/5. AI scores: timeline_reliability:0.81, budget_accuracy:0.83, quality_consistency:0.82",
+    "unified_text_summary": "Hyderabad Heritage Constructors. Established 2011. Operates in: Hyderabad. Areas covered: Garden Town, Latifabad, Qasimabad. Plot sizes: 3 to 25 marla (817 to 6806 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 6,000,000 to 36,000,000. Services: turnkey, grey_structure. Approvals: HDA. Rating: 4.1/5 from 92 reviews. Best for: traditional_families, mid_budget. Not ideal for: modern_design, commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.82.",
     "search_tags": [
+      "boq_provided",
       "commercial",
       "cultural_design",
       "fair_pricing",
+      "garden_town",
       "grey_structure",
       "heritage_design",
       "heritage_homes",
+      "hyderabad",
+      "installment_available",
+      "latifabad",
+      "low_rise",
       "mid_budget",
       "modern_design",
+      "no_delay_penalty",
+      "qasimabad",
+      "registered_company",
       "traditional_design",
       "traditional_families",
-      "turnkey"
-    ]
+      "turnkey",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 6000000,
+    "overall_budget_max_pkr": 36000000,
+    "executive_cost_ceiling": {
+      "5_marla": 18000000,
+      "10_marla": 36000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 6806
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-012",
@@ -6782,19 +7082,41 @@
       "ai_score_avg": 0.7200000000000001,
       "customer_rating": 3.8
     },
-    "unified_text_summary": "Sukkur Riverfront Builders. Established 2017. Plot 2-20 marla. Floors up to 2. Services: grey_structure, basic_finishing. Approvals: SDA. Rating 3.8/5. AI scores: timeline_reliability:0.72, budget_accuracy:0.75, quality_consistency:0.69",
+    "unified_text_summary": "Sukkur Riverfront Builders. Established 2017. Operates in: Sukkur. Areas covered: Military Road, Model Colony, Rohri. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 2,500,000 to 13,500,000. Services: grey_structure, basic_finishing. Approvals: SDA. Rating: 3.8/5 from 55 reviews. Best for: very_low_budget, first_time_builders. Not ideal for: quality_conscious, large_projects. Installments: Yes. Warranty: 0 year(s). AI reliability score: 0.72.",
     "search_tags": [
       "affordable",
       "basic_finishing",
       "economy_housing",
+      "fast_build",
       "first_time_builders",
       "grey_structure",
+      "installment_available",
       "large_projects",
       "local_knowledge",
+      "low_rise",
+      "military_road",
+      "model_colony",
+      "no_delay_penalty",
       "quality_conscious",
+      "registered_company",
+      "rohri",
       "small_plots",
+      "sukkur",
       "very_low_budget"
-    ]
+    ],
+    "overall_budget_min_pkr": 2500000,
+    "overall_budget_max_pkr": 13500000,
+    "executive_cost_ceiling": {
+      "3_marla": 7800000,
+      "5_marla": 13500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.16
   },
   {
     "company_id": "CC-013",
@@ -7200,22 +7522,48 @@
       "ai_score_avg": 0.8133333333333334,
       "customer_rating": 4.3
     },
-    "unified_text_summary": "Abbottabad Hillside Constructors. Established 2015. Plot 5-35 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: ADA, Cantt Board. Rating 4.3/5. AI scores: timeline_reliability:0.78, budget_accuracy:0.82, quality_consistency:0.84",
+    "unified_text_summary": "Abbottabad Hillside Constructors. Established 2015. Operates in: Abbottabad. Areas covered: Cantt Area, Jinnahabad, Model Colony. Plot sizes: 5 to 35 marla (1361 to 9529 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,500,000 to 42,000,000. Services: turnkey, grey_structure. Approvals: ADA, Cantt Board. Rating: 4.3/5 from 78 reviews. Best for: hillside_plots, mid_budget. Not ideal for: plain_area, very_low_budget. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.81.",
     "search_tags": [
+      "abbottabad",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
+      "cantt_area",
+      "delay_penalty",
       "grey_structure",
       "hillside_construction",
       "hillside_foundation",
       "hillside_plots",
+      "installment_available",
+      "jinnahabad",
+      "long_build",
       "mid_budget",
+      "mid_rise",
+      "model_colony",
       "plain_area",
+      "registered_company",
       "solid_foundation",
       "turnkey",
       "very_low_budget",
       "view_design",
       "view_maximization",
-      "weather_resistant"
-    ]
+      "weather_resistant",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 7500000,
+    "overall_budget_max_pkr": 42000000,
+    "executive_cost_ceiling": {
+      "5_marla": 21000000,
+      "10_marla": 42000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 9529
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.81
   },
   {
     "company_id": "CC-014",
@@ -7622,23 +7970,50 @@
       "ai_score_avg": 0.8766666666666666,
       "customer_rating": 4.5
     },
-    "unified_text_summary": "Mirpur Modern Developers. Established 2019. Plot 5-50 marla. Floors up to 4. Basement supported. Services: turnkey, grey_structure. Approvals: MDA. Rating 4.5/5. AI scores: timeline_reliability:0.86, budget_accuracy:0.88, quality_consistency:0.89",
+    "unified_text_summary": "Mirpur Modern Developers. Established 2019. Operates in: Mirpur. Areas covered: Bagh Colony, Cantt Area, Modern Housing. Plot sizes: 5 to 50 marla (1361 to 13612 sq ft). Up to 4 floors. Packages: standard, premium, executive. Budget range: PKR 8,000,000 to 48,000,000. Services: turnkey, grey_structure. Approvals: MDA. Rating: 4.5/5 from 62 reviews. Best for: overseas_pakistanis, modern_homes. Not ideal for: traditional_design, low_budget. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.88.",
     "search_tags": [
+      "bagh_colony",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
+      "cantt_area",
+      "delay_penalty",
       "elevator_support",
       "grey_structure",
+      "high_rise",
+      "installment_available",
+      "long_build",
       "low_budget",
+      "mirpur",
       "modern_apartments",
       "modern_design",
       "modern_facades",
       "modern_homes",
+      "modern_housing",
+      "new_company",
       "overseas_clients",
       "overseas_pakistanis",
       "quality_finishing",
+      "registered_company",
       "top_rated",
       "traditional_design",
-      "turnkey"
-    ]
+      "turnkey",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8000000,
+    "overall_budget_max_pkr": 48000000,
+    "executive_cost_ceiling": {
+      "5_marla": 24000000,
+      "10_marla": 48000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 13612
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-015",
@@ -8038,21 +8413,47 @@
       "ai_score_avg": 0.82,
       "customer_rating": 4.2
     },
-    "unified_text_summary": "Sargodha Agricultural Constructors. Established 2009. Plot 10-100 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: SDA. Rating 4.2/5. AI scores: timeline_reliability:0.79, budget_accuracy:0.84, quality_consistency:0.83",
+    "unified_text_summary": "Sargodha Agricultural Constructors. Established 2009. Operates in: Sargodha. Areas covered: Civil Lines, Model Colony, Satellite Town. Plot sizes: 10 to 100 marla (2722 to 27225 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 12,000,000 to 60,000,000. Services: turnkey, grey_structure. Approvals: SDA. Rating: 4.2/5 from 105 reviews. Best for: farm_owners, large_plot_owners. Not ideal for: small_plots, urban_modern. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.82.",
     "search_tags": [
+      "boq_provided",
+      "civil_lines",
+      "established_company",
+      "experienced",
       "farm_houses",
       "farm_knowledge",
       "farm_owners",
       "farm_storage",
       "grey_structure",
+      "installment_available",
       "large_plot_owners",
       "large_plots",
+      "long_build",
+      "low_rise",
+      "model_colony",
+      "no_delay_penalty",
+      "registered_company",
+      "sargodha",
+      "satellite_town",
       "small_plots",
       "spacious_design",
       "turnkey",
       "urban_modern",
-      "water_tanks"
-    ]
+      "water_tanks",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 12000000,
+    "overall_budget_max_pkr": 60000000,
+    "executive_cost_ceiling": {
+      "10_marla": 34500000,
+      "1_kanal": 60000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 2722,
+      "max_sqft": 27225
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-016",
@@ -8457,8 +8858,11 @@
       "ai_score_avg": 0.8166666666666668,
       "customer_rating": 4.1
     },
-    "unified_text_summary": "Rahim Yar Khan Desert Experts. Established 2012. Plot 5-40 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: RYKDA. Rating 4.1/5. AI scores: timeline_reliability:0.8, budget_accuracy:0.83, quality_consistency:0.82",
+    "unified_text_summary": "Rahim Yar Khan Desert Experts. Established 2012. Operates in: Rahim Yar Khan. Areas covered: Cantt Area, Civil Lines, Model Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 6,800,000 to 39,000,000. Services: turnkey, grey_structure. Approvals: RYKDA. Rating: 4.1/5 from 82 reviews. Best for: desert_areas, mid_budget. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.82.",
     "search_tags": [
+      "boq_provided",
+      "cantt_area",
+      "civil_lines",
       "climate_appropriate",
       "desert_areas",
       "desert_climate",
@@ -8467,11 +8871,31 @@
       "grey_structure",
       "heat_management",
       "heat_resistant",
+      "installment_available",
+      "low_rise",
       "mid_budget",
+      "model_town",
       "modern_design",
+      "no_delay_penalty",
+      "rahim_yar_khan",
+      "registered_company",
       "turnkey",
-      "water_conservation"
-    ]
+      "water_conservation",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 6800000,
+    "overall_budget_max_pkr": 39000000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 39000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-017",
@@ -8882,23 +9306,50 @@
       "ai_score_avg": 0.87,
       "customer_rating": 4.6
     },
-    "unified_text_summary": "Gwadar Port Constructors. Established 2020. Plot 10-200 marla. Floors up to 5. Basement supported. Services: turnkey, grey_structure. Approvals: GDA, GPA. Rating 4.6/5. AI scores: timeline_reliability:0.84, budget_accuracy:0.87, quality_consistency:0.9",
+    "unified_text_summary": "Gwadar Port Constructors. Established 2020. Operates in: Gwadar. Areas covered: Garden Town, New Town, Port Area. Plot sizes: 10 to 200 marla (2722 to 54450 sq ft). Up to 5 floors. Packages: standard, premium, executive. Budget range: PKR 20,000,000 to 105,000,000. Services: turnkey, grey_structure. Approvals: GDA, GPA. Rating: 4.6/5 from 45 reviews. Best for: commercial_investors, hotel_developers. Not ideal for: residential_small, low_budget. Installments: Yes. Warranty: 3 year(s). AI reliability score: 0.87.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "commercial",
       "commercial_investors",
       "corrosion_protection",
+      "delay_penalty",
+      "garden_town",
       "grey_structure",
+      "gwadar",
+      "high_rise",
       "hotel_developers",
       "hotels",
+      "installment_available",
+      "long_build",
       "low_budget",
       "marine_environment",
       "marine_expertise",
       "modern_design",
+      "new_company",
+      "new_town",
+      "port_area",
+      "registered_company",
       "residential_small",
       "top_rated",
-      "turnkey"
-    ]
+      "turnkey",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 20000000,
+    "overall_budget_max_pkr": 105000000,
+    "executive_cost_ceiling": {
+      "10_marla": 60000000,
+      "1_kanal": 105000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 2722,
+      "max_sqft": 54450
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-018",
@@ -9299,19 +9750,41 @@
       "ai_score_avg": 0.7466666666666667,
       "customer_rating": 3.9
     },
-    "unified_text_summary": "Mardan Traditional Builders. Established 2014. Plot 3-25 marla. Floors up to 2. Services: grey_structure, basic_finishing. Approvals: MDA. Rating 3.9/5. AI scores: timeline_reliability:0.76, budget_accuracy:0.77, quality_consistency:0.71",
+    "unified_text_summary": "Mardan Traditional Builders. Established 2014. Operates in: Mardan. Areas covered: Chamtar, Garden Town, University Road. Plot sizes: 3 to 25 marla (817 to 6806 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 4,500,000 to 27,000,000. Services: grey_structure, basic_finishing. Approvals: MDA. Rating: 3.9/5 from 68 reviews. Best for: very_low_budget, local_residents. Not ideal for: quality_conscious, modern_design. Installments: Yes. Warranty: 0 year(s). AI reliability score: 0.75.",
     "search_tags": [
       "affordable",
       "basic_finishing",
+      "chamtar",
       "economy_housing",
+      "fast_build",
+      "garden_town",
       "grey_structure",
+      "installment_available",
       "local_knowledge",
       "local_residents",
+      "low_rise",
+      "mardan",
       "modern_design",
+      "no_delay_penalty",
       "quality_conscious",
+      "registered_company",
       "traditional_homes",
+      "university_road",
       "very_low_budget"
-    ]
+    ],
+    "overall_budget_min_pkr": 4500000,
+    "overall_budget_max_pkr": 27000000,
+    "executive_cost_ceiling": {
+      "5_marla": 13500000,
+      "10_marla": 27000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 6806
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.25
   },
   {
     "company_id": "CC-019",
@@ -9711,21 +10184,45 @@
       "ai_score_avg": 0.8233333333333333,
       "customer_rating": 4.2
     },
-    "unified_text_summary": "Sahiwal Farmhouse Specialists. Established 2011. Plot 10-80 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: SDA. Rating 4.2/5. AI scores: timeline_reliability:0.81, budget_accuracy:0.84, quality_consistency:0.82",
+    "unified_text_summary": "Sahiwal Farmhouse Specialists. Established 2011. Operates in: Sahiwal. Areas covered: Cantt Area, Jinnah Colony, Model Town. Plot sizes: 10 to 80 marla (2722 to 21780 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 11,000,000 to 57,000,000. Services: turnkey, grey_structure. Approvals: SDA. Rating: 4.2/5 from 95 reviews. Best for: farm_owners, large_plot. Not ideal for: urban_small, modern_design. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.82.",
     "search_tags": [
       "agricultural_buildings",
+      "boq_provided",
+      "cantt_area",
       "farm_expertise",
       "farm_houses",
       "farm_owners",
       "farm_structures",
       "grey_structure",
+      "installment_available",
       "irrigation_support",
+      "jinnah_colony",
       "large_plot",
+      "long_build",
+      "low_rise",
+      "model_town",
       "modern_design",
+      "no_delay_penalty",
+      "registered_company",
+      "sahiwal",
       "spacious_design",
       "turnkey",
-      "urban_small"
-    ]
+      "urban_small",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 11000000,
+    "overall_budget_max_pkr": 57000000,
+    "executive_cost_ceiling": {
+      "10_marla": 33000000,
+      "1_kanal": 57000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 2722,
+      "max_sqft": 21780
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-020",
@@ -10132,22 +10629,48 @@
       "ai_score_avg": 0.86,
       "customer_rating": 4.4
     },
-    "unified_text_summary": "Jhelum River View Constructors. Established 2016. Plot 5-40 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: JDA, Cantt Board. Rating 4.4/5. AI scores: timeline_reliability:0.85, budget_accuracy:0.86, quality_consistency:0.87",
+    "unified_text_summary": "Jhelum River View Constructors. Established 2016. Operates in: Jhelum. Areas covered: Cantt, Civil Lines, Garden Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,200,000 to 42,000,000. Services: turnkey, grey_structure. Approvals: JDA, Cantt Board. Rating: 4.4/5 from 88 reviews. Best for: scenic_plots, mid_to_high_budget. Not ideal for: plain_plots, low_budget. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.86.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
+      "cantt",
+      "civil_lines",
+      "delay_penalty",
+      "garden_town",
       "grey_structure",
+      "installment_available",
+      "jhelum",
       "landscaping",
+      "long_build",
       "low_budget",
+      "mid_rise",
       "mid_to_high_budget",
       "plain_plots",
       "quality",
+      "registered_company",
       "river_view_design",
       "river_view_homes",
       "scenic_design",
       "scenic_plots",
       "turnkey",
-      "view_maximization"
-    ]
+      "view_maximization",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 7200000,
+    "overall_budget_max_pkr": 42000000,
+    "executive_cost_ceiling": {
+      "5_marla": 21000000,
+      "10_marla": 42000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-021",
@@ -10852,20 +11375,48 @@
       "ai_score_avg": 0.7766666666666667,
       "customer_rating": 3.8000000000000003
     },
-    "unified_text_summary": "Karachi Construction Firm 1. Established 2005. Plot 2-20 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating 3.8000000000000003/5. AI scores: timeline_reliability:0.8099999999999999, budget_accuracy:0.7799999999999999, quality_consistency:0.74",
+    "unified_text_summary": "Karachi Construction Firm 1. Established 2005. Operates in: Karachi. Areas covered: Bahria Town, Clifton, DHA, Gulshan-e-Iqbal, North Nazimabad. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 3,200,000 to 30,000,000. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating: 3.8000000000000003/5 from 113 reviews. Best for: first_time_builders, low_budget_projects. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.78.",
     "search_tags": [
       "affordable",
+      "bahria_town",
       "basic_landscaping",
+      "boq_provided",
+      "clifton",
+      "dha",
       "economy_housing",
+      "established_company",
+      "experienced",
+      "fast_build",
       "fast_completion",
       "first_time_builders",
       "grey_structure",
+      "gulshan_e_iqbal",
+      "installment_available",
+      "karachi",
       "large_commercial",
       "low_budget_projects",
+      "low_rise",
       "luxury_homes",
+      "no_delay_penalty",
+      "north_nazimabad",
+      "registered_company",
       "small_plots",
       "turnkey"
-    ]
+    ],
+    "overall_budget_min_pkr": 3200000,
+    "overall_budget_max_pkr": 30000000,
+    "executive_cost_ceiling": {
+      "3_marla": 9000000,
+      "5_marla": 15000000,
+      "10_marla": 30000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-022",
@@ -11570,20 +12121,48 @@
       "ai_score_avg": 0.7866666666666666,
       "customer_rating": 3.9000000000000004
     },
-    "unified_text_summary": "Karachi Construction Firm 2. Established 2005. Plot 2-20 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating 3.9000000000000004/5. AI scores: timeline_reliability:0.82, budget_accuracy:0.7899999999999999, quality_consistency:0.75",
+    "unified_text_summary": "Karachi Construction Firm 2. Established 2005. Operates in: Karachi. Areas covered: Bahria Town, Clifton, DHA, Gulshan-e-Iqbal, North Nazimabad. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 3,200,000 to 30,000,000. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating: 3.9000000000000004/5 from 127 reviews. Best for: first_time_builders, low_budget_projects. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.79.",
     "search_tags": [
       "affordable",
+      "bahria_town",
       "basic_landscaping",
+      "boq_provided",
+      "clifton",
+      "dha",
       "economy_housing",
+      "established_company",
+      "experienced",
+      "fast_build",
       "fast_completion",
       "first_time_builders",
       "grey_structure",
+      "gulshan_e_iqbal",
+      "installment_available",
+      "karachi",
       "large_commercial",
       "low_budget_projects",
+      "low_rise",
       "luxury_homes",
+      "no_delay_penalty",
+      "north_nazimabad",
+      "registered_company",
       "small_plots",
       "turnkey"
-    ]
+    ],
+    "overall_budget_min_pkr": 3200000,
+    "overall_budget_max_pkr": 30000000,
+    "executive_cost_ceiling": {
+      "3_marla": 9000000,
+      "5_marla": 15000000,
+      "10_marla": 30000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-023",
@@ -12288,20 +12867,49 @@
       "ai_score_avg": 0.7966666666666665,
       "customer_rating": 4.0
     },
-    "unified_text_summary": "Karachi Construction Firm 3. Established 2005. Plot 2-20 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating 4.0/5. AI scores: timeline_reliability:0.83, budget_accuracy:0.7999999999999999, quality_consistency:0.76",
+    "unified_text_summary": "Karachi Construction Firm 3. Established 2005. Operates in: Karachi. Areas covered: Bahria Town, Clifton, DHA, Gulshan-e-Iqbal, North Nazimabad. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 3,200,000 to 30,000,000. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating: 4.0/5 from 142 reviews. Best for: first_time_builders, low_budget_projects. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.80.",
     "search_tags": [
       "affordable",
+      "bahria_town",
       "basic_landscaping",
+      "boq_provided",
+      "clifton",
+      "dha",
       "economy_housing",
+      "established_company",
+      "experienced",
+      "fast_build",
       "fast_completion",
       "first_time_builders",
       "grey_structure",
+      "gulshan_e_iqbal",
+      "installment_available",
+      "karachi",
       "large_commercial",
       "low_budget_projects",
+      "low_rise",
       "luxury_homes",
+      "no_delay_penalty",
+      "north_nazimabad",
+      "registered_company",
       "small_plots",
-      "turnkey"
-    ]
+      "turnkey",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 3200000,
+    "overall_budget_max_pkr": 30000000,
+    "executive_cost_ceiling": {
+      "3_marla": 9000000,
+      "5_marla": 15000000,
+      "10_marla": 30000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-024",
@@ -13006,20 +13614,49 @@
       "ai_score_avg": 0.8066666666666666,
       "customer_rating": 4.1000000000000005
     },
-    "unified_text_summary": "Karachi Construction Firm 4. Established 2005. Plot 2-20 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating 4.1000000000000005/5. AI scores: timeline_reliability:0.84, budget_accuracy:0.8099999999999999, quality_consistency:0.77",
+    "unified_text_summary": "Karachi Construction Firm 4. Established 2005. Operates in: Karachi. Areas covered: Bahria Town, Clifton, DHA, Gulshan-e-Iqbal, North Nazimabad. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 3,200,000 to 30,000,000. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating: 4.1000000000000005/5 from 156 reviews. Best for: first_time_builders, low_budget_projects. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.81.",
     "search_tags": [
       "affordable",
+      "bahria_town",
       "basic_landscaping",
+      "boq_provided",
+      "clifton",
+      "dha",
       "economy_housing",
+      "established_company",
+      "experienced",
+      "fast_build",
       "fast_completion",
       "first_time_builders",
       "grey_structure",
+      "gulshan_e_iqbal",
+      "installment_available",
+      "karachi",
       "large_commercial",
       "low_budget_projects",
+      "low_rise",
       "luxury_homes",
+      "no_delay_penalty",
+      "north_nazimabad",
+      "registered_company",
       "small_plots",
-      "turnkey"
-    ]
+      "turnkey",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 3200000,
+    "overall_budget_max_pkr": 30000000,
+    "executive_cost_ceiling": {
+      "3_marla": 9000000,
+      "5_marla": 15000000,
+      "10_marla": 30000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-025",
@@ -13724,20 +14361,49 @@
       "ai_score_avg": 0.8166666666666668,
       "customer_rating": 4.2
     },
-    "unified_text_summary": "Karachi Construction Firm 5. Established 2005. Plot 2-20 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating 4.2/5. AI scores: timeline_reliability:0.85, budget_accuracy:0.82, quality_consistency:0.78",
+    "unified_text_summary": "Karachi Construction Firm 5. Established 2005. Operates in: Karachi. Areas covered: Bahria Town, Clifton, DHA, Gulshan-e-Iqbal, North Nazimabad. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 3,200,000 to 30,000,000. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating: 4.2/5 from 170 reviews. Best for: first_time_builders, low_budget_projects. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.82.",
     "search_tags": [
       "affordable",
+      "bahria_town",
       "basic_landscaping",
+      "boq_provided",
+      "clifton",
+      "dha",
       "economy_housing",
+      "established_company",
+      "experienced",
+      "fast_build",
       "fast_completion",
       "first_time_builders",
       "grey_structure",
+      "gulshan_e_iqbal",
+      "installment_available",
+      "karachi",
       "large_commercial",
       "low_budget_projects",
+      "low_rise",
       "luxury_homes",
+      "no_delay_penalty",
+      "north_nazimabad",
+      "registered_company",
       "small_plots",
-      "turnkey"
-    ]
+      "turnkey",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 3200000,
+    "overall_budget_max_pkr": 30000000,
+    "executive_cost_ceiling": {
+      "3_marla": 9000000,
+      "5_marla": 15000000,
+      "10_marla": 30000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-026",
@@ -14442,20 +15108,49 @@
       "ai_score_avg": 0.8266666666666667,
       "customer_rating": 4.3
     },
-    "unified_text_summary": "Karachi Construction Firm 6. Established 2005. Plot 2-20 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating 4.3/5. AI scores: timeline_reliability:0.86, budget_accuracy:0.83, quality_consistency:0.79",
+    "unified_text_summary": "Karachi Construction Firm 6. Established 2005. Operates in: Karachi. Areas covered: Bahria Town, Clifton, DHA, Gulshan-e-Iqbal, North Nazimabad. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 3,200,000 to 30,000,000. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating: 4.3/5 from 99 reviews. Best for: first_time_builders, low_budget_projects. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.83.",
     "search_tags": [
       "affordable",
+      "bahria_town",
       "basic_landscaping",
+      "boq_provided",
+      "clifton",
+      "dha",
       "economy_housing",
+      "established_company",
+      "experienced",
+      "fast_build",
       "fast_completion",
       "first_time_builders",
       "grey_structure",
+      "gulshan_e_iqbal",
+      "installment_available",
+      "karachi",
       "large_commercial",
       "low_budget_projects",
+      "low_rise",
       "luxury_homes",
+      "no_delay_penalty",
+      "north_nazimabad",
+      "registered_company",
       "small_plots",
-      "turnkey"
-    ]
+      "turnkey",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 3200000,
+    "overall_budget_max_pkr": 30000000,
+    "executive_cost_ceiling": {
+      "3_marla": 9000000,
+      "5_marla": 15000000,
+      "10_marla": 30000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-027",
@@ -15160,20 +15855,50 @@
       "ai_score_avg": 0.8366666666666666,
       "customer_rating": 4.4
     },
-    "unified_text_summary": "Karachi Construction Firm 7. Established 2005. Plot 2-20 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating 4.4/5. AI scores: timeline_reliability:0.87, budget_accuracy:0.84, quality_consistency:0.8",
+    "unified_text_summary": "Karachi Construction Firm 7. Established 2005. Operates in: Karachi. Areas covered: Bahria Town, Clifton, DHA, Gulshan-e-Iqbal, North Nazimabad. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 3,200,000 to 30,000,000. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating: 4.4/5 from 113 reviews. Best for: first_time_builders, low_budget_projects. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.84.",
     "search_tags": [
       "affordable",
+      "bahria_town",
       "basic_landscaping",
+      "boq_provided",
+      "clifton",
+      "dha",
       "economy_housing",
+      "established_company",
+      "experienced",
+      "fast_build",
       "fast_completion",
       "first_time_builders",
       "grey_structure",
+      "gulshan_e_iqbal",
+      "installment_available",
+      "karachi",
       "large_commercial",
+      "long_build",
       "low_budget_projects",
+      "low_rise",
       "luxury_homes",
+      "no_delay_penalty",
+      "north_nazimabad",
+      "registered_company",
       "small_plots",
-      "turnkey"
-    ]
+      "turnkey",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 3200000,
+    "overall_budget_max_pkr": 30000000,
+    "executive_cost_ceiling": {
+      "3_marla": 9000000,
+      "5_marla": 15000000,
+      "10_marla": 30000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-028",
@@ -15878,21 +16603,51 @@
       "ai_score_avg": 0.8466666666666667,
       "customer_rating": 4.5
     },
-    "unified_text_summary": "Karachi Construction Firm 8. Established 2005. Plot 2-20 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating 4.5/5. AI scores: timeline_reliability:0.88, budget_accuracy:0.85, quality_consistency:0.81",
+    "unified_text_summary": "Karachi Construction Firm 8. Established 2005. Operates in: Karachi. Areas covered: Bahria Town, Clifton, DHA, Gulshan-e-Iqbal, North Nazimabad. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 3,200,000 to 30,000,000. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating: 4.5/5 from 127 reviews. Best for: first_time_builders, low_budget_projects. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.85.",
     "search_tags": [
       "affordable",
+      "bahria_town",
       "basic_landscaping",
+      "boq_provided",
+      "clifton",
+      "dha",
       "economy_housing",
+      "established_company",
+      "experienced",
+      "fast_build",
       "fast_completion",
       "first_time_builders",
       "grey_structure",
+      "gulshan_e_iqbal",
+      "installment_available",
+      "karachi",
       "large_commercial",
+      "long_build",
       "low_budget_projects",
+      "low_rise",
       "luxury_homes",
+      "no_delay_penalty",
+      "north_nazimabad",
+      "registered_company",
       "small_plots",
       "top_rated",
-      "turnkey"
-    ]
+      "turnkey",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 3200000,
+    "overall_budget_max_pkr": 30000000,
+    "executive_cost_ceiling": {
+      "3_marla": 9000000,
+      "5_marla": 15000000,
+      "10_marla": 30000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-029",
@@ -16597,21 +17352,51 @@
       "ai_score_avg": 0.8566666666666668,
       "customer_rating": 4.6000000000000005
     },
-    "unified_text_summary": "Karachi Construction Firm 9. Established 2005. Plot 2-20 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating 4.6000000000000005/5. AI scores: timeline_reliability:0.89, budget_accuracy:0.86, quality_consistency:0.8200000000000001",
+    "unified_text_summary": "Karachi Construction Firm 9. Established 2005. Operates in: Karachi. Areas covered: Bahria Town, Clifton, DHA, Gulshan-e-Iqbal, North Nazimabad. Plot sizes: 2 to 20 marla (544 to 5445 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 3,200,000 to 30,000,000. Services: turnkey, grey_structure. Approvals: KDA, DHA. Rating: 4.6000000000000005/5 from 142 reviews. Best for: first_time_builders, low_budget_projects. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.86.",
     "search_tags": [
       "affordable",
+      "bahria_town",
       "basic_landscaping",
+      "boq_provided",
+      "clifton",
+      "dha",
       "economy_housing",
+      "established_company",
+      "experienced",
+      "fast_build",
       "fast_completion",
       "first_time_builders",
       "grey_structure",
+      "gulshan_e_iqbal",
+      "installment_available",
+      "karachi",
       "large_commercial",
+      "long_build",
       "low_budget_projects",
+      "low_rise",
       "luxury_homes",
+      "no_delay_penalty",
+      "north_nazimabad",
+      "registered_company",
       "small_plots",
       "top_rated",
-      "turnkey"
-    ]
+      "turnkey",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 3200000,
+    "overall_budget_max_pkr": 30000000,
+    "executive_cost_ceiling": {
+      "3_marla": 9000000,
+      "5_marla": 15000000,
+      "10_marla": 30000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 544,
+      "max_sqft": 5445
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-030",
@@ -17394,26 +18179,56 @@
       "ai_score_avg": 0.8533333333333334,
       "customer_rating": 4.199999999999999
     },
-    "unified_text_summary": "Lahore Construction Firm 1. Established 2012. Plot 5-40 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating 4.199999999999999/5. AI scores: timeline_reliability:0.86, budget_accuracy:0.83, quality_consistency:0.87",
+    "unified_text_summary": "Lahore Construction Firm 1. Established 2012. Operates in: Lahore. Areas covered: Bahria Town, DHA, Gulberg, Johar Town, Model Town, Wapda Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 8,500,000 to 75,000,000. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating: 4.199999999999999/5 from 168 reviews. Best for: mid_to_high_budget, luxury_homes, design_conscious. Not ideal for: very_low_budget, small_plots. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.85.",
     "search_tags": [
+      "bahria_town",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "contemporary",
+      "delay_penalty",
       "design_conscious",
       "design_expertise",
+      "dha",
+      "experienced",
       "grey_structure",
+      "gulberg",
       "home_automation",
+      "installment_available",
+      "johar_town",
+      "lahore",
       "landscaping",
       "luxury",
       "luxury_homes",
+      "mid_rise",
       "mid_to_high_budget",
+      "model_town",
       "modern",
       "quality",
+      "registered_company",
       "small_plots",
       "smart_home",
       "timely_updates",
       "turnkey",
-      "very_low_budget"
-    ]
+      "very_low_budget",
+      "wapda_town",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8500000,
+    "overall_budget_max_pkr": 75000000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 75000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-031",
@@ -18196,26 +19011,56 @@
       "ai_score_avg": 0.8633333333333333,
       "customer_rating": 4.3
     },
-    "unified_text_summary": "Lahore Construction Firm 2. Established 2012. Plot 5-40 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating 4.3/5. AI scores: timeline_reliability:0.87, budget_accuracy:0.84, quality_consistency:0.88",
+    "unified_text_summary": "Lahore Construction Firm 2. Established 2012. Operates in: Lahore. Areas covered: Bahria Town, DHA, Gulberg, Johar Town, Model Town, Wapda Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 8,500,000 to 75,000,000. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating: 4.3/5 from 188 reviews. Best for: mid_to_high_budget, luxury_homes, design_conscious. Not ideal for: very_low_budget, small_plots. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.86.",
     "search_tags": [
+      "bahria_town",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "contemporary",
+      "delay_penalty",
       "design_conscious",
       "design_expertise",
+      "dha",
+      "experienced",
       "grey_structure",
+      "gulberg",
       "home_automation",
+      "installment_available",
+      "johar_town",
+      "lahore",
       "landscaping",
       "luxury",
       "luxury_homes",
+      "mid_rise",
       "mid_to_high_budget",
+      "model_town",
       "modern",
       "quality",
+      "registered_company",
       "small_plots",
       "smart_home",
       "timely_updates",
       "turnkey",
-      "very_low_budget"
-    ]
+      "very_low_budget",
+      "wapda_town",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8500000,
+    "overall_budget_max_pkr": 75000000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 75000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-032",
@@ -18998,26 +19843,56 @@
       "ai_score_avg": 0.8733333333333334,
       "customer_rating": 4.3999999999999995
     },
-    "unified_text_summary": "Lahore Construction Firm 3. Established 2012. Plot 5-40 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating 4.3999999999999995/5. AI scores: timeline_reliability:0.88, budget_accuracy:0.85, quality_consistency:0.89",
+    "unified_text_summary": "Lahore Construction Firm 3. Established 2012. Operates in: Lahore. Areas covered: Bahria Town, DHA, Gulberg, Johar Town, Model Town, Wapda Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 8,500,000 to 75,000,000. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating: 4.3999999999999995/5 from 210 reviews. Best for: mid_to_high_budget, luxury_homes, design_conscious. Not ideal for: very_low_budget, small_plots. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.87.",
     "search_tags": [
+      "bahria_town",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "contemporary",
+      "delay_penalty",
       "design_conscious",
       "design_expertise",
+      "dha",
+      "experienced",
       "grey_structure",
+      "gulberg",
       "home_automation",
+      "installment_available",
+      "johar_town",
+      "lahore",
       "landscaping",
       "luxury",
       "luxury_homes",
+      "mid_rise",
       "mid_to_high_budget",
+      "model_town",
       "modern",
       "quality",
+      "registered_company",
       "small_plots",
       "smart_home",
       "timely_updates",
       "turnkey",
-      "very_low_budget"
-    ]
+      "very_low_budget",
+      "wapda_town",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8500000,
+    "overall_budget_max_pkr": 75000000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 75000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-033",
@@ -19800,27 +20675,58 @@
       "ai_score_avg": 0.8833333333333333,
       "customer_rating": 4.5
     },
-    "unified_text_summary": "Lahore Construction Firm 4. Established 2012. Plot 5-40 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating 4.5/5. AI scores: timeline_reliability:0.89, budget_accuracy:0.86, quality_consistency:0.9",
+    "unified_text_summary": "Lahore Construction Firm 4. Established 2012. Operates in: Lahore. Areas covered: Bahria Town, DHA, Gulberg, Johar Town, Model Town, Wapda Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 8,500,000 to 75,000,000. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating: 4.5/5 from 231 reviews. Best for: mid_to_high_budget, luxury_homes, design_conscious. Not ideal for: very_low_budget, small_plots. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.88.",
     "search_tags": [
+      "bahria_town",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "contemporary",
+      "delay_penalty",
       "design_conscious",
       "design_expertise",
+      "dha",
+      "experienced",
       "grey_structure",
+      "gulberg",
       "home_automation",
+      "installment_available",
+      "johar_town",
+      "lahore",
       "landscaping",
+      "long_build",
       "luxury",
       "luxury_homes",
+      "mid_rise",
       "mid_to_high_budget",
+      "model_town",
       "modern",
       "quality",
+      "registered_company",
       "small_plots",
       "smart_home",
       "timely_updates",
       "top_rated",
       "turnkey",
-      "very_low_budget"
-    ]
+      "very_low_budget",
+      "wapda_town",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8500000,
+    "overall_budget_max_pkr": 75000000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 75000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-034",
@@ -20603,27 +21509,58 @@
       "ai_score_avg": 0.8933333333333334,
       "customer_rating": 4.6
     },
-    "unified_text_summary": "Lahore Construction Firm 5. Established 2012. Plot 5-40 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating 4.6/5. AI scores: timeline_reliability:0.9, budget_accuracy:0.87, quality_consistency:0.91",
+    "unified_text_summary": "Lahore Construction Firm 5. Established 2012. Operates in: Lahore. Areas covered: Bahria Town, DHA, Gulberg, Johar Town, Model Town, Wapda Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 8,500,000 to 75,000,000. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating: 4.6/5 from 252 reviews. Best for: mid_to_high_budget, luxury_homes, design_conscious. Not ideal for: very_low_budget, small_plots. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.89.",
     "search_tags": [
+      "bahria_town",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "contemporary",
+      "delay_penalty",
       "design_conscious",
       "design_expertise",
+      "dha",
+      "experienced",
       "grey_structure",
+      "gulberg",
       "home_automation",
+      "installment_available",
+      "johar_town",
+      "lahore",
       "landscaping",
+      "long_build",
       "luxury",
       "luxury_homes",
+      "mid_rise",
       "mid_to_high_budget",
+      "model_town",
       "modern",
       "quality",
+      "registered_company",
       "small_plots",
       "smart_home",
       "timely_updates",
       "top_rated",
       "turnkey",
-      "very_low_budget"
-    ]
+      "very_low_budget",
+      "wapda_town",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8500000,
+    "overall_budget_max_pkr": 75000000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 75000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-035",
@@ -21406,27 +22343,58 @@
       "ai_score_avg": 0.9033333333333333,
       "customer_rating": 4.699999999999999
     },
-    "unified_text_summary": "Lahore Construction Firm 6. Established 2012. Plot 5-40 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating 4.699999999999999/5. AI scores: timeline_reliability:0.91, budget_accuracy:0.88, quality_consistency:0.92",
+    "unified_text_summary": "Lahore Construction Firm 6. Established 2012. Operates in: Lahore. Areas covered: Bahria Town, DHA, Gulberg, Johar Town, Model Town, Wapda Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 8,500,000 to 75,000,000. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating: 4.699999999999999/5 from 147 reviews. Best for: mid_to_high_budget, luxury_homes, design_conscious. Not ideal for: very_low_budget, small_plots. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.90.",
     "search_tags": [
+      "bahria_town",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "contemporary",
+      "delay_penalty",
       "design_conscious",
       "design_expertise",
+      "dha",
+      "experienced",
       "grey_structure",
+      "gulberg",
       "home_automation",
+      "installment_available",
+      "johar_town",
+      "lahore",
       "landscaping",
+      "long_build",
       "luxury",
       "luxury_homes",
+      "mid_rise",
       "mid_to_high_budget",
+      "model_town",
       "modern",
       "quality",
+      "registered_company",
       "small_plots",
       "smart_home",
       "timely_updates",
       "top_rated",
       "turnkey",
-      "very_low_budget"
-    ]
+      "very_low_budget",
+      "wapda_town",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8500000,
+    "overall_budget_max_pkr": 75000000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 75000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-036",
@@ -22209,27 +23177,58 @@
       "ai_score_avg": 0.9133333333333334,
       "customer_rating": 4.8
     },
-    "unified_text_summary": "Lahore Construction Firm 7. Established 2012. Plot 5-40 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating 4.8/5. AI scores: timeline_reliability:0.92, budget_accuracy:0.89, quality_consistency:0.93",
+    "unified_text_summary": "Lahore Construction Firm 7. Established 2012. Operates in: Lahore. Areas covered: Bahria Town, DHA, Gulberg, Johar Town, Model Town, Wapda Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 8,500,000 to 75,000,000. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating: 4.8/5 from 168 reviews. Best for: mid_to_high_budget, luxury_homes, design_conscious. Not ideal for: very_low_budget, small_plots. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.91.",
     "search_tags": [
+      "bahria_town",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "contemporary",
+      "delay_penalty",
       "design_conscious",
       "design_expertise",
+      "dha",
+      "experienced",
       "grey_structure",
+      "gulberg",
       "home_automation",
+      "installment_available",
+      "johar_town",
+      "lahore",
       "landscaping",
+      "long_build",
       "luxury",
       "luxury_homes",
+      "mid_rise",
       "mid_to_high_budget",
+      "model_town",
       "modern",
       "quality",
+      "registered_company",
       "small_plots",
       "smart_home",
       "timely_updates",
       "top_rated",
       "turnkey",
-      "very_low_budget"
-    ]
+      "very_low_budget",
+      "wapda_town",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8500000,
+    "overall_budget_max_pkr": 75000000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 75000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-037",
@@ -23012,27 +24011,58 @@
       "ai_score_avg": 0.9233333333333333,
       "customer_rating": 4.8999999999999995
     },
-    "unified_text_summary": "Lahore Construction Firm 8. Established 2012. Plot 5-40 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating 4.8999999999999995/5. AI scores: timeline_reliability:0.93, budget_accuracy:0.9, quality_consistency:0.9400000000000001",
+    "unified_text_summary": "Lahore Construction Firm 8. Established 2012. Operates in: Lahore. Areas covered: Bahria Town, DHA, Gulberg, Johar Town, Model Town, Wapda Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 8,500,000 to 75,000,000. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating: 4.8999999999999995/5 from 188 reviews. Best for: mid_to_high_budget, luxury_homes, design_conscious. Not ideal for: very_low_budget, small_plots. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.92.",
     "search_tags": [
+      "bahria_town",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "contemporary",
+      "delay_penalty",
       "design_conscious",
       "design_expertise",
+      "dha",
+      "experienced",
       "grey_structure",
+      "gulberg",
       "home_automation",
+      "installment_available",
+      "johar_town",
+      "lahore",
       "landscaping",
+      "long_build",
       "luxury",
       "luxury_homes",
+      "mid_rise",
       "mid_to_high_budget",
+      "model_town",
       "modern",
       "quality",
+      "registered_company",
       "small_plots",
       "smart_home",
       "timely_updates",
       "top_rated",
       "turnkey",
-      "very_low_budget"
-    ]
+      "very_low_budget",
+      "wapda_town",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8500000,
+    "overall_budget_max_pkr": 75000000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 75000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-038",
@@ -23815,27 +24845,58 @@
       "ai_score_avg": 0.9333333333333332,
       "customer_rating": 5.0
     },
-    "unified_text_summary": "Lahore Construction Firm 9. Established 2012. Plot 5-40 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating 5.0/5. AI scores: timeline_reliability:0.9400000000000001, budget_accuracy:0.91, quality_consistency:0.95",
+    "unified_text_summary": "Lahore Construction Firm 9. Established 2012. Operates in: Lahore. Areas covered: Bahria Town, DHA, Gulberg, Johar Town, Model Town, Wapda Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 8,500,000 to 75,000,000. Services: turnkey, grey_structure. Approvals: LDA, DHA, RDA. Rating: 5.0/5 from 210 reviews. Best for: mid_to_high_budget, luxury_homes, design_conscious. Not ideal for: very_low_budget, small_plots. Installments: Yes. Warranty: 2 year(s). AI reliability score: 0.93.",
     "search_tags": [
+      "bahria_town",
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "contemporary",
+      "delay_penalty",
       "design_conscious",
       "design_expertise",
+      "dha",
+      "experienced",
       "grey_structure",
+      "gulberg",
       "home_automation",
+      "installment_available",
+      "johar_town",
+      "lahore",
       "landscaping",
+      "long_build",
       "luxury",
       "luxury_homes",
+      "mid_rise",
       "mid_to_high_budget",
+      "model_town",
       "modern",
       "quality",
+      "registered_company",
       "small_plots",
       "smart_home",
       "timely_updates",
       "top_rated",
       "turnkey",
-      "very_low_budget"
-    ]
+      "very_low_budget",
+      "wapda_town",
+      "weekly_updates",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8500000,
+    "overall_budget_max_pkr": 75000000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 75000000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.94
   },
   {
     "company_id": "CC-039",
@@ -24402,23 +25463,49 @@
       "ai_score_avg": 0.7766666666666667,
       "customer_rating": 3.8000000000000003
     },
-    "unified_text_summary": "Peshawar Construction Firm 1. Established 2010. Plot 3-35 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating 3.8000000000000003/5. AI scores: timeline_reliability:0.76, budget_accuracy:0.7899999999999999, quality_consistency:0.7799999999999999",
+    "unified_text_summary": "Peshawar Construction Firm 1. Established 2010. Operates in: Peshawar. Areas covered: Cantt Peshawar, Hayatabad, University Town, Warsak Road. Plot sizes: 3 to 35 marla (817 to 9529 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,000,000 to 67,500,000. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating: 3.8000000000000003/5 from 76 reviews. Best for: mid_budget, security_conscious. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.78.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "boundary_walls",
+      "cantt_peshawar",
+      "established_company",
       "family_homes",
       "grey_structure",
+      "hayatabad",
+      "installment_available",
       "large_commercial",
       "local_knowledge",
       "luxury_homes",
       "mid_budget",
+      "mid_rise",
+      "no_delay_penalty",
+      "peshawar",
+      "registered_company",
       "renovation",
       "secure_construction",
       "secure_housing",
       "security_conscious",
       "security_gates",
-      "turnkey"
-    ]
+      "turnkey",
+      "university_town",
+      "warsak_road"
+    ],
+    "overall_budget_min_pkr": 7000000,
+    "overall_budget_max_pkr": 67500000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 40500000,
+      "1_kanal": 67500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 9529
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-040",
@@ -24985,23 +26072,49 @@
       "ai_score_avg": 0.7866666666666666,
       "customer_rating": 3.9000000000000004
     },
-    "unified_text_summary": "Peshawar Construction Firm 2. Established 2010. Plot 3-35 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating 3.9000000000000004/5. AI scores: timeline_reliability:0.77, budget_accuracy:0.7999999999999999, quality_consistency:0.7899999999999999",
+    "unified_text_summary": "Peshawar Construction Firm 2. Established 2010. Operates in: Peshawar. Areas covered: Cantt Peshawar, Hayatabad, University Town, Warsak Road. Plot sizes: 3 to 35 marla (817 to 9529 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,000,000 to 67,500,000. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating: 3.9000000000000004/5 from 85 reviews. Best for: mid_budget, security_conscious. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.79.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "boundary_walls",
+      "cantt_peshawar",
+      "established_company",
       "family_homes",
       "grey_structure",
+      "hayatabad",
+      "installment_available",
       "large_commercial",
       "local_knowledge",
       "luxury_homes",
       "mid_budget",
+      "mid_rise",
+      "no_delay_penalty",
+      "peshawar",
+      "registered_company",
       "renovation",
       "secure_construction",
       "secure_housing",
       "security_conscious",
       "security_gates",
-      "turnkey"
-    ]
+      "turnkey",
+      "university_town",
+      "warsak_road"
+    ],
+    "overall_budget_min_pkr": 7000000,
+    "overall_budget_max_pkr": 67500000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 40500000,
+      "1_kanal": 67500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 9529
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-041",
@@ -25568,23 +26681,51 @@
       "ai_score_avg": 0.7966666666666665,
       "customer_rating": 4.0
     },
-    "unified_text_summary": "Peshawar Construction Firm 3. Established 2010. Plot 3-35 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating 4.0/5. AI scores: timeline_reliability:0.78, budget_accuracy:0.8099999999999999, quality_consistency:0.7999999999999999",
+    "unified_text_summary": "Peshawar Construction Firm 3. Established 2010. Operates in: Peshawar. Areas covered: Cantt Peshawar, Hayatabad, University Town, Warsak Road. Plot sizes: 3 to 35 marla (817 to 9529 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,000,000 to 67,500,000. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating: 4.0/5 from 95 reviews. Best for: mid_budget, security_conscious. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.80.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "boundary_walls",
+      "cantt_peshawar",
+      "established_company",
+      "experienced",
       "family_homes",
       "grey_structure",
+      "hayatabad",
+      "installment_available",
       "large_commercial",
       "local_knowledge",
       "luxury_homes",
       "mid_budget",
+      "mid_rise",
+      "no_delay_penalty",
+      "peshawar",
+      "registered_company",
       "renovation",
       "secure_construction",
       "secure_housing",
       "security_conscious",
       "security_gates",
-      "turnkey"
-    ]
+      "turnkey",
+      "university_town",
+      "warsak_road",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 7000000,
+    "overall_budget_max_pkr": 67500000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 40500000,
+      "1_kanal": 67500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 9529
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-042",
@@ -26151,23 +27292,51 @@
       "ai_score_avg": 0.8066666666666666,
       "customer_rating": 4.1000000000000005
     },
-    "unified_text_summary": "Peshawar Construction Firm 4. Established 2010. Plot 3-35 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating 4.1000000000000005/5. AI scores: timeline_reliability:0.79, budget_accuracy:0.82, quality_consistency:0.8099999999999999",
+    "unified_text_summary": "Peshawar Construction Firm 4. Established 2010. Operates in: Peshawar. Areas covered: Cantt Peshawar, Hayatabad, University Town, Warsak Road. Plot sizes: 3 to 35 marla (817 to 9529 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,000,000 to 67,500,000. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating: 4.1000000000000005/5 from 104 reviews. Best for: mid_budget, security_conscious. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.81.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "boundary_walls",
+      "cantt_peshawar",
+      "established_company",
+      "experienced",
       "family_homes",
       "grey_structure",
+      "hayatabad",
+      "installment_available",
       "large_commercial",
       "local_knowledge",
       "luxury_homes",
       "mid_budget",
+      "mid_rise",
+      "no_delay_penalty",
+      "peshawar",
+      "registered_company",
       "renovation",
       "secure_construction",
       "secure_housing",
       "security_conscious",
       "security_gates",
-      "turnkey"
-    ]
+      "turnkey",
+      "university_town",
+      "warsak_road",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 7000000,
+    "overall_budget_max_pkr": 67500000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 40500000,
+      "1_kanal": 67500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 9529
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-043",
@@ -26734,23 +27903,51 @@
       "ai_score_avg": 0.8166666666666668,
       "customer_rating": 4.2
     },
-    "unified_text_summary": "Peshawar Construction Firm 5. Established 2010. Plot 3-35 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating 4.2/5. AI scores: timeline_reliability:0.8, budget_accuracy:0.83, quality_consistency:0.82",
+    "unified_text_summary": "Peshawar Construction Firm 5. Established 2010. Operates in: Peshawar. Areas covered: Cantt Peshawar, Hayatabad, University Town, Warsak Road. Plot sizes: 3 to 35 marla (817 to 9529 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,000,000 to 67,500,000. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating: 4.2/5 from 114 reviews. Best for: mid_budget, security_conscious. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.82.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "boundary_walls",
+      "cantt_peshawar",
+      "established_company",
       "family_homes",
       "grey_structure",
+      "hayatabad",
+      "installment_available",
       "large_commercial",
       "local_knowledge",
+      "long_build",
       "luxury_homes",
       "mid_budget",
+      "mid_rise",
+      "no_delay_penalty",
+      "peshawar",
+      "registered_company",
       "renovation",
       "secure_construction",
       "secure_housing",
       "security_conscious",
       "security_gates",
-      "turnkey"
-    ]
+      "turnkey",
+      "university_town",
+      "warsak_road",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 7000000,
+    "overall_budget_max_pkr": 67500000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 40500000,
+      "1_kanal": 67500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 9529
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-044",
@@ -27317,23 +28514,51 @@
       "ai_score_avg": 0.8266666666666667,
       "customer_rating": 4.3
     },
-    "unified_text_summary": "Peshawar Construction Firm 6. Established 2010. Plot 3-35 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating 4.3/5. AI scores: timeline_reliability:0.81, budget_accuracy:0.84, quality_consistency:0.83",
+    "unified_text_summary": "Peshawar Construction Firm 6. Established 2010. Operates in: Peshawar. Areas covered: Cantt Peshawar, Hayatabad, University Town, Warsak Road. Plot sizes: 3 to 35 marla (817 to 9529 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,000,000 to 67,500,000. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating: 4.3/5 from 66 reviews. Best for: mid_budget, security_conscious. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.83.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "boundary_walls",
+      "cantt_peshawar",
+      "established_company",
       "family_homes",
       "grey_structure",
+      "hayatabad",
+      "installment_available",
       "large_commercial",
       "local_knowledge",
+      "long_build",
       "luxury_homes",
       "mid_budget",
+      "mid_rise",
+      "no_delay_penalty",
+      "peshawar",
+      "registered_company",
       "renovation",
       "secure_construction",
       "secure_housing",
       "security_conscious",
       "security_gates",
-      "turnkey"
-    ]
+      "turnkey",
+      "university_town",
+      "warsak_road",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 7000000,
+    "overall_budget_max_pkr": 67500000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 40500000,
+      "1_kanal": 67500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 9529
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-045",
@@ -27900,23 +29125,51 @@
       "ai_score_avg": 0.8366666666666666,
       "customer_rating": 4.4
     },
-    "unified_text_summary": "Peshawar Construction Firm 7. Established 2010. Plot 3-35 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating 4.4/5. AI scores: timeline_reliability:0.8200000000000001, budget_accuracy:0.85, quality_consistency:0.84",
+    "unified_text_summary": "Peshawar Construction Firm 7. Established 2010. Operates in: Peshawar. Areas covered: Cantt Peshawar, Hayatabad, University Town, Warsak Road. Plot sizes: 3 to 35 marla (817 to 9529 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,000,000 to 67,500,000. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating: 4.4/5 from 76 reviews. Best for: mid_budget, security_conscious. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.84.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "boundary_walls",
+      "cantt_peshawar",
+      "established_company",
       "family_homes",
       "grey_structure",
+      "hayatabad",
+      "installment_available",
       "large_commercial",
       "local_knowledge",
+      "long_build",
       "luxury_homes",
       "mid_budget",
+      "mid_rise",
+      "no_delay_penalty",
+      "peshawar",
+      "registered_company",
       "renovation",
       "secure_construction",
       "secure_housing",
       "security_conscious",
       "security_gates",
-      "turnkey"
-    ]
+      "turnkey",
+      "university_town",
+      "warsak_road",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 7000000,
+    "overall_budget_max_pkr": 67500000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 40500000,
+      "1_kanal": 67500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 9529
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-046",
@@ -28483,24 +29736,53 @@
       "ai_score_avg": 0.8466666666666667,
       "customer_rating": 4.5
     },
-    "unified_text_summary": "Peshawar Construction Firm 8. Established 2010. Plot 3-35 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating 4.5/5. AI scores: timeline_reliability:0.8300000000000001, budget_accuracy:0.86, quality_consistency:0.85",
+    "unified_text_summary": "Peshawar Construction Firm 8. Established 2010. Operates in: Peshawar. Areas covered: Cantt Peshawar, Hayatabad, University Town, Warsak Road. Plot sizes: 3 to 35 marla (817 to 9529 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,000,000 to 67,500,000. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating: 4.5/5 from 85 reviews. Best for: mid_budget, security_conscious. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.85.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "boundary_walls",
+      "cantt_peshawar",
+      "established_company",
+      "experienced",
       "family_homes",
       "grey_structure",
+      "hayatabad",
+      "installment_available",
       "large_commercial",
       "local_knowledge",
+      "long_build",
       "luxury_homes",
       "mid_budget",
+      "mid_rise",
+      "no_delay_penalty",
+      "peshawar",
+      "registered_company",
       "renovation",
       "secure_construction",
       "secure_housing",
       "security_conscious",
       "security_gates",
       "top_rated",
-      "turnkey"
-    ]
+      "turnkey",
+      "university_town",
+      "warsak_road",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 7000000,
+    "overall_budget_max_pkr": 67500000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 40500000,
+      "1_kanal": 67500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 9529
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-047",
@@ -29067,24 +30349,53 @@
       "ai_score_avg": 0.8566666666666668,
       "customer_rating": 4.6000000000000005
     },
-    "unified_text_summary": "Peshawar Construction Firm 9. Established 2010. Plot 3-35 marla. Floors up to 3. Basement supported. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating 4.6000000000000005/5. AI scores: timeline_reliability:0.8400000000000001, budget_accuracy:0.87, quality_consistency:0.86",
+    "unified_text_summary": "Peshawar Construction Firm 9. Established 2010. Operates in: Peshawar. Areas covered: Cantt Peshawar, Hayatabad, University Town, Warsak Road. Plot sizes: 3 to 35 marla (817 to 9529 sq ft). Up to 3 floors. Packages: standard, premium, executive. Budget range: PKR 7,000,000 to 67,500,000. Services: turnkey, grey_structure, renovation. Approvals: PDA. Rating: 4.6000000000000005/5 from 95 reviews. Best for: mid_budget, security_conscious. Not ideal for: luxury_homes, large_commercial. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.86.",
     "search_tags": [
       "basement_allowed",
+      "basement_supported",
+      "boq_provided",
       "boundary_walls",
+      "cantt_peshawar",
+      "established_company",
+      "experienced",
       "family_homes",
       "grey_structure",
+      "hayatabad",
+      "installment_available",
       "large_commercial",
       "local_knowledge",
+      "long_build",
       "luxury_homes",
       "mid_budget",
+      "mid_rise",
+      "no_delay_penalty",
+      "peshawar",
+      "registered_company",
       "renovation",
       "secure_construction",
       "secure_housing",
       "security_conscious",
       "security_gates",
       "top_rated",
-      "turnkey"
-    ]
+      "turnkey",
+      "university_town",
+      "warsak_road",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 7000000,
+    "overall_budget_max_pkr": 67500000,
+    "executive_cost_ceiling": {
+      "5_marla": 19500000,
+      "10_marla": 40500000,
+      "1_kanal": 67500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 817,
+      "max_sqft": 9529
+    },
+    "has_installments": true,
+    "is_registered": true,
+    "warranty_and_support_score": 0.75
   },
   {
     "company_id": "CC-048",
@@ -29514,20 +30825,43 @@
       "ai_score_avg": 0.73,
       "customer_rating": 3.6999999999999997
     },
-    "unified_text_summary": "Quetta Construction Firm 1. Established 2013. Plot 5-40 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: QDA. Rating 3.6999999999999997/5. AI scores: timeline_reliability:0.6799999999999999, budget_accuracy:0.76, quality_consistency:0.75",
+    "unified_text_summary": "Quetta Construction Firm 1. Established 2013. Operates in: Quetta. Areas covered: Cantt Quetta, Jinnah Town, Satellite Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 8,000,000 to 82,500,000. Services: turnkey, grey_structure. Approvals: QDA. Rating: 3.6999999999999997/5 from 51 reviews. Best for: local_residents, earthquake_zones. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.73.",
     "search_tags": [
+      "cantt_quetta",
       "cold_climate",
       "earthquake_resistant",
       "earthquake_zones",
       "fast_track",
       "grey_structure",
+      "installment_available",
       "insulation",
+      "jinnah_town",
       "local_expertise",
       "local_residents",
+      "long_build",
+      "low_rise",
       "modern_design",
+      "no_delay_penalty",
+      "quetta",
+      "satellite_town",
       "strong_construction",
-      "turnkey"
-    ]
+      "turnkey",
+      "unregistered"
+    ],
+    "overall_budget_min_pkr": 8000000,
+    "overall_budget_max_pkr": 82500000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 82500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": false,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-049",
@@ -29957,20 +31291,43 @@
       "ai_score_avg": 0.7399999999999999,
       "customer_rating": 3.8
     },
-    "unified_text_summary": "Quetta Construction Firm 2. Established 2013. Plot 5-40 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: QDA. Rating 3.8/5. AI scores: timeline_reliability:0.69, budget_accuracy:0.77, quality_consistency:0.76",
+    "unified_text_summary": "Quetta Construction Firm 2. Established 2013. Operates in: Quetta. Areas covered: Cantt Quetta, Jinnah Town, Satellite Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 8,000,000 to 82,500,000. Services: turnkey, grey_structure. Approvals: QDA. Rating: 3.8/5 from 58 reviews. Best for: local_residents, earthquake_zones. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.74.",
     "search_tags": [
+      "cantt_quetta",
       "cold_climate",
       "earthquake_resistant",
       "earthquake_zones",
       "fast_track",
       "grey_structure",
+      "installment_available",
       "insulation",
+      "jinnah_town",
       "local_expertise",
       "local_residents",
+      "long_build",
+      "low_rise",
       "modern_design",
+      "no_delay_penalty",
+      "quetta",
+      "satellite_town",
       "strong_construction",
-      "turnkey"
-    ]
+      "turnkey",
+      "unregistered"
+    ],
+    "overall_budget_min_pkr": 8000000,
+    "overall_budget_max_pkr": 82500000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 82500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": false,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-050",
@@ -30400,20 +31757,43 @@
       "ai_score_avg": 0.75,
       "customer_rating": 3.8999999999999995
     },
-    "unified_text_summary": "Quetta Construction Firm 3. Established 2013. Plot 5-40 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: QDA. Rating 3.8999999999999995/5. AI scores: timeline_reliability:0.7, budget_accuracy:0.78, quality_consistency:0.77",
+    "unified_text_summary": "Quetta Construction Firm 3. Established 2013. Operates in: Quetta. Areas covered: Cantt Quetta, Jinnah Town, Satellite Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 8,000,000 to 82,500,000. Services: turnkey, grey_structure. Approvals: QDA. Rating: 3.8999999999999995/5 from 65 reviews. Best for: local_residents, earthquake_zones. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.75.",
     "search_tags": [
+      "cantt_quetta",
       "cold_climate",
       "earthquake_resistant",
       "earthquake_zones",
       "fast_track",
       "grey_structure",
+      "installment_available",
       "insulation",
+      "jinnah_town",
       "local_expertise",
       "local_residents",
+      "long_build",
+      "low_rise",
       "modern_design",
+      "no_delay_penalty",
+      "quetta",
+      "satellite_town",
       "strong_construction",
-      "turnkey"
-    ]
+      "turnkey",
+      "unregistered"
+    ],
+    "overall_budget_min_pkr": 8000000,
+    "overall_budget_max_pkr": 82500000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 82500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": false,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-051",
@@ -30843,20 +32223,43 @@
       "ai_score_avg": 0.7600000000000001,
       "customer_rating": 3.9999999999999996
     },
-    "unified_text_summary": "Quetta Construction Firm 4. Established 2013. Plot 5-40 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: QDA. Rating 3.9999999999999996/5. AI scores: timeline_reliability:0.71, budget_accuracy:0.79, quality_consistency:0.78",
+    "unified_text_summary": "Quetta Construction Firm 4. Established 2013. Operates in: Quetta. Areas covered: Cantt Quetta, Jinnah Town, Satellite Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 8,000,000 to 82,500,000. Services: turnkey, grey_structure. Approvals: QDA. Rating: 3.9999999999999996/5 from 71 reviews. Best for: local_residents, earthquake_zones. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.76.",
     "search_tags": [
+      "cantt_quetta",
       "cold_climate",
       "earthquake_resistant",
       "earthquake_zones",
       "fast_track",
       "grey_structure",
+      "installment_available",
       "insulation",
+      "jinnah_town",
       "local_expertise",
       "local_residents",
+      "long_build",
+      "low_rise",
       "modern_design",
+      "no_delay_penalty",
+      "quetta",
+      "satellite_town",
       "strong_construction",
-      "turnkey"
-    ]
+      "turnkey",
+      "unregistered"
+    ],
+    "overall_budget_min_pkr": 8000000,
+    "overall_budget_max_pkr": 82500000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 82500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": false,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-052",
@@ -31286,20 +32689,44 @@
       "ai_score_avg": 0.77,
       "customer_rating": 4.1
     },
-    "unified_text_summary": "Quetta Construction Firm 5. Established 2013. Plot 5-40 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: QDA. Rating 4.1/5. AI scores: timeline_reliability:0.72, budget_accuracy:0.8, quality_consistency:0.79",
+    "unified_text_summary": "Quetta Construction Firm 5. Established 2013. Operates in: Quetta. Areas covered: Cantt Quetta, Jinnah Town, Satellite Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 8,000,000 to 82,500,000. Services: turnkey, grey_structure. Approvals: QDA. Rating: 4.1/5 from 78 reviews. Best for: local_residents, earthquake_zones. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.77.",
     "search_tags": [
+      "cantt_quetta",
       "cold_climate",
       "earthquake_resistant",
       "earthquake_zones",
       "fast_track",
       "grey_structure",
+      "installment_available",
       "insulation",
+      "jinnah_town",
       "local_expertise",
       "local_residents",
+      "long_build",
+      "low_rise",
       "modern_design",
+      "no_delay_penalty",
+      "quetta",
+      "satellite_town",
       "strong_construction",
-      "turnkey"
-    ]
+      "turnkey",
+      "unregistered",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8000000,
+    "overall_budget_max_pkr": 82500000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 82500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": false,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-053",
@@ -31729,20 +33156,44 @@
       "ai_score_avg": 0.7799999999999999,
       "customer_rating": 4.199999999999999
     },
-    "unified_text_summary": "Quetta Construction Firm 6. Established 2013. Plot 5-40 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: QDA. Rating 4.199999999999999/5. AI scores: timeline_reliability:0.73, budget_accuracy:0.81, quality_consistency:0.8",
+    "unified_text_summary": "Quetta Construction Firm 6. Established 2013. Operates in: Quetta. Areas covered: Cantt Quetta, Jinnah Town, Satellite Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 8,000,000 to 82,500,000. Services: turnkey, grey_structure. Approvals: QDA. Rating: 4.199999999999999/5 from 45 reviews. Best for: local_residents, earthquake_zones. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.78.",
     "search_tags": [
+      "cantt_quetta",
       "cold_climate",
       "earthquake_resistant",
       "earthquake_zones",
       "fast_track",
       "grey_structure",
+      "installment_available",
       "insulation",
+      "jinnah_town",
       "local_expertise",
       "local_residents",
+      "long_build",
+      "low_rise",
       "modern_design",
+      "no_delay_penalty",
+      "quetta",
+      "satellite_town",
       "strong_construction",
-      "turnkey"
-    ]
+      "turnkey",
+      "unregistered",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8000000,
+    "overall_budget_max_pkr": 82500000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 82500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": false,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-054",
@@ -32172,20 +33623,44 @@
       "ai_score_avg": 0.79,
       "customer_rating": 4.3
     },
-    "unified_text_summary": "Quetta Construction Firm 7. Established 2013. Plot 5-40 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: QDA. Rating 4.3/5. AI scores: timeline_reliability:0.74, budget_accuracy:0.8200000000000001, quality_consistency:0.81",
+    "unified_text_summary": "Quetta Construction Firm 7. Established 2013. Operates in: Quetta. Areas covered: Cantt Quetta, Jinnah Town, Satellite Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 8,000,000 to 82,500,000. Services: turnkey, grey_structure. Approvals: QDA. Rating: 4.3/5 from 51 reviews. Best for: local_residents, earthquake_zones. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.79.",
     "search_tags": [
+      "cantt_quetta",
       "cold_climate",
       "earthquake_resistant",
       "earthquake_zones",
       "fast_track",
       "grey_structure",
+      "installment_available",
       "insulation",
+      "jinnah_town",
       "local_expertise",
       "local_residents",
+      "long_build",
+      "low_rise",
       "modern_design",
+      "no_delay_penalty",
+      "quetta",
+      "satellite_town",
       "strong_construction",
-      "turnkey"
-    ]
+      "turnkey",
+      "unregistered",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8000000,
+    "overall_budget_max_pkr": 82500000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 82500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": false,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-055",
@@ -32615,20 +34090,44 @@
       "ai_score_avg": 0.8000000000000002,
       "customer_rating": 4.3999999999999995
     },
-    "unified_text_summary": "Quetta Construction Firm 8. Established 2013. Plot 5-40 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: QDA. Rating 4.3999999999999995/5. AI scores: timeline_reliability:0.75, budget_accuracy:0.8300000000000001, quality_consistency:0.8200000000000001",
+    "unified_text_summary": "Quetta Construction Firm 8. Established 2013. Operates in: Quetta. Areas covered: Cantt Quetta, Jinnah Town, Satellite Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 8,000,000 to 82,500,000. Services: turnkey, grey_structure. Approvals: QDA. Rating: 4.3999999999999995/5 from 58 reviews. Best for: local_residents, earthquake_zones. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.80.",
     "search_tags": [
+      "cantt_quetta",
       "cold_climate",
       "earthquake_resistant",
       "earthquake_zones",
       "fast_track",
       "grey_structure",
+      "installment_available",
       "insulation",
+      "jinnah_town",
       "local_expertise",
       "local_residents",
+      "long_build",
+      "low_rise",
       "modern_design",
+      "no_delay_penalty",
+      "quetta",
+      "satellite_town",
       "strong_construction",
-      "turnkey"
-    ]
+      "turnkey",
+      "unregistered",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8000000,
+    "overall_budget_max_pkr": 82500000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 82500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": false,
+    "warranty_and_support_score": 0.62
   },
   {
     "company_id": "CC-056",
@@ -33058,20 +34557,44 @@
       "ai_score_avg": 0.81,
       "customer_rating": 4.5
     },
-    "unified_text_summary": "Quetta Construction Firm 9. Established 2013. Plot 5-40 marla. Floors up to 2. Services: turnkey, grey_structure. Approvals: QDA. Rating 4.5/5. AI scores: timeline_reliability:0.76, budget_accuracy:0.8400000000000001, quality_consistency:0.8300000000000001",
+    "unified_text_summary": "Quetta Construction Firm 9. Established 2013. Operates in: Quetta. Areas covered: Cantt Quetta, Jinnah Town, Satellite Town. Plot sizes: 5 to 40 marla (1361 to 10890 sq ft). Up to 2 floors. Packages: standard, premium, executive. Budget range: PKR 8,000,000 to 82,500,000. Services: turnkey, grey_structure. Approvals: QDA. Rating: 4.5/5 from 65 reviews. Best for: local_residents, earthquake_zones. Not ideal for: modern_design, fast_track. Installments: Yes. Warranty: 1 year(s). AI reliability score: 0.81.",
     "search_tags": [
+      "cantt_quetta",
       "cold_climate",
       "earthquake_resistant",
       "earthquake_zones",
       "fast_track",
       "grey_structure",
+      "installment_available",
       "insulation",
+      "jinnah_town",
       "local_expertise",
       "local_residents",
+      "long_build",
+      "low_rise",
       "modern_design",
+      "no_delay_penalty",
+      "quetta",
+      "satellite_town",
       "strong_construction",
       "top_rated",
-      "turnkey"
-    ]
+      "turnkey",
+      "unregistered",
+      "well_reviewed"
+    ],
+    "overall_budget_min_pkr": 8000000,
+    "overall_budget_max_pkr": 82500000,
+    "executive_cost_ceiling": {
+      "5_marla": 22500000,
+      "10_marla": 45000000,
+      "1_kanal": 82500000
+    },
+    "plot_sizes_sqft": {
+      "min_sqft": 1361,
+      "max_sqft": 10890
+    },
+    "has_installments": true,
+    "is_registered": false,
+    "warranty_and_support_score": 0.62
   }
 ]
