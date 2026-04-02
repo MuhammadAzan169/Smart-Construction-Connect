@@ -44,13 +44,18 @@ export type SupplierDirectoryItem = {
   raw: SupplierDatasetItem;
 };
 
+const SUPPLIER_API =
+  window.location.port === "5173"
+    ? "http://localhost:8000/api/suppliers/"
+    : "/api/suppliers/";
+
 let _cachedSuppliers: SupplierDatasetItem[] | null = null;
 let _cachedDirectory: SupplierDirectoryItem[] | null = null;
 
 export async function fetchSuppliers(): Promise<SupplierDatasetItem[]> {
   if (_cachedSuppliers) return _cachedSuppliers;
   try {
-    const res = await fetch("http://localhost:8000/api/suppliers/");
+    const res = await fetch(SUPPLIER_API);
     if (!res.ok) throw new Error("Failed to fetch suppliers");
     const data = await res.json();
     _cachedSuppliers = data;

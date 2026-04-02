@@ -1,4 +1,9 @@
-const API_BASE = "http://localhost:8000/api";
+// When served from the same origin (app.py), use relative path.
+// When running Vite dev server (port 5173), proxy to backend on 8000.
+const API_BASE =
+  window.location.port === "5173"
+    ? "http://localhost:8000/api"
+    : "/api";
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
