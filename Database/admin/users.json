@@ -1,0 +1,18 @@
+[
+  {
+    "user_id": "d8c62811-7264-4c52-96b8-b47ff394bb06",
+    "email": "admin@smartconnect.pk",
+    "password_hash": "__PLAINTEXT__admin123__HASH_BEFORE_PRODUCTION__",
+    "display_name": "Admin",
+    "phone": null,
+    "role": "admin",
+    "status": "active",
+    "created_at": "2025-01-01T00:00:00+00:00",
+    "updated_at": "2025-01-01T00:00:00+00:00",
+    "last_login_at": null,
+    "legacy_id": "ADMIN-001",
+    "permissions": {
+      "all": true
+    }
+  }
+]

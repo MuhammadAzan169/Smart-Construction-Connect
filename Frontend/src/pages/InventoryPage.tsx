@@ -1,22 +1,61 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { StatCard } from "@/components/shared/StatCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { mockMaterials } from "@/data/mockData";
+import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-import { Package, TrendingDown, TrendingUp } from "lucide-react";
+import { Loader2, Package, Save, TrendingDown, TrendingUp } from "lucide-react";
 
-type Material = (typeof mockMaterials)[number];
+type Material = {
+  name: string;
+  category: string;
+  brand: string;
+  price: number;
+  unit: string;
+  stock: number;
+};
 
 const formatPKR = (value: number) =>
   new Intl.NumberFormat("en-PK", { style: "currency", currency: "PKR", maximumFractionDigits: 0 }).format(value);
 
 export default function InventoryPage() {
   const user = useAuthStore((s) => s.user);
-  const [materials, setMaterials] = useState<Material[]>(() => [...mockMaterials]);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
+
+  const supplierSlug = user?.supplierFile;
+
+  useEffect(() => {
+    if (!supplierSlug) {
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    api.suppliers
+      .getProfile(supplierSlug)
+      .then((data: any) => {
+        if (cancelled) return;
+        const mats: Material[] = (data.materials ?? []).map((m: any) => ({
+          name: m.name ?? "",
+          category: m.category ?? "",
+          brand: m.brand ?? "",
+          price: typeof m.price === "number" ? m.price : 0,
+          unit: m.unit ?? "",
+          stock: typeof m.stock === "number" ? m.stock : 0,
+        }));
+        setMaterials(mats);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [supplierSlug]);
 
   const lowStockThreshold = 50;
 
@@ -39,15 +78,47 @@ export default function InventoryPage() {
     );
   }
 
-  const updatePrice = (id: string, next: number) => {
-    setMaterials((prev) => prev.map((m) => (m.id === id ? { ...m, price: Math.max(0, Math.round(next)) } : m)));
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const updatePrice = (idx: number, next: number) => {
+    setMaterials((prev) =>
+      prev.map((m, i) => (i === idx ? { ...m, price: Math.max(0, Math.round(next)) } : m))
+    );
+    setDirty(true);
+  };
+
+  const handleSave = async () => {
+    if (!supplierSlug) return;
+    setSaving(true);
+    try {
+      await api.suppliers.updateMaterials(supplierSlug, materials);
+      setDirty(false);
+    } catch {
+      // silently fail
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Inventory</h1>
-        <p className="text-sm text-muted-foreground">Material cards with pricing controls and stock visibility.</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Inventory</h1>
+          <p className="text-sm text-muted-foreground">Material cards with pricing controls and stock visibility.</p>
+        </div>
+        {dirty && (
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {saving ? "Saving…" : "Save Changes"}
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -57,66 +128,73 @@ export default function InventoryPage() {
         <StatCard title="Low Stock" value={stats.lowStock} icon={TrendingDown} trend="down" change="Attention" />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {materials.map((m) => {
-          const lowStock = m.stock <= lowStockThreshold;
-          return (
-            <GlassCard key={m.id} className="p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground">{m.name}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Supplier: {m.supplier}</p>
+      {materials.length === 0 ? (
+        <GlassCard interactive={false} className="p-8 text-center">
+          <p className="text-sm font-semibold text-foreground">No materials found.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Your inventory is empty.</p>
+        </GlassCard>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {materials.map((m, idx) => {
+            const lowStock = m.stock <= lowStockThreshold;
+            return (
+              <GlassCard key={`${m.name}-${idx}`} className="p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">{m.name}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Brand: {m.brand || "—"}</p>
 
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Badge variant="secondary" className="rounded-lg">
-                      {m.category}
-                    </Badge>
-                    <Badge variant={lowStock ? "destructive" : "outline"} className="rounded-lg">
-                      Stock: {m.stock.toLocaleString()} {m.unit}
-                    </Badge>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Badge variant="secondary" className="rounded-lg">
+                        {m.category}
+                      </Badge>
+                      <Badge variant={lowStock ? "destructive" : "outline"} className="rounded-lg">
+                        Stock: {m.stock.toLocaleString()} {m.unit}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-xs font-semibold tracking-wide text-muted-foreground">PRICE</p>
+                    <p className="mt-1 text-lg font-bold text-foreground">{formatPKR(m.price)}</p>
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <p className="text-xs font-semibold tracking-wide text-muted-foreground">PRICE</p>
-                  <p className="mt-1 text-lg font-bold text-foreground">{formatPKR(m.price)}</p>
+                <div className="mt-5 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-center">
+                  <Input
+                    type="number"
+                    value={m.price}
+                    onChange={(e) => updatePrice(idx, Number(e.target.value))}
+                    className="bg-background/40"
+                    min={0}
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => updatePrice(idx, m.price - 50)}
+                    >
+                      -50
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => updatePrice(idx, m.price + 50)}
+                    >
+                      +50
+                    </Button>
+                  </div>
                 </div>
-              </div>
 
-              <div className="mt-5 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-center">
-                <Input
-                  type="number"
-                  value={m.price}
-                  onChange={(e) => updatePrice(m.id, Number(e.target.value))}
-                  className="bg-background/40"
-                  min={0}
-                />
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => updatePrice(m.id, m.price - 50)}
-                  >
-                    -50
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => updatePrice(m.id, m.price + 50)}
-                  >
-                    +50
-                  </Button>
-                </div>
-              </div>
-
-              {lowStock ? (
-                <div className="mt-4 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
-                  Low stock: prioritize restock to avoid order delays.
-                </div>
-              ) : null}
-            </GlassCard>
-          );
-        })}
-      </div>
+                {lowStock ? (
+                  <div className="mt-4 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+                    Low stock: prioritize restock to avoid order delays.
+                  </div>
+                ) : null}
+              </GlassCard>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

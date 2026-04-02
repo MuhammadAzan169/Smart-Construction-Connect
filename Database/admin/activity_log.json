@@ -1,0 +1,50 @@
+[
+  {
+    "timestamp": "2026-04-02T01:13:44.681945+00:00",
+    "action": "user_active",
+    "target": "info@steelhub.pk",
+    "details": "Admin set Steel Hub PK status to active"
+  },
+  {
+    "timestamp": "2026-04-02T01:13:43.894372+00:00",
+    "action": "user_active",
+    "target": "info@multanhomes.pk",
+    "details": "Admin set Multan Homes status to active"
+  },
+  {
+    "timestamp": "2026-04-02T01:13:42.652879+00:00",
+    "action": "user_active",
+    "target": "sales@pct.com",
+    "details": "Admin set Punjab Cement Traders status to active"
+  },
+  {
+    "timestamp": "2026-03-28T10:30:00Z",
+    "action": "user_approved",
+    "target": "info@001builders.com",
+    "details": "Approved Karachi Builders company account"
+  },
+  {
+    "timestamp": "2026-03-25T14:15:00Z",
+    "action": "user_banned",
+    "target": "info@steelhub.pk",
+    "details": "Banned Steel Hub PK for policy violation"
+  },
+  {
+    "timestamp": "2026-03-20T09:00:00Z",
+    "action": "user_approved",
+    "target": "contact@elite.com",
+    "details": "Approved Elite Builders company account"
+  },
+  {
+    "timestamp": "2026-03-15T11:45:00Z",
+    "action": "ai_chat_summary",
+    "target": "ahmed@example.com",
+    "details": "Client searched for 5-Marla house builders in Islamabad, budget 8-12M PKR"
+  },
+  {
+    "timestamp": "2026-03-10T16:20:00Z",
+    "action": "pricing_updated",
+    "target": "info@001builders.com",
+    "details": "Karachi Builders updated premium package pricing"
+  }
+]

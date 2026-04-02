@@ -21,8 +21,10 @@ export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [role, setRole] = useState<UserRole>("client");
   const [showPw, setShowPw] = useState(false);
+  const [error, setError] = useState("");
   const signup = useAuthStore((s) => s.signup);
   const navigate = useNavigate();
 
@@ -33,10 +35,15 @@ export default function SignupPage() {
     { value: "admin", label: "Admin", desc: "Approvals & platform controls", icon: ShieldCheck },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    signup(name, email, password, role);
-    navigate("/dashboard");
+    setError("");
+    try {
+      await signup(name, email, password, role, phone);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "Signup failed");
+    }
   };
 
   return (
@@ -193,8 +200,28 @@ export default function SignupPage() {
               </div>
 
               {(role === "company" || role === "supplier") && (
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+92-XXX-XXXXXXX"
+                    className="bg-background/40"
+                  />
+                </div>
+              )}
+
+              {(role === "company" || role === "supplier") && (
                 <div className="rounded-2xl border border-border bg-warning/10 p-3 text-xs text-warning">
                   Approval required: {role === "company" ? "Company" : "Supplier"} accounts are reviewed by admins before full access.
+                </div>
+              )}
+
+              {error && (
+                <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+                  {error}
                 </div>
               )}
 

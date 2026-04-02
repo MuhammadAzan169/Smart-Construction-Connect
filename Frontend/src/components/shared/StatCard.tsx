@@ -13,7 +13,7 @@ export function StatCard({ title, value, change, icon: Icon, trend }: StatCardPr
   return (
     <motion.div
       whileHover={{ y: -2 }}
-      className="rounded-2xl border border-border bg-card p-6 card-shadow transition-shadow hover:card-shadow-hover"
+      className="glass-surface rounded-2xl p-6 transition-all duration-300 card-shadow hover:card-shadow-hover hover:border-[rgb(255_255_255_/_0.12)]"
     >
       <div className="flex items-start justify-between">
         <div>

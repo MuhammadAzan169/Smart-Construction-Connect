@@ -24,6 +24,7 @@ export default function LoginPage() {
   const [role, setRole] = useState<UserRole>("client");
   const [showPw, setShowPw] = useState(false);
   const [remember, setRemember] = useState(false);
+  const [error, setError] = useState("");
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate();
 
@@ -34,10 +35,15 @@ export default function LoginPage() {
     { value: "admin", label: "Admin", desc: "Approvals & oversight", icon: ShieldCheck },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password, role);
-    navigate("/dashboard");
+    setError("");
+    try {
+      await login(email, password, role);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "Login failed");
+    }
   };
 
   return (
@@ -200,6 +206,12 @@ export default function LoginPage() {
                   Forgot password?
                 </Button>
               </div>
+
+              {error && (
+                <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+                  {error}
+                </div>
+              )}
 
               <Button type="submit" className="w-full">
                 Sign In

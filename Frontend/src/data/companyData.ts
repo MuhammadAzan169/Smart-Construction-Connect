@@ -28,6 +28,12 @@ type FlattenedOperationalArea = {
 export type CompanyDatasetCompany = {
   company_id: string;
   company_name: string;
+  slug?: string;
+  city?: string;
+  description?: string | null;
+  logo_url?: string | null;
+  rating?: number;
+  review_count?: number;
   legal_info?: {
     registered?: boolean;
     secp_registered?: boolean;
@@ -39,10 +45,14 @@ export type CompanyDatasetCompany = {
     email?: string;
     website?: string;
   };
+  construction_capability?: Record<string, unknown>;
+  services?: Record<string, unknown>;
   operational_areas?: Record<string, unknown>;
   flattened_operational_areas?: FlattenedOperationalArea[];
   package_scope?: Record<string, PackageScopeFields>;
   materials_used?: Record<string, MaterialsFields>;
+  estimated_cost_range?: Record<string, Record<string, unknown>>;
+  /** @deprecated old field name */
   estimated_total_cost_range?: Record<string, Record<string, string>>;
   payment_terms?: {
     advance_percentage?: number;
@@ -50,6 +60,7 @@ export type CompanyDatasetCompany = {
     price_type?: string;
     variation_clause?: boolean;
   };
+  timeline_estimates?: Record<string, unknown>;
   experience?: {
     total_projects?: number;
     houses_completed?: number;
@@ -60,6 +71,10 @@ export type CompanyDatasetCompany = {
     average_rating?: number;
     review_count?: number;
   };
+  quality_control?: Record<string, unknown>;
+  after_handover_support?: Record<string, unknown>;
+  legal_and_contract?: Record<string, unknown>;
+  ideal_customer_profile?: Record<string, unknown>;
   ai_scores?: {
     timeline_reliability?: number;
     budget_accuracy?: number;
@@ -67,10 +82,11 @@ export type CompanyDatasetCompany = {
   };
 };
 
-// Import the provided dataset JSON from the workspace root.
+// Import the provided dataset JSON from the workspace Database folder.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import companiesJson from "../../../Dataset/Contruction Company.json";
+import companiesJson from "../../../Database/construction/companies.json";
+
 
 export const companyDataset = (companiesJson as unknown as CompanyDatasetCompany[]).filter(
   (c) => c && typeof c.company_id === "string" && typeof c.company_name === "string",

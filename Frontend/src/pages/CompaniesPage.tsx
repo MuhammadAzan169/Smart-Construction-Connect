@@ -36,7 +36,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { companyDirectory, getPackageKeys, humanizeToken, type CompanyDirectoryItem } from "@/data/companyData";
-import { mockCompanies, mockMaterials } from "@/data/mockData";
+import { mockCompanies } from "@/data/mockData";
+import { fetchSupplierDirectory, type SupplierDirectoryItem } from "@/data/supplierData";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 import {
@@ -51,21 +52,8 @@ import {
   Star,
 } from "lucide-react";
 
-type Material = (typeof mockMaterials)[number];
-
 const formatPKR = (value: number) =>
   new Intl.NumberFormat("en-PK", { style: "currency", currency: "PKR", maximumFractionDigits: 0 }).format(value);
-
-type SupplierSummary = {
-  id: string;
-  name: string;
-  categories: string[];
-  materialNames: string[];
-  minPrice: number | null;
-  maxPrice: number | null;
-  locationLabel: string;
-  ratingLabel: string;
-};
 
 function previewList(items: string[], max: number) {
   const cleaned = items.filter((x) => x && x !== "—");
@@ -75,57 +63,6 @@ function previewList(items: string[], max: number) {
     text: shown.join(" • "),
     more,
   };
-}
-
-function supplierId(name: string) {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-");
-}
-
-function buildSupplierSummaries(materials: Material[], query: string): SupplierSummary[] {
-  const q = query.trim().toLowerCase();
-  const bySupplier = new Map<string, Material[]>();
-
-  for (const m of materials) {
-    const list = bySupplier.get(m.supplier) ?? [];
-    list.push(m);
-    bySupplier.set(m.supplier, list);
-  }
-
-  const rows: SupplierSummary[] = Array.from(bySupplier.entries()).map(([name, items]) => {
-    const categories = Array.from(new Set(items.map((x) => x.category))).sort();
-    const materialNames = items.map((x) => x.name);
-    const prices = items.map((x) => x.price).filter((x) => typeof x === "number" && Number.isFinite(x));
-    const minPrice = prices.length ? Math.min(...prices) : null;
-    const maxPrice = prices.length ? Math.max(...prices) : null;
-
-    return {
-      id: supplierId(name),
-      name,
-      categories,
-      materialNames,
-      minPrice,
-      maxPrice,
-      locationLabel: "—",
-      ratingLabel: "—",
-    };
-  });
-
-  const filtered = !q
-    ? rows
-    : rows.filter((s) => {
-        const haystack = [s.name, ...s.categories, ...s.materialNames].join(" ").toLowerCase();
-        return haystack.includes(q);
-      });
-
-  return filtered.sort((a, b) => {
-    // Prefer suppliers with more categories, then more materials
-    if (b.categories.length !== a.categories.length) return b.categories.length - a.categories.length;
-    return b.materialNames.length - a.materialNames.length;
-  });
 }
 
 export default function CompaniesPage() {
@@ -159,12 +96,16 @@ function ClientCompaniesView() {
   const [specializations, setSpecializations] = useState<string[]>([]);
   const [compareIds, setCompareIds] = useState<string[]>([]);
 
-  const [materialOnlyInStock, setMaterialOnlyInStock] = useState(false);
   const [materialCategories, setMaterialCategories] = useState<string[]>([]);
+  const [supplierData, setSupplierData] = useState<SupplierDirectoryItem[]>([]);
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 650);
     return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    fetchSupplierDirectory().then(setSupplierData);
   }, []);
 
   const locationOptions = useMemo(() => {
@@ -201,18 +142,23 @@ function ClientCompaniesView() {
   }, [search, onlyVerified, locations, specializations]);
 
   const materialCategoryOptions = useMemo(() => {
-    return Array.from(new Set(mockMaterials.map((m) => m.category))).sort();
-  }, []);
+    return Array.from(new Set(supplierData.flatMap((s) => s.categories))).sort();
+  }, [supplierData]);
 
-  const filteredMaterials = useMemo(() => {
-    return mockMaterials.filter((m) => {
-      const matchesStock = !materialOnlyInStock || m.stock > 0;
-      const matchesCategory = materialCategories.length === 0 || materialCategories.includes(m.category);
-      return matchesStock && matchesCategory;
+  const filteredSuppliers = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return supplierData.filter((s) => {
+      const matchesQuery =
+        !q ||
+        s.name.toLowerCase().includes(q) ||
+        s.city.toLowerCase().includes(q) ||
+        s.categories.some((c) => c.toLowerCase().includes(q));
+      const matchesCategory =
+        materialCategories.length === 0 ||
+        s.categories.some((c) => materialCategories.includes(c));
+      return matchesQuery && matchesCategory;
     });
-  }, [materialOnlyInStock, materialCategories]);
-
-  const suppliers = useMemo(() => buildSupplierSummaries(filteredMaterials, search), [filteredMaterials, search]);
+  }, [supplierData, search, materialCategories]);
 
   const selectedCompanies = useMemo(
     () => companyDirectory.filter((c) => compareIds.includes(c.id)),
@@ -287,16 +233,6 @@ function ClientCompaniesView() {
 
   const MaterialFilters = (
     <div className="space-y-5">
-      <div>
-        <div className="flex items-center justify-between">
-          <Label className="text-sm">In stock only</Label>
-          <Checkbox checked={materialOnlyInStock} onCheckedChange={(v) => setMaterialOnlyInStock(v === true)} />
-        </div>
-        <p className="mt-1 text-xs text-muted-foreground">Show suppliers that have available stock.</p>
-      </div>
-
-      <Separator />
-
       <div className="space-y-3">
         <p className="text-xs font-semibold tracking-wide text-muted-foreground">CATEGORIES</p>
         <div className="space-y-2">
@@ -392,7 +328,7 @@ function ClientCompaniesView() {
             <p className="text-sm text-muted-foreground">
               Showing{" "}
               <span className="font-semibold text-foreground">
-                {tab === "companies" ? filtered.length : suppliers.length}
+                {tab === "companies" ? filtered.length : filteredSuppliers.length}
               </span>
             </p>
           </div>
@@ -628,7 +564,6 @@ function ClientCompaniesView() {
                     variant="link"
                     className="h-auto p-0 text-xs"
                     onClick={() => {
-                      setMaterialOnlyInStock(false);
                       setMaterialCategories([]);
                     }}
                   >
@@ -660,7 +595,7 @@ function ClientCompaniesView() {
                 </div>
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {suppliers.map((s) => (
+                  {filteredSuppliers.map((s) => (
                     <GlassCard
                       key={s.id}
                       className="group overflow-hidden p-0"
@@ -683,13 +618,13 @@ function ClientCompaniesView() {
                             <p className="truncate text-sm font-semibold text-primary-foreground">{s.name}</p>
                             <div className="mt-1 flex items-center gap-1 text-xs text-primary-foreground/80">
                               <MapPin className="h-3 w-3" />
-                              <span className="truncate">{s.locationLabel}</span>
+                              <span className="truncate">{s.city || "—"}</span>
                             </div>
                           </div>
                           <div className="flex shrink-0 items-center gap-2">
                             <Badge variant="secondary" className="rounded-lg bg-background/20 text-primary-foreground">
                               <Package className="h-3.5 w-3.5" />
-                              {s.materialNames.length}
+                              {s.materialCount}
                             </Badge>
                           </div>
                         </div>
@@ -712,8 +647,8 @@ function ClientCompaniesView() {
                         <div className="flex items-center justify-between text-xs">
                           <div className="flex items-center gap-1 text-muted-foreground">
                             <Star className="h-3.5 w-3.5 fill-warning text-warning" />
-                            <span className="font-semibold text-foreground">{s.ratingLabel}</span>
-                            <span>(reviews —)</span>
+                            <span className="font-semibold text-foreground">{s.rating}</span>
+                            <span>({s.reviews})</span>
                           </div>
                           <span className="text-muted-foreground">
                             {s.minPrice == null || s.maxPrice == null
@@ -746,7 +681,7 @@ function ClientCompaniesView() {
                 </div>
               )}
 
-              {!loading && suppliers.length === 0 ? (
+              {!loading && filteredSuppliers.length === 0 ? (
                 <GlassCard interactive={false} className="p-8 text-center">
                   <p className="text-sm font-semibold text-foreground">No suppliers match your search.</p>
                   <p className="mt-1 text-sm text-muted-foreground">Try searching by supplier name or category.</p>

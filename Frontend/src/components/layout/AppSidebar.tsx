@@ -111,7 +111,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="mb-2 rounded-2xl border border-sidebar-border bg-background/30 p-3">
-              <p className="truncate text-sm font-semibold text-sidebar-foreground">{user.name}</p>
+              <p className="truncate text-sm font-semibold text-sidebar-foreground">{user.display_name || user.name}</p>
               <p className="truncate text-xs capitalize text-muted-foreground">{user.role}</p>
             </div>
           </SidebarMenuItem>

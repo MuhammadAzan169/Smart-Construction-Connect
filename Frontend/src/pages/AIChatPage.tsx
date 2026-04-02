@@ -1,11 +1,13 @@
-import { mockCompanies } from "@/data/mockData";
 import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, User, Send, Star, MapPin, ArrowRight } from "lucide-react";
+import { Bot, User, Send, Star, MapPin, ArrowRight, Building2, Package } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/stores/authStore";
+import { api } from "@/lib/api";
 
 interface Message {
   id: number;
@@ -13,67 +15,19 @@ interface Message {
   text: string;
 }
 
-const aiResponses = [
-  "Based on your requirements, I've found some excellent matches! Let me analyze the best construction companies for your project.",
-  "I recommend Islamabad Elite Builders — they have a 94% match score for luxury residential projects in your area with excellent reviews.",
-  "Comparing prices: For a 10-marla house in DHA Phase 5, expect PKR 2,350-4,200/sq ft for standard to executive quality. I'll show you the best options.",
-  "Great question! I've updated the recommendations panel with companies that specialize in renovation projects within your budget range.",
-  "For your budget of 8-12M PKR, I suggest looking at companies with 4.5+ ratings that have completed similar projects. Check the recommendations on the right!",
-];
-
-type Company = (typeof mockCompanies)[number];
-
-function normalizeText(text: string) {
-  return text.toLowerCase().replace(/[^a-z0-9\s-]/g, " ").replace(/\s+/g, " ").trim();
-}
-
-function pickAiResponse(userText: string) {
-  const t = normalizeText(userText);
-  const mentionsBudget = /\b(budget|pkr|rs)\b/.test(t) || /\b\d+(?:\.\d+)?\s*(?:m|mn|million|l|lac|lakh|k|thousand)\b/.test(t);
-  const mentionsCompare = /\b(compare|comparison|vs)\b/.test(t);
-  const mentionsRenovation = /\b(renovation|remodel|upgrade|repair)\b/.test(t);
-
-  if (mentionsCompare) return aiResponses[2];
-  if (mentionsRenovation) return aiResponses[3];
-  if (mentionsBudget) return aiResponses[4];
-  return aiResponses[Math.floor(Math.random() * aiResponses.length)];
-}
-
-function rankCompanies(companies: Company[], userText: string) {
-  const q = normalizeText(userText);
-  if (!q) return [...companies].sort((a, b) => b.matchScore - a.matchScore);
-
-  const keywords = new Set(q.split(" ").filter(Boolean));
-  const qHas = (s: string) => keywords.has(normalizeText(s));
-
-  return [...companies]
-    .map((c) => {
-      let score = c.matchScore;
-
-      // Strong signal: location
-      if (q.includes(normalizeText(c.location))) score += 30;
-
-      // Specialization signals (more forgiving: word-level)
-      const specWords = c.specialization.flatMap((s) => normalizeText(s).split(" "));
-      const specHits = specWords.reduce((acc, w) => (qHas(w) ? acc + 1 : acc), 0);
-      score += Math.min(40, specHits * 10);
-
-      // Quality signals
-      score += Math.round(c.rating * 2);
-      if (c.verified) score += 6;
-
-      // Intent signals
-      if (/\b(cheap|low|economy|basic)\b/.test(q) && /\b(luxury|executive|premium)\b/.test(normalizeText(c.priceRange))) {
-        score -= 8;
-      }
-      if (/\b(luxury|premium|executive)\b/.test(q) && /\b(luxury)\b/.test(normalizeText(c.specialization.join(" ")))) {
-        score += 10;
-      }
-
-      return { company: c, score };
-    })
-    .sort((a, b) => b.score - a.score)
-    .map((x) => x.company);
+interface Recommendation {
+  type: "company" | "supplier";
+  id: string;
+  name: string;
+  score: number;
+  location: string;
+  rating: number;
+  reviews: number;
+  specializations?: string[];
+  price_range?: string;
+  completed_projects?: number;
+  categories?: string[];
+  materials_count?: number;
 }
 
 export default function AIChatPage() {
@@ -82,34 +36,23 @@ export default function AIChatPage() {
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
 
   const nextIdRef = useRef(2);
   const getNextId = useCallback(() => nextIdRef.current++, []);
-
-  const unmountedRef = useRef(false);
-  const activeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const aiQueueRef = useRef<string[]>([]);
-  const processingRef = useRef(false);
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const shouldAutoScrollRef = useRef(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    return () => {
-      unmountedRef.current = true;
-      if (activeTimeoutRef.current) {
-        clearTimeout(activeTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     const el = messagesContainerRef.current;
     if (!el) return;
 
     const update = () => {
-      const threshold = 48; // px from bottom counts as "at bottom"
+      const threshold = 48;
       shouldAutoScrollRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
     };
 
@@ -123,49 +66,38 @@ export default function AIChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const lastUserText = useMemo(() => {
-    for (let i = messages.length - 1; i >= 0; i--) {
-      if (messages[i]?.role === "user") return messages[i]!.text;
-    }
-    return "";
-  }, [messages]);
+  const handleSend = useCallback(async () => {
+    const text = input.trim();
+    if (!text || isTyping) return;
 
-  const recommendedCompanies = useMemo(() => {
-    return rankCompanies(mockCompanies, lastUserText).slice(0, 4);
-  }, [lastUserText]);
-
-  const processQueue = useCallback(() => {
-    if (processingRef.current) return;
-
-    const nextUserText = aiQueueRef.current.shift();
-    if (!nextUserText) {
-      setIsTyping(false);
-      return;
-    }
-
-    processingRef.current = true;
+    const userMsg: Message = { id: getNextId(), role: "user", text };
+    setMessages((prev) => [...prev, userMsg]);
+    setInput("");
     setIsTyping(true);
 
-    const delayMs = 1500 + Math.random() * 1000;
-    activeTimeoutRef.current = setTimeout(() => {
-      if (unmountedRef.current) return;
+    try {
+      const chatHistory = [...messages, userMsg].map((m) => ({
+        role: m.role === "ai" ? "assistant" : "user",
+        content: m.text,
+      }));
 
-      const aiText = pickAiResponse(nextUserText);
-      setMessages((prev) => [...prev, { id: getNextId(), role: "ai", text: aiText }]);
-      processingRef.current = false;
-      processQueue();
-    }, delayMs);
-  }, [getNextId]);
+      const result = await api.ai.chat(chatHistory, user?.email || "");
 
-  const handleSend = useCallback(() => {
-    const text = input.trim();
-    if (!text) return;
+      const aiMsg: Message = { id: getNextId(), role: "ai", text: result.response };
+      setMessages((prev) => [...prev, aiMsg]);
 
-    setMessages((prev) => [...prev, { id: getNextId(), role: "user", text }]);
-    setInput("");
-    aiQueueRef.current.push(text);
-    processQueue();
-  }, [getNextId, input, processQueue]);
+      if (result.recommendations && result.recommendations.length > 0) {
+        setRecommendations(result.recommendations);
+      }
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { id: getNextId(), role: "ai", text: "I'm having trouble connecting right now. Please try again in a moment." },
+      ]);
+    } finally {
+      setIsTyping(false);
+    }
+  }, [getNextId, input, isTyping, messages, user?.email]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -276,11 +208,12 @@ export default function AIChatPage() {
               placeholder="Describe your construction project..."
               className="flex-1 bg-background/40"
               aria-label="Message"
+              disabled={isTyping}
             />
             <Button
               type="submit"
               size="icon"
-              disabled={!input.trim()}
+              disabled={!input.trim() || isTyping}
               className="rounded-xl"
               aria-label="Send message"
             >
@@ -294,41 +227,80 @@ export default function AIChatPage() {
       <div className="hidden w-96 flex-col gap-4 lg:flex">
         <h3 className="text-sm font-semibold text-foreground">Top Recommendations</h3>
         <div className="space-y-3 overflow-y-auto">
-          {recommendedCompanies.map((company, i) => (
-            <motion.div
-              key={company.id}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1 }}
-              whileHover={{ x: 4 }}
-            >
-              <GlassCard className="p-4">
-                <div className="flex items-start gap-3">
-                  <MatchScoreRing score={company.matchScore} size={48} />
-                  <div className="flex-1">
-                    <h4 className="text-sm font-semibold text-foreground">{company.name}</h4>
-                    <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                      <MapPin className="h-3 w-3" />
-                      {company.location}
-                    </div>
-                    <div className="mt-1 flex items-center gap-1 text-xs">
-                      <Star className="h-3 w-3 fill-warning text-warning" />
-                      <span className="font-medium text-foreground">{company.rating}</span>
-                      <span className="text-muted-foreground">({company.reviews} reviews)</span>
+          {recommendations.length === 0 ? (
+            <GlassCard interactive={false} className="p-4 text-center">
+              <Bot className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
+              <p className="text-xs text-muted-foreground">
+                Describe your project and I'll find the best matches for you
+              </p>
+            </GlassCard>
+          ) : (
+            recommendations.map((rec, i) => (
+              <motion.div
+                key={rec.id}
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ x: 4 }}
+              >
+                <GlassCard className="p-4">
+                  <div className="flex items-start gap-3">
+                    <MatchScoreRing score={rec.score} size={48} />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-1.5">
+                        {rec.type === "company" ? (
+                          <Building2 className="h-3.5 w-3.5 text-primary" />
+                        ) : (
+                          <Package className="h-3.5 w-3.5 text-highlight" />
+                        )}
+                        <span className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
+                          {rec.type === "company" ? "Construction" : "Supplier"}
+                        </span>
+                      </div>
+                      <h4 className="mt-0.5 text-sm font-semibold text-foreground">{rec.name}</h4>
+                      <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        {rec.location}
+                      </div>
+                      <div className="mt-1 flex items-center gap-1 text-xs">
+                        <Star className="h-3 w-3 fill-warning text-warning" />
+                        <span className="font-medium text-foreground">{rec.rating}</span>
+                        <span className="text-muted-foreground">({rec.reviews} reviews)</span>
+                      </div>
+                      {rec.price_range && (
+                        <p className="mt-1 text-xs text-muted-foreground">💰 {rec.price_range}</p>
+                      )}
+                      {rec.specializations && rec.specializations.length > 0 && (
+                        <p className="mt-1 text-xs text-muted-foreground">🔧 {rec.specializations.join(", ")}</p>
+                      )}
+                      {rec.categories && rec.categories.length > 0 && (
+                        <p className="mt-1 text-xs text-muted-foreground">📦 {rec.categories.join(", ")}</p>
+                      )}
                     </div>
                   </div>
-                </div>
-                <div className="mt-3 flex gap-2">
-                  <Button variant="secondary" size="sm" className="flex-1">
-                    View profile
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex items-center gap-1">
-                    Compare <ArrowRight className="h-3 w-3" />
-                  </Button>
-                </div>
-              </GlassCard>
-            </motion.div>
-          ))}
+                  <div className="mt-3 flex gap-2">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() =>
+                        navigate(
+                          rec.type === "company"
+                            ? `/companies/${rec.id}`
+                            : `/suppliers/${rec.id}`
+                        )
+                      }
+                    >
+                      View profile
+                    </Button>
+                    <Button variant="outline" size="sm" className="flex items-center gap-1">
+                      Details <ArrowRight className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            ))
+          )}
         </div>
       </div>
     </div>
