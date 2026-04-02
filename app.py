@@ -10,7 +10,7 @@ Frontend (SPA) is served from Frontend/dist/ for every other route.
 
 from __future__ import annotations
 
-import sys, subprocess, os, signal, time
+import sys, subprocess, time
 from pathlib import Path
 
 # ── Ensure repo root is on sys.path so `backend.*` imports work ──
@@ -28,6 +28,9 @@ from backend.routers import admin, ai_chat, auth, companies, suppliers
 # ═══════════════════════════════════════════════════════════════════════════
 # FastAPI app
 # ═══════════════════════════════════════════════════════════════════════════
+
+DIST = ROOT / "Frontend" / "dist"
+INDEX_HTML = DIST / "index.html"
 
 app = FastAPI(
     title="Smart Construction Connect",
@@ -61,38 +64,30 @@ def health():
     return {"status": "ok", "version": "1.0.0"}
 
 
-# ── Serve built frontend (SPA) ──
-DIST = ROOT / "Frontend" / "dist"
-print(f"[app] DIST={DIST}  exists={DIST.is_dir()}")
-
+# ── SPA fallback: catch any non-API 404 and serve index.html ──
 if DIST.is_dir():
-    # Serve /assets, favicon, robots.txt etc.
-    app.mount("/assets", StaticFiles(directory=str(DIST / "assets")), name="frontend-assets")
+    # Serve /assets/* (CSS, JS bundles)
+    app.mount("/assets", StaticFiles(directory=str(DIST / "assets")), name="static-assets")
 
-    @app.get("/favicon.ico", include_in_schema=False)
-    def favicon():
-        path = DIST / "favicon.ico"
-        if path.exists():
-            return FileResponse(str(path))
-        return FileResponse(str(DIST / "index.html"))
+    @app.exception_handler(404)
+    async def spa_fallback(request: Request, exc):
+        """For non-API paths, serve index.html so SPA client-side routing works."""
+        path = request.url.path
 
-    @app.get("/robots.txt", include_in_schema=False)
-    def robots():
-        return FileResponse(str(DIST / "robots.txt"))
+        # API routes should return proper JSON 404
+        if path.startswith("/api/"):
+            return JSONResponse({"detail": "Not Found"}, status_code=404)
 
-    # SPA catch-all — must be registered LAST
-    @app.get("/", include_in_schema=False)
-    def spa_root():
-        return FileResponse(str(DIST / "index.html"))
-
-    @app.get("/{full_path:path}", include_in_schema=False)
-    def spa_fallback(full_path: str):
-        """Serve index.html for any non-API, non-static route (SPA routing)."""
-        # If a real file exists under dist/, serve it
-        requested = DIST / full_path
-        if requested.is_file() and ".." not in full_path:
+        # Try to serve existing static file from dist/
+        requested = DIST / path.lstrip("/")
+        if requested.is_file() and ".." not in path:
             return FileResponse(str(requested))
-        return FileResponse(str(DIST / "index.html"))
+
+        # Fallback to index.html for client-side routing
+        if INDEX_HTML.exists():
+            return FileResponse(str(INDEX_HTML))
+
+        return JSONResponse({"detail": "Not Found"}, status_code=404)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
