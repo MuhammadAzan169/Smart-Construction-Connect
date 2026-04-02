@@ -47,8 +47,10 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto grid min-h-screen max-w-6xl grid-cols-1 items-stretch gap-8 p-4 sm:p-6 lg:grid-cols-2 lg:gap-10 lg:p-10">
+    <div className="relative min-h-screen bg-background overflow-hidden">
+      <ParticleBackground />
+      <AnimatedBackground />
+      <div className="relative z-10 mx-auto grid min-h-screen max-w-6xl grid-cols-1 items-stretch gap-8 p-4 sm:p-6 lg:grid-cols-2 lg:gap-10 lg:p-10">
         {/* Left */}
         <motion.section
           initial={{ opacity: 0, x: -16 }}
@@ -220,14 +222,20 @@ export default function SignupPage() {
               )}
 
               {error && (
-                <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive"
+                >
                   {error}
-                </div>
+                </motion.div>
               )}
 
-              <Button type="submit" className="w-full">
-                Create Account
-              </Button>
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                <Button type="submit" className="w-full">
+                  Create Account
+                </Button>
+              </motion.div>
             </form>
 
             <p className="mt-6 text-center text-sm text-muted-foreground">

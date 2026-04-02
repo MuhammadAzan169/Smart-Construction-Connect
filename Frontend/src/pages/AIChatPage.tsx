@@ -108,7 +108,12 @@ export default function AIChatPage() {
   );
 
   return (
-    <div className="flex h-[calc(100svh-11rem)] gap-6">
+    <motion.div
+      className="flex h-[calc(100svh-11rem)] gap-6"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
       {/* Chat panel */}
       <GlassCard interactive={false} className="flex flex-1 flex-col p-0 card-shadow">
         {/* Header */}
@@ -210,15 +215,16 @@ export default function AIChatPage() {
               aria-label="Message"
               disabled={isTyping}
             />
-            <Button
+            <motion.button
               type="submit"
-              size="icon"
               disabled={!input.trim() || isTyping}
-              className="rounded-xl"
+              className="inline-flex items-center justify-center rounded-xl h-9 w-9 gradient-bg text-primary-foreground disabled:opacity-50"
               aria-label="Send message"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
             >
               <Send className="h-4 w-4" />
-            </Button>
+            </motion.button>
           </form>
         </div>
       </GlassCard>
@@ -303,6 +309,6 @@ export default function AIChatPage() {
           )}
         </div>
       </div>
-    </div>
-  );
+      </motion.div>
+   );
 }

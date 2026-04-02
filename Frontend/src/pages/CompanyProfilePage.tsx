@@ -1,9 +1,11 @@
 import { useMemo } from "react";
+import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { SectionReveal } from "@/components/shared/AnimationPrimitives";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -61,8 +63,18 @@ export default function CompanyProfilePage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div
+        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <Button type="button" variant="secondary" onClick={() => navigate(-1)}>
@@ -94,12 +106,13 @@ export default function CompanyProfilePage() {
           <MatchScoreRing score={company.matchScore} size={64} />
           <Button type="button">Request quote</Button>
         </div>
-      </div>
+      </motion.div>
 
+      <SectionReveal>
       <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <GlassCard className="overflow-hidden p-0">
-          <div className="relative h-56 overflow-hidden">
-            <img src={company.image} alt={company.name} className="h-full w-full object-cover" />
+          <div className="group relative h-56 overflow-hidden">
+            <img src={company.image} alt={company.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
             <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-background/70 to-transparent" />
           </div>
           <div className="space-y-4 p-6">
@@ -301,6 +314,11 @@ export default function CompanyProfilePage() {
         </GlassCard>
 
         <div className="space-y-4">
+          <motion.div
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.35 }}
+          >
           <GlassCard interactive={false} className="p-6">
             <p className="text-sm font-semibold text-foreground">Contact</p>
             <div className="mt-3 space-y-1 text-sm text-foreground">
@@ -315,20 +333,34 @@ export default function CompanyProfilePage() {
               </p>
             </div>
           </GlassCard>
+          </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3, duration: 0.35 }}
+          >
           <GlassCard interactive={false} className="p-6">
             <p className="text-sm font-semibold text-foreground">Availability / Status</p>
             <p className="mt-2 text-sm text-muted-foreground">Availability signals are not included in the dataset.</p>
           </GlassCard>
+          </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.35 }}
+          >
           <GlassCard interactive={false} className="p-6">
             <p className="text-sm font-semibold text-foreground">Ratings & Reviews</p>
             <p className="mt-2 text-sm text-muted-foreground">
               {company.rating} average rating across {company.reviews} reviews.
             </p>
           </GlassCard>
+          </motion.div>
         </div>
       </div>
-    </div>
+      </SectionReveal>
+    </motion.div>
   );
 }

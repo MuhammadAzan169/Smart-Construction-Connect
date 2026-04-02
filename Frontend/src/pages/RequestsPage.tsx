@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
@@ -37,8 +38,18 @@ export default function RequestsPage() {
   if (!user) return null;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div
+        className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.35 }}
+      >
         <div>
           <h1 className="text-2xl font-bold text-foreground">{title}</h1>
           <p className="text-sm text-muted-foreground">{subtitle}</p>
@@ -59,11 +70,17 @@ export default function RequestsPage() {
             Completed: <span className="font-semibold text-foreground">{stats.completed}</span>
           </div>
         </GlassCard>
-      </div>
+      </motion.div>
 
       <div className="grid gap-4">
-        {requests.map((req) => (
-          <GlassCard key={req.id} className="p-5">
+        {requests.map((req, idx) => (
+          <motion.div
+            key={req.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: Math.min(idx * 0.06, 0.4), duration: 0.3 }}
+          >
+          <GlassCard className="p-5">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
@@ -124,8 +141,9 @@ export default function RequestsPage() {
               </div>
             </div>
           </GlassCard>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

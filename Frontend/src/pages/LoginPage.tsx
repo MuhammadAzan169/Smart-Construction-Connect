@@ -1,13 +1,15 @@
 import { useState, type ElementType } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore, UserRole } from "@/stores/authStore";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { AnimatedBackground } from "@/components/shared/AnimatedBackground";
+import { ParticleBackground } from "@/components/shared/ParticleBackground";
 import {
   Building2,
   Eye,
@@ -47,8 +49,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto grid min-h-screen max-w-6xl grid-cols-1 items-stretch gap-8 p-4 sm:p-6 lg:grid-cols-2 lg:gap-10 lg:p-10">
+    <div className="relative min-h-screen bg-background overflow-hidden">
+      <ParticleBackground />
+      <AnimatedBackground />
+      <div className="relative z-10 mx-auto grid min-h-screen max-w-6xl grid-cols-1 items-stretch gap-8 p-4 sm:p-6 lg:grid-cols-2 lg:gap-10 lg:p-10">
         {/* Left: Brand + trust */}
         <motion.section
           initial={{ opacity: 0, x: -16 }}
@@ -208,14 +212,21 @@ export default function LoginPage() {
               </div>
 
               {error && (
-                <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive"
+                >
                   {error}
-                </div>
-              )}
+                </motion.div>
+              )
+              }
 
-              <Button type="submit" className="w-full">
-                Sign In
-              </Button>
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                <Button type="submit" className="w-full">
+                  Sign In
+                </Button>
+              </motion.div>
             </form>
 
             <p className="mt-6 text-center text-sm text-muted-foreground">

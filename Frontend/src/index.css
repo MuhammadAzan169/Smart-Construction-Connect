@@ -188,6 +188,87 @@
       0 0 20px rgb(var(--primary) / 0.08),
       0 0 60px rgb(var(--primary) / 0.04);
   }
+
+  /* --- Premium hover card with glow border --- */
+  .hover-glow-card {
+    @apply relative overflow-hidden rounded-2xl transition-all duration-300;
+  }
+  .hover-glow-card::before {
+    content: "";
+    @apply absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300;
+    background: linear-gradient(135deg, rgb(var(--primary) / 0.12), rgb(var(--highlight) / 0.08));
+    z-index: -1;
+  }
+  .hover-glow-card:hover::before {
+    @apply opacity-100;
+  }
+
+  /* --- Noise texture overlay --- */
+  .noise-overlay {
+    position: relative;
+  }
+  .noise-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* --- Section divider gradient --- */
+  .section-divider {
+    @apply h-px w-full;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgb(var(--primary) / 0.3) 50%,
+      transparent 100%
+    );
+  }
+
+  /* --- Animated gradient border --- */
+  .gradient-border {
+    @apply relative;
+  }
+  .gradient-border::before {
+    content: "";
+    @apply absolute -inset-px rounded-2xl;
+    background: linear-gradient(135deg, rgb(var(--primary)), rgb(var(--highlight)), rgb(var(--premium)));
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: -1;
+  }
+  .gradient-border:hover::before {
+    opacity: 0.3;
+  }
+
+  /* --- Ripple button effect --- */
+  .btn-ripple {
+    @apply relative overflow-hidden;
+  }
+  .btn-ripple .ripple-effect {
+    @apply absolute rounded-full bg-white/20 animate-ripple;
+    pointer-events: none;
+  }
+
+  /* --- Skeleton loading with better shimmer --- */
+  .skeleton-premium {
+    @apply relative overflow-hidden rounded-xl;
+    background: rgb(var(--muted));
+  }
+  .skeleton-premium::after {
+    content: "";
+    @apply absolute inset-0;
+    background: linear-gradient(
+      110deg,
+      transparent 25%,
+      rgb(var(--primary) / 0.04) 37%,
+      transparent 63%
+    );
+    animation: shimmerMove 2s ease-in-out infinite;
+  }
 }
 
 @layer utilities {
@@ -215,6 +296,35 @@
       transparent 75%
     );
     animation: shimmerMove 3s ease-in-out infinite;
+  }
+
+  /* --- Focus animation: dim surroundings --- */
+  .focus-highlight > *:not(:hover) {
+    @apply transition-opacity duration-300;
+  }
+  .focus-highlight:hover > *:not(:hover) {
+    opacity: 0.6;
+  }
+
+  /* --- Smooth text gradient animation --- */
+  .animated-gradient-text {
+    background-size: 200% auto;
+    background-image: linear-gradient(
+      90deg,
+      rgb(var(--primary)),
+      rgb(var(--highlight)),
+      rgb(var(--premium)),
+      rgb(var(--primary))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 4s linear infinite;
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
   }
 }
 

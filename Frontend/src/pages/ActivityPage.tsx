@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
@@ -45,11 +46,20 @@ export default function ActivityPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.35 }}
+      >
         <h1 className="text-2xl font-bold text-foreground">Activity Log</h1>
         <p className="text-sm text-muted-foreground">Platform-wide activity and audit trail.</p>
-      </div>
+      </motion.div>
 
       <GlassCard interactive={false} className="p-6">
         {loading ? (
@@ -62,7 +72,12 @@ export default function ActivityPage() {
               const Icon = actionIcons[entry.action] || Activity;
               const time = new Date(entry.timestamp).toLocaleString();
               return (
-                <div key={i} className="flex items-start gap-4 rounded-2xl border border-border bg-background/30 p-4">
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: Math.min(i * 0.05, 0.5), duration: 0.3 }}
+                  className="flex items-start gap-4 rounded-2xl border border-border bg-background/30 p-4 transition-colors hover:border-primary/20">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <Icon className="h-4 w-4" />
                   </div>
@@ -71,12 +86,12 @@ export default function ActivityPage() {
                     <p className="mt-0.5 text-xs text-muted-foreground">{entry.target}</p>
                   </div>
                   <span className="shrink-0 text-xs text-muted-foreground">{time}</span>
-                </div>
+                </motion.div>
               );
             })}
           </div>
         )}
       </GlassCard>
-    </div>
+    </motion.div>
   );
 }

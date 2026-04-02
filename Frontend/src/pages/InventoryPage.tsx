@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 
 import { GlassCard } from "@/components/shared/GlassCard";
+import { StaggerList, StaggerItem } from "@/components/shared/AnimationPrimitives";
 import { StatCard } from "@/components/shared/StatCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -107,8 +109,18 @@ export default function InventoryPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div
+        className="flex items-start justify-between gap-4"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.35 }}
+      >
         <div>
           <h1 className="text-2xl font-bold text-foreground">Inventory</h1>
           <p className="text-sm text-muted-foreground">Material cards with pricing controls and stock visibility.</p>
@@ -119,14 +131,14 @@ export default function InventoryPage() {
             {saving ? "Saving…" : "Save Changes"}
           </Button>
         )}
-      </div>
+      </motion.div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Products" value={stats.total} icon={Package} />
-        <StatCard title="Categories" value={stats.categories} icon={TrendingUp} />
-        <StatCard title="Total Stock" value={stats.totalStock.toLocaleString()} icon={TrendingUp} trend="up" change="Stable" />
-        <StatCard title="Low Stock" value={stats.lowStock} icon={TrendingDown} trend="down" change="Attention" />
-      </div>
+      <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StaggerItem><StatCard title="Products" value={stats.total} icon={Package} /></StaggerItem>
+        <StaggerItem><StatCard title="Categories" value={stats.categories} icon={TrendingUp} /></StaggerItem>
+        <StaggerItem><StatCard title="Total Stock" value={stats.totalStock.toLocaleString()} icon={TrendingUp} trend="up" change="Stable" /></StaggerItem>
+        <StaggerItem><StatCard title="Low Stock" value={stats.lowStock} icon={TrendingDown} trend="down" change="Attention" /></StaggerItem>
+      </StaggerList>
 
       {materials.length === 0 ? (
         <GlassCard interactive={false} className="p-8 text-center">
@@ -138,7 +150,13 @@ export default function InventoryPage() {
           {materials.map((m, idx) => {
             const lowStock = m.stock <= lowStockThreshold;
             return (
-              <GlassCard key={`${m.name}-${idx}`} className="p-5">
+              <motion.div
+                key={`${m.name}-${idx}`}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(idx * 0.06, 0.5), duration: 0.35 }}
+              >
+              <GlassCard className="p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-foreground">{m.name}</p>
@@ -191,10 +209,11 @@ export default function InventoryPage() {
                   </div>
                 ) : null}
               </GlassCard>
+              </motion.div>
             );
           })}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

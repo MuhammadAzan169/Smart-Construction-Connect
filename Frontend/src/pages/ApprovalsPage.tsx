@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -50,11 +51,20 @@ export default function ApprovalsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.35 }}
+      >
         <h1 className="text-2xl font-bold text-foreground">Approvals</h1>
         <p className="text-sm text-muted-foreground">Review and approve pending company and supplier accounts.</p>
-      </div>
+      </motion.div>
 
       {loading ? (
         <GlassCard interactive={false} className="p-6">
@@ -68,8 +78,14 @@ export default function ApprovalsPage() {
         </GlassCard>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {pendingUsers.map((u) => (
-            <GlassCard key={u.id} className="p-5">
+          {pendingUsers.map((u, idx) => (
+            <motion.div
+              key={u.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: Math.min(idx * 0.08, 0.5), duration: 0.35 }}
+            >
+            <GlassCard className="p-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   {u.role === "company" ? <Building2 className="h-5 w-5" /> : <Package className="h-5 w-5" />}
@@ -95,9 +111,10 @@ export default function ApprovalsPage() {
                 </Button>
               </div>
             </GlassCard>
+            </motion.div>
           ))}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

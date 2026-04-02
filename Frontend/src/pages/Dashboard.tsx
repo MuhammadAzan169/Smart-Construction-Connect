@@ -7,6 +7,8 @@ import { StatCard } from "@/components/shared/StatCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StaggerList, StaggerItem, SectionReveal } from "@/components/shared/AnimationPrimitives";
+import { TiltCard } from "@/components/shared/TiltCard";
 import {
   mockCompanies,
   mockRequests,
@@ -51,12 +53,20 @@ function ClientDashboard() {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Companies" value={mockCompanies.length} icon={Building2} />
-        <StatCard title="Verified" value={verifiedCount} icon={ShieldCheck} />
-        <StatCard title="Requests" value={mockRequests.length} icon={FileText} />
-        <StatCard title="Best Match" value={`${bestMatchScore}%`} icon={TrendingUp} trend="up" change="Recommended" />
-      </div>
+      <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
+        <StaggerItem>
+          <StatCard title="Companies" value={mockCompanies.length} icon={Building2} />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard title="Verified" value={verifiedCount} icon={ShieldCheck} />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard title="Requests" value={mockRequests.length} icon={FileText} />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard title="Best Match" value={`${bestMatchScore}%`} icon={TrendingUp} trend="up" change="Recommended" />
+        </StaggerItem>
+      </StaggerList>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
@@ -73,9 +83,16 @@ function ClientDashboard() {
               </Button>
             </div>
 
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {topPicks.map((c) => (
-                <GlassCard key={c.id} className="p-4">
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 focus-highlight">
+              {topPicks.map((c, i) => (
+                <motion.div
+                  key={c.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.08, duration: 0.3 }}
+                >
+                  <TiltCard tiltMaxAngleX={5} tiltMaxAngleY={5} scale={1.01}>
+                    <GlassCard className="p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold text-foreground">{c.name}</p>
@@ -99,7 +116,9 @@ function ClientDashboard() {
                     </div>
                     <StatusBadge status={c.verified ? "verified" : "pending"} />
                   </div>
-                </GlassCard>
+                    </GlassCard>
+                  </TiltCard>
+                </motion.div>
               ))}
             </div>
           </GlassCard>
@@ -308,25 +327,27 @@ function AdminDashboard() {
           transition={{ duration: 0.4 }}
           className="space-y-4"
         >
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard title="Total Users" value={stats.total_users} icon={Users} />
-            <StatCard title="Clients" value={stats.clients} icon={Users} />
-            <StatCard title="Companies" value={stats.companies} icon={Building2} />
-            <StatCard title="Suppliers" value={stats.suppliers} icon={Package} />
-          </div>
+          <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
+            <StaggerItem><StatCard title="Total Users" value={stats.total_users} icon={Users} /></StaggerItem>
+            <StaggerItem><StatCard title="Clients" value={stats.clients} icon={Users} /></StaggerItem>
+            <StaggerItem><StatCard title="Companies" value={stats.companies} icon={Building2} /></StaggerItem>
+            <StaggerItem><StatCard title="Suppliers" value={stats.suppliers} icon={Package} /></StaggerItem>
+          </StaggerList>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard
-              title="Pending Approvals"
-              value={stats.pending_approvals}
-              icon={ShieldCheck}
-              trend={stats.pending_approvals > 0 ? "up" : undefined}
-              change={stats.pending_approvals > 0 ? "Needs review" : "All clear"}
-            />
-            <StatCard title="Banned Users" value={stats.banned_users} icon={Activity} />
-            <StatCard title="Dataset Companies" value={stats.dataset_companies} icon={Building2} />
-            <StatCard title="Dataset Suppliers" value={stats.dataset_suppliers} icon={Package} />
-          </div>
+          <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08} delay={0.2}>
+            <StaggerItem>
+              <StatCard
+                title="Pending Approvals"
+                value={stats.pending_approvals}
+                icon={ShieldCheck}
+                trend={stats.pending_approvals > 0 ? "up" : undefined}
+                change={stats.pending_approvals > 0 ? "Needs review" : "All clear"}
+              />
+            </StaggerItem>
+            <StaggerItem><StatCard title="Banned Users" value={stats.banned_users} icon={Activity} /></StaggerItem>
+            <StaggerItem><StatCard title="Dataset Companies" value={stats.dataset_companies} icon={Building2} /></StaggerItem>
+            <StaggerItem><StatCard title="Dataset Suppliers" value={stats.dataset_suppliers} icon={Package} /></StaggerItem>
+          </StaggerList>
         </motion.div>
       ) : (
         <GlassCard className="p-5">

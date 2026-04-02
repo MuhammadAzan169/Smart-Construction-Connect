@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -58,12 +59,20 @@ export default function UsersPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Users</h1>
-        <p className="text-sm text-muted-foreground">Manage all platform users.</p>
-      </div>
-
+      <motion.div
+        className="space-y-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.35 }}
+        >
+          <h1 className="text-2xl font-bold text-foreground">Users</h1>
+          <p className="text-sm text-muted-foreground">Manage all platform users.</p>
+        </motion.div>
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -88,6 +97,11 @@ export default function UsersPage() {
         </Select>
       </div>
 
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.35 }}
+      >
       <GlassCard className="p-0">
         <div className="border-b border-border p-5">
           <p className="text-sm font-semibold text-foreground">All users ({filtered.length})</p>
@@ -150,6 +164,7 @@ export default function UsersPage() {
           </Table>
         </div>
       </GlassCard>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -387,7 +387,7 @@ function ClientCompaniesView() {
                 </div>
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {filtered.map((company) => {
+                  {filtered.map((company, idx) => {
                     const compareSelected = compareIds.includes(company.id);
                     const compareDisabled = !compareSelected && compareIds.length >= 3;
                     const pkgKeys = getPackageKeys(company.raw);
@@ -395,8 +395,13 @@ function ClientCompaniesView() {
                     const societiesPreview = previewList(company.societies, 2);
 
                     return (
-                      <GlassCard
+                      <motion.div
                         key={company.id}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: Math.min(idx * 0.06, 0.5), duration: 0.35 }}
+                      >
+                      <GlassCard
                         className="group overflow-hidden p-0"
                         role="button"
                         tabIndex={0}
@@ -412,7 +417,7 @@ function ClientCompaniesView() {
                           <img
                             src={company.image}
                             alt={company.name}
-                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                           />
                           <div className="absolute left-3 top-3">
                             {company.verified ? <StatusBadge status="verified" /> : null}
@@ -491,6 +496,7 @@ function ClientCompaniesView() {
                           ) : null}
                         </div>
                       </GlassCard>
+                      </motion.div>
                     );
                   })}
                 </div>

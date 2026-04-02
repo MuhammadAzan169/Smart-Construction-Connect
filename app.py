@@ -64,30 +64,37 @@ def health():
     return {"status": "ok", "version": "1.0.0"}
 
 
-# ── SPA fallback: catch any non-API 404 and serve index.html ──
+@app.get("/")
+async def root():
+    """Serve the SPA entry point."""
+    if INDEX_HTML.exists():
+        return FileResponse(str(INDEX_HTML))
+    return JSONResponse({"detail": "Frontend not built. Run: cd Frontend && npm run build"}, status_code=503)
+
+
+# ── Static assets ──
 if DIST.is_dir():
-    # Serve /assets/* (CSS, JS bundles)
     app.mount("/assets", StaticFiles(directory=str(DIST / "assets")), name="static-assets")
 
-    @app.exception_handler(404)
-    async def spa_fallback(request: Request, exc):
-        """For non-API paths, serve index.html so SPA client-side routing works."""
-        path = request.url.path
 
-        # API routes should return proper JSON 404
-        if path.startswith("/api/"):
-            return JSONResponse({"detail": "Not Found"}, status_code=404)
-
-        # Try to serve existing static file from dist/
-        requested = DIST / path.lstrip("/")
-        if requested.is_file() and ".." not in path:
-            return FileResponse(str(requested))
-
-        # Fallback to index.html for client-side routing
-        if INDEX_HTML.exists():
-            return FileResponse(str(INDEX_HTML))
-
+# ── SPA catch-all: must be LAST so API routes take priority ──
+@app.get("/{full_path:path}")
+async def spa_fallback(full_path: str, request: Request):
+    """Serve index.html for all non-API paths so React Router works."""
+    # Let API 404s return JSON
+    if full_path.startswith("api/"):
         return JSONResponse({"detail": "Not Found"}, status_code=404)
+
+    # Serve existing static files from dist/ (robots.txt, favicon, etc.)
+    candidate = DIST / full_path
+    if candidate.is_file() and ".." not in full_path:
+        return FileResponse(str(candidate))
+
+    # SPA fallback — let React Router handle the path client-side
+    if INDEX_HTML.exists():
+        return FileResponse(str(INDEX_HTML))
+
+    return JSONResponse({"detail": "Frontend not built"}, status_code=503)
 
 
 # ═══════════════════════════════════════════════════════════════════════════

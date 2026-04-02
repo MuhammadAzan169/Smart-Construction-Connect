@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { SectionReveal } from "@/components/shared/AnimationPrimitives";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -79,8 +81,18 @@ export default function SupplierProfilePage() {
   const maxPrice = prices.length ? Math.max(...prices) : null;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div
+        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
         <div className="min-w-0">
           <Button type="button" variant="secondary" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-4 w-4" />
@@ -104,8 +116,9 @@ export default function SupplierProfilePage() {
             </span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
+      <SectionReveal>
       <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         {/* Left — Material details */}
         <div className="space-y-6">
@@ -143,7 +156,13 @@ export default function SupplierProfilePage() {
             <p className="text-xs font-semibold tracking-wide text-muted-foreground">ALL MATERIALS</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               {supplier.materials.map((m, idx) => (
-                <div key={idx} className="rounded-2xl border border-border bg-background/30 p-4">
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(idx * 0.05, 0.4), duration: 0.3 }}
+                >
+                <div className="rounded-2xl border border-border bg-background/30 p-4 transition-colors hover:border-primary/20">
                   <p className="truncate text-sm font-semibold text-foreground">{m.name}</p>
                   <div className="mt-1 flex items-center gap-2">
                     <Badge variant="outline" className="text-[10px]">{m.category}</Badge>
@@ -160,6 +179,7 @@ export default function SupplierProfilePage() {
                     </span>
                   </div>
                 </div>
+                </motion.div>
               ))}
             </div>
           </GlassCard>
@@ -217,6 +237,7 @@ export default function SupplierProfilePage() {
           </GlassCard>
         </div>
       </div>
-    </div>
+      </SectionReveal>
+    </motion.div>
   );
 }

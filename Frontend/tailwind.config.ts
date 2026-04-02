@@ -112,6 +112,36 @@ export default {
           "50%": { transform: "scale(1)", opacity: "0.8" },
           "100%": { transform: "scale(0.95)", opacity: "1" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-8px)" },
+        },
+        "float-slow": {
+          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
+          "33%": { transform: "translateY(-6px) rotate(1deg)" },
+          "66%": { transform: "translateY(4px) rotate(-1deg)" },
+        },
+        "gradient-shift": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(245,158,11,0.08)" },
+          "50%": { boxShadow: "0 0 40px rgba(245,158,11,0.16)" },
+        },
+        "text-reveal": {
+          "0%": { clipPath: "inset(0 100% 0 0)" },
+          "100%": { clipPath: "inset(0 0% 0 0)" },
+        },
+        "slide-up-fade": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "ripple": {
+          "0%": { transform: "scale(0)", opacity: "0.35" },
+          "100%": { transform: "scale(4)", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -120,6 +150,13 @@ export default {
         "slide-in-left": "slide-in-left 0.3s ease-out",
         shimmer: "shimmer 2s infinite",
         "pulse-ring": "pulse-ring 2s ease-in-out infinite",
+        float: "float 4s ease-in-out infinite",
+        "float-slow": "float-slow 6s ease-in-out infinite",
+        "gradient-shift": "gradient-shift 8s ease infinite",
+        "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+        "text-reveal": "text-reveal 0.6s cubic-bezier(0.77,0,0.175,1) forwards",
+        "slide-up-fade": "slide-up-fade 0.4s ease-out forwards",
+        ripple: "ripple 0.6s ease-out",
       },
     },
   },
