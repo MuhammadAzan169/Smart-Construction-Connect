@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
-import { Activity, Bot, Shield, CreditCard, UserPlus } from "lucide-react";
+import { Activity, ArrowLeft, Bot, Shield, CreditCard, UserPlus } from "lucide-react";
 
 type LogEntry = {
   timestamp: string;
@@ -29,6 +30,7 @@ const actionIcons: Record<string, React.ElementType> = {
 
 export default function ActivityPage() {
   const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
   const [log, setLog] = useState<LogEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,6 +59,16 @@ export default function ActivityPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.35 }}
       >
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="mb-2 gap-1.5 rounded-xl text-muted-foreground hover:text-foreground"
+          onClick={() => navigate("/dashboard")}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Dashboard
+        </Button>
         <h1 className="text-2xl font-bold text-foreground">Activity Log</h1>
         <p className="text-sm text-muted-foreground">Platform-wide activity and audit trail.</p>
       </motion.div>

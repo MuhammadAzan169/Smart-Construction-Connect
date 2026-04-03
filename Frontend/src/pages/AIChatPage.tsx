@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, User, Send, Star, MapPin, ArrowRight, Building2, Package } from "lucide-react";
+import { ArrowLeft, Bot, User, Send, Star, MapPin, ArrowRight, Building2, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
@@ -118,6 +118,15 @@ export default function AIChatPage() {
       <GlassCard interactive={false} className="flex flex-1 flex-col p-0 card-shadow">
         {/* Header */}
         <div className="flex items-center gap-3 border-b border-border px-6 py-4">
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center gap-1 rounded-lg p-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            aria-label="Back to dashboard"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back
+          </button>
           <div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-bg">
             <Bot className="h-5 w-5 text-primary-foreground" />
           </div>

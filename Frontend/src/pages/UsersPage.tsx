@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
@@ -12,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-import { Search } from "lucide-react";
+import { Search, ArrowLeft } from "lucide-react";
 
 type UserRow = {
   id: string;
@@ -26,6 +27,7 @@ type UserRow = {
 
 export default function UsersPage() {
   const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -70,6 +72,16 @@ export default function UsersPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.35 }}
         >
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="mb-2 gap-1.5 rounded-xl text-muted-foreground hover:text-foreground"
+            onClick={() => navigate("/dashboard")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Dashboard
+          </Button>
           <h1 className="text-2xl font-bold text-foreground">Users</h1>
           <p className="text-sm text-muted-foreground">Manage all platform users.</p>
         </motion.div>

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 import { GlassCard } from "@/components/shared/GlassCard";
@@ -6,12 +7,13 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { mockRequests } from "@/data/mockData";
 import { useAuthStore } from "@/stores/authStore";
-import { Check, FileText, X } from "lucide-react";
+import { ArrowLeft, Building2, Check, FileText, X } from "lucide-react";
 
 type RequestStatus = (typeof mockRequests)[number]["status"] | "rejected";
 
 export default function RequestsPage() {
   const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
   const [requests, setRequests] = useState(() =>
     mockRequests.map((r) => ({ ...r, status: r.status as RequestStatus })),
   );
@@ -51,10 +53,29 @@ export default function RequestsPage() {
         transition={{ delay: 0.1, duration: 0.35 }}
       >
         <div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="mb-2 gap-1.5 rounded-xl text-muted-foreground hover:text-foreground"
+            onClick={() => navigate("/dashboard")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Dashboard
+          </Button>
           <h1 className="text-2xl font-bold text-foreground">{title}</h1>
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
-        <GlassCard interactive={false} className="flex items-center gap-3 px-4 py-3">
+        <div className="flex flex-col items-end gap-2">
+          {isClient && (
+            <Button asChild size="sm">
+              <Link to="/companies" className="flex items-center gap-1.5">
+                <Building2 className="h-4 w-4" />
+                Browse companies
+              </Link>
+            </Button>
+          )}
+          <GlassCard interactive={false} className="flex items-center gap-3 px-4 py-3">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span className="h-2 w-2 rounded-full bg-warning" />
             Pending: <span className="font-semibold text-foreground">{stats.pending}</span>
@@ -69,7 +90,8 @@ export default function RequestsPage() {
             <span className="h-2 w-2 rounded-full bg-success" />
             Completed: <span className="font-semibold text-foreground">{stats.completed}</span>
           </div>
-        </GlassCard>
+          </GlassCard>
+        </div>
       </motion.div>
 
       <div className="grid gap-4">

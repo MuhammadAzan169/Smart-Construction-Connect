@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
+  ArrowLeft,
   Building2,
   Eye,
   EyeOff,
@@ -103,6 +104,18 @@ export default function SignupPage() {
           className="flex items-center justify-center"
         >
           <GlassCard interactive={false} className="w-full max-w-md p-7 sm:p-8">
+            <div className="mb-5 flex items-center">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 rounded-xl text-muted-foreground hover:text-foreground"
+                onClick={() => navigate("/")}
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+            </div>
             <div className="mb-6">
               <div className="mb-4 flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">

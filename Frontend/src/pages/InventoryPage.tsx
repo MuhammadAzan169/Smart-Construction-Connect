@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 import { GlassCard } from "@/components/shared/GlassCard";
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-import { Loader2, Package, Save, TrendingDown, TrendingUp } from "lucide-react";
+import { ArrowLeft, Loader2, Package, Save, TrendingDown, TrendingUp } from "lucide-react";
 
 type Material = {
   name: string;
@@ -31,6 +32,7 @@ export default function InventoryPage() {
   const [dirty, setDirty] = useState(false);
 
   const supplierSlug = user?.supplierFile;
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!supplierSlug) {
@@ -122,6 +124,16 @@ export default function InventoryPage() {
         transition={{ delay: 0.1, duration: 0.35 }}
       >
         <div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="mb-2 gap-1.5 rounded-xl text-muted-foreground hover:text-foreground"
+            onClick={() => navigate("/dashboard")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Dashboard
+          </Button>
           <h1 className="text-2xl font-bold text-foreground">Inventory</h1>
           <p className="text-sm text-muted-foreground">Material cards with pricing controls and stock visibility.</p>
         </div>

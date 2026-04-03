@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
-import { ShieldCheck, Building2, Package } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Building2, Package } from "lucide-react";
 
 type UserRow = {
   id: string;
@@ -18,6 +19,7 @@ type UserRow = {
 
 export default function ApprovalsPage() {
   const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -62,6 +64,16 @@ export default function ApprovalsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.35 }}
       >
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="mb-2 gap-1.5 rounded-xl text-muted-foreground hover:text-foreground"
+          onClick={() => navigate("/dashboard")}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Dashboard
+        </Button>
         <h1 className="text-2xl font-bold text-foreground">Approvals</h1>
         <p className="text-sm text-muted-foreground">Review and approve pending company and supplier accounts.</p>
       </motion.div>

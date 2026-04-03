@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +38,7 @@ import { cities as cityOptions, societiesByCity } from "@/data/locationOptions";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
-import { Loader2, Plus, Save, X } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Save, X } from "lucide-react";
 import { api } from "@/lib/api";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -408,6 +408,7 @@ const paymentOptions = getPaymentTermOptions(companyDataset);
 
 function SettingsEditor({ email, companySlug }: { email: string; companySlug?: string }) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const company = useMemo(() => getCompanyByEmail(email) ?? null, [email]);
   const companyKey = company?.company_id ?? email;
 
@@ -572,6 +573,16 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="mb-2 gap-1.5 rounded-xl text-muted-foreground hover:text-foreground"
+            onClick={() => navigate("/dashboard")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Dashboard
+          </Button>
           <h1 className="text-2xl font-bold text-foreground">Settings</h1>
           <p className="text-sm text-muted-foreground">Manage your company profile, legal info, contact details, and more.</p>
         </div>
