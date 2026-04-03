@@ -1,6 +1,310 @@
-# Contruction AI (Company Registration Form)
+# Construction AI — Company Registration Form
 
-This folder contains a standalone (no-build) HTML/CSS/JS mini-app for registering a construction company via a **16-step wizard**. It collects structured company data (legal, contact, operational areas, packages, materials, pricing, timelines, experience, etc.), then **exports the submission as a JSON download** and also saves a copy in `localStorage` (demo behavior).
+A standalone (no-build) HTML/CSS/JS mini-app for registering a construction company via a **16-step wizard**. It collects structured company data (profile, legal, contact, operational areas, packages, materials, pricing, timelines, experience, etc.), then **exports the submission as a JSON download** and saves a demo copy in `localStorage`.
+
+---
+
+## Files
+
+| File | Purpose |
+|---|---|
+| `index.html` | The 16-step registration wizard UI |
+| `style.css` | Styling for the form, progress indicator, upload tabs, and PKR labels |
+| `script.js` | All dynamic logic: step navigation, validation, PKR helpers, logo/cover upload, operational areas builder, autosave, JSON export |
+| `Contruction Company.json` | Reference dataset of companies (used by `chech.py`); the form does **not** read this file |
+| `chech.py` | Python utility to detect duplicate emails in the dataset and suggest fixes |
+
+---
+
+## 16-Step Wizard Flow
+
+| Step | Title | Key Fields |
+|---|---|---|
+| 1 | **Basic Company Information** | Company name _(required)_, HQ city _(required)_, description _(optional)_, logo URL/upload, cover image URL/upload |
+| 2 | **Legal & Registration** | Legally registered, SECP registered, NTN number (`1234567-8`), year established |
+| 3 | **Contact Information** | Phone (`+92-300-1234567`) _(required)_, email _(required)_, website URL _(optional)_ |
+| 4 | **Operational Areas** | Cities → Societies/Areas → Phases/Blocks with ₨ PKR/sq ft rates per package (Standard / Premium / Executive) |
+| 5 | **Construction Capability** | Plot sizes (Marla + Kanal + custom), max floors, basement support, house types |
+| 6 | **Services Offered** | Construction, design, approvals support, extra services |
+| 7 | **Package Scope** | Per-package (Standard/Premium/Executive): design included, fixtures quality, ceiling type, kitchen type, bathroom fittings |
+| 8 | **Materials Used** | Per-package: cement brand, steel grade, bricks type, wiring brand, plumbing brand, paint brand (with "Other" free-text) |
+| 9 | **Estimated Total Cost Range** | ₨ PKR min–max total cost per plot size × package. Stored as both bare number (`pkr`) and human label (`label`, e.g. "35 Lakh") |
+| 10 | **Payment Terms** | Advance % (slider), installment type, price type, variation clause |
+| 11 | **Timeline Estimates** | Months for single/double storey per plot size + reliability score |
+| 12 | **Experience & Track Record** | Projects completed, houses completed, ongoing projects, specializations |
+| 13 | **Quality Control Practices** | Site engineer assigned, material verification, weekly reporting |
+| 14 | **After-Handover Support** | Defect liability period, maintenance support, support response time |
+| 15 | **Legal & Contract Details** | Written contract, BOQ, penalty for delay, warranty duration (years) |
+| 16 | **Ideal Customer Profile** | Best for / not ideal for + accept Terms & Conditions |
+
+---
+
+## Step 1 — Profile Fields (added)
+
+Step 1 now collects the full company profile in addition to the company name:
+
+### Logo
+Two input modes (tabs):
+- **Paste URL** — user provides a direct image URL (stored as `logo_url`).
+- **Upload File** — user selects a file (PNG/JPG/SVG, max 2 MB). The file is read as a base64 data URL via `FileReader` and stored in `appState.logoDataUrl`, which takes precedence over the URL field in the exported JSON.
+- A live preview is shown below the active input.
+
+### Cover / Banner Image
+Same dual URL/upload approach:
+- **Paste URL** — stored as `cover_image_url`.
+- **Upload File** — PNG/JPG, max 5 MB, also converted to base64.
+- 16:9 ratio recommended (e.g. 1280×720).
+
+### HQ City
+A dropdown of major Pakistani cities (Lahore, Karachi, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, Quetta, Gujranwala, Sialkot, Other).
+- Selecting **Other** shows a free-text input for any city name.
+- This maps to the top-level `city` field in the database.
+
+### Company Description
+An optional `<textarea>` (4 rows). Shown on the public-facing company profile page. Max 500 characters recommended. Maps to the `description` field in the database.
+
+---
+
+## Currency — Pakistani Rupees (₨ PKR)
+
+All monetary values in this form are in **Pakistani Rupees (PKR)**.
+
+### Step 4 — Per-area rates
+Each phase/block has three rate inputs labeled `Standard Rate (PKR/sq ft)`, `Premium Rate (PKR/sq ft)`, and `Executive Rate (PKR/sq ft)`.
+
+### Step 9 — Estimated cost ranges
+- Every cost input has a **₨** prefix symbol.
+- Column headers read `Standard Package (₨ PKR)`, `Premium Package (₨ PKR)`, and `Executive Package (₨ PKR)`.
+- Cost inputs use comma formatting on blur (e.g. typing `3500000` displays as `3,500,000`).
+
+### JSON output format for cost ranges
+Each min/max value in `estimatedCostRange` is stored as a two-field object:
+
+```jsonc
+{
+  "pkr": 3500000,
+  "label": "35 Lakh"
+}
+```
+
+The `label` is auto-generated by `pkrToHumanLabel()`:
+- ≥ 1 Crore (10,000,000) → `"X Crore"`
+- ≥ 1 Lakh (100,000) → `"X Lakh"`
+- Below 1 Lakh → `"X,XXX PKR"`
+
+---
+
+## Packages
+
+Three tiers are used consistently throughout the form and in the exported JSON:
+
+| Tier | Description |
+|---|---|
+| **Standard** | Economy-grade materials, simple finishes, basic kitchen |
+| **Premium** | Branded fixtures, designer POP, modular kitchen |
+| **Executive** | International-branded fixtures, custom/designer kitchen, luxury bathroom |
+
+Package names map directly to the database keys `standard`, `premium`, `executive`.
+
+---
+
+## Validation Summary
+
+| Step | Rules |
+|---|---|
+| 1 | Company name required; HQ city required (if "Other", free-text also required) |
+| 2 | NTN format `1234567-8` if filled |
+| 3 | Phone `+92-300-1234567` required; valid email required; website URL validated if filled |
+| 4 | At least one city selected; at least one society/area per city |
+| 5 | At least one plot size checked; max floors selected; at least one house type checked |
+| 6 | At least one construction service checked |
+| 16 | Terms & Conditions checkbox must be checked to submit |
+
+---
+
+## Output JSON Shape (full)
+
+```jsonc
+{
+  // ── Step 1 ──────────────────────────────────────────────
+  "companyName": "My Builders",
+  "city": "Lahore",
+  "description": "We build quality homes...",
+  "logo_url": "https://example.com/logo.png",   // or base64 data URL
+  "cover_image_url": "https://example.com/cover.jpg",
+
+  // ── Step 2 ──────────────────────────────────────────────
+  "legalRegistration": {
+    "isLegallyRegistered": true,
+    "secpRegistered": true,
+    "ntnNumber": "1234567-8",
+    "yearEstablished": 2018
+  },
+
+  // ── Step 3 ──────────────────────────────────────────────
+  "contact": {
+    "phone": "+92-300-1234567",
+    "email": "info@mybuilders.com",
+    "website": "https://mybuilders.com"
+  },
+
+  // ── Step 4 ──────────────────────────────────────────────
+  "operationalAreas": [
+    {
+      "city": "Lahore",
+      "societies": [
+        {
+          "societyName": "Bahria Town",
+          "phases": [
+            {
+              "phaseName": "Phase 1",
+              "rates": { "standard": 2800, "premium": 3500, "executive": 4800 }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+
+  // ── Step 5 ──────────────────────────────────────────────
+  "constructionCapability": {
+    "plotSizes": ["5 Marla", "10 Marla", "1 Kanal (20 Marla)"],
+    "maxFloors": 3,
+    "basementSupported": false,
+    "houseTypes": ["Residential", "Small Commercial"]
+  },
+
+  // ── Step 6 ──────────────────────────────────────────────
+  "servicesOffered": {
+    "constructionServices": ["Turnkey", "Grey Structure"],
+    "designServices": ["Architectural", "Structural"],
+    "approvalSupport": ["LDA", "DHA"],
+    "extraServices": ["Solar"]
+  },
+
+  // ── Step 7 ──────────────────────────────────────────────
+  "packageScope": {
+    "standard":  { "designIncluded": true, "fixturesQuality": "Local",                   "ceilingType": "Simple POP",          "kitchenType": "Basic",           "bathroomFittings": "Standard" },
+    "premium":   { "designIncluded": true, "fixturesQuality": "Branded",                  "ceilingType": "Designer POP",        "kitchenType": "Modular",         "bathroomFittings": "Branded" },
+    "executive": { "designIncluded": true, "fixturesQuality": "Branded (International)",  "ceilingType": "Designer POP (Premium)", "kitchenType": "Custom (Designer)", "bathroomFittings": "Branded (Luxury)" }
+  },
+
+  // ── Step 8 ──────────────────────────────────────────────
+  "materialsUsed": {
+    "standard":  { "cementBrand": "Bestway", "steelGrade": "60 Grade", "bricksType": "A+ Bricks", "wiringBrand": "Pak Cable", "plumbingBrand": "Ashir",  "paintBrand": "Berger" },
+    "premium":   { "cementBrand": "Lucky",   "steelGrade": "60 Grade", "bricksType": "A+ Bricks", "wiringBrand": "Siemens",   "plumbingBrand": "Jaquar", "paintBrand": "ICI Dulux" },
+    "executive": { "cementBrand": "DG Khan", "steelGrade": "ASTM A615","bricksType": "A+ Bricks", "wiringBrand": "ABB",       "plumbingBrand": "Kohler", "paintBrand": "Jotun" }
+  },
+
+  // ── Step 9 ──────────────────────────────────────────────
+  // All amounts in PKR. Each value has both the raw number and a human label.
+  "estimatedCostRange": {
+    "currency": "PKR",
+    "5Marla": {
+      "standard":  { "min": { "pkr": 2500000, "label": "25 Lakh" }, "max": { "pkr": 3500000, "label": "35 Lakh" } },
+      "premium":   { "min": { "pkr": 3500000, "label": "35 Lakh" }, "max": { "pkr": 4500000, "label": "45 Lakh" } },
+      "executive": { "min": { "pkr": 4500000, "label": "45 Lakh" }, "max": { "pkr": 6000000, "label": "60 Lakh" } }
+    },
+    "10Marla": { "...": "same shape" },
+    "1Kanal":  { "...": "same shape" }
+  },
+
+  // ── Step 10 ─────────────────────────────────────────────
+  "paymentTerms": {
+    "advancePercentage": 30,
+    "installmentType": "Stage-wise",
+    "priceType": "Fixed",
+    "variationClauseExists": true
+  },
+
+  // ── Step 11 ─────────────────────────────────────────────
+  "timelineEstimates": {
+    "5Marla": {
+      "singleStorey": { "minTime": 5, "typicalTime": 7, "maxTime": 9 },
+      "doubleStorey": { "minTime": 7, "typicalTime": 10, "maxTime": 14 }
+    }
+  },
+
+  // ── Step 12 ─────────────────────────────────────────────
+  "experience": {
+    "totalProjectsCompleted": "21-50",
+    "housesCompleted": "31-100",
+    "ongoingProjects": "4-10",
+    "specializations": ["Economy Housing", "Small Plots"]
+  },
+
+  // ── Step 13 ─────────────────────────────────────────────
+  "qualityControl": {
+    "siteEngineerAssigned": true,
+    "materialVerification": true,
+    "weeklyReporting": true
+  },
+
+  // ── Step 14 ─────────────────────────────────────────────
+  "afterHandoverSupport": {
+    "defectLiabilityPeriod": 12,
+    "maintenanceSupport": true,
+    "supportResponseTime": 3
+  },
+
+  // ── Step 15 ─────────────────────────────────────────────
+  "legalAndContract": {
+    "writtenContractProvided": true,
+    "boqProvided": true,
+    "penaltyForDelay": true,
+    "warrantyDuration": 2
+  },
+
+  // ── Step 16 ─────────────────────────────────────────────
+  "idealCustomerProfile": {
+    "bestFor": ["First Time Builders", "Low Budget Projects"],
+    "notIdealFor": ["Luxury Homes", "High-rise Buildings"]
+  },
+
+  "submissionDate": "2026-04-03T12:00:00.000Z",
+  "status": "pending"
+}
+```
+
+---
+
+## How to Run
+
+This is a fully static app — no build step required.
+
+**Option A (simplest):** Open `index.html` directly in a browser.
+
+**Option B (recommended):** Use VS Code **Live Server** extension or any static file server to avoid CORS issues with local resource paths.
+
+External libraries loaded via CDN:
+- [Font Awesome 6.4](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)
+- [Google Fonts — Poppins + Roboto](https://fonts.googleapis.com)
+- [Select2 4.1](https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0)
+
+---
+
+## Known Issues / Notes
+
+| Issue | Detail |
+|---|---|
+| Progress bar CSS | `script.js` sets `--progress-width` CSS variable on `.progress-bar` but `style.css` doesn't use that variable — the bar may not fill correctly. |
+| Select2 not initialised | The CDN includes Select2 but `script.js` has no `.select2()` init calls; vanilla `<select>` elements are used instead. |
+| Autosave checkbox bug | `saveStepData()` stores one entry per `input.name`. Checkbox groups (e.g. `plotSizes`, `houseTypes`) share the same name, so only the last value is saved. Multi-select groups will not restore correctly from autosave. |
+| Phase dropdown fallback | `addPhase()` tries to infer the parent city ID by splitting the `societyId` string; this often fails and falls back to Karachi phase options. |
+| File uploads in autosave | Base64 data URLs for logo/cover files are stored only in `appState`; they are not persisted to `localStorage`, so they will be lost if the page is refreshed. |
+
+---
+
+## `chech.py` Utility
+
+`chech.py` reads `Contruction Company.json` and:
+- Groups companies by email domain to detect duplicates / shared domains.
+- Prints similarity heuristics (same city, services, pricing range).
+- Suggests unique replacement emails.
+- Can write a "fixed" JSON output file.
+
+> **Note:** The `__main__` block uses hard-coded Windows absolute paths. Change them to relative paths before running in a different environment.
+
 
 ## What’s here
 

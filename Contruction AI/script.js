@@ -3,6 +3,8 @@ const appState = {
     currentStep: 1,
     totalSteps: 16,
     operationalAreas: [],
+    logoDataUrl: null,   // base64 data URL when user uploads a file
+    coverDataUrl: null,  // base64 data URL when user uploads a file
     cities: {
         'Karachi': {
             societies: ['DHA', 'Bahria Town', 'Gulshan-e-Iqbal', 'Clifton', 'Saddar', 'North Nazimabad', 'Gulistan-e-Jauhar', 'Malir', 'Korangi', 'Defence'],
@@ -53,12 +55,14 @@ const notificationText = document.getElementById('notificationText');
 document.addEventListener('DOMContentLoaded', function() {
     populateYearDropdown();
     initializeOperationalAreas();
-    initializePlotSizes(); // Add this line
+    initializePlotSizes();
     setupEventListeners();
     setupPackageTabs();
     setupMaterialsTabs();
     setupTimelineTabs();
-    setupMaterialOtherInputs(); // Add this line
+    setupMaterialOtherInputs();
+    setupLogoUpload();
+    setupCoverUpload();
     updateProgressBar();
     
     // Show step 1
@@ -138,6 +142,170 @@ function setupMaterialOtherInputs() {
             }
         });
     });
+}
+
+// ── PKR / Currency helpers ────────────────────────────────────────────────────
+
+/**
+ * Convert a raw PKR number to a human-readable Lakh/Crore string.
+ * e.g. 3500000 → "35 Lakh"  |  10000000 → "1 Crore"
+ */
+function pkrToHumanLabel(amount) {
+    if (!amount || isNaN(amount) || amount <= 0) return '';
+    const num = parseInt(amount);
+    if (num >= 10000000) {
+        const crore = (num / 10000000);
+        return (Number.isInteger(crore) ? crore : crore.toFixed(2).replace(/\.?0+$/, '')) + ' Crore';
+    }
+    if (num >= 100000) {
+        const lakh = (num / 100000);
+        return (Number.isInteger(lakh) ? lakh : lakh.toFixed(2).replace(/\.?0+$/, '')) + ' Lakh';
+    }
+    return num.toLocaleString('en-PK') + ' PKR';
+}
+
+/**
+ * Build a cost-range object storing both the bare number and the human label.
+ * { pkr: 3500000, label: "35 Lakh" }
+ */
+function buildCostRangeValue(rawStr) {
+    const num = parseInt((rawStr || '').replace(/,/g, '')) || 0;
+    return { pkr: num, label: pkrToHumanLabel(num) };
+}
+
+// ── HQ City "Other" toggle ────────────────────────────────────────────────────
+function setupHqCityToggle() {
+    const hqCitySelect = document.getElementById('hqCity');
+    if (hqCitySelect) {
+        hqCitySelect.addEventListener('change', function() {
+            const otherGroup = document.getElementById('hqCityOtherGroup');
+            if (otherGroup) {
+                otherGroup.style.display = this.value === 'Other' ? 'block' : 'none';
+                const otherInput = document.getElementById('hqCityOther');
+                if (otherInput) otherInput.required = this.value === 'Other';
+            }
+        });
+    }
+}
+
+// ── Logo upload (URL + file) ──────────────────────────────────────────────────
+function switchLogoTab(tab) {
+    const urlTab = document.getElementById('logoUrlTab');
+    const fileTab = document.getElementById('logoFileTab');
+    const urlBtn = document.getElementById('logoUrlTabBtn');
+    const fileBtn = document.getElementById('logoFileTabBtn');
+    if (!urlTab) return;
+    if (tab === 'url') {
+        urlTab.style.display = 'block';
+        fileTab.style.display = 'none';
+        urlBtn.classList.add('active');
+        fileBtn.classList.remove('active');
+    } else {
+        urlTab.style.display = 'none';
+        fileTab.style.display = 'block';
+        fileBtn.classList.add('active');
+        urlBtn.classList.remove('active');
+    }
+}
+
+function setupLogoUpload() {
+    setupHqCityToggle();
+
+    const logoUrlInput = document.getElementById('logoUrl');
+    const logoFileInput = document.getElementById('logoFile');
+    const logoPreview = document.getElementById('logoPreview');
+    const logoPreviewContainer = document.getElementById('logoPreviewContainer');
+
+    if (logoUrlInput) {
+        logoUrlInput.addEventListener('input', function() {
+            const val = this.value.trim();
+            if (val) {
+                logoPreview.src = val;
+                logoPreviewContainer.style.display = 'block';
+                appState.logoDataUrl = null; // URL takes precedence
+            } else {
+                logoPreviewContainer.style.display = 'none';
+            }
+        });
+    }
+
+    if (logoFileInput) {
+        logoFileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+                showNotification('Logo file must be under 2 MB', 'error');
+                this.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                appState.logoDataUrl = e.target.result;
+                logoPreview.src = e.target.result;
+                logoPreviewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+}
+
+// ── Cover image upload (URL + file) ──────────────────────────────────────────
+function switchCoverTab(tab) {
+    const urlTab = document.getElementById('coverUrlTab');
+    const fileTab = document.getElementById('coverFileTab');
+    const urlBtn = document.getElementById('coverUrlTabBtn');
+    const fileBtn = document.getElementById('coverFileTabBtn');
+    if (!urlTab) return;
+    if (tab === 'url') {
+        urlTab.style.display = 'block';
+        fileTab.style.display = 'none';
+        urlBtn.classList.add('active');
+        fileBtn.classList.remove('active');
+    } else {
+        urlTab.style.display = 'none';
+        fileTab.style.display = 'block';
+        fileBtn.classList.add('active');
+        urlBtn.classList.remove('active');
+    }
+}
+
+function setupCoverUpload() {
+    const coverUrlInput = document.getElementById('coverImageUrl');
+    const coverFileInput = document.getElementById('coverFile');
+    const coverPreview = document.getElementById('coverPreview');
+    const coverPreviewContainer = document.getElementById('coverPreviewContainer');
+
+    if (coverUrlInput) {
+        coverUrlInput.addEventListener('input', function() {
+            const val = this.value.trim();
+            if (val) {
+                coverPreview.src = val;
+                coverPreviewContainer.style.display = 'block';
+                appState.coverDataUrl = null;
+            } else {
+                coverPreviewContainer.style.display = 'none';
+            }
+        });
+    }
+
+    if (coverFileInput) {
+        coverFileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                showNotification('Cover image must be under 5 MB', 'error');
+                this.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                appState.coverDataUrl = e.target.result;
+                coverPreview.src = e.target.result;
+                coverPreviewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 }
 
 // Populate year dropdown
@@ -737,6 +905,23 @@ function validateCurrentStep() {
                 return false;
             }
             companyName.classList.remove('validation-error');
+
+            const hqCitySelect = document.getElementById('hqCity');
+            if (!hqCitySelect || !hqCitySelect.value) {
+                showNotification('Please select your headquarters city', 'error');
+                if (hqCitySelect) hqCitySelect.classList.add('validation-error');
+                return false;
+            }
+            if (hqCitySelect.value === 'Other') {
+                const hqCityOther = document.getElementById('hqCityOther');
+                if (!hqCityOther || !hqCityOther.value.trim()) {
+                    showNotification('Please enter your city name', 'error');
+                    if (hqCityOther) hqCityOther.classList.add('validation-error');
+                    return false;
+                }
+                if (hqCityOther) hqCityOther.classList.remove('validation-error');
+            }
+            if (hqCitySelect) hqCitySelect.classList.remove('validation-error');
             break;
             
         case 2:
@@ -1033,7 +1218,26 @@ function buildFormData() {
     
     // Build complete data structure
     const formData = {
-        companyName: document.getElementById('companyName').value,
+        // ── Step 1 ──────────────────────────────────────────────────────────
+        companyName: document.getElementById('companyName').value.trim(),
+        city: (function() {
+            const sel = document.getElementById('hqCity');
+            if (!sel) return '';
+            if (sel.value === 'Other') {
+                return (document.getElementById('hqCityOther')?.value || '').trim();
+            }
+            return sel.value;
+        })(),
+        description: (document.getElementById('companyDescription')?.value || '').trim() || null,
+        logo_url: (function() {
+            if (appState.logoDataUrl) return appState.logoDataUrl;
+            return (document.getElementById('logoUrl')?.value || '').trim() || null;
+        })(),
+        cover_image_url: (function() {
+            if (appState.coverDataUrl) return appState.coverDataUrl;
+            return (document.getElementById('coverImageUrl')?.value || '').trim() || null;
+        })(),
+        // ── Step 2 ──────────────────────────────────────────────────────────
         legalRegistration: {
             isLegallyRegistered: document.getElementById('isLegallyRegistered').checked,
             secpRegistered: document.getElementById('secpRegistered').checked,
@@ -1126,74 +1330,75 @@ function buildFormData() {
             }
         },
         estimatedCostRange: {
+            currency: "PKR",
             "3Marla": {
                 standard: {
-                    min: parseInt(document.querySelector('input[name="standard3MarlaMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="standard3MarlaMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="standard3MarlaMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="standard3MarlaMax"]')?.value)
                 },
                 premium: {
-                    min: parseInt(document.querySelector('input[name="premium3MarlaMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="premium3MarlaMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="premium3MarlaMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="premium3MarlaMax"]')?.value)
                 },
                 executive: {
-                    min: parseInt(document.querySelector('input[name="executive3MarlaMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="executive3MarlaMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="executive3MarlaMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="executive3MarlaMax"]')?.value)
                 }
             },
             "5Marla": {
                 standard: {
-                    min: parseInt(document.querySelector('input[name="standard5MarlaMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="standard5MarlaMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="standard5MarlaMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="standard5MarlaMax"]')?.value)
                 },
                 premium: {
-                    min: parseInt(document.querySelector('input[name="premium5MarlaMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="premium5MarlaMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="premium5MarlaMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="premium5MarlaMax"]')?.value)
                 },
                 executive: {
-                    min: parseInt(document.querySelector('input[name="executive5MarlaMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="executive5MarlaMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="executive5MarlaMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="executive5MarlaMax"]')?.value)
                 }
             },
             "10Marla": {
                 standard: {
-                    min: parseInt(document.querySelector('input[name="standard10MarlaMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="standard10MarlaMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="standard10MarlaMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="standard10MarlaMax"]')?.value)
                 },
                 premium: {
-                    min: parseInt(document.querySelector('input[name="premium10MarlaMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="premium10MarlaMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="premium10MarlaMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="premium10MarlaMax"]')?.value)
                 },
                 executive: {
-                    min: parseInt(document.querySelector('input[name="executive10MarlaMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="executive10MarlaMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="executive10MarlaMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="executive10MarlaMax"]')?.value)
                 }
             },
             "1Kanal": {
                 standard: {
-                    min: parseInt(document.querySelector('input[name="standard1KanalMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="standard1KanalMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="standard1KanalMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="standard1KanalMax"]')?.value)
                 },
                 premium: {
-                    min: parseInt(document.querySelector('input[name="premium1KanalMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="premium1KanalMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="premium1KanalMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="premium1KanalMax"]')?.value)
                 },
                 executive: {
-                    min: parseInt(document.querySelector('input[name="executive1KanalMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="executive1KanalMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="executive1KanalMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="executive1KanalMax"]')?.value)
                 }
             },
             "2Kanal": {
                 standard: {
-                    min: parseInt(document.querySelector('input[name="standard2KanalMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="standard2KanalMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="standard2KanalMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="standard2KanalMax"]')?.value)
                 },
                 premium: {
-                    min: parseInt(document.querySelector('input[name="premium2KanalMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="premium2KanalMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="premium2KanalMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="premium2KanalMax"]')?.value)
                 },
                 executive: {
-                    min: parseInt(document.querySelector('input[name="executive2KanalMin"]')?.value.replace(/,/g, '')) || 0,
-                    max: parseInt(document.querySelector('input[name="executive2KanalMax"]')?.value.replace(/,/g, '')) || 0
+                    min: buildCostRangeValue(document.querySelector('input[name="executive2KanalMin"]')?.value),
+                    max: buildCostRangeValue(document.querySelector('input[name="executive2KanalMax"]')?.value)
                 }
             }
         },

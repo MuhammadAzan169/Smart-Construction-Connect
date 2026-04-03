@@ -498,7 +498,7 @@ textarea {
 }
 
 .cost-input {
-    width: 45%;
+    width: 38%;
     padding: 8px 10px;
     border: 1px solid #dee2e6;
     border-radius: 6px;
@@ -508,6 +508,64 @@ textarea {
 .cost-separator {
     color: #6c757d;
     font-weight: 500;
+}
+
+/* ₨ PKR prefix label inside cost-range-input */
+.pkr-prefix {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #27ae60;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.cost-range-input {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+}
+
+/* ── Logo / Cover upload tabs ─────────────────────────────────────── */
+.logo-upload-container {
+    border: 1px dashed #ced4da;
+    border-radius: 10px;
+    padding: 16px;
+    background: #f8f9fa;
+}
+
+.upload-tab-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.upload-tab-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #6c757d;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.upload-tab-btn.active {
+    background: linear-gradient(135deg, #3498db, #2c3e50);
+    color: white;
+    border-color: #3498db;
+    font-weight: 500;
+}
+
+.upload-tab-btn:hover:not(.active) {
+    background: #e9ecef;
+    border-color: #adb5bd;
 }
 
 .cost-hint {

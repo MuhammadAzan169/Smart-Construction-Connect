@@ -51,6 +51,104 @@
                            placeholder="Enter your company name">
                     <div class="hint">This will be used as the primary identifier and display name.</div>
                 </div>
+
+                <div class="form-group">
+                    <label for="hqCity">Headquarters / Primary City *</label>
+                    <div class="styled-select">
+                        <select id="hqCity" name="hqCity" required>
+                            <option value="">Select your main city</option>
+                            <option value="Lahore">Lahore</option>
+                            <option value="Karachi">Karachi</option>
+                            <option value="Islamabad">Islamabad</option>
+                            <option value="Rawalpindi">Rawalpindi</option>
+                            <option value="Faisalabad">Faisalabad</option>
+                            <option value="Multan">Multan</option>
+                            <option value="Peshawar">Peshawar</option>
+                            <option value="Quetta">Quetta</option>
+                            <option value="Gujranwala">Gujranwala</option>
+                            <option value="Sialkot">Sialkot</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="hint">The city where your main office is located.</div>
+                </div>
+
+                <div class="form-group" id="hqCityOtherGroup" style="display:none;">
+                    <label for="hqCityOther">Enter City Name *</label>
+                    <input type="text" id="hqCityOther" name="hqCityOther"
+                           placeholder="Enter your city name">
+                </div>
+
+                <div class="form-group">
+                    <label for="companyDescription">Company Description / Bio</label>
+                    <textarea id="companyDescription" name="companyDescription" rows="4"
+                              placeholder="Briefly describe your company — services, expertise, values, and what makes you stand out. (optional)"></textarea>
+                    <div class="hint">Shown on your public profile page. Max 500 characters recommended.</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Company Logo</label>
+                    <div class="logo-upload-container">
+                        <div class="upload-tab-buttons">
+                            <button type="button" class="upload-tab-btn active" id="logoUrlTabBtn" onclick="switchLogoTab('url')">
+                                <i class="fas fa-link"></i> Paste Image URL
+                            </button>
+                            <button type="button" class="upload-tab-btn" id="logoFileTabBtn" onclick="switchLogoTab('file')">
+                                <i class="fas fa-upload"></i> Upload File
+                            </button>
+                        </div>
+
+                        <div id="logoUrlTab">
+                            <input type="url" id="logoUrl" name="logoUrl"
+                                   placeholder="https://example.com/logo.png">
+                            <div class="hint">Paste a direct link to your logo image (PNG, JPG, or SVG).</div>
+                        </div>
+
+                        <div id="logoFileTab" style="display:none;">
+                            <input type="file" id="logoFile" name="logoFile" accept="image/*">
+                            <div class="hint">Upload PNG, JPG, or SVG. Max 2 MB. The image will be embedded in the exported JSON as a base64 data URL.</div>
+                        </div>
+
+                        <div id="logoPreviewContainer" style="display:none; margin-top:10px;">
+                            <p class="hint">Preview:</p>
+                            <img id="logoPreview" src="" alt="Logo preview"
+                                 style="max-width:160px; max-height:100px; border-radius:8px; border:1px solid var(--border-color, #ddd); padding:4px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Cover / Banner Image</label>
+                    <div class="logo-upload-container">
+                        <div class="upload-tab-buttons">
+                            <button type="button" class="upload-tab-btn active" id="coverUrlTabBtn" onclick="switchCoverTab('url')">
+                                <i class="fas fa-link"></i> Paste Image URL
+                            </button>
+                            <button type="button" class="upload-tab-btn" id="coverFileTabBtn" onclick="switchCoverTab('file')">
+                                <i class="fas fa-upload"></i> Upload File
+                            </button>
+                        </div>
+
+                        <div id="coverUrlTab">
+                            <input type="url" id="coverImageUrl" name="coverImageUrl"
+                                   placeholder="https://example.com/cover.jpg">
+                            <div class="hint">Paste a direct link to your cover/banner image (16:9 recommended).</div>
+                        </div>
+
+                        <div id="coverFileTab" style="display:none;">
+                            <input type="file" id="coverFile" name="coverFile" accept="image/*">
+                            <div class="hint">Upload PNG or JPG (16:9 ratio preferred, e.g. 1280×720). Max 5 MB.</div>
+                        </div>
+
+                        <div id="coverPreviewContainer" style="display:none; margin-top:10px;">
+                            <p class="hint">Preview:</p>
+                            <img id="coverPreview" src="" alt="Cover preview"
+                                 style="max-width:100%; max-height:180px; border-radius:8px; border:1px solid var(--border-color, #ddd); object-fit:cover;">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="button-group">
                     <button type="button" class="btn-next" data-next="2">Next <i class="fas fa-arrow-right"></i></button>
                 </div>
@@ -867,17 +965,17 @@
 
             <!-- Step 9: Estimated Total Cost Range -->
             <div class="form-step" id="step9">
-                <h2><i class="fas fa-calculator"></i> Estimated Total Cost Range (PKR)</h2>
-                <div class="section-note">Enter approximate cost ranges in Pakistani Rupees (PKR) - Leave blank if not applicable</div>
+                <h2><i class="fas fa-calculator"></i> Estimated Total Cost Range</h2>
+                <div class="section-note">Enter approximate construction cost ranges in <strong>Pakistani Rupees (₨ PKR)</strong>. Leave blank if not applicable.</div>
                 
                 <div class="cost-table-container">
                     <table class="cost-table">
                         <thead>
                             <tr>
                                 <th>Plot Size</th>
-                                <th>Standard Package</th>
-                                <th>Premium Package</th>
-                                <th>Executive Package</th>
+                                <th>Standard Package (₨ PKR)</th>
+                                <th>Premium Package (₨ PKR)</th>
+                                <th>Executive Package (₨ PKR)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -885,27 +983,33 @@
                                 <td>3 Marla</td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="standard3MarlaMin" placeholder="Min" class="cost-input" 
                                                step="50000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="standard3MarlaMax" placeholder="Max" class="cost-input"
                                                step="50000" min="0">
                                     </div>
                                 </td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="premium3MarlaMin" placeholder="Min" class="cost-input"
                                                step="50000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="premium3MarlaMax" placeholder="Max" class="cost-input"
                                                step="50000" min="0">
                                     </div>
                                 </td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="executive3MarlaMin" placeholder="Min" class="cost-input"
                                                step="50000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="executive3MarlaMax" placeholder="Max" class="cost-input"
                                                step="50000" min="0">
                                     </div>
@@ -915,27 +1019,33 @@
                                 <td>5 Marla</td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="standard5MarlaMin" placeholder="Min" class="cost-input"
                                                step="100000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="standard5MarlaMax" placeholder="Max" class="cost-input"
                                                step="100000" min="0">
                                     </div>
                                 </td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="premium5MarlaMin" placeholder="Min" class="cost-input"
                                                step="100000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="premium5MarlaMax" placeholder="Max" class="cost-input"
                                                step="100000" min="0">
                                     </div>
                                 </td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="executive5MarlaMin" placeholder="Min" class="cost-input"
                                                step="100000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="executive5MarlaMax" placeholder="Max" class="cost-input"
                                                step="100000" min="0">
                                     </div>
@@ -945,27 +1055,33 @@
                                 <td>10 Marla</td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="standard10MarlaMin" placeholder="Min" class="cost-input"
                                                step="200000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="standard10MarlaMax" placeholder="Max" class="cost-input"
                                                step="200000" min="0">
                                     </div>
                                 </td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="premium10MarlaMin" placeholder="Min" class="cost-input"
                                                step="200000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="premium10MarlaMax" placeholder="Max" class="cost-input"
                                                step="200000" min="0">
                                     </div>
                                 </td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="executive10MarlaMin" placeholder="Min" class="cost-input"
                                                step="200000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="executive10MarlaMax" placeholder="Max" class="cost-input"
                                                step="200000" min="0">
                                     </div>
@@ -975,27 +1091,33 @@
                                 <td>1 Kanal (20 Marla)</td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="standard1KanalMin" placeholder="Min" class="cost-input"
                                                step="500000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="standard1KanalMax" placeholder="Max" class="cost-input"
                                                step="500000" min="0">
                                     </div>
                                 </td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="premium1KanalMin" placeholder="Min" class="cost-input"
                                                step="500000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="premium1KanalMax" placeholder="Max" class="cost-input"
                                                step="500000" min="0">
                                     </div>
                                 </td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="executive1KanalMin" placeholder="Min" class="cost-input"
                                                step="500000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="executive1KanalMax" placeholder="Max" class="cost-input"
                                                step="500000" min="0">
                                     </div>
@@ -1005,27 +1127,33 @@
                                 <td>2 Kanal (40 Marla)</td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="standard2KanalMin" placeholder="Min" class="cost-input"
                                                step="1000000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="standard2KanalMax" placeholder="Max" class="cost-input"
                                                step="1000000" min="0">
                                     </div>
                                 </td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="premium2KanalMin" placeholder="Min" class="cost-input"
                                                step="1000000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="premium2KanalMax" placeholder="Max" class="cost-input"
                                                step="1000000" min="0">
                                     </div>
                                 </td>
                                 <td class="cost-range-cell">
                                     <div class="cost-range-input">
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="executive2KanalMin" placeholder="Min" class="cost-input"
                                                step="1000000" min="0">
-                                        <span class="cost-separator">to</span>
+                                        <span class="cost-separator">—</span>
+                                        <span class="pkr-prefix">₨</span>
                                         <input type="number" name="executive2KanalMax" placeholder="Max" class="cost-input"
                                                step="1000000" min="0">
                                     </div>
