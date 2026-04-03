@@ -1,67 +1,163 @@
-// When served from the same origin (app.py), use relative path.
-// When running Vite dev server (port 5173), proxy to backend on 8000.
-const API_BASE =
-  window.location.port === "5173"
-    ? "http://localhost:8000/api"
-    : "/api";
+// API base always uses relative path — Vite dev proxy and production both route /api correctly.
+const API_BASE = "/api";
+const REQUEST_TIMEOUT_MS = 15_000;
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    ...options,
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.detail || `Request failed: ${res.status}`);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      signal: controller.signal,
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      ...options,
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({})) as { detail?: string };
+      throw new Error(body.detail ?? `Request failed: ${res.status}`);
+    }
+
+    return res.json() as Promise<T>;
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new Error("Request timed out. Please try again.");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  return res.json();
 }
 
-// --- Auth ---
+// ── Shared response types ────────────────────────────────────────────────────
+
+export interface UserResponse {
+  user_id: string;
+  display_name: string;
+  email: string;
+  role: string;
+  status: string;
+  phone?: string | null;
+  company_slug?: string | null;
+  supplier_slug?: string | null;
+}
+
+export interface AdminUser {
+  user_id: string;
+  display_name: string;
+  email: string;
+  role: string;
+  status: string;
+  created_at?: string;
+  phone?: string;
+}
+
+export interface ActivityEntry {
+  timestamp: string;
+  action: string;
+  target: string;
+  details: string;
+}
+
+// ── API client ───────────────────────────────────────────────────────────────
+
 export const api = {
   auth: {
     login: (email: string, password: string, role: string) =>
-      request<any>("/auth/login", { method: "POST", body: JSON.stringify({ email, password, role }) }),
+      request<UserResponse>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password, role }),
+      }),
     signup: (name: string, email: string, password: string, role: string, phone = "") =>
-      request<any>("/auth/signup", { method: "POST", body: JSON.stringify({ name, email, password, role, phone }) }),
+      request<UserResponse>("/auth/signup", {
+        method: "POST",
+        body: JSON.stringify({ name, email, password, role, phone }),
+      }),
   },
 
-  // --- Companies ---
   companies: {
-    list: () => request<any[]>("/companies/"),
-    get: (id: string) => request<any>(`/companies/${encodeURIComponent(id)}`),
-    getProfile: (slug: string) => request<any>(`/companies/profile/${encodeURIComponent(slug)}`),
-    updateProfile: (slug: string, data: any) =>
-      request<any>(`/companies/profile/${encodeURIComponent(slug)}`, { method: "PUT", body: JSON.stringify({ data }) }),
-    updatePackages: (slug: string, payload: any) =>
-      request<any>(`/companies/profile/${encodeURIComponent(slug)}/packages`, { method: "PUT", body: JSON.stringify(payload) }),
+    list: () => request<Record<string, unknown>[]>("/companies/"),
+    get: (id: string) => request<Record<string, unknown>>(`/companies/${encodeURIComponent(id)}`),
+    getProfile: (slug: string) =>
+      request<Record<string, unknown>>(`/companies/profile/${encodeURIComponent(slug)}`),
+    updateProfile: (slug: string, data: Record<string, unknown>) =>
+      request<{ status: string }>(`/companies/profile/${encodeURIComponent(slug)}`, {
+        method: "PUT",
+        body: JSON.stringify({ data }),
+      }),
+    updatePackages: (slug: string, payload: Record<string, unknown>) =>
+      request<{ status: string }>(`/companies/profile/${encodeURIComponent(slug)}/packages`, {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      }),
   },
 
-  // --- Suppliers ---
   suppliers: {
-    list: () => request<any[]>("/suppliers/"),
-    get: (id: string) => request<any>(`/suppliers/${encodeURIComponent(id)}`),
-    getProfile: (slug: string) => request<any>(`/suppliers/profile/${encodeURIComponent(slug)}`),
-    updateProfile: (slug: string, data: any) =>
-      request<any>(`/suppliers/profile/${encodeURIComponent(slug)}`, { method: "PUT", body: JSON.stringify({ data }) }),
-    updateMaterials: (slug: string, materials: any[]) =>
-      request<any>(`/suppliers/profile/${encodeURIComponent(slug)}/materials`, { method: "PUT", body: JSON.stringify({ materials }) }),
+    list: () => request<Record<string, unknown>[]>("/suppliers/"),
+    get: (id: string) => request<Record<string, unknown>>(`/suppliers/${encodeURIComponent(id)}`),
+    getProfile: (slug: string) =>
+      request<Record<string, unknown>>(`/suppliers/profile/${encodeURIComponent(slug)}`),
+    updateProfile: (slug: string, data: Record<string, unknown>) =>
+      request<{ status: string }>(`/suppliers/profile/${encodeURIComponent(slug)}`, {
+        method: "PUT",
+        body: JSON.stringify({ data }),
+      }),
+    updateMaterials: (slug: string, materials: Record<string, unknown>[]) =>
+      request<{ status: string }>(`/suppliers/profile/${encodeURIComponent(slug)}/materials`, {
+        method: "PUT",
+        body: JSON.stringify({ materials }),
+      }),
   },
 
-  // --- Admin ---
   admin: {
-    getUsers: () => request<any[]>("/admin/users"),
-    getActivity: () => request<any[]>("/admin/activity"),
+    getUsers: () => request<AdminUser[]>("/admin/users"),
+    getActivity: () => request<ActivityEntry[]>("/admin/activity"),
     updateUserStatus: (userId: string, status: string) =>
-      request<any>("/admin/users/status", { method: "PUT", body: JSON.stringify({ user_id: userId, status }) }),
-    getStats: () => request<any>("/admin/stats"),
-    getCompanies: () => request<any[]>("/admin/companies"),
-    getSuppliers: () => request<any[]>("/admin/suppliers"),
+      request<{ status: string }>("/admin/users/status", {
+        method: "PUT",
+        body: JSON.stringify({ user_id: userId, status }),
+      }),
+    getStats: () => request<Record<string, unknown>>("/admin/stats"),
+    getCompanies: () => request<Record<string, unknown>[]>("/admin/companies"),
+    getSuppliers: () => request<Record<string, unknown>[]>("/admin/suppliers"),
   },
 
-  // --- AI ---
   ai: {
     chat: (messages: { role: string; content: string }[], userEmail = "") =>
-      request<any>("/ai/chat", { method: "POST", body: JSON.stringify({ messages, user_email: userEmail }) }),
+      request<{ response: string; recommendations?: unknown[] }>("/ai/chat", {
+        method: "POST",
+        body: JSON.stringify({ messages, user_email: userEmail }),
+      }),
+  },
+
+  upload: {
+    image: async (file: File, entityName: string, imageType: "profile" | "dp"): Promise<string> => {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("entity_name", entityName);
+      form.append("image_type", imageType);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30_000);
+      try {
+        const res = await fetch(`${API_BASE}/upload/image`, {
+          method: "POST",
+          body: form,
+          signal: controller.signal,
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({})) as { detail?: string };
+          throw new Error(body.detail ?? `Upload failed: ${res.status}`);
+        }
+        const data = await res.json() as { url: string };
+        return data.url;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          throw new Error("Upload timed out. Please try again.");
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    },
   },
 };

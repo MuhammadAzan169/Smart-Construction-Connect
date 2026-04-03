@@ -31,8 +31,14 @@ interface AuthState {
   clearError: () => void;
 }
 
-const stored = typeof window !== 'undefined' ? localStorage.getItem('scc_user') : null;
-const initialUser: User | null = stored ? JSON.parse(stored) : null;
+let initialUser: User | null = null;
+try {
+  const stored = typeof window !== 'undefined' ? localStorage.getItem('scc_user') : null;
+  if (stored) initialUser = JSON.parse(stored) as User;
+} catch {
+  // Corrupt localStorage — start fresh
+  if (typeof window !== 'undefined') localStorage.removeItem('scc_user');
+}
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: initialUser,
@@ -46,8 +52,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       const user = { ...raw, id: raw.user_id, name: raw.display_name, companyFile: raw.company_slug, supplierFile: raw.supplier_slug };
       localStorage.setItem('scc_user', JSON.stringify(user));
       set({ user, isAuthenticated: true, loading: false });
-    } catch (err: any) {
-      set({ loading: false, error: err.message || 'Login failed' });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Login failed';
+      set({ loading: false, error: message });
       throw err;
     }
   },
@@ -58,8 +65,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       const user = { ...raw, id: raw.user_id, name: raw.display_name, companyFile: raw.company_slug, supplierFile: raw.supplier_slug };
       localStorage.setItem('scc_user', JSON.stringify(user));
       set({ user, isAuthenticated: true, loading: false });
-    } catch (err: any) {
-      set({ loading: false, error: err.message || 'Signup failed' });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Signup failed';
+      set({ loading: false, error: message });
       throw err;
     }
   },

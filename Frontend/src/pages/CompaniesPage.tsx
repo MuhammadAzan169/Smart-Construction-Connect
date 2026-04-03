@@ -78,6 +78,14 @@ export default function CompaniesPage() {
     return <ClientCompaniesView />;
   }
 
+  if (user.role === "company") {
+    return <ClientCompaniesView defaultTab="materials" hideTabs />;
+  }
+
+  if (user.role === "supplier") {
+    return <ClientCompaniesView defaultTab="companies" hideTabs />;
+  }
+
   return (
     <GlassCard interactive={false} className="p-6">
       <h1 className="text-lg font-semibold text-foreground">Companies</h1>
@@ -86,10 +94,10 @@ export default function CompaniesPage() {
   );
 }
 
-function ClientCompaniesView() {
+function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies" | "materials"; hideTabs?: boolean } = {}) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"companies" | "materials">("companies");
+  const [tab, setTab] = useState<"companies" | "materials">(defaultTab ?? "companies");
   const [search, setSearch] = useState("");
   const [onlyVerified, setOnlyVerified] = useState(false);
   const [locations, setLocations] = useState<string[]>([]);
@@ -260,18 +268,22 @@ function ClientCompaniesView() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Browse</h1>
-          <p className="text-sm text-muted-foreground">Explore construction companies or material suppliers.</p>
+          <p className="text-sm text-muted-foreground">
+            {hideTabs && tab === "materials" ? "Browse material suppliers and vendors." : hideTabs && tab === "companies" ? "Browse construction companies." : "Explore construction companies or material suppliers."}
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <Tabs value={tab} onValueChange={(v) => setTab(v === "materials" ? "materials" : "companies")}
-            className="mr-1"
-          >
-            <TabsList>
-              <TabsTrigger value="companies">Construction Companies</TabsTrigger>
-              <TabsTrigger value="materials">Materials &amp; Suppliers</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          {!hideTabs && (
+            <Tabs value={tab} onValueChange={(v) => setTab(v === "materials" ? "materials" : "companies")}
+              className="mr-1"
+            >
+              <TabsList>
+                <TabsTrigger value="companies">Construction Companies</TabsTrigger>
+                <TabsTrigger value="materials">Materials &amp; Suppliers</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
 
           <Sheet>
             <SheetTrigger asChild>
@@ -443,6 +455,20 @@ function ClientCompaniesView() {
                                 {s}
                               </Badge>
                             ))}
+                            {company.specialization.length > 3 && (
+                              <Badge variant="outline" className="rounded-lg">+{company.specialization.length - 3}</Badge>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="rounded-lg border border-border bg-background/30 px-2 py-1.5">
+                              <span className="text-muted-foreground">Est. </span>
+                              <span className="font-semibold text-foreground">{company.yearEstablished ?? "—"}</span>
+                            </div>
+                            <div className="rounded-lg border border-border bg-background/30 px-2 py-1.5">
+                              <span className="text-muted-foreground">Projects </span>
+                              <span className="font-semibold text-foreground">{company.completedProjects ?? "—"}</span>
+                            </div>
                           </div>
 
                           <p className="text-xs text-muted-foreground">

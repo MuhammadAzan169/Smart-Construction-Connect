@@ -280,69 +280,153 @@ function CompanyDashboard() {
 }
 
 function SupplierDashboard() {
+  const user = useAuthStore((s) => s.user);
+  const supplierSlug = user?.supplierFile;
+  const [supplier, setSupplier] = useState<Record<string, unknown> | null>(null);
+  const [loadingSupplier, setLoadingSupplier] = useState(!!supplierSlug);
+
+  useEffect(() => {
+    if (!supplierSlug) { setLoadingSupplier(false); return; }
+    let cancelled = false;
+    api.suppliers.getProfile(supplierSlug)
+      .then((data) => { if (!cancelled) setSupplier(data as Record<string, unknown>); })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoadingSupplier(false); });
+    return () => { cancelled = true; };
+  }, [supplierSlug]);
+
+  const materials = useMemo(() => (supplier?.materials as Record<string, unknown>[] | undefined) ?? [], [supplier]);
+  const categoryCount = useMemo(() => new Set(materials.map((m) => m.category as string)).size, [materials]);
+  const citiesCount = useMemo(() => ((supplier?.cities_served as string[] | undefined) ?? []).length, [supplier]);
+  const lowStockCount = useMemo(() => materials.filter((m) => typeof m.stock === "number" && (m.stock as number) <= 50).length, [materials]);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Supplier Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Manage your inventory and materials.</p>
+          <p className="text-sm text-muted-foreground">Manage your inventory, pricing, and supplier profile.</p>
         </div>
-        <Button asChild>
-          <Link to="/products">Manage inventory</Link>
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="secondary">
+            <Link to="/settings">Settings</Link>
+          </Button>
+          <Button asChild>
+            <Link to="/products">Manage inventory</Link>
+          </Button>
+        </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        <GlassCard className="p-5">
-          <div className="flex items-center gap-3">
-            <Package className="h-8 w-8 text-primary" />
-            <div>
-              <p className="text-sm font-semibold text-foreground">Inventory</p>
-              <p className="mt-1 text-xs text-muted-foreground">Track stock levels and update product listings.</p>
-            </div>
-          </div>
-          <Button asChild variant="outline" className="mt-4 w-full">
-            <Link to="/products" className="flex items-center justify-between">
-              Open inventory <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </GlassCard>
+      <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
+        <StaggerItem>
+          <StatCard title="Total Materials" value={loadingSupplier ? "…" : (materials.length || "—")} icon={Package} />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard title="Categories" value={loadingSupplier ? "…" : (categoryCount || "—")} icon={Building2} />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard title="Cities Served" value={loadingSupplier ? "…" : (citiesCount || "—")} icon={TrendingUp} />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard
+            title="Low Stock Items"
+            value={loadingSupplier ? "…" : lowStockCount}
+            icon={Activity}
+            trend={lowStockCount > 0 ? "down" : undefined}
+            change={lowStockCount > 0 ? "Needs restock" : "All good"}
+          />
+        </StaggerItem>
+      </StaggerList>
 
-        <GlassCard className="p-5">
-          <div className="flex items-center gap-3">
-            <TrendingUp className="h-8 w-8 text-primary" />
-            <div>
-              <p className="text-sm font-semibold text-foreground">Pricing</p>
-              <p className="mt-1 text-xs text-muted-foreground">Update material prices and manage offers.</p>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <GlassCard interactive={false} className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Inventory Overview</p>
+                <p className="mt-1 text-xs text-muted-foreground">Your current material listings and stock levels.</p>
+              </div>
+              <Button asChild variant="link" className="h-auto p-0 text-xs">
+                <Link to="/products" className="flex items-center gap-1">
+                  Manage all <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </Button>
             </div>
-          </div>
-          <Button asChild variant="outline" className="mt-4 w-full">
-            <Link to="/products" className="flex items-center justify-between">
-              Manage pricing <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </GlassCard>
+            {loadingSupplier ? (
+              <div className="mt-4 flex items-center justify-center py-8">
+                <p className="text-sm text-muted-foreground">Loading inventory…</p>
+              </div>
+            ) : materials.length === 0 ? (
+              <div className="mt-6 rounded-2xl border border-dashed border-border p-6 text-center">
+                <Package className="mx-auto h-8 w-8 text-muted-foreground" />
+                <p className="mt-2 text-sm text-muted-foreground">No materials yet. Add your first product.</p>
+                <Button asChild variant="secondary" className="mt-3">
+                  <Link to="/products">Add materials</Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="mt-4 space-y-2">
+                {materials.slice(0, 5).map((m, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 * i, duration: 0.25 }}
+                    className="flex items-center justify-between rounded-2xl border border-border bg-background/30 px-4 py-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-foreground">{m.name as string}</p>
+                      <p className="text-xs text-muted-foreground">{m.category as string} · {m.brand as string}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-foreground">
+                        {new Intl.NumberFormat("en-PK", { style: "currency", currency: "PKR", maximumFractionDigits: 0 }).format(m.price as number)}
+                      </p>
+                      <p className={`text-xs ${(m.stock as number) <= 50 ? "text-destructive" : "text-muted-foreground"}`}>
+                        {m.stock as number} {m.unit as string} in stock
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+                {materials.length > 5 && (
+                  <p className="pt-1 text-center text-xs text-muted-foreground">+{materials.length - 5} more items</p>
+                )}
+              </div>
+            )}
+          </GlassCard>
+        </div>
 
-        <GlassCard className="p-5">
-          <div className="flex items-center gap-3">
-            <Building2 className="h-8 w-8 text-primary" />
-            <div>
-              <p className="text-sm font-semibold text-foreground">Supplier Profile</p>
-              <p className="mt-1 text-xs text-muted-foreground">Keep your profile updated for visibility.</p>
+        <div className="space-y-4">
+          <GlassCard className="p-5">
+            <div className="flex items-center gap-3">
+              <Package className="h-7 w-7 text-primary" />
+              <div>
+                <p className="text-sm font-semibold text-foreground">Inventory &amp; Pricing</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Update stock and material prices.</p>
+              </div>
             </div>
-          </div>
-          <Button asChild variant="outline" className="mt-4 w-full">
-            <Link to="/supplier-profile" className="flex items-center justify-between">
-              View profile <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </GlassCard>
-      </motion.div>
+            <Button asChild variant="outline" className="mt-4 w-full">
+              <Link to="/products" className="flex items-center justify-between">
+                Open inventory <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </GlassCard>
+          <GlassCard className="p-5">
+            <div className="flex items-center gap-3">
+              <Building2 className="h-7 w-7 text-primary" />
+              <div>
+                <p className="text-sm font-semibold text-foreground">Supplier Settings</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Profile, contact, cities &amp; legal.</p>
+              </div>
+            </div>
+            <Button asChild variant="outline" className="mt-4 w-full">
+              <Link to="/settings" className="flex items-center justify-between">
+                Open settings <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </GlassCard>
+        </div>
+      </div>
     </div>
   );
 }

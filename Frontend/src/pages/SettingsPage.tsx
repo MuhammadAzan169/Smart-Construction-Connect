@@ -38,7 +38,7 @@ import { cities as cityOptions, societiesByCity } from "@/data/locationOptions";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
-import { ArrowLeft, Loader2, Plus, Save, X } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Save, Upload, X } from "lucide-react";
 import { api } from "@/lib/api";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -49,6 +49,7 @@ type CompanySettings = {
   company_name: string;
   description: string;
   logo_url: string;
+  dp_url: string;
   contact: {
     phone: string;
     email: string;
@@ -255,6 +256,7 @@ function normalizeSettingsFromRaw(obj: Record<string, unknown>, defaults: Compan
     company_name: str(obj.company_name, defaults.company_name),
     description: str(obj.description, defaults.description),
     logo_url: str(obj.logo_url, defaults.logo_url),
+    dp_url: str(obj.dp_url, defaults.dp_url),
     contact: {
       phone: str(contact.phone, defaults.contact.phone),
       email: str(contact.email, defaults.contact.email),
@@ -342,6 +344,7 @@ function defaultSettings(company: CompanyDatasetCompany | null, email: string): 
     company_name: company?.company_name ?? "",
     description: "",
     logo_url: company?.logo_url ?? "",
+    dp_url: "",
     contact: {
       phone: company?.contact?.phone ?? "",
       email: company?.contact?.email ?? email,
@@ -404,6 +407,102 @@ const notIdealForOptions = ["Luxury Homes", "Large Commercial", "High-rise Build
 const phaseSuggestions = ["Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5", "Phase 6", "Phase 7", "Phase 8", "Block A", "Block B", "Block C", "Block D", "Sector A", "Sector B"];
 const paymentOptions = getPaymentTermOptions(companyDataset);
 
+// ─── ImageUploadField ──────────────────────────────────────────────────────────
+
+function ImageUploadField({
+  label,
+  currentUrl,
+  onUploaded,
+  entityName,
+  imageType,
+}: {
+  label: string;
+  currentUrl: string;
+  onUploaded: (url: string) => void;
+  entityName: string;
+  imageType: "profile" | "dp";
+}) {
+  const { toast } = useToast();
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const displayUrl = localPreview ?? (currentUrl || null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setLocalPreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+    setUploading(true);
+    try {
+      const url = await api.upload.image(file, entityName || "unknown", imageType);
+      onUploaded(url);
+      toast({ title: "Image uploaded", description: `${label} updated successfully.` });
+    } catch (err) {
+      setLocalPreview(null);
+      toast({ variant: "destructive", title: "Upload failed", description: err instanceof Error ? err.message : "Could not upload image." });
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="flex items-center gap-4">
+        {displayUrl ? (
+          <img
+            src={displayUrl}
+            alt={label}
+            className="h-16 w-16 rounded-xl border border-border object-cover"
+            onError={() => setLocalPreview(null)}
+          />
+        ) : (
+          <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-dashed border-border bg-background/30 text-muted-foreground">
+            <Upload className="h-6 w-6" />
+          </div>
+        )}
+        <div className="flex-1 space-y-1">
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={uploading}
+              onClick={() => inputRef.current?.click()}
+            >
+              {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+              {uploading ? "Uploading…" : displayUrl ? "Change" : "Upload"}
+            </Button>
+            {displayUrl && !uploading && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-destructive hover:text-destructive"
+                onClick={() => { setLocalPreview(null); onUploaded(""); }}
+              >
+                <X className="h-3.5 w-3.5" /> Remove
+              </Button>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">JPEG, PNG or WebP · Max 5 MB</p>
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+      </div>
+    </div>
+  );
+}
+
 // ─── SettingsEditor ────────────────────────────────────────────────────────────
 
 function SettingsEditor({ email, companySlug }: { email: string; companySlug?: string }) {
@@ -431,8 +530,9 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
   const [activePackage, setActivePackage] = useState<string>(packageIds[0] ?? "standard");
   const [loading, setLoading] = useState(!!companySlug);
   const [saving, setSaving] = useState(false);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const profileRef = useRef<Record<string, unknown> | null>(null);
+  const dpInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!companySlug) { setLoading(false); return; }
@@ -524,6 +624,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
         company_name: settings.company_name,
         description: settings.description,
         logo_url: settings.logo_url,
+        dp_url: settings.dp_url,
         contact: settings.contact,
         legal_info: settings.legal_info,
         payment_terms: settings.payment_terms,
@@ -603,57 +704,111 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
 
         {/* ── Tab 1: Company Profile ─────────────────────────────────────────── */}
         <TabsContent value="profile" className="mt-6 space-y-4">
-          <GlassCard interactive={false} className="p-5">
-            <p className="text-sm font-semibold text-foreground">Basic Information</p>
-            <p className="mt-1 text-xs text-muted-foreground">How your company appears to clients on the platform.</p>
-
-            <div className="mt-4 grid gap-4">
-              <div className="space-y-2">
-                <Label>Company Name</Label>
-                <Input
-                  value={settings.company_name}
-                  onChange={(e) => setSettings((prev) => ({ ...prev, company_name: e.target.value }))}
-                  className="bg-background/40"
-                  placeholder="e.g., Al-Hassan Builders"
+          {/* LinkedIn-style Profile Header */}
+          <GlassCard interactive={false} className="overflow-hidden p-0">
+            {/* Cover / Display Picture */}
+            <div className="relative h-40 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent sm:h-48">
+              {settings.dp_url && (
+                <img
+                  src={settings.dp_url}
+                  alt="Cover"
+                  className="h-full w-full object-cover"
                 />
-              </div>
-
-              <div className="space-y-2">
-                <Label>About / Description</Label>
-                <Textarea
-                  value={settings.description}
-                  onChange={(e) => setSettings((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Describe your company, specialties, and what makes you stand out…"
-                  className="min-h-[100px] bg-background/40"
-                  maxLength={500}
-                />
-                <p className="text-xs text-muted-foreground">{settings.description.length}/500 characters</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Logo URL</Label>
-                <Input
-                  value={settings.logo_url}
-                  onChange={(e) => {
-                    setSettings((prev) => ({ ...prev, logo_url: e.target.value }));
-                    setLogoPreview(e.target.value);
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+              <div className="absolute right-3 top-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="bg-background/70 backdrop-blur-sm"
+                  onClick={() => dpInputRef.current?.click()}
+                >
+                  <Upload className="h-3.5 w-3.5" />
+                  {settings.dp_url ? "Change Cover" : "Add Cover Photo"}
+                </Button>
+                <input
+                  ref={dpInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    try {
+                      const url = await api.upload.image(file, settings.company_name || email, "dp");
+                      setSettings((prev) => ({ ...prev, dp_url: url }));
+                      toast({ title: "Cover photo updated" });
+                    } catch { toast({ variant: "destructive", title: "Upload failed" }); }
+                    if (dpInputRef.current) dpInputRef.current.value = "";
                   }}
-                  className="bg-background/40"
-                  placeholder="https://example.com/logo.png"
-                  type="url"
                 />
-                {logoPreview && (
-                  <div className="mt-2 flex items-center gap-3">
-                    <img
-                      src={logoPreview}
-                      alt="Logo preview"
-                      className="h-14 w-14 rounded-xl border border-border object-contain"
-                      onError={() => setLogoPreview(null)}
-                    />
-                    <p className="text-xs text-muted-foreground">Logo preview</p>
-                  </div>
-                )}
               </div>
+            </div>
+            {/* Profile Picture + Name */}
+            <div className="relative px-5 pb-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-5">
+                <div className="-mt-12 relative shrink-0">
+                  <div className="h-24 w-24 overflow-hidden rounded-2xl border-4 border-background bg-background shadow-lg">
+                    {settings.logo_url ? (
+                      <img src={settings.logo_url} alt="Logo" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-secondary text-muted-foreground">
+                        <Upload className="h-8 w-8" />
+                      </div>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="absolute -bottom-1 -right-1 h-7 w-7 rounded-full p-0 shadow"
+                    onClick={() => logoInputRef.current?.click()}
+                  >
+                    <Upload className="h-3 w-3" />
+                  </Button>
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      try {
+                        const url = await api.upload.image(file, settings.company_name || email, "profile");
+                        setSettings((prev) => ({ ...prev, logo_url: url }));
+                        toast({ title: "Profile picture updated" });
+                      } catch { toast({ variant: "destructive", title: "Upload failed" }); }
+                      if (logoInputRef.current) logoInputRef.current.value = "";
+                    }}
+                  />
+                </div>
+                <div className="min-w-0 flex-1 pt-2">
+                  <Input
+                    value={settings.company_name}
+                    onChange={(e) => setSettings((prev) => ({ ...prev, company_name: e.target.value }))}
+                    className="border-none bg-transparent p-0 text-xl font-bold text-foreground shadow-none focus-visible:ring-0 h-auto"
+                    placeholder="Company Name"
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground">{email}</p>
+                </div>
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">About</p>
+            <p className="mt-1 text-xs text-muted-foreground">Tell clients what your company does and what makes you stand out.</p>
+            <div className="mt-3 space-y-2">
+              <Textarea
+                value={settings.description}
+                onChange={(e) => setSettings((prev) => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe your company, specialties, and what makes you stand out…"
+                className="min-h-[100px] bg-background/40"
+                maxLength={500}
+              />
+              <p className="text-xs text-muted-foreground">{settings.description.length}/500 characters</p>
             </div>
           </GlassCard>
 
@@ -1265,14 +1420,537 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
   );
 }
 
+// ─── Supplier Settings ─────────────────────────────────────────────────────────
+
+type SupplierSettings = {
+  supplier_name: string;
+  description: string;
+  logo_url: string;
+  dp_url: string;
+  city: string;
+  area: string;
+  cities_served: string[];
+  contact: {
+    phone: string;
+    email: string;
+    website: string;
+    linkedin: string;
+    facebook: string;
+  };
+  legal_info: {
+    registered: boolean;
+    ntn: string;
+    year_established: number | null;
+  };
+  material_categories: string[];
+  profile_settings: {
+    public_profile: boolean;
+    show_contact: boolean;
+  };
+};
+
+const supplierSettingsStorageKey = (key: string) => `scc_supplier_settings_v1:${key}`;
+
+function defaultSupplierSettings(profile: Record<string, unknown> | null, email: string): SupplierSettings {
+  const contact = profile?.contact && typeof profile.contact === "object" ? (profile.contact as Record<string, unknown>) : {};
+  const editorSettings = profile?._editor_settings && typeof profile._editor_settings === "object" ? (profile._editor_settings as Record<string, unknown>) : {};
+  const editorContact = editorSettings.contact && typeof editorSettings.contact === "object" ? (editorSettings.contact as Record<string, unknown>) : {};
+  const editorLegal = editorSettings.legal_info && typeof editorSettings.legal_info === "object" ? (editorSettings.legal_info as Record<string, unknown>) : {};
+  const editorProfile = editorSettings.profile_settings && typeof editorSettings.profile_settings === "object" ? (editorSettings.profile_settings as Record<string, unknown>) : {};
+  return {
+    supplier_name: str(profile?.supplier_name, ""),
+    description: str(profile?.description, ""),
+    logo_url: str(profile?.logo_url, ""),
+    dp_url: str(profile?.dp_url, ""),
+    city: str(profile?.city, ""),
+    area: str(profile?.area, ""),
+    cities_served: strArr(profile?.cities_served, []),
+    contact: {
+      phone: str(contact.phone, ""),
+      email: str(contact.email, email),
+      website: str(contact.website, ""),
+      linkedin: str(editorContact.linkedin, ""),
+      facebook: str(editorContact.facebook, ""),
+    },
+    legal_info: {
+      registered: bool(editorLegal.registered, false),
+      ntn: str(editorLegal.ntn, ""),
+      year_established: numOrNull(editorLegal.year_established, null),
+    },
+    material_categories: strArr(editorSettings.material_categories, []),
+    profile_settings: {
+      public_profile: bool(editorProfile.public_profile, true),
+      show_contact: bool(editorProfile.show_contact, true),
+    },
+  };
+}
+
+const supplierCityOptions = [
+  "Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad",
+  "Multan", "Peshawar", "Quetta", "Hyderabad", "Gujranwala", "Sialkot", "Bahawalpur",
+];
+
+const materialCategoryOptions = [
+  "Cement", "Steel / Rebar", "Bricks & Blocks", "Sand & Aggregate", "Tiles & Flooring",
+  "Paint & Finishes", "Electrical", "Plumbing", "Glass & Windows", "Doors & Frames",
+  "Wood & Lumber", "Roofing Materials", "Insulation", "Chemicals & Adhesives",
+];
+
+function SupplierSettingsEditor({ email, supplierSlug }: { email: string; supplierSlug?: string }) {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const settingsKey2 = supplierSlug ?? email;
+
+  const [settings, setSettings] = useState<SupplierSettings>(() => {
+    try {
+      const raw = localStorage.getItem(supplierSettingsStorageKey(settingsKey2));
+      if (!raw) return defaultSupplierSettings(null, email);
+      return JSON.parse(raw) as SupplierSettings;
+    } catch {
+      return defaultSupplierSettings(null, email);
+    }
+  });
+  const [loading, setLoading] = useState(!!supplierSlug);
+  const [saving, setSaving] = useState(false);
+  const profileRef = useRef<Record<string, unknown> | null>(null);
+  const sDpInputRef = useRef<HTMLInputElement>(null);
+  const sLogoInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!supplierSlug) { setLoading(false); return; }
+    let cancelled = false;
+    setLoading(true);
+    api.suppliers.getProfile(supplierSlug)
+      .then((profile) => {
+        if (cancelled) return;
+        profileRef.current = profile as Record<string, unknown>;
+        setSettings(defaultSupplierSettings(profile as Record<string, unknown>, email));
+      })
+      .catch(() => {
+        if (cancelled) return;
+        toast({ variant: "destructive", title: "Load failed", description: "Could not load settings from server." });
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [supplierSlug, email]);
+
+  const toggleCity = (city: string, on: boolean) =>
+    setSettings((prev) => ({
+      ...prev,
+      cities_served: on
+        ? Array.from(new Set([...prev.cities_served, city]))
+        : prev.cities_served.filter((c) => c !== city),
+    }));
+
+  const toggleCategory = (cat: string, on: boolean) =>
+    setSettings((prev) => ({
+      ...prev,
+      material_categories: on
+        ? Array.from(new Set([...prev.material_categories, cat]))
+        : prev.material_categories.filter((c) => c !== cat),
+    }));
+
+  const save = async () => {
+    localStorage.setItem(supplierSettingsStorageKey(settingsKey2), JSON.stringify(settings));
+    if (!supplierSlug) {
+      toast({ title: "Saved locally", description: "Settings saved. Link a supplier profile to sync to server." });
+      return;
+    }
+    setSaving(true);
+    try {
+      const profileData: Record<string, unknown> = {
+        ...(profileRef.current ?? {}),
+        supplier_name: settings.supplier_name,
+        description: settings.description,
+        logo_url: settings.logo_url,
+        dp_url: settings.dp_url,
+        city: settings.city,
+        area: settings.area,
+        cities_served: settings.cities_served,
+        contact: {
+          phone: settings.contact.phone,
+          email: settings.contact.email,
+          website: settings.contact.website,
+        },
+        _editor_settings: {
+          contact: { linkedin: settings.contact.linkedin, facebook: settings.contact.facebook },
+          legal_info: settings.legal_info,
+          material_categories: settings.material_categories,
+          profile_settings: settings.profile_settings,
+        },
+      };
+      await api.suppliers.updateProfile(supplierSlug, profileData);
+      profileRef.current = profileData;
+      toast({ title: "Settings saved", description: "Your supplier profile has been updated." });
+    } catch (err) {
+      toast({ variant: "destructive", title: "Save failed", description: err instanceof Error ? err.message : "Could not save to server." });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="mb-2 gap-1.5 rounded-xl text-muted-foreground hover:text-foreground"
+            onClick={() => navigate("/dashboard")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Dashboard
+          </Button>
+          <h1 className="text-2xl font-bold text-foreground">Supplier Settings</h1>
+          <p className="text-sm text-muted-foreground">Manage your supplier profile, contact details, cities served, and more.</p>
+        </div>
+        <Button type="button" onClick={save} disabled={saving}>
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          {saving ? "Saving…" : "Save changes"}
+        </Button>
+      </div>
+
+      <Tabs defaultValue="profile">
+        <TabsList className="flex h-auto flex-wrap gap-1">
+          <TabsTrigger value="profile">Supplier Profile</TabsTrigger>
+          <TabsTrigger value="contact">Contact & Social</TabsTrigger>
+          <TabsTrigger value="business">Business & Legal</TabsTrigger>
+        </TabsList>
+
+        {/* ── Tab 1: Supplier Profile ──────────────────────────────────────── */}
+        <TabsContent value="profile" className="mt-6 space-y-4">
+          {/* LinkedIn-style Supplier Profile Header */}
+          <GlassCard interactive={false} className="overflow-hidden p-0">
+            <div className="relative h-40 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent sm:h-48">
+              {settings.dp_url && (
+                <img src={settings.dp_url} alt="Cover" className="h-full w-full object-cover" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+              <div className="absolute right-3 top-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="bg-background/70 backdrop-blur-sm"
+                  onClick={() => sDpInputRef.current?.click()}
+                >
+                  <Upload className="h-3.5 w-3.5" />
+                  {settings.dp_url ? "Change Cover" : "Add Cover Photo"}
+                </Button>
+                <input
+                  ref={sDpInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    try {
+                      const url = await api.upload.image(file, settings.supplier_name || email, "dp");
+                      setSettings((prev) => ({ ...prev, dp_url: url }));
+                      toast({ title: "Cover photo updated" });
+                    } catch { toast({ variant: "destructive", title: "Upload failed" }); }
+                    if (sDpInputRef.current) sDpInputRef.current.value = "";
+                  }}
+                />
+              </div>
+            </div>
+            <div className="relative px-5 pb-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-5">
+                <div className="-mt-12 relative shrink-0">
+                  <div className="h-24 w-24 overflow-hidden rounded-2xl border-4 border-background bg-background shadow-lg">
+                    {settings.logo_url ? (
+                      <img src={settings.logo_url} alt="Logo" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-secondary text-muted-foreground">
+                        <Upload className="h-8 w-8" />
+                      </div>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="absolute -bottom-1 -right-1 h-7 w-7 rounded-full p-0 shadow"
+                    onClick={() => sLogoInputRef.current?.click()}
+                  >
+                    <Upload className="h-3 w-3" />
+                  </Button>
+                  <input
+                    ref={sLogoInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      try {
+                        const url = await api.upload.image(file, settings.supplier_name || email, "profile");
+                        setSettings((prev) => ({ ...prev, logo_url: url }));
+                        toast({ title: "Profile picture updated" });
+                      } catch { toast({ variant: "destructive", title: "Upload failed" }); }
+                      if (sLogoInputRef.current) sLogoInputRef.current.value = "";
+                    }}
+                  />
+                </div>
+                <div className="min-w-0 flex-1 pt-2">
+                  <Input
+                    value={settings.supplier_name}
+                    onChange={(e) => setSettings((prev) => ({ ...prev, supplier_name: e.target.value }))}
+                    className="border-none bg-transparent p-0 text-xl font-bold text-foreground shadow-none focus-visible:ring-0 h-auto"
+                    placeholder="Supplier / Business Name"
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground">{email}</p>
+                </div>
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">About</p>
+            <p className="mt-1 text-xs text-muted-foreground">Describe your business, specialty materials, delivery areas.</p>
+            <div className="mt-3 space-y-2">
+              <Textarea
+                value={settings.description}
+                onChange={(e) => setSettings((prev) => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe your business, specialty materials, delivery areas…"
+                className="min-h-[100px] bg-background/40"
+                maxLength={500}
+              />
+              <p className="text-xs text-muted-foreground">{settings.description.length}/500 characters</p>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">Location & Categories</p>
+            <p className="mt-1 text-xs text-muted-foreground">Where you operate and what you supply.</p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>City</Label>
+                <Select
+                  value={settings.city || "__none__"}
+                  onValueChange={(v) => setSettings((prev) => ({ ...prev, city: v === "__none__" ? "" : v }))}
+                >
+                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select city" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not set</SelectItem>
+                    {supplierCityOptions.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Area / District</Label>
+                <Input
+                  value={settings.area}
+                  onChange={(e) => setSettings((prev) => ({ ...prev, area: e.target.value }))}
+                  className="bg-background/40"
+                  placeholder="e.g., Gulshan-e-Iqbal"
+                />
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">Visibility Settings</p>
+            <p className="mt-1 text-xs text-muted-foreground">Control how companies and clients discover your profile.</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="flex items-center justify-between rounded-2xl border border-border bg-background/30 p-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Public profile</p>
+                  <p className="text-xs text-muted-foreground">Appear in Browse Suppliers.</p>
+                </div>
+                <Switch
+                  checked={settings.profile_settings.public_profile}
+                  onCheckedChange={(v) => setSettings((prev) => ({ ...prev, profile_settings: { ...prev.profile_settings, public_profile: v } }))}
+                />
+              </div>
+              <div className="flex items-center justify-between rounded-2xl border border-border bg-background/30 p-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Show contact info</p>
+                  <p className="text-xs text-muted-foreground">Display phone &amp; email to companies.</p>
+                </div>
+                <Switch
+                  checked={settings.profile_settings.show_contact}
+                  onCheckedChange={(v) => setSettings((prev) => ({ ...prev, profile_settings: { ...prev.profile_settings, show_contact: v } }))}
+                />
+              </div>
+            </div>
+          </GlassCard>
+        </TabsContent>
+
+        {/* ── Tab 2: Contact & Social ─────────────────────────────────────── */}
+        <TabsContent value="contact" className="mt-6 space-y-4">
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">Contact Information</p>
+            <p className="mt-1 text-xs text-muted-foreground">Primary contact details visible to companies.</p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Phone Number</Label>
+                <Input
+                  value={settings.contact.phone}
+                  onChange={(e) => setSettings((prev) => ({ ...prev, contact: { ...prev.contact, phone: e.target.value } }))}
+                  className="bg-background/40" placeholder="+92-300-1234567"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Email Address</Label>
+                <Input
+                  type="email"
+                  value={settings.contact.email}
+                  onChange={(e) => setSettings((prev) => ({ ...prev, contact: { ...prev.contact, email: e.target.value } }))}
+                  className="bg-background/40" placeholder="info@supplier.pk"
+                />
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">Online Presence</p>
+            <p className="mt-1 text-xs text-muted-foreground">Links displayed on your public profile page.</p>
+            <div className="mt-4 grid gap-4">
+              <div className="space-y-2">
+                <Label>Website</Label>
+                <Input
+                  type="url"
+                  value={settings.contact.website}
+                  onChange={(e) => setSettings((prev) => ({ ...prev, contact: { ...prev.contact, website: e.target.value } }))}
+                  className="bg-background/40" placeholder="https://yoursupplier.pk"
+                />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>LinkedIn</Label>
+                  <Input
+                    type="url"
+                    value={settings.contact.linkedin}
+                    onChange={(e) => setSettings((prev) => ({ ...prev, contact: { ...prev.contact, linkedin: e.target.value } }))}
+                    className="bg-background/40" placeholder="https://linkedin.com/company/..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Facebook</Label>
+                  <Input
+                    type="url"
+                    value={settings.contact.facebook}
+                    onChange={(e) => setSettings((prev) => ({ ...prev, contact: { ...prev.contact, facebook: e.target.value } }))}
+                    className="bg-background/40" placeholder="https://facebook.com/..."
+                  />
+                </div>
+              </div>
+            </div>
+          </GlassCard>
+        </TabsContent>
+
+        {/* ── Tab 3: Business & Legal ─────────────────────────────────────── */}
+        <TabsContent value="business" className="mt-6 space-y-4">
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">Cities Served</p>
+            <p className="mt-1 text-xs text-muted-foreground">Select all cities where you deliver or operate.</p>
+            <div className="mt-4 grid gap-2 sm:grid-cols-3">
+              {supplierCityOptions.map((city) => (
+                <label key={city} className="flex items-center gap-2 text-sm text-foreground">
+                  <Checkbox
+                    checked={settings.cities_served.includes(city)}
+                    onCheckedChange={(v) => toggleCity(city, Boolean(v))}
+                  />
+                  {city}
+                </label>
+              ))}
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">Material Categories</p>
+            <p className="mt-1 text-xs text-muted-foreground">What types of materials does your business supply?</p>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              {materialCategoryOptions.map((cat) => (
+                <label key={cat} className="flex items-center gap-2 text-sm text-foreground">
+                  <Checkbox
+                    checked={settings.material_categories.includes(cat)}
+                    onCheckedChange={(v) => toggleCategory(cat, Boolean(v))}
+                  />
+                  {cat}
+                </label>
+              ))}
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">Legal Registration</p>
+            <p className="mt-1 text-xs text-muted-foreground">Registration status affects trust scores and visibility.</p>
+            <div className="mt-4 grid gap-4">
+              <div className="flex items-center justify-between rounded-2xl border border-border bg-background/30 p-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Legally registered</p>
+                  <p className="text-xs text-muted-foreground">Business registered with authorities.</p>
+                </div>
+                <Switch
+                  checked={settings.legal_info.registered}
+                  onCheckedChange={(v) => setSettings((prev) => ({ ...prev, legal_info: { ...prev.legal_info, registered: v } }))}
+                />
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>NTN Number</Label>
+                  <Input
+                    value={settings.legal_info.ntn}
+                    onChange={(e) => setSettings((prev) => ({ ...prev, legal_info: { ...prev.legal_info, ntn: e.target.value } }))}
+                    className="bg-background/40"
+                    placeholder="e.g., 1234567-8"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Year Established</Label>
+                  <Input
+                    type="number"
+                    value={settings.legal_info.year_established ?? ""}
+                    onChange={(e) => setSettings((prev) => ({ ...prev, legal_info: { ...prev.legal_info, year_established: e.target.value.trim() ? Number(e.target.value) : null } }))}
+                    className="bg-background/40"
+                    placeholder="e.g., 2010"
+                    min={1950}
+                    max={2026}
+                  />
+                </div>
+              </div>
+            </div>
+          </GlassCard>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+// ─── SettingsPage (role router) ────────────────────────────────────────────────
+
 export default function SettingsPage() {
   const user = useAuthStore((s) => s.user);
-  if (!user || user.role !== "company") {
+  if (!user) {
     return (
       <GlassCard interactive={false} className="p-6">
-        <p className="text-sm text-muted-foreground">Settings are only available for company accounts.</p>
+        <p className="text-sm text-muted-foreground">Please log in to access settings.</p>
       </GlassCard>
     );
   }
-  return <SettingsEditor email={user.email} companySlug={user.companyFile} />;
+  if (user.role === "supplier") {
+    return <SupplierSettingsEditor email={user.email} supplierSlug={user.supplierFile} />;
+  }
+  if (user.role === "company") {
+    return <SettingsEditor email={user.email} companySlug={user.companyFile} />;
+  }
+  return (
+    <GlassCard interactive={false} className="p-6">
+      <p className="text-sm text-muted-foreground">Settings are only available for company and supplier accounts.</p>
+    </GlassCard>
+  );
 }
+

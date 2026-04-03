@@ -1,5 +1,11 @@
 [
   {
+    "timestamp": "2026-04-03T23:08:06.300182+00:00",
+    "action": "materials_updated",
+    "target": "islamabad-hardware-tools",
+    "details": "Supplier islamabad-hardware-tools updated materials"
+  },
+  {
     "timestamp": "2026-04-02T01:13:44.681945+00:00",
     "action": "user_active",
     "target": "info@steelhub.pk",

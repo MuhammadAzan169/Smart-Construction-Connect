@@ -23,13 +23,17 @@ type SupplierData = {
   supplier_name: string;
   description: string;
   logo: string;
-  location: { city: string; area: string };
+  logo_url?: string;
+  city?: string;
+  area?: string;
+  location?: { city: string; area: string };
   cities_served: string[];
   contact: { phone: string; email: string; website: string };
   materials: SupplierMaterial[];
   status: string;
   rating: number;
   review_count: number;
+  slug?: string;
 };
 
 const formatPKR = (value: number) =>
@@ -75,6 +79,9 @@ export default function SupplierProfilePage() {
     );
   }
 
+  const supplierCity = supplier.city || supplier.location?.city || "—";
+  const supplierArea = supplier.area || supplier.location?.area || "";
+
   const categories = Array.from(new Set(supplier.materials.map((m) => m.category))).sort();
   const prices = supplier.materials.map((m) => m.price).filter((p) => p > 0);
   const minPrice = prices.length ? Math.min(...prices) : null;
@@ -104,7 +111,7 @@ export default function SupplierProfilePage() {
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <MapPin className="h-4 w-4" />
-              {supplier.location.city}, {supplier.location.area}
+              {supplierCity}{supplierArea ? `, ${supplierArea}` : ""}
             </span>
             <span className="inline-flex items-center gap-1">
               <Star className="h-4 w-4 fill-warning text-warning" />

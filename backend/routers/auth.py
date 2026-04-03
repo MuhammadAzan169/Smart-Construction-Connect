@@ -6,6 +6,12 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+try:
+    import bcrypt
+    _BCRYPT_AVAILABLE = True
+except ImportError:  # pragma: no cover
+    _BCRYPT_AVAILABLE = False
+
 from backend.utils.data_handler import (
     find_user_by_email,
     add_user,
@@ -17,7 +23,27 @@ from backend.utils.data_handler import (
     add_activity_log,
 )
 
-router = APIRouter(prefix="/api/auth", tags=["auth"])
+def _hash_password(plain: str) -> str:
+    """Return a bcrypt hash when available, otherwise a clearly-marked plaintext fallback."""
+    if _BCRYPT_AVAILABLE:
+        return bcrypt.hashpw(plain.encode(), bcrypt.gensalt()).decode()
+    # bcrypt not installed — store plaintext with a clear marker so it can be
+    # detected and re-hashed once bcrypt is available.
+    return f"__PLAINTEXT__{plain}__HASH_BEFORE_PRODUCTION__"
+
+
+def _verify_password(plain: str, stored: str) -> bool:
+    """Verify a password against either a bcrypt hash or a legacy plaintext value."""
+    if stored.startswith("$2b$") or stored.startswith("$2a$"):
+        if not _BCRYPT_AVAILABLE:
+            return False
+        return bcrypt.checkpw(plain.encode(), stored.encode())
+    # Legacy plaintext fallback — used only when bcrypt was not available at signup time
+    if stored.startswith("__PLAINTEXT__"):
+        extracted = stored.replace("__PLAINTEXT__", "").replace("__HASH_BEFORE_PRODUCTION__", "")
+        return extracted == plain
+    return stored == plain
+
 
 
 class LoginRequest(BaseModel):
@@ -58,24 +84,18 @@ def _user_to_response(user: dict) -> UserResponse:
     )
 
 
+router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+
 @router.post("/login", response_model=UserResponse)
 def login(req: LoginRequest):
     user = find_user_by_email(req.email)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    # Check password — new format uses password_hash with placeholder prefix,
-    # old format uses plain password field.
     stored = user.get("password_hash", user.get("password", ""))
-    if stored.startswith("__PLAINTEXT__"):
-        # Extract the plain password from the placeholder wrapper
-        plain = stored.replace("__PLAINTEXT__", "").replace("__HASH_BEFORE_PRODUCTION__", "")
-        if plain != req.password:
-            raise HTTPException(status_code=401, detail="Invalid email or password")
-    else:
-        # Direct comparison (old format fallback)
-        if stored != req.password:
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+    if not _verify_password(req.password, stored):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
 
     if user.get("role") != req.role:
         raise HTTPException(status_code=401, detail="Role mismatch")
@@ -97,7 +117,7 @@ def signup(req: SignupRequest):
     new_user: dict = {
         "user_id": user_id,
         "email": req.email.strip().lower(),
-        "password_hash": f"__PLAINTEXT__{req.password}__HASH_BEFORE_PRODUCTION__",
+        "password_hash": _hash_password(req.password),
         "display_name": req.name,
         "phone": req.phone or None,
         "role": req.role,
