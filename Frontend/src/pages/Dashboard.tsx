@@ -152,69 +152,129 @@ function ClientDashboard() {
 }
 
 function CompanyDashboard() {
+  const user = useAuthStore((s) => s.user);
+  const email = user?.email ?? "";
+  const companyKey = email;
+
+  const pricingState = useMemo(() => {
+    try {
+      const raw = localStorage.getItem(`scc_pricing_v3:${companyKey}`);
+      if (!raw) return null;
+      return JSON.parse(raw) as { packages?: unknown[]; areaRates?: unknown[] };
+    } catch { return null; }
+  }, [companyKey]);
+
+  const activePackages = (pricingState?.packages as { id: string }[] | undefined)?.length ?? 0;
+  const coveredCities = useMemo(() => {
+    const areas = pricingState?.areaRates as { city?: string }[] | undefined;
+    if (!areas) return 0;
+    return new Set(areas.map((r) => r.city).filter(Boolean)).size;
+  }, [pricingState]);
+
+  const pendingRequests = useMemo(() => mockRequests.filter((r) => r.status === "pending").length, []);
+  const recentRequests = useMemo(() => mockRequests.slice(0, 4), []);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Company Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Manage your company profile and packages.</p>
+          <p className="text-sm text-muted-foreground">Overview of your packages, service areas, and incoming requests.</p>
         </div>
-        <Button asChild>
-          <Link to="/pricing">Manage packages</Link>
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="secondary">
+            <Link to="/settings">Settings</Link>
+          </Button>
+          <Button asChild>
+            <Link to="/pricing">Manage packages</Link>
+          </Button>
+        </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        <GlassCard className="p-5">
-          <div className="flex items-center gap-3">
-            <Building2 className="h-8 w-8 text-primary" />
-            <div>
-              <p className="text-sm font-semibold text-foreground">Company Profile</p>
-              <p className="mt-1 text-xs text-muted-foreground">Keep your profile updated to attract more clients.</p>
-            </div>
-          </div>
-          <Button asChild variant="outline" className="mt-4 w-full">
-            <Link to="/company-profile" className="flex items-center justify-between">
-              View profile <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </GlassCard>
+      <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
+        <StaggerItem>
+          <StatCard title="Active Packages" value={activePackages || "—"} icon={Package} />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard title="Covered Cities" value={coveredCities || "—"} icon={Building2} />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard title="Pending Requests" value={pendingRequests} icon={FileText} />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard title="Total Requests" value={mockRequests.length} icon={Activity} trend="up" change="All time" />
+        </StaggerItem>
+      </StaggerList>
 
-        <GlassCard className="p-5">
-          <div className="flex items-center gap-3">
-            <Package className="h-8 w-8 text-primary" />
-            <div>
-              <p className="text-sm font-semibold text-foreground">Packages & Pricing</p>
-              <p className="mt-1 text-xs text-muted-foreground">Create and manage your service packages.</p>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <GlassCard interactive={false} className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Recent Requests</p>
+                <p className="mt-1 text-xs text-muted-foreground">Latest client requests received.</p>
+              </div>
+              <Button asChild variant="link" className="h-auto p-0 text-xs">
+                <Link to="/requests" className="flex items-center gap-1">
+                  View all <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </Button>
             </div>
-          </div>
-          <Button asChild variant="outline" className="mt-4 w-full">
-            <Link to="/pricing" className="flex items-center justify-between">
-              Manage packages <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </GlassCard>
+            <div className="mt-4 space-y-2">
+              {recentRequests.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No requests yet.</p>
+              ) : (
+                recentRequests.map((req, i) => (
+                  <motion.div
+                    key={req.id}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 * i, duration: 0.25 }}
+                    className="flex items-center justify-between rounded-2xl border border-border bg-background/30 px-4 py-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-foreground">{req.clientName}</p>
+                      <p className="truncate text-xs text-muted-foreground">{req.location ?? "—"}</p>
+                    </div>
+                    <StatusBadge status={req.status} />
+                  </motion.div>
+                ))
+              )}
+            </div>
+          </GlassCard>
+        </div>
 
-        <GlassCard className="p-5">
-          <div className="flex items-center gap-3">
-            <FileText className="h-8 w-8 text-primary" />
-            <div>
-              <p className="text-sm font-semibold text-foreground">Requests</p>
-              <p className="mt-1 text-xs text-muted-foreground">Review and respond to client requests.</p>
+        <div className="space-y-4">
+          <GlassCard className="p-5">
+            <div className="flex items-center gap-3">
+              <Package className="h-7 w-7 text-primary" />
+              <div>
+                <p className="text-sm font-semibold text-foreground">Packages & Pricing</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Configure service tiers and costs.</p>
+              </div>
             </div>
-          </div>
-          <Button asChild variant="outline" className="mt-4 w-full">
-            <Link to="/requests" className="flex items-center justify-between">
-              View requests <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </GlassCard>
-      </motion.div>
+            <Button asChild variant="outline" className="mt-4 w-full">
+              <Link to="/pricing" className="flex items-center justify-between">
+                Manage packages <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </GlassCard>
+          <GlassCard className="p-5">
+            <div className="flex items-center gap-3">
+              <Building2 className="h-7 w-7 text-primary" />
+              <div>
+                <p className="text-sm font-semibold text-foreground">Company Settings</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Profile, logo, contact & social.</p>
+              </div>
+            </div>
+            <Button asChild variant="outline" className="mt-4 w-full">
+              <Link to="/settings" className="flex items-center justify-between">
+                Open settings <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </GlassCard>
+        </div>
+      </div>
     </div>
   );
 }

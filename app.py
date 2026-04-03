@@ -68,7 +68,7 @@ def health():
 async def root():
     """Serve the SPA entry point."""
     if INDEX_HTML.exists():
-        return FileResponse(str(INDEX_HTML))
+        return FileResponse(str(INDEX_HTML), headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
     return JSONResponse({"detail": "Frontend not built. Run: cd Frontend && npm run build"}, status_code=503)
 
 
@@ -92,7 +92,7 @@ async def spa_fallback(full_path: str, request: Request):
 
     # SPA fallback — let React Router handle the path client-side
     if INDEX_HTML.exists():
-        return FileResponse(str(INDEX_HTML))
+        return FileResponse(str(INDEX_HTML), headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
 
     return JSONResponse({"detail": "Frontend not built"}, status_code=503)
 

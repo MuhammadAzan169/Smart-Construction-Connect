@@ -23,6 +23,7 @@ import {
   FileText,
   HardHat,
   Package,
+  Settings,
   ShieldCheck,
   Users,
   LayoutDashboard,
@@ -43,6 +44,7 @@ const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { label: "Requests", icon: FileText, path: "/requests" },
     { label: "Packages & Pricing", icon: CreditCard, path: "/pricing" },
+    { label: "Settings", icon: Settings, path: "/settings" },
   ],
   supplier: [
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
