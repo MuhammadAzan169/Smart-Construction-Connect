@@ -1211,51 +1211,263 @@ function SupplierCompareDialog({
   );
 }
 
+const ADMIN_PAGE_SIZE = 25;
+
 function AdminCompaniesView() {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const paramTab = searchParams.get("tab");
+  const [tab, setTabRaw] = useState<"companies" | "materials">(
+    paramTab === "materials" ? "materials" : "companies",
+  );
+  const setTab = (t: "companies" | "materials") => {
+    setTabRaw(t);
+    setSearchParams({ tab: t }, { replace: true });
+  };
+
+  // Sync tab when URL param changes (e.g. sidebar link)
+  useEffect(() => {
+    if (paramTab === "materials" && tab !== "materials") setTabRaw("materials");
+    else if (paramTab !== "materials" && tab !== "companies") setTabRaw("companies");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramTab]);
+
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+
+  // Suppliers state
+  const [supplierData, setSupplierData] = useState<SupplierDirectoryItem[]>([]);
+  const [suppliersLoading, setSuppliersLoading] = useState(true);
+  useEffect(() => {
+    fetchSupplierDirectory()
+      .then(setSupplierData)
+      .catch(() => {})
+      .finally(() => setSuppliersLoading(false));
+  }, []);
+
+  // Reset to page 1 when search or tab changes
+  useEffect(() => { setPage(1); }, [search, tab]);
+
+  // ── Companies ──
+  const filteredCompanies = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return companyDirectory;
+    return companyDirectory.filter((c) => {
+      const cities = c.cities.length ? c.cities : [c.location];
+      return (
+        c.name.toLowerCase().includes(q) ||
+        cities.some((x) => x.toLowerCase().includes(q)) ||
+        c.specialization.some((s) => s.toLowerCase().includes(q))
+      );
+    });
+  }, [search]);
+
+  const totalCompanyPages = Math.max(1, Math.ceil(filteredCompanies.length / ADMIN_PAGE_SIZE));
+  const pagedCompanies = filteredCompanies.slice((page - 1) * ADMIN_PAGE_SIZE, page * ADMIN_PAGE_SIZE);
+
+  // ── Suppliers ──
+  const filteredSuppliers = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return supplierData;
+    return supplierData.filter(
+      (s) =>
+        s.name.toLowerCase().includes(q) ||
+        s.city.toLowerCase().includes(q) ||
+        s.categories.some((c) => c.toLowerCase().includes(q)),
+    );
+  }, [search, supplierData]);
+
+  const totalSupplierPages = Math.max(1, Math.ceil(filteredSuppliers.length / ADMIN_PAGE_SIZE));
+  const pagedSuppliers = filteredSuppliers.slice((page - 1) * ADMIN_PAGE_SIZE, page * ADMIN_PAGE_SIZE);
+
+  const currentTotal = tab === "companies" ? filteredCompanies.length : filteredSuppliers.length;
+  const currentPages = tab === "companies" ? totalCompanyPages : totalSupplierPages;
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Companies</h1>
-        <p className="text-sm text-muted-foreground">Review and monitor construction partners.</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            {tab === "companies" ? "Companies" : "Materials & Suppliers"}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {tab === "companies"
+              ? `${filteredCompanies.length} construction companies in the dataset.`
+              : `${filteredSuppliers.length} material suppliers registered.`}
+          </p>
+        </div>
+        <Tabs value={tab} onValueChange={(v) => setTab(v as "companies" | "materials")}>
+          <TabsList>
+            <TabsTrigger value="companies">
+              <Building2 className="mr-1.5 h-3.5 w-3.5" />
+              Construction Companies
+            </TabsTrigger>
+            <TabsTrigger value="materials">
+              <Package className="mr-1.5 h-3.5 w-3.5" />
+              Materials &amp; Suppliers
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
+      {/* Search */}
       <GlassCard interactive={false} className="p-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="h-2 w-2 rounded-full bg-success" /> Verified
-          <span className="h-2 w-2 rounded-full bg-warning" /> Unverified
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={
+                tab === "companies"
+                  ? "Search by company name, city, or specialization…"
+                  : "Search by supplier, city, or material category…"
+              }
+              className="bg-background/40 pl-9"
+            />
+          </div>
+          <p className="shrink-0 text-sm text-muted-foreground">
+            Showing{" "}
+            <span className="font-semibold text-foreground">
+              {(page - 1) * ADMIN_PAGE_SIZE + 1}–
+              {Math.min(page * ADMIN_PAGE_SIZE, currentTotal)}
+            </span>{" "}
+            of <span className="font-semibold text-foreground">{currentTotal}</span>
+          </p>
         </div>
       </GlassCard>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Company</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Specialization</TableHead>
-              <TableHead>Rating</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {mockCompanies.map((c) => (
-              <TableRow key={c.id}>
-                <TableCell className="font-medium text-foreground">{c.name}</TableCell>
-                <TableCell className="text-muted-foreground">{c.location}</TableCell>
-                <TableCell className="text-muted-foreground">{c.specialization.join(", ")}</TableCell>
-                <TableCell className="text-foreground">{c.rating}</TableCell>
-                <TableCell>{c.verified ? <StatusBadge status="verified" /> : <StatusBadge status="pending" />}</TableCell>
-                <TableCell className="text-right">
-                  <Button variant={c.verified ? "secondary" : "default"}>
-                    {c.verified ? "View" : "Verify"}
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      {/* Legend */}
+      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-success" /> Verified
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-warning" /> Unverified / Pending
+        </span>
       </div>
+
+      {/* Table */}
+      {tab === "companies" ? (
+        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Company</TableHead>
+                <TableHead>Cities</TableHead>
+                <TableHead>Specialization</TableHead>
+                <TableHead>Rating</TableHead>
+                <TableHead>Price Range</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pagedCompanies.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
+                    No companies match your search.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                pagedCompanies.map((c) => {
+                  const cities = c.cities.length ? c.cities : [c.location];
+                  const cityText = cities.slice(0, 2).join(", ") + (cities.length > 2 ? ` +${cities.length - 2}` : "");
+                  const specText = c.specialization.slice(0, 2).join(", ") + (c.specialization.length > 2 ? ` +${c.specialization.length - 2}` : "");
+                  return (
+                    <TableRow key={c.id} className="cursor-pointer hover:bg-muted/30" onClick={() => navigate(`/companies/${c.id}`)}>
+                      <TableCell className="font-medium text-foreground">{c.name}</TableCell>
+                      <TableCell className="text-muted-foreground">{cityText || "—"}</TableCell>
+                      <TableCell className="text-muted-foreground">{specText || "—"}</TableCell>
+                      <TableCell className="text-foreground">{c.rating > 0 ? c.rating : "—"}</TableCell>
+                      <TableCell className="text-muted-foreground">{c.priceRange || "—"}</TableCell>
+                      <TableCell>
+                        {c.verified ? <StatusBadge status="verified" /> : <StatusBadge status="pending" />}
+                      </TableCell>
+                      <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                        <Button size="sm" variant="secondary" onClick={() => navigate(`/companies/${c.id}`)}>
+                          View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+          {suppliersLoading ? (
+            <div className="p-10 text-center text-muted-foreground">Loading suppliers…</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Supplier</TableHead>
+                  <TableHead>City</TableHead>
+                  <TableHead>Categories</TableHead>
+                  <TableHead>Materials</TableHead>
+                  <TableHead>Rating</TableHead>
+                  <TableHead>Price Range</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pagedSuppliers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
+                      No suppliers match your search.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  pagedSuppliers.map((s) => {
+                    const catText = s.categories.slice(0, 2).join(", ") + (s.categories.length > 2 ? ` +${s.categories.length - 2}` : "");
+                    const priceText =
+                      s.minPrice == null || s.maxPrice == null
+                        ? "—"
+                        : s.minPrice === s.maxPrice
+                          ? formatPKR(s.minPrice)
+                          : `${formatPKR(s.minPrice)} – ${formatPKR(s.maxPrice)}`;
+                    return (
+                      <TableRow key={s.id} className="cursor-pointer hover:bg-muted/30" onClick={() => navigate(`/suppliers/${s.id}`)}>
+                        <TableCell className="font-medium text-foreground">{s.name}</TableCell>
+                        <TableCell className="text-muted-foreground">{s.city || "—"}</TableCell>
+                        <TableCell className="text-muted-foreground">{catText || "—"}</TableCell>
+                        <TableCell className="text-foreground">{s.materialCount}</TableCell>
+                        <TableCell className="text-foreground">{s.rating > 0 ? s.rating : "—"}</TableCell>
+                        <TableCell className="text-muted-foreground">{priceText}</TableCell>
+                        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                          <Button size="sm" variant="secondary" onClick={() => navigate(`/suppliers/${s.id}`)}>
+                            View
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {currentPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">
+            Page {page} of {currentPages}
+          </p>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+              Previous
+            </Button>
+            <Button variant="outline" size="sm" disabled={page >= currentPages} onClick={() => setPage((p) => Math.min(currentPages, p + 1))}>
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -112,7 +112,7 @@ export default function ApprovalsPage() {
           </div>
           <div>
             <p className="text-lg font-bold text-foreground">{pendingSuppliers.length}</p>
-            <p className="text-xs text-muted-foreground">Suppliers</p>
+            <p className="text-xs text-muted-foreground">Materials &amp; Suppliers</p>
           </div>
         </GlassCard>
       </div>
@@ -132,7 +132,7 @@ export default function ApprovalsPage() {
           <TabsList>
             <TabsTrigger value="all">All ({pendingUsers.length})</TabsTrigger>
             <TabsTrigger value="companies">Companies ({pendingCompanies.length})</TabsTrigger>
-            <TabsTrigger value="suppliers">Suppliers ({pendingSuppliers.length})</TabsTrigger>
+          <TabsTrigger value="suppliers">Materials &amp; Suppliers ({pendingSuppliers.length})</TabsTrigger>
             {pendingOther.length > 0 && <TabsTrigger value="other">Other ({pendingOther.length})</TabsTrigger>}
           </TabsList>
           {[

@@ -57,8 +57,8 @@ const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path
   admin: [
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { label: "Users", icon: Users, path: "/users" },
-    { label: "Companies", icon: Building2, path: "/companies" },
-    { label: "Suppliers", icon: Package, path: "/companies?tab=suppliers" },
+    { label: "Companies", icon: Building2, path: "/companies?tab=companies" },
+    { label: "Materials & Suppliers", icon: Package, path: "/companies?tab=materials" },
     { label: "Approvals", icon: ShieldCheck, path: "/approvals" },
     { label: "Activity", icon: Activity, path: "/activity" },
   ],
@@ -106,7 +106,10 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item, i) => {
-                  const active = location.pathname === item.path;
+                  const [itemPath, itemQuery] = item.path.split("?");
+                  const active =
+                    location.pathname === itemPath &&
+                    (!itemQuery || location.search === `?${itemQuery}`);
                   return (
                     <motion.div
                       key={item.path}
