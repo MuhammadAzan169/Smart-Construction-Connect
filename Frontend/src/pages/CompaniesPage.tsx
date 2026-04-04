@@ -112,6 +112,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
   const [locations, setLocations] = useState<string[]>([]);
   const [specializations, setSpecializations] = useState<string[]>([]);
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [compareSupplierIds, setCompareSupplierIds] = useState<string[]>([]);
 
   const [materialCategories, setMaterialCategories] = useState<string[]>([]);
   const [supplierData, setSupplierData] = useState<SupplierDirectoryItem[]>([]);
@@ -193,6 +194,21 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
   };
 
   const clearCompare = () => setCompareIds([]);
+
+  const selectedSuppliers = useMemo(
+    () => supplierData.filter((s) => compareSupplierIds.includes(s.id)),
+    [compareSupplierIds, supplierData],
+  );
+
+  const toggleSupplierCompare = (id: string) => {
+    setCompareSupplierIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= 3) return prev;
+      return [...prev, id];
+    });
+  };
+
+  const clearSupplierCompare = () => setCompareSupplierIds([]);
 
   const Filters = (
     <div className="space-y-5">
@@ -315,19 +331,35 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
             </SheetContent>
           </Sheet>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                className={cn("hidden sm:flex", (tab !== "companies" || compareIds.length === 0) && "opacity-60")}
-                variant="secondary"
-                disabled={tab !== "companies" || compareIds.length === 0}
-              >
-                <Building2 className="h-4 w-4" />
-                Compare ({compareIds.length})
-              </Button>
-            </DialogTrigger>
-            <CompareDialog companies={selectedCompanies} onClear={clearCompare} />
-          </Dialog>
+          {tab === "companies" ? (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  className={cn("hidden sm:flex", compareIds.length === 0 && "opacity-60")}
+                  variant="secondary"
+                  disabled={compareIds.length === 0}
+                >
+                  <Building2 className="h-4 w-4" />
+                  Compare ({compareIds.length})
+                </Button>
+              </DialogTrigger>
+              <CompareDialog companies={selectedCompanies} onClear={clearCompare} />
+            </Dialog>
+          ) : (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  className={cn("hidden sm:flex", compareSupplierIds.length === 0 && "opacity-60")}
+                  variant="secondary"
+                  disabled={compareSupplierIds.length === 0}
+                >
+                  <Package className="h-4 w-4" />
+                  Compare ({compareSupplierIds.length})
+                </Button>
+              </DialogTrigger>
+              <SupplierCompareDialog suppliers={selectedSuppliers} onClear={clearSupplierCompare} />
+            </Dialog>
+          )}
         </div>
       </div>
 
@@ -677,7 +709,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="grid gap-6 lg:grid-cols-[18rem_1fr]"
+            className="grid gap-6 lg:grid-cols-[18rem_1fr_20rem]"
           >
             {/* Filters (desktop) */}
             <div className="hidden lg:block">
@@ -748,9 +780,17 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                 </div>
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {filteredSuppliers.map((s) => (
-                    <GlassCard
+                  {filteredSuppliers.map((s, idx) => {
+                    const supplierCompareSelected = compareSupplierIds.includes(s.id);
+                    const supplierCompareDisabled = !supplierCompareSelected && compareSupplierIds.length >= 3;
+                    return (
+                    <motion.div
                       key={s.id}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(idx * 0.06, 0.5), duration: 0.35 }}
+                    >
+                    <GlassCard
                       className="group overflow-hidden p-0"
                       role="button"
                       tabIndex={0}
@@ -762,23 +802,30 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                         }
                       }}
                     >
-                      <div className="relative flex h-40 items-end overflow-hidden bg-secondary">
-                        <div className="absolute inset-0 opacity-80 gradient-bg" />
-                        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background/60 to-transparent" />
-
-                        <div className="relative flex w-full items-start justify-between gap-3 px-4 pb-3">
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold text-primary-foreground">{s.name}</p>
-                            <div className="mt-1 flex items-center gap-1 text-xs text-primary-foreground/80">
-                              <MapPin className="h-3 w-3" />
-                              <span className="truncate">{s.city || "—"}</span>
-                            </div>
-                          </div>
-                          <div className="flex shrink-0 items-center gap-2">
-                            <Badge variant="secondary" className="rounded-lg bg-background/20 text-primary-foreground">
-                              <Package className="h-3.5 w-3.5" />
-                              {s.materialCount}
-                            </Badge>
+                      {/* Image banner with overlaid name/location */}
+                      <div className="relative h-40 overflow-hidden">
+                        {s.logo ? (
+                          <img
+                            src={s.logo}
+                            alt={s.name}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-secondary opacity-80 gradient-bg transition-transform duration-500 group-hover:scale-[1.05]" />
+                        )}
+                        {/* Top-right: material count badge */}
+                        <div className="absolute right-3 top-3">
+                          <Badge variant="secondary" className="rounded-lg bg-background/30 backdrop-blur-sm text-white font-semibold">
+                            <Package className="h-3.5 w-3.5 mr-1" />
+                            {s.materialCount}
+                          </Badge>
+                        </div>
+                        {/* Bottom gradient + name overlay */}
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-3 pb-3 pt-8">
+                          <p className="truncate text-sm font-bold text-white leading-tight">{s.name}</p>
+                          <div className="mt-0.5 flex items-center gap-1 text-xs text-white/70">
+                            <MapPin className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{s.city || "—"}</span>
                           </div>
                         </div>
                       </div>
@@ -820,18 +867,26 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                             type="button"
                             variant="secondary"
                             size="sm"
-                            className="w-full"
+                            className={cn("w-full", supplierCompareSelected && "border border-primary/40")}
                             onClick={(e) => {
                               e.stopPropagation();
-                              navigate(`/suppliers/${s.id}`);
+                              toggleSupplierCompare(s.id);
                             }}
+                            disabled={supplierCompareDisabled}
                           >
-                            View profile
+                            {supplierCompareSelected ? <Check className="mr-1 h-3.5 w-3.5" /> : <Plus className="mr-1 h-3.5 w-3.5" />}
+                            Compare
                           </Button>
                         </div>
+
+                        {supplierCompareDisabled ? (
+                          <p className="text-xs text-muted-foreground">Max 3 suppliers for comparison.</p>
+                        ) : null}
                       </div>
                     </GlassCard>
-                  ))}
+                    </motion.div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -842,11 +897,92 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                 </GlassCard>
               ) : null}
             </div>
+
+            {/* Supplier compare panel (desktop) */}
+            <div className="hidden lg:block">
+              <GlassCard interactive={false} className="sticky top-24 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setCompareOpen((o) => !o)}
+                  className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-white/5"
+                >
+                  <div className="flex items-center gap-2">
+                    <Package className="h-3.5 w-3.5 text-primary" />
+                    <p className="text-sm font-semibold text-foreground">Compare</p>
+                    {compareSupplierIds.length > 0 && (
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+                        {compareSupplierIds.length}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform duration-300", compareOpen && "rotate-180")} />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {compareOpen && (
+                    <motion.div
+                      key="supplier-compare-body"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-5 pb-5">
+                        {compareSupplierIds.length === 0 ? (
+                          <div className="rounded-xl border border-dashed border-border bg-background/20 px-4 py-6 text-center">
+                            <Package className="mx-auto mb-2 h-6 w-6 text-muted-foreground/40" />
+                            <p className="text-xs text-muted-foreground">Select up to 3 suppliers from the list to compare side by side.</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {selectedSuppliers.map((s) => (
+                              <div
+                                key={s.id}
+                                className="group cursor-pointer rounded-2xl border border-border bg-background/30 p-3 transition-colors hover:border-primary/30 hover:bg-background/50"
+                                onClick={() => navigate(`/suppliers/${s.id}`)}
+                              >
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="min-w-0">
+                                    <p className="truncate text-sm font-semibold text-foreground">{s.name}</p>
+                                    <p className="mt-0.5 text-xs text-muted-foreground">{s.city}</p>
+                                  </div>
+                                  <span className="shrink-0 rounded-lg bg-secondary px-2 py-0.5 text-xs font-bold text-foreground">{s.materialCount} items</span>
+                                </div>
+                                <div className="mt-2 flex items-center gap-2">
+                                  <Star className="h-3 w-3 fill-warning text-warning" />
+                                  <span className="text-xs text-foreground">{s.rating}</span>
+                                  <span className="text-xs text-muted-foreground">• {s.categories[0] ?? "—"}</span>
+                                </div>
+                              </div>
+                            ))}
+
+                            <div className="flex gap-2">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button variant="default" size="sm" className="flex-1">
+                                    Compare ({compareSupplierIds.length})
+                                  </Button>
+                                </DialogTrigger>
+                                <SupplierCompareDialog suppliers={selectedSuppliers} onClear={clearSupplierCompare} />
+                              </Dialog>
+                              <Button variant="secondary" size="sm" onClick={clearSupplierCompare} className="px-3">
+                                <Minus className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </GlassCard>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Compare bar (mobile) */}
+      {/* Compare bar (mobile) – companies */}
       {tab === "companies" && compareIds.length > 0 ? (
         <div className="fixed inset-x-0 bottom-4 z-40 px-4 lg:hidden">
           <GlassCard interactive={false} className="flex items-center justify-between px-4 py-3">
@@ -867,6 +1003,33 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                   </Button>
                 </DialogTrigger>
                 <CompareDialog companies={selectedCompanies} onClear={clearCompare} />
+              </Dialog>
+            </div>
+          </GlassCard>
+        </div>
+      ) : null}
+
+      {/* Compare bar (mobile) – suppliers */}
+      {tab === "materials" && compareSupplierIds.length > 0 ? (
+        <div className="fixed inset-x-0 bottom-4 z-40 px-4 lg:hidden">
+          <GlassCard interactive={false} className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-2 text-sm text-foreground">
+              <Package className="h-4 w-4 text-primary" />
+              <span className="font-semibold">Compare</span>
+              <span className="text-muted-foreground">({compareSupplierIds.length}/3)</span>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="secondary" onClick={clearSupplierCompare}>
+                <Minus className="h-4 w-4" />
+                Clear
+              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button>
+                    Compare
+                  </Button>
+                </DialogTrigger>
+                <SupplierCompareDialog suppliers={selectedSuppliers} onClear={clearSupplierCompare} />
               </Dialog>
             </div>
           </GlassCard>
@@ -952,6 +1115,72 @@ function CompareRow({ label, values }: { label: string; values: string[] }) {
         </TableCell>
       ))}
     </TableRow>
+  );
+}
+
+function SupplierCompareDialog({
+  suppliers,
+  onClear,
+}: {
+  suppliers: SupplierDirectoryItem[];
+  onClear: () => void;
+}) {
+  return (
+    <DialogContent className="max-w-5xl bg-background text-foreground">
+      <DialogHeader>
+        <DialogTitle>Supplier comparison</DialogTitle>
+      </DialogHeader>
+
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-40">Metric</TableHead>
+              {suppliers.map((s) => (
+                <TableHead key={s.id} className="min-w-[12rem]">
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold text-foreground">{s.name}</p>
+                    <p className="text-xs text-muted-foreground">{s.city}</p>
+                  </div>
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <CompareRow label="Rating" values={suppliers.map((s) => `${s.rating} (${s.reviews} reviews)`)} />
+            <CompareRow label="City" values={suppliers.map((s) => s.city || "—")} />
+            <CompareRow label="Area" values={suppliers.map((s) => s.area || "—")} />
+            <CompareRow label="Cities Served" values={suppliers.map((s) => s.citiesServed.slice(0, 3).join(", ") || "—")} />
+            <CompareRow label="Materials" values={suppliers.map((s) => `${s.materialCount} items`)} />
+            <CompareRow
+              label="Categories"
+              values={suppliers.map((s) => {
+                const shown = s.categories.slice(0, 3).join(", ");
+                const more = s.categories.length - 3;
+                return more > 0 ? `${shown} (+${more})` : shown || "—";
+              })}
+            />
+            <CompareRow
+              label="Price Range"
+              values={suppliers.map((s) =>
+                s.minPrice == null || s.maxPrice == null
+                  ? "—"
+                  : s.minPrice === s.maxPrice
+                    ? formatPKR(s.minPrice)
+                    : `${formatPKR(s.minPrice)} – ${formatPKR(s.maxPrice)}`
+              )}
+            />
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="flex justify-end gap-2">
+        <Button variant="secondary" onClick={onClear}>
+          Clear selection
+        </Button>
+        <Button>Request quotes</Button>
+      </div>
+    </DialogContent>
   );
 }
 
