@@ -762,16 +762,16 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
             {/* Results */}
             <div className="space-y-4 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scroll-styled pr-1">
               {loading ? (
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
                   {Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className="overflow-hidden rounded-2xl border border-border bg-card">
-                      <Skeleton className="h-40 w-full" />
+                      <Skeleton className="h-44 w-full" />
                       <div className="space-y-3 p-4">
                         <Skeleton className="h-4 w-3/4" />
                         <Skeleton className="h-3 w-1/2" />
                         <div className="flex gap-2">
                           <Skeleton className="h-5 w-16" />
-                          <Skeleton className="h-5 w-24" />
+                          <Skeleton className="h-5 w-20" />
                         </div>
                         <Skeleton className="h-9 w-full" />
                       </div>
@@ -779,7 +779,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                   ))}
                 </div>
               ) : (
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
                   {filteredSuppliers.map((s, idx) => {
                     const supplierCompareSelected = compareSupplierIds.includes(s.id);
                     const supplierCompareDisabled = !supplierCompareSelected && compareSupplierIds.length >= 3;
@@ -803,7 +803,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                       }}
                     >
                       {/* Image banner with overlaid name/location */}
-                      <div className="relative h-40 overflow-hidden">
+                      <div className="relative h-44 overflow-hidden">
                         {s.logo ? (
                           <img
                             src={s.logo}
@@ -830,27 +830,15 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                         </div>
                       </div>
 
-                      <div className="space-y-3 p-4">
-                        <div className="flex flex-wrap gap-1.5">
-                          {s.categories.slice(0, 3).map((c) => (
-                            <Badge key={c} variant="secondary" className="rounded-lg">
-                              {c}
-                            </Badge>
-                          ))}
-                          {s.categories.length > 3 ? (
-                            <Badge variant="outline" className="rounded-lg">
-                              +{s.categories.length - 3}
-                            </Badge>
-                          ) : null}
-                        </div>
-
-                        <div className="flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-1 text-muted-foreground">
+                      <div className="space-y-3 p-3.5">
+                        {/* Rating + price range */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1 text-xs">
                             <Star className="h-3.5 w-3.5 fill-warning text-warning" />
                             <span className="font-semibold text-foreground">{s.rating}</span>
-                            <span>({s.reviews})</span>
+                            <span className="text-muted-foreground">({s.reviews} reviews)</span>
                           </div>
-                          <span className="text-muted-foreground">
+                          <span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-foreground">
                             {s.minPrice == null || s.maxPrice == null
                               ? "Pricing —"
                               : s.minPrice === s.maxPrice
@@ -859,7 +847,46 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                           </span>
                         </div>
 
+                        {/* Stat pills */}
                         <div className="grid grid-cols-2 gap-2">
+                          <div className="flex flex-col items-center rounded-xl border border-border bg-background/30 py-2">
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Materials</span>
+                            <span className="mt-0.5 text-sm font-bold text-foreground">{s.materialCount}</span>
+                          </div>
+                          <div className="flex flex-col items-center rounded-xl border border-border bg-background/30 py-2">
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Categories</span>
+                            <span className="mt-0.5 text-sm font-bold text-foreground">{s.categories.length}</span>
+                          </div>
+                        </div>
+
+                        {/* Category badges */}
+                        <div className="flex flex-wrap gap-1">
+                          {s.categories.slice(0, 2).map((c) => (
+                            <Badge key={c} variant="secondary" className="rounded-lg text-[11px] px-2 py-0">
+                              {c}
+                            </Badge>
+                          ))}
+                          {s.categories.length > 2 ? (
+                            <Badge variant="outline" className="rounded-lg text-[11px] px-2 py-0">
+                              +{s.categories.length - 2} more
+                            </Badge>
+                          ) : null}
+                        </div>
+
+                        {/* Cities served chips */}
+                        {s.citiesServed.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-1">
+                            <MapPin className="h-3 w-3 shrink-0 text-muted-foreground" />
+                            {s.citiesServed.slice(0, 2).map((city) => (
+                              <span key={city} className="rounded-md bg-secondary/70 px-2 py-0.5 text-[11px] text-foreground">{city}</span>
+                            ))}
+                            {s.citiesServed.length > 2 && (
+                              <span className="text-[11px] text-muted-foreground">+{s.citiesServed.length - 2}</span>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-2 pt-0.5">
                           <Button type="button" size="sm" className="w-full" onClick={(e) => e.stopPropagation()}>
                             Request quote
                           </Button>

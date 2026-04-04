@@ -206,6 +206,7 @@ export default function CompanyProfilePage() {
               <div className="mt-2 flex flex-wrap gap-2">
                 {(company.cities.length ? company.cities : [company.location]).slice(0, 6).map((city) => (
                   <Badge key={city} variant="secondary" className="rounded-lg">
+                    <MapPin className="mr-1 h-3 w-3" />
                     {city}
                   </Badge>
                 ))}
@@ -216,20 +217,25 @@ export default function CompanyProfilePage() {
                 ) : null}
               </div>
 
-              <div className="mt-2 grid gap-1 text-sm text-foreground sm:grid-cols-2">
-                <p>
-                  Areas: <span className="font-semibold">{previewList(company.areas, 3).text || "—"}</span>
-                  {previewList(company.areas, 3).more ? (
-                    <span className="text-muted-foreground"> (+{previewList(company.areas, 3).more})</span>
-                  ) : null}
-                </p>
-                <p>
-                  Societies: <span className="font-semibold">{previewList(company.societies, 3).text || "—"}</span>
-                  {previewList(company.societies, 3).more ? (
-                    <span className="text-muted-foreground"> (+{previewList(company.societies, 3).more})</span>
-                  ) : null}
-                </p>
-              </div>
+              {(company.areas.length > 0 || company.societies.length > 0) && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {company.areas.slice(0, 4).map((area) => (
+                    <span key={area} className="rounded-md bg-secondary/70 px-2 py-0.5 text-xs text-foreground">{area}</span>
+                  ))}
+                  {company.areas.length > 4 && (
+                    <span className="text-xs text-muted-foreground">+{company.areas.length - 4} areas</span>
+                  )}
+                  {company.societies.length > 0 && company.areas.length > 0 && (
+                    <span className="text-xs text-muted-foreground px-1">·</span>
+                  )}
+                  {company.societies.slice(0, 4).map((soc) => (
+                    <span key={soc} className="rounded-md border border-border bg-background/30 px-2 py-0.5 text-xs text-muted-foreground">{soc}</span>
+                  ))}
+                  {company.societies.length > 4 && (
+                    <span className="text-xs text-muted-foreground">+{company.societies.length - 4} societies</span>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
