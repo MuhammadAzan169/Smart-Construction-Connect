@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore, UserRole } from "@/stores/authStore";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { AnimatedBackground } from "@/components/shared/AnimatedBackground";
+import { ParticleBackground } from "@/components/shared/ParticleBackground";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,22 +12,40 @@ import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   Building2,
+  CheckCircle,
   Eye,
   EyeOff,
   HardHat,
   Package,
   ShieldCheck,
   UserRound,
+  XCircle,
 } from "lucide-react";
+
+function passwordStrength(pw: string): { score: number; label: string; color: string } {
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  if (score <= 1) return { score, label: "Weak", color: "bg-destructive" };
+  if (score <= 2) return { score, label: "Fair", color: "bg-warning" };
+  if (score <= 3) return { score, label: "Good", color: "bg-primary" };
+  return { score, label: "Strong", color: "bg-green-500" };
+}
 
 export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [role, setRole] = useState<UserRole>("client");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const signup = useAuthStore((s) => s.signup);
   const navigate = useNavigate();
 
@@ -36,14 +56,23 @@ export default function SignupPage() {
     { value: "admin", label: "Admin", desc: "Approvals & platform controls", icon: ShieldCheck },
   ];
 
+  const strength = passwordStrength(password);
+  const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
+  const passwordsMismatch = confirmPassword.length > 0 && password !== confirmPassword;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
+    if (password !== confirmPassword) { setError("Passwords do not match."); return; }
+    setSubmitting(true);
     try {
       await signup(name, email, password, role, phone);
       navigate("/dashboard");
     } catch (err: any) {
       setError(err.message || "Signup failed");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -212,7 +241,49 @@ export default function SignupPage() {
                     {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {password.length > 0 && (
+                  <div className="space-y-1.5">
+                    <div className="flex gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <div key={i} className={cn("h-1 flex-1 rounded-full transition-colors", i < strength.score ? strength.color : "bg-muted")} />
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Strength: <span className="font-medium">{strength.label}</span></p>
+                  </div>
+                )}
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showPw ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className={cn("bg-background/40 pr-10", passwordsMismatch && "border-destructive focus-visible:ring-destructive")}
+                  />
+                  {passwordsMatch && <CheckCircle className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-green-500" />}
+                  {passwordsMismatch && <XCircle className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-destructive" />}
+                </div>
+                {passwordsMismatch && <p className="text-xs text-destructive">Passwords do not match</p>}
+              </div>
+
+              {(role === "company" || role === "supplier") && (
+                <div className="space-y-2">
+                  <Label htmlFor="companyName">{role === "company" ? "Company" : "Business"} Name</Label>
+                  <Input
+                    id="companyName"
+                    type="text"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder={role === "company" ? "ABC Construction Pvt Ltd" : "Your Store / Business Name"}
+                    className="bg-background/40"
+                  />
+                </div>
+              )}
 
               {(role === "company" || role === "supplier") && (
                 <div className="space-y-2">
@@ -245,8 +316,8 @@ export default function SignupPage() {
               )}
 
               <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                <Button type="submit" className="w-full">
-                  Create Account
+                <Button type="submit" className="w-full" disabled={submitting || passwordsMismatch}>
+                  {submitting ? "Creating Account…" : "Create Account"}
                 </Button>
               </motion.div>
             </form>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
@@ -96,8 +96,16 @@ export default function CompaniesPage() {
 
 function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies" | "materials"; hideTabs?: boolean } = {}) {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"companies" | "materials">(defaultTab ?? "companies");
+  const paramTab = searchParams.get("tab");
+  const [tab, setTabRaw] = useState<"companies" | "materials">(
+    paramTab === "materials" ? "materials" : paramTab === "companies" ? "companies" : (defaultTab ?? "companies")
+  );
+  const setTab = (t: "companies" | "materials") => {
+    setTabRaw(t);
+    setSearchParams({ tab: t }, { replace: true });
+  };
   const [search, setSearch] = useState("");
   const [onlyVerified, setOnlyVerified] = useState(false);
   const [locations, setLocations] = useState<string[]>([]);
@@ -379,12 +387,12 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
             </div>
 
             {/* Results */}
-            <div className="space-y-4">
+            <div className="space-y-4 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-1">
               {loading ? (
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
                   {Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className="overflow-hidden rounded-2xl border border-border bg-card">
-                      <Skeleton className="h-40 w-full" />
+                      <Skeleton className="h-44 w-full" />
                       <div className="space-y-3 p-4">
                         <Skeleton className="h-4 w-3/4" />
                         <Skeleton className="h-3 w-1/2" />
@@ -398,13 +406,12 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                   ))}
                 </div>
               ) : (
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
                   {filtered.map((company, idx) => {
                     const compareSelected = compareIds.includes(company.id);
                     const compareDisabled = !compareSelected && compareIds.length >= 3;
                     const pkgKeys = getPackageKeys(company.raw);
-                    const citiesPreview = previewList(company.cities.length ? company.cities : [company.location], 2);
-                    const societiesPreview = previewList(company.societies, 2);
+                    const citiesAll = company.cities.length ? company.cities : [company.location];
 
                     return (
                       <motion.div
@@ -425,79 +432,94 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                           }
                         }}
                       >
-                        <div className="relative h-40 overflow-hidden">
+                        {/* Image banner with overlaid name/location */}
+                        <div className="relative h-44 overflow-hidden">
                           <img
                             src={company.image}
                             alt={company.name}
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                           />
+                          {/* Top-left: verified badge */}
                           <div className="absolute left-3 top-3">
                             {company.verified ? <StatusBadge status="verified" /> : null}
                           </div>
+                          {/* Top-right: match score */}
                           <div className="absolute right-3 top-3">
-                            <MatchScoreRing score={company.matchScore} size={48} />
+                            <MatchScoreRing score={company.matchScore} size={44} />
                           </div>
-                          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background/60 to-transparent" />
-                        </div>
-
-                        <div className="space-y-3 p-4">
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold text-foreground">{company.name}</p>
-                            <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                              <MapPin className="h-3 w-3" />
+                          {/* Bottom gradient + name overlay */}
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-3 pb-3 pt-8">
+                            <p className="truncate text-sm font-bold text-white leading-tight">{company.name}</p>
+                            <div className="mt-0.5 flex items-center gap-1 text-xs text-white/70">
+                              <MapPin className="h-3 w-3 shrink-0" />
                               <span className="truncate">{company.location}</span>
                             </div>
                           </div>
+                        </div>
 
-                          <div className="flex flex-wrap gap-1.5">
-                            {company.specialization.slice(0, 3).map((s) => (
-                              <Badge key={s} variant="secondary" className="rounded-lg">
+                        <div className="space-y-3 p-3.5">
+                          {/* Rating + price */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1 text-xs">
+                              <Star className="h-3.5 w-3.5 fill-warning text-warning" />
+                              <span className="font-semibold text-foreground">{company.rating}</span>
+                              <span className="text-muted-foreground">({company.reviews} reviews)</span>
+                            </div>
+                            <span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-foreground">{company.priceRange}</span>
+                          </div>
+
+                          {/* Stat pills */}
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="flex flex-col items-center rounded-xl border border-border bg-background/30 py-2">
+                              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Established</span>
+                              <span className="mt-0.5 text-sm font-bold text-foreground">{company.yearEstablished ?? "—"}</span>
+                            </div>
+                            <div className="flex flex-col items-center rounded-xl border border-border bg-background/30 py-2">
+                              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Projects</span>
+                              <span className="mt-0.5 text-sm font-bold text-foreground">{company.completedProjects ?? "—"}</span>
+                            </div>
+                          </div>
+
+                          {/* Specializations */}
+                          <div className="flex flex-wrap gap-1">
+                            {company.specialization.slice(0, 2).map((s) => (
+                              <Badge key={s} variant="secondary" className="rounded-lg text-[11px] px-2 py-0">
                                 {s}
                               </Badge>
                             ))}
-                            {company.specialization.length > 3 && (
-                              <Badge variant="outline" className="rounded-lg">+{company.specialization.length - 3}</Badge>
+                            {company.specialization.length > 2 && (
+                              <Badge variant="outline" className="rounded-lg text-[11px] px-2 py-0">+{company.specialization.length - 2} more</Badge>
                             )}
                           </div>
 
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div className="rounded-lg border border-border bg-background/30 px-2 py-1.5">
-                              <span className="text-muted-foreground">Est. </span>
-                              <span className="font-semibold text-foreground">{company.yearEstablished ?? "—"}</span>
-                            </div>
-                            <div className="rounded-lg border border-border bg-background/30 px-2 py-1.5">
-                              <span className="text-muted-foreground">Projects </span>
-                              <span className="font-semibold text-foreground">{company.completedProjects ?? "—"}</span>
-                            </div>
+                          {/* Cities chips */}
+                          <div className="flex flex-wrap items-center gap-1">
+                            <MapPin className="h-3 w-3 shrink-0 text-muted-foreground" />
+                            {citiesAll.slice(0, 2).map((city) => (
+                              <span key={city} className="rounded-md bg-secondary/70 px-2 py-0.5 text-[11px] text-foreground">{city}</span>
+                            ))}
+                            {citiesAll.length > 2 && (
+                              <span className="text-[11px] text-muted-foreground">+{citiesAll.length - 2}</span>
+                            )}
                           </div>
 
-                          <p className="text-xs text-muted-foreground">
-                            Packages: <span className="text-foreground">{pkgKeys.map(humanizeToken).join(" • ")}</span>
-                          </p>
-
-                          <p className="text-xs text-muted-foreground">
-                            Cities: <span className="text-foreground">{citiesPreview.text || "—"}</span>
-                            {citiesPreview.more ? <span className="text-muted-foreground"> (+{citiesPreview.more})</span> : null}
-                          </p>
-
-                          <p className="text-xs text-muted-foreground">
-                            Societies: <span className="text-foreground">{societiesPreview.text || "—"}</span>
-                            {societiesPreview.more ? <span className="text-muted-foreground"> (+{societiesPreview.more})</span> : null}
-                          </p>
-
-                          <div className="flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-1 text-muted-foreground">
-                              <Star className="h-3.5 w-3.5 fill-warning text-warning" />
-                              <span className="font-semibold text-foreground">{company.rating}</span>
-                              <span>({company.reviews})</span>
+                          {/* Packages row */}
+                          {pkgKeys.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {pkgKeys.slice(0, 3).map((k) => (
+                                <span key={k} className="rounded-md border border-border bg-background/20 px-2 py-0.5 text-[11px] text-muted-foreground">{humanizeToken(k)}</span>
+                              ))}
+                              {pkgKeys.length > 3 && (
+                                <span className="text-[11px] text-muted-foreground">+{pkgKeys.length - 3}</span>
+                              )}
                             </div>
-                            <span className="text-muted-foreground">{company.priceRange}</span>
-                          </div>
+                          )}
 
-                          <div className="flex gap-2">
+                          <div className="grid grid-cols-2 gap-2 pt-0.5">
                             <Button
                               type="button"
-                              className="flex-1"
+                              size="sm"
+                              className="w-full"
                               onClick={(e) => e.stopPropagation()}
                             >
                               Request quote
@@ -505,14 +527,15 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                             <Button
                               type="button"
                               variant="secondary"
-                              className={cn("flex-1", compareSelected && "border border-primary/40")}
+                              size="sm"
+                              className={cn("w-full", compareSelected && "border border-primary/40")}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 toggleCompare(company.id);
                               }}
                               disabled={compareDisabled}
                             >
-                              {compareSelected ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                              {compareSelected ? <Check className="mr-1 h-3.5 w-3.5" /> : <Plus className="mr-1 h-3.5 w-3.5" />}
                               Compare
                             </Button>
                           </div>
@@ -607,7 +630,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
             </div>
 
             {/* Results */}
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto pr-1">
               {loading ? (
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {Array.from({ length: 6 }).map((_, i) => (
@@ -691,14 +714,15 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                           </span>
                         </div>
 
-                        <div className="flex gap-2">
-                          <Button type="button" className="flex-1" onClick={(e) => e.stopPropagation()}>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button type="button" size="sm" className="w-full" onClick={(e) => e.stopPropagation()}>
                             Request quote
                           </Button>
                           <Button
                             type="button"
                             variant="secondary"
-                            className="flex-1"
+                            size="sm"
+                            className="w-full"
                             onClick={(e) => {
                               e.stopPropagation();
                               navigate(`/suppliers/${s.id}`);
