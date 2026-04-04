@@ -344,3 +344,40 @@
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
+
+/* ─── Themed scrollbars (global) ─────────────────────────────── */
+/* Webkit browsers */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--card));
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--border));
+  border-radius: 999px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--primary) / 0.7);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--border)) rgb(var(--card));
+}
+/* Utility class for accent-colored thumb on overflow panels */
+.scroll-styled::-webkit-scrollbar-thumb {
+  background: rgb(var(--primary) / 0.25);
+}
+.scroll-styled::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--primary) / 0.65);
+}
+.scroll-styled {
+  scrollbar-color: rgb(var(--primary) / 0.25) rgb(var(--card));
+}

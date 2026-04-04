@@ -43,6 +43,7 @@ import { useAuthStore } from "@/stores/authStore";
 import {
   Building2,
   Check,
+  ChevronDown,
   Filter,
   MapPin,
   Minus,
@@ -114,6 +115,8 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
 
   const [materialCategories, setMaterialCategories] = useState<string[]>([]);
   const [supplierData, setSupplierData] = useState<SupplierDirectoryItem[]>([]);
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [compareOpen, setCompareOpen] = useState(true);
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 650);
@@ -367,27 +370,54 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
           >
             {/* Filters (desktop) */}
             <div className="hidden lg:block">
-              <GlassCard interactive={false} className="sticky top-24 p-5">
-                <div className="mb-4 flex items-center justify-between">
-                  <p className="text-sm font-semibold text-foreground">Filters</p>
-                  <Button
-                    variant="link"
-                    className="h-auto p-0 text-xs"
-                    onClick={() => {
-                      setOnlyVerified(false);
-                      setLocations([]);
-                      setSpecializations([]);
-                    }}
-                  >
-                    Reset
-                  </Button>
-                </div>
-                {Filters}
+              <GlassCard interactive={false} className="sticky top-24 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setFiltersOpen((o) => !o)}
+                  className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-white/5"
+                >
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-3.5 w-3.5 text-primary" />
+                    <p className="text-sm font-semibold text-foreground">Filters</p>
+                    {(onlyVerified || locations.length > 0 || specializations.length > 0) && (
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+                        {(onlyVerified ? 1 : 0) + locations.length + specializations.length}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform duration-300", filtersOpen && "rotate-180")} />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {filtersOpen && (
+                    <motion.div
+                      key="filter-body"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="max-h-[calc(100vh-14rem)] overflow-y-auto scroll-styled px-5 pb-5">
+                        <div className="mb-3 flex justify-end">
+                          <Button
+                            variant="link"
+                            className="h-auto p-0 text-xs"
+                            onClick={() => { setOnlyVerified(false); setLocations([]); setSpecializations([]); }}
+                          >
+                            Reset all
+                          </Button>
+                        </div>
+                        {Filters}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </GlassCard>
             </div>
 
             {/* Results */}
-            <div className="space-y-4 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-1">
+            <div className="space-y-4 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scroll-styled pr-1">
               {loading ? (
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
                   {Array.from({ length: 6 }).map((_, i) => (
@@ -561,43 +591,82 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
 
             {/* Compare panel (desktop) */}
             <div className="hidden lg:block">
-              <GlassCard interactive={false} className="sticky top-24 p-5">
-                <div className="mb-4 flex items-center justify-between">
-                  <p className="text-sm font-semibold text-foreground">Compare</p>
-                  <Button variant="link" className="h-auto p-0 text-xs" onClick={clearCompare} disabled={compareIds.length === 0}>
-                    Clear
-                  </Button>
-                </div>
-
-                {compareIds.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Select up to 3 companies to compare.</p>
-                ) : (
-                  <div className="space-y-3">
-                    {selectedCompanies.map((c) => (
-                      <div
-                        key={c.id}
-                        className="cursor-pointer rounded-2xl border border-border bg-background/30 p-3"
-                        onClick={() => navigate(`/companies/${c.id}`)}
-                      >
-                        <p className="truncate text-sm font-semibold text-foreground">{c.name}</p>
-                        <p className="mt-1 text-xs text-muted-foreground">{c.location}</p>
-                        <div className="mt-3 flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">Match</span>
-                          <span className="text-xs font-semibold text-foreground">{c.matchScore}%</span>
-                        </div>
-                      </div>
-                    ))}
-
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="secondary" className="w-full">
-                          Compare selected ({compareIds.length})
-                        </Button>
-                      </DialogTrigger>
-                      <CompareDialog companies={selectedCompanies} onClear={clearCompare} />
-                    </Dialog>
+              <GlassCard interactive={false} className="sticky top-24 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setCompareOpen((o) => !o)}
+                  className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-white/5"
+                >
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-3.5 w-3.5 text-primary" />
+                    <p className="text-sm font-semibold text-foreground">Compare</p>
+                    {compareIds.length > 0 && (
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+                        {compareIds.length}
+                      </span>
+                    )}
                   </div>
-                )}
+                  <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform duration-300", compareOpen && "rotate-180")} />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {compareOpen && (
+                    <motion.div
+                      key="compare-body"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-5 pb-5">
+                        {compareIds.length === 0 ? (
+                          <div className="rounded-xl border border-dashed border-border bg-background/20 px-4 py-6 text-center">
+                            <Building2 className="mx-auto mb-2 h-6 w-6 text-muted-foreground/40" />
+                            <p className="text-xs text-muted-foreground">Select up to 3 companies from the list to compare side by side.</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {selectedCompanies.map((c) => (
+                              <div
+                                key={c.id}
+                                className="group cursor-pointer rounded-2xl border border-border bg-background/30 p-3 transition-colors hover:border-primary/30 hover:bg-background/50"
+                                onClick={() => navigate(`/companies/${c.id}`)}
+                              >
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="min-w-0">
+                                    <p className="truncate text-sm font-semibold text-foreground">{c.name}</p>
+                                    <p className="mt-0.5 text-xs text-muted-foreground">{c.location}</p>
+                                  </div>
+                                  <span className="shrink-0 rounded-lg bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">{c.matchScore}%</span>
+                                </div>
+                                <div className="mt-2 flex items-center gap-2">
+                                  <Star className="h-3 w-3 fill-warning text-warning" />
+                                  <span className="text-xs text-foreground">{c.rating}</span>
+                                  <span className="text-xs text-muted-foreground">• {c.priceRange}</span>
+                                </div>
+                              </div>
+                            ))}
+
+                            <div className="flex gap-2">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button variant="default" size="sm" className="flex-1">
+                                    Compare ({compareIds.length})
+                                  </Button>
+                                </DialogTrigger>
+                                <CompareDialog companies={selectedCompanies} onClear={clearCompare} />
+                              </Dialog>
+                              <Button variant="secondary" size="sm" onClick={clearCompare} className="px-3">
+                                <Minus className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </GlassCard>
             </div>
           </motion.div>
@@ -612,25 +681,54 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
           >
             {/* Filters (desktop) */}
             <div className="hidden lg:block">
-              <GlassCard interactive={false} className="sticky top-24 p-5">
-                <div className="mb-4 flex items-center justify-between">
-                  <p className="text-sm font-semibold text-foreground">Filters</p>
-                  <Button
-                    variant="link"
-                    className="h-auto p-0 text-xs"
-                    onClick={() => {
-                      setMaterialCategories([]);
-                    }}
-                  >
-                    Reset
-                  </Button>
-                </div>
-                {MaterialFilters}
+              <GlassCard interactive={false} className="sticky top-24 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setFiltersOpen((o) => !o)}
+                  className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-white/5"
+                >
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-3.5 w-3.5 text-primary" />
+                    <p className="text-sm font-semibold text-foreground">Filters</p>
+                    {materialCategories.length > 0 && (
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+                        {materialCategories.length}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform duration-300", filtersOpen && "rotate-180")} />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {filtersOpen && (
+                    <motion.div
+                      key="mat-filter-body"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="max-h-[calc(100vh-14rem)] overflow-y-auto scroll-styled px-5 pb-5">
+                        <div className="mb-3 flex justify-end">
+                          <Button
+                            variant="link"
+                            className="h-auto p-0 text-xs"
+                            onClick={() => setMaterialCategories([])}
+                          >
+                            Reset all
+                          </Button>
+                        </div>
+                        {MaterialFilters}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </GlassCard>
             </div>
 
             {/* Results */}
-            <div className="space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto pr-1">
+            <div className="space-y-4 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scroll-styled pr-1">
               {loading ? (
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {Array.from({ length: 6 }).map((_, i) => (
