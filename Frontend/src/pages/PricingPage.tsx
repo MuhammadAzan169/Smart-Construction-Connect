@@ -446,7 +446,6 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
       <Tabs defaultValue="cities">
         <TabsList className="flex h-auto flex-wrap gap-1">
           <TabsTrigger value="cities"><MapPin className="mr-1 h-3.5 w-3.5" />Cities / Areas</TabsTrigger>
-          <TabsTrigger value="societies"><MapPin className="mr-1 h-3.5 w-3.5" />Societies / Locations</TabsTrigger>
           <TabsTrigger value="packages"><Package className="mr-1 h-3.5 w-3.5" />Packages</TabsTrigger>
           <TabsTrigger value="materials"><Wrench className="mr-1 h-3.5 w-3.5" />Materials</TabsTrigger>
           <TabsTrigger value="pricing">₨ Pricing</TabsTrigger>
@@ -543,89 +542,7 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
           </GlassCard>
         </TabsContent>
 
-        {/* ── Tab 2: Societies / Locations ───────────────────────────────────── */}
-        <TabsContent value="societies" className="mt-6 space-y-4">
-          <GlassCard interactive={false} className="p-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold text-foreground">Service locations detail</p>
-                <p className="text-xs text-muted-foreground">City, society/area, and phase/block for each location you serve.</p>
-              </div>
-              <Button type="button" variant="secondary" onClick={addArea}><Plus className="h-4 w-4" /> Add location</Button>
-            </div>
-
-            {pricing.areaRates.length === 0 ? (
-              <p className="mt-4 text-sm text-muted-foreground">No locations added yet.</p>
-            ) : (
-              <div className="mt-4 grid gap-4">
-                {pricing.areaRates.map((row, idx) => {
-                  const cityKnown = (cityOptions as readonly string[]).includes(row.city);
-                  const citySelectValue = row.city ? (cityKnown ? row.city : "__custom__") : "__none__";
-                  const societyOpts = cityKnown ? (societiesByCity[row.city] ?? []) : [];
-                  const societyKnown = cityKnown && societyOpts.includes(row.society);
-                  const societySelectValue = row.society ? (societyKnown ? row.society : "__custom__") : "__none__";
-                  return (
-                    <div key={row.id} className="rounded-2xl border border-border bg-background/30 p-4">
-                      <div className="flex items-start justify-between">
-                        <p className="text-sm font-medium text-foreground">Location {idx + 1}</p>
-                        <Button type="button" variant="link" className="h-auto p-0 text-xs text-destructive" onClick={() => removeArea(row.id)}>
-                          <X className="h-3.5 w-3.5" /> Remove
-                        </Button>
-                      </div>
-                      <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                        <div className="space-y-2">
-                          <Label className="text-xs text-muted-foreground">City</Label>
-                          <Select value={citySelectValue} onValueChange={(v) => {
-                            if (v === "__none__") { patchArea(row.id, { city: "", society: "" }); return; }
-                            if (v === "__custom__") { if (cityKnown) patchArea(row.id, { city: "", society: "" }); return; }
-                            patchArea(row.id, { city: v, society: societiesByCity[v]?.includes(row.society) ? row.society : "" });
-                          }}>
-                            <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select city" /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="__none__">Not set</SelectItem>
-                              {(cityOptions as readonly string[]).map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                              <SelectItem value="__custom__">Other (type manually)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          {citySelectValue === "__custom__" && <Input value={row.city} onChange={(e) => patchArea(row.id, { city: e.target.value, society: "" })} className="bg-background/40" placeholder="Enter city" />}
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-xs text-muted-foreground">Society / Area</Label>
-                          {cityKnown ? (
-                            <>
-                              <Select value={societySelectValue} onValueChange={(v) => {
-                                if (v === "__none__") { patchArea(row.id, { society: "" }); return; }
-                                if (v === "__custom__") { if (societyKnown) patchArea(row.id, { society: "" }); return; }
-                                patchArea(row.id, { society: v });
-                              }}>
-                                <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select society" /></SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="__none__">Not set</SelectItem>
-                                  {societyOpts.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                                  <SelectItem value="__custom__">Other (type manually)</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              {societySelectValue === "__custom__" && <Input value={row.society} onChange={(e) => patchArea(row.id, { society: e.target.value })} className="bg-background/40" placeholder="Enter society" />}
-                            </>
-                          ) : (
-                            <Input value={row.society} onChange={(e) => patchArea(row.id, { society: e.target.value })} className="bg-background/40" placeholder="Enter society" />
-                          )}
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-xs text-muted-foreground">Phase / Block</Label>
-                          <Input value={row.phase} onChange={(e) => patchArea(row.id, { phase: e.target.value })} className="bg-background/40" placeholder="e.g., Phase 1 / Block A" list="phase-suggestions" />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-                <datalist id="phase-suggestions">{phaseSuggestions.map((p) => <option key={p} value={p} />)}</datalist>
-              </div>
-            )}
-          </GlassCard>
-        </TabsContent>
-
-        {/* ── Tab 3: Packages ────────────────────────────────────────────────── */}
+        {/* ── Tab 2: Packages ────────────────────────────────────────────────── */}
         <TabsContent value="packages" className="mt-6 space-y-4">
           <GlassCard interactive={false} className="p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

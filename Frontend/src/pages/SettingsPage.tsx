@@ -48,6 +48,7 @@ type PackageDef = { id: string; label: string };
 type CompanySettings = {
   company_name: string;
   description: string;
+  city: string;
   logo_url: string;
   dp_url: string;
   contact: {
@@ -255,6 +256,7 @@ function normalizeSettingsFromRaw(obj: Record<string, unknown>, defaults: Compan
   return {
     company_name: str(obj.company_name, defaults.company_name),
     description: str(obj.description, defaults.description),
+    city: str(obj.city, defaults.city),
     logo_url: str(obj.logo_url, defaults.logo_url),
     dp_url: str(obj.dp_url, defaults.dp_url),
     contact: {
@@ -343,7 +345,8 @@ function defaultSettings(company: CompanyDatasetCompany | null, email: string): 
   return {
     company_name: company?.company_name ?? "",
     description: "",
-    logo_url: company?.logo_url ?? "",
+    city: (company as Record<string, unknown>)?.city as string ?? "",
+    logo_url: company?.logo_url ?? "",    
     dp_url: "",
     contact: {
       phone: company?.contact?.phone ?? "",
@@ -739,6 +742,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
         ...(profileRef.current ?? {}),
         company_name: settings.company_name,
         description: settings.description,
+        city: settings.city,
         logo_url: settings.logo_url,
         dp_url: settings.dp_url,
         contact: settings.contact,
@@ -925,6 +929,24 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                 maxLength={500}
               />
               <p className="text-xs text-muted-foreground">{settings.description.length}/500 characters</p>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">Head Office Location</p>
+            <p className="mt-1 text-xs text-muted-foreground">Primary city where your company is based.</p>
+            <div className="mt-3">
+              <Label>City</Label>
+              <Select
+                value={settings.city || "__none__"}
+                onValueChange={(v) => setSettings((prev) => ({ ...prev, city: v === "__none__" ? "" : v }))}
+              >
+                <SelectTrigger className="mt-1 bg-background/40"><SelectValue placeholder="Select city" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">Not set</SelectItem>
+                  {(cityOptions as readonly string[]).map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
           </GlassCard>
 
@@ -1490,9 +1512,21 @@ type SupplierSettings = {
   };
   legal_info: {
     registered: boolean;
+    secp_registered: boolean;
     ntn: string;
     year_established: number | null;
   };
+  payment_terms: {
+    advance_percentage: number | null;
+    accepted_payments: string[];
+    minimum_order_value: number | null;
+  };
+  delivery_info: {
+    delivery_time_days: number | null;
+    delivery_charges: string;
+    free_delivery_above: number | null;
+  };
+  status: string;
   material_categories: string[];
   profile_settings: {
     public_profile: boolean;
@@ -1508,6 +1542,8 @@ function defaultSupplierSettings(profile: Record<string, unknown> | null, email:
   const editorContact = editorSettings.contact && typeof editorSettings.contact === "object" ? (editorSettings.contact as Record<string, unknown>) : {};
   const editorLegal = editorSettings.legal_info && typeof editorSettings.legal_info === "object" ? (editorSettings.legal_info as Record<string, unknown>) : {};
   const editorProfile = editorSettings.profile_settings && typeof editorSettings.profile_settings === "object" ? (editorSettings.profile_settings as Record<string, unknown>) : {};
+  const editorPayment = editorSettings.payment_terms && typeof editorSettings.payment_terms === "object" ? (editorSettings.payment_terms as Record<string, unknown>) : {};
+  const editorDelivery = editorSettings.delivery_info && typeof editorSettings.delivery_info === "object" ? (editorSettings.delivery_info as Record<string, unknown>) : {};
   return {
     supplier_name: str(profile?.supplier_name, ""),
     description: str(profile?.description, ""),
@@ -1525,9 +1561,21 @@ function defaultSupplierSettings(profile: Record<string, unknown> | null, email:
     },
     legal_info: {
       registered: bool(editorLegal.registered, false),
+      secp_registered: bool(editorLegal.secp_registered, false),
       ntn: str(editorLegal.ntn, ""),
       year_established: numOrNull(editorLegal.year_established, null),
     },
+    payment_terms: {
+      advance_percentage: numOrNull(editorPayment.advance_percentage, null),
+      accepted_payments: strArr(editorPayment.accepted_payments, []),
+      minimum_order_value: numOrNull(editorPayment.minimum_order_value, null),
+    },
+    delivery_info: {
+      delivery_time_days: numOrNull(editorDelivery.delivery_time_days, null),
+      delivery_charges: str(editorDelivery.delivery_charges, ""),
+      free_delivery_above: numOrNull(editorDelivery.free_delivery_above, null),
+    },
+    status: str(profile?.status ?? editorSettings.status, "active"),
     material_categories: strArr(editorSettings.material_categories, []),
     profile_settings: {
       public_profile: bool(editorProfile.public_profile, true),
@@ -1566,6 +1614,62 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
   const profileRef = useRef<Record<string, unknown> | null>(null);
   const sDpInputRef = useRef<HTMLInputElement>(null);
   const sLogoInputRef = useRef<HTMLInputElement>(null);
+
+  const [customInputs, setCustomInputs] = useState<Record<string, string>>({});
+  const setCustomInput = (key: string, value: string) => setCustomInputs((prev) => ({ ...prev, [key]: value }));
+
+  function CheckboxListWithCustom({
+    fieldKey, options, selected, onToggle, columns = "sm:grid-cols-4",
+  }: { fieldKey: string; options: string[]; selected: string[]; onToggle: (value: string, on: boolean) => void; columns?: string; }) {
+    const customValues = selected.filter((v) => !options.includes(v));
+    const inputKey = `chk-${fieldKey}`;
+    return (
+      <div className={`mt-2 grid gap-2 ${columns}`}>
+        {options.map((opt) => (
+          <label key={opt} className="flex items-center gap-2 text-sm text-foreground">
+            <Checkbox checked={selected.includes(opt)} onCheckedChange={(v) => onToggle(opt, Boolean(v))} />
+            {opt}
+          </label>
+        ))}
+        {customValues.map((cv) => (
+          <label key={cv} className="flex items-center gap-2 text-sm text-foreground">
+            <Checkbox checked onCheckedChange={() => onToggle(cv, false)} />
+            <span className="text-primary">{cv}</span>
+          </label>
+        ))}
+        <div className="flex items-center gap-2 col-span-full">
+          <Input value={customInputs[inputKey] ?? ""} onChange={(e) => setCustomInput(inputKey, e.target.value)} placeholder="Other (type custom)…" className="bg-background/40 h-8 text-xs max-w-[14rem]" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); const val = (customInputs[inputKey] ?? "").trim(); if (val && !selected.includes(val)) { onToggle(val, true); setCustomInput(inputKey, ""); } } }} />
+          <Button type="button" variant="secondary" size="sm" className="h-8 px-2" disabled={!(customInputs[inputKey] ?? "").trim()} onClick={() => { const val = (customInputs[inputKey] ?? "").trim(); if (val && !selected.includes(val)) { onToggle(val, true); setCustomInput(inputKey, ""); } }}>
+            <Plus className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  function SelectWithCustom({ value, onValueChange, placeholder = "Select", notSetLabel = "Not set", options, className = "bg-background/40" }: { value: string; onValueChange: (v: string) => void; placeholder?: string; notSetLabel?: string; options: { value: string; label: string }[]; className?: string; }) {
+    const [customMode, setCustomMode] = useState(false);
+    const knownValues = useMemo(() => new Set(options.map((o) => o.value)), [options]);
+    const isCustom = customMode || (value !== "__none__" && value !== "" && !knownValues.has(value));
+    if (isCustom) {
+      return (
+        <div className="flex items-center gap-2">
+          <Input value={value === "__none__" ? "" : value} onChange={(e) => onValueChange(e.target.value)} placeholder="Type custom value…" className={`${className} h-9 text-sm flex-1`} autoFocus />
+          <Button type="button" variant="ghost" size="sm" className="h-9 px-2 text-xs text-muted-foreground" onClick={() => { setCustomMode(false); onValueChange("__none__"); }}>Cancel</Button>
+        </div>
+      );
+    }
+    return (
+      <Select value={value} onValueChange={(v) => { if (v === "__custom__") { setCustomMode(true); onValueChange(""); } else { onValueChange(v); } }}>
+        <SelectTrigger className={className}><SelectValue placeholder={placeholder} /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="__none__">{notSetLabel}</SelectItem>
+          {options.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+          <SelectItem value="__custom__" className="text-primary">Custom…</SelectItem>
+        </SelectContent>
+      </Select>
+    );
+  }
 
   useEffect(() => {
     if (!supplierSlug) { setLoading(false); return; }
@@ -1626,6 +1730,9 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
         _editor_settings: {
           contact: { linkedin: settings.contact.linkedin, facebook: settings.contact.facebook },
           legal_info: settings.legal_info,
+          payment_terms: settings.payment_terms,
+          delivery_info: settings.delivery_info,
+          status: settings.status,
           material_categories: settings.material_categories,
           profile_settings: settings.profile_settings,
         },
@@ -1676,6 +1783,7 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
           <TabsTrigger value="profile">Supplier Profile</TabsTrigger>
           <TabsTrigger value="contact">Contact & Social</TabsTrigger>
           <TabsTrigger value="business">Business & Legal</TabsTrigger>
+          <TabsTrigger value="operations">Operations & Delivery</TabsTrigger>
         </TabsList>
 
         {/* ── Tab 1: Supplier Profile ──────────────────────────────────────── */}
@@ -1928,15 +2036,27 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
             <p className="text-sm font-semibold text-foreground">Legal Registration</p>
             <p className="mt-1 text-xs text-muted-foreground">Registration status affects trust scores and visibility.</p>
             <div className="mt-4 grid gap-4">
-              <div className="flex items-center justify-between rounded-2xl border border-border bg-background/30 p-3">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Legally registered</p>
-                  <p className="text-xs text-muted-foreground">Business registered with authorities.</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="flex items-center justify-between rounded-2xl border border-border bg-background/30 p-3">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Legally registered</p>
+                    <p className="text-xs text-muted-foreground">Business registered with authorities.</p>
+                  </div>
+                  <Switch
+                    checked={settings.legal_info.registered}
+                    onCheckedChange={(v) => setSettings((prev) => ({ ...prev, legal_info: { ...prev.legal_info, registered: v } }))}
+                  />
                 </div>
-                <Switch
-                  checked={settings.legal_info.registered}
-                  onCheckedChange={(v) => setSettings((prev) => ({ ...prev, legal_info: { ...prev.legal_info, registered: v } }))}
-                />
+                <div className="flex items-center justify-between rounded-2xl border border-border bg-background/30 p-3">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">SECP registered</p>
+                    <p className="text-xs text-muted-foreground">Securities & Exchange Commission of Pakistan.</p>
+                  </div>
+                  <Switch
+                    checked={settings.legal_info.secp_registered}
+                    onCheckedChange={(v) => setSettings((prev) => ({ ...prev, legal_info: { ...prev.legal_info, secp_registered: v } }))}
+                  />
+                </div>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
@@ -1960,6 +2080,121 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
                     max={2026}
                   />
                 </div>
+              </div>
+            </div>
+          </GlassCard>
+        </TabsContent>
+
+        {/* ── Tab 4: Operations & Delivery ────────────────────────────────── */}
+        <TabsContent value="operations" className="mt-6 space-y-4">
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">Operational Status</p>
+            <p className="mt-1 text-xs text-muted-foreground">Control whether your supplier profile is currently active and accepting orders.</p>
+            <div className="mt-4">
+              <div className="flex items-center justify-between rounded-2xl border border-border bg-background/30 p-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Active status</p>
+                  <p className="text-xs text-muted-foreground">When inactive, your profile won't appear in search results.</p>
+                </div>
+                <Switch
+                  checked={settings.status === "active"}
+                  onCheckedChange={(v) => setSettings((prev) => ({ ...prev, status: v ? "active" : "inactive" }))}
+                />
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">Payment Terms</p>
+            <p className="mt-1 text-xs text-muted-foreground">How companies and clients will pay for materials.</p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">Advance payment %</Label>
+                <Input
+                  type="number" min={0} max={100}
+                  value={settings.payment_terms.advance_percentage ?? ""}
+                  onChange={(e) => setSettings((prev) => ({ ...prev, payment_terms: { ...prev.payment_terms, advance_percentage: e.target.value.trim() ? Number(e.target.value) : null } }))}
+                  className="bg-background/40" placeholder="e.g., 50"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">Minimum order value (PKR)</Label>
+                <Input
+                  type="number" min={0} step={1000}
+                  value={settings.payment_terms.minimum_order_value ?? ""}
+                  onChange={(e) => setSettings((prev) => ({ ...prev, payment_terms: { ...prev.payment_terms, minimum_order_value: e.target.value.trim() ? Number(e.target.value) : null } }))}
+                  className="bg-background/40" placeholder="e.g., 10000"
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <p className="text-xs font-semibold text-foreground">Accepted Payment Methods</p>
+              <CheckboxListWithCustom
+                fieldKey="accepted_payments"
+                options={["Cash on Delivery", "Bank Transfer", "Online Payment", "Cheque", "Credit (30 Days)", "Credit (60 Days)", "Letter of Credit"]}
+                columns="sm:grid-cols-2"
+                selected={settings.payment_terms.accepted_payments}
+                onToggle={(opt, v) => setSettings((prev) => ({
+                  ...prev,
+                  payment_terms: {
+                    ...prev.payment_terms,
+                    accepted_payments: v
+                      ? Array.from(new Set([...prev.payment_terms.accepted_payments, opt]))
+                      : prev.payment_terms.accepted_payments.filter((x) => x !== opt),
+                  },
+                }))}
+              />
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5">
+            <p className="text-sm font-semibold text-foreground">Delivery Information</p>
+            <p className="mt-1 text-xs text-muted-foreground">Delivery policies and charges for your materials.</p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">Typical delivery time (days)</Label>
+                <Select
+                  value={settings.delivery_info.delivery_time_days != null ? String(settings.delivery_info.delivery_time_days) : "__none__"}
+                  onValueChange={(v) => setSettings((prev) => ({ ...prev, delivery_info: { ...prev.delivery_info, delivery_time_days: v === "__none__" ? null : Number(v) || null } }))}
+                >
+                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select delivery time" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not set</SelectItem>
+                    <SelectItem value="0">Same Day</SelectItem>
+                    <SelectItem value="1">1 Day</SelectItem>
+                    <SelectItem value="2">2 Days</SelectItem>
+                    <SelectItem value="3">3 Days</SelectItem>
+                    <SelectItem value="5">5 Days</SelectItem>
+                    <SelectItem value="7">7 Days</SelectItem>
+                    <SelectItem value="14">14 Days</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">Delivery charges</Label>
+                <Select
+                  value={settings.delivery_info.delivery_charges || "__none__"}
+                  onValueChange={(v) => setSettings((prev) => ({ ...prev, delivery_info: { ...prev.delivery_info, delivery_charges: v === "__none__" ? "" : v } }))}
+                >
+                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select delivery charges" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not set</SelectItem>
+                    <SelectItem value="free">Free Delivery</SelectItem>
+                    <SelectItem value="fixed">Fixed Charges</SelectItem>
+                    <SelectItem value="per_km">Per KM</SelectItem>
+                    <SelectItem value="negotiable">Negotiable</SelectItem>
+                    <SelectItem value="buyer_arranged">Buyer Arranges</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">Free delivery above (PKR)</Label>
+                <Input
+                  type="number" min={0} step={5000}
+                  value={settings.delivery_info.free_delivery_above ?? ""}
+                  onChange={(e) => setSettings((prev) => ({ ...prev, delivery_info: { ...prev.delivery_info, free_delivery_above: e.target.value.trim() ? Number(e.target.value) : null } }))}
+                  className="bg-background/40" placeholder="e.g., 50000"
+                />
               </div>
             </div>
           </GlassCard>
