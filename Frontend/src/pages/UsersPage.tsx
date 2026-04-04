@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { StatCard } from "@/components/shared/StatCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -13,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-import { Search, ArrowLeft } from "lucide-react";
+import { Search, ArrowLeft, Users, ShieldCheck, Ban, UserPlus } from "lucide-react";
 
 type UserRow = {
   id: string;
@@ -60,6 +62,25 @@ export default function UsersPage() {
     return matchSearch && matchRole;
   });
 
+  const roleCounts = useMemo(() => {
+    const counts = { total: users.length, active: 0, pending: 0, banned: 0 };
+    for (const u of users) {
+      if (u.status === "active") counts.active++;
+      else if (u.status === "pending") counts.pending++;
+      else if (u.status === "banned") counts.banned++;
+    }
+    return counts;
+  }, [users]);
+
+  const roleBadgeVariant = (role: string) => {
+    switch (role) {
+      case "admin": return "default" as const;
+      case "company": return "secondary" as const;
+      case "supplier": return "outline" as const;
+      default: return "secondary" as const;
+    }
+  };
+
   return (
       <motion.div
         className="space-y-6"
@@ -85,6 +106,14 @@ export default function UsersPage() {
           <h1 className="text-2xl font-bold text-foreground">Users</h1>
           <p className="text-sm text-muted-foreground">Manage all platform users.</p>
         </motion.div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="Total Users" value={roleCounts.total} icon={Users} />
+        <StatCard title="Active" value={roleCounts.active} icon={ShieldCheck} />
+        <StatCard title="Pending" value={roleCounts.pending} icon={UserPlus} trend={roleCounts.pending > 0 ? "up" : undefined} change={roleCounts.pending > 0 ? "Needs review" : ""} />
+        <StatCard title="Banned" value={roleCounts.banned} icon={Ban} />
+      </div>
+
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -145,7 +174,9 @@ export default function UsersPage() {
                   <TableRow key={u.id}>
                     <TableCell className="font-medium text-foreground">{u.name}</TableCell>
                     <TableCell className="text-muted-foreground">{u.email}</TableCell>
-                    <TableCell className="capitalize">{u.role}</TableCell>
+                    <TableCell>
+                      <Badge variant={roleBadgeVariant(u.role)} className="capitalize text-[10px]">{u.role}</Badge>
+                    </TableCell>
                     <TableCell>
                       <StatusBadge status={u.status as any} />
                     </TableCell>

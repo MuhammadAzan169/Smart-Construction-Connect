@@ -434,14 +434,36 @@ function SupplierDashboard() {
 function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [activity, setActivity] = useState<{ timestamp: string; action: string; target: string; details: string }[]>([]);
+  const [pendingUsers, setPendingUsers] = useState<{ id: string; name: string; email: string; role: string; status: string; joinDate: string }[]>([]);
 
   useEffect(() => {
-    api.admin
-      .getStats()
-      .then(setStats)
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    Promise.all([
+      api.admin.getStats().then(setStats).catch(() => {}),
+      api.admin.getActivity().then(setActivity).catch(() => {}),
+      api.admin.getUsers().then((users: any[]) => setPendingUsers(users.filter((u) => u.status === "pending").slice(0, 5))).catch(() => {}),
+    ]).finally(() => setLoading(false));
   }, []);
+
+  const handleApprove = async (userId: string) => {
+    try {
+      await api.admin.updateUserStatus(userId, "active");
+      setPendingUsers((prev) => prev.filter((u) => u.id !== userId));
+      if (stats) setStats({ ...stats, pending_approvals: Math.max(0, (stats.pending_approvals ?? 1) - 1) });
+    } catch {}
+  };
+
+  const handleReject = async (userId: string) => {
+    try {
+      await api.admin.updateUserStatus(userId, "banned");
+      setPendingUsers((prev) => prev.filter((u) => u.id !== userId));
+      if (stats) setStats({ ...stats, pending_approvals: Math.max(0, (stats.pending_approvals ?? 1) - 1), banned_users: (stats.banned_users ?? 0) + 1 });
+    } catch {}
+  };
+
+  const recentActivity = activity.slice(0, 6);
+
+  const actionLabel = (a: string) => a.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
     <div className="space-y-6">
@@ -450,53 +472,220 @@ function AdminDashboard() {
           <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
           <p className="text-sm text-muted-foreground">Oversight, approvals, and platform activity.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button asChild>
-            <Link to="/users">Users</Link>
+            <Link to="/users">Manage Users</Link>
           </Button>
           <Button asChild variant="secondary">
-            <Link to="/activity">Activity</Link>
+            <Link to="/approvals">Approvals</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/activity">Activity Log</Link>
           </Button>
         </div>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <p className="text-sm text-muted-foreground">Loading stats…</p>
+          <p className="text-sm text-muted-foreground">Loading dashboard…</p>
         </div>
-      ) : stats ? (
+      ) : (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="space-y-4"
+          className="space-y-6"
         >
+          {/* Stat cards */}
           <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
-            <StaggerItem><StatCard title="Total Users" value={stats.total_users} icon={Users} /></StaggerItem>
-            <StaggerItem><StatCard title="Clients" value={stats.clients} icon={Users} /></StaggerItem>
-            <StaggerItem><StatCard title="Companies" value={stats.companies} icon={Building2} /></StaggerItem>
-            <StaggerItem><StatCard title="Suppliers" value={stats.suppliers} icon={Package} /></StaggerItem>
+            <StaggerItem><StatCard title="Total Users" value={stats?.total_users ?? "—"} icon={Users} /></StaggerItem>
+            <StaggerItem><StatCard title="Clients" value={stats?.clients ?? "—"} icon={Users} /></StaggerItem>
+            <StaggerItem><StatCard title="Companies" value={stats?.companies ?? "—"} icon={Building2} /></StaggerItem>
+            <StaggerItem><StatCard title="Suppliers" value={stats?.suppliers ?? "—"} icon={Package} /></StaggerItem>
           </StaggerList>
 
           <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08} delay={0.2}>
             <StaggerItem>
               <StatCard
                 title="Pending Approvals"
-                value={stats.pending_approvals}
+                value={stats?.pending_approvals ?? 0}
                 icon={ShieldCheck}
-                trend={stats.pending_approvals > 0 ? "up" : undefined}
-                change={stats.pending_approvals > 0 ? "Needs review" : "All clear"}
+                trend={(stats?.pending_approvals ?? 0) > 0 ? "up" : undefined}
+                change={(stats?.pending_approvals ?? 0) > 0 ? "Needs review" : "All clear"}
               />
             </StaggerItem>
-            <StaggerItem><StatCard title="Banned Users" value={stats.banned_users} icon={Activity} /></StaggerItem>
-            <StaggerItem><StatCard title="Dataset Companies" value={stats.dataset_companies} icon={Building2} /></StaggerItem>
-            <StaggerItem><StatCard title="Dataset Suppliers" value={stats.dataset_suppliers} icon={Package} /></StaggerItem>
+            <StaggerItem><StatCard title="Banned Users" value={stats?.banned_users ?? 0} icon={Activity} /></StaggerItem>
+            <StaggerItem><StatCard title="Dataset Companies" value={stats?.dataset_companies ?? "—"} icon={Building2} /></StaggerItem>
+            <StaggerItem><StatCard title="Dataset Suppliers" value={stats?.dataset_suppliers ?? "—"} icon={Package} /></StaggerItem>
           </StaggerList>
+
+          {/* Main content grid */}
+          <div className="grid gap-4 lg:grid-cols-3">
+            {/* Left: Pending Approvals */}
+            <div className="lg:col-span-2 space-y-4">
+              <GlassCard interactive={false} className="p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Pending Approvals</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Review and approve new accounts.</p>
+                  </div>
+                  <Button asChild variant="link" className="h-auto p-0 text-xs">
+                    <Link to="/approvals" className="flex items-center gap-1">
+                      View all <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                </div>
+                <div className="mt-4 space-y-2">
+                  {pendingUsers.length === 0 ? (
+                    <div className="rounded-2xl border border-dashed border-border p-6 text-center">
+                      <ShieldCheck className="mx-auto h-8 w-8 text-success" />
+                      <p className="mt-2 text-sm text-muted-foreground">No pending approvals. All clear!</p>
+                    </div>
+                  ) : (
+                    pendingUsers.map((u, i) => (
+                      <motion.div
+                        key={u.id}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.05 * i, duration: 0.25 }}
+                        className="flex items-center justify-between rounded-2xl border border-border bg-background/30 px-4 py-3"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="truncate text-sm font-medium text-foreground">{u.name}</p>
+                            <Badge variant="secondary" className="text-[10px] capitalize">{u.role}</Badge>
+                          </div>
+                          <p className="truncate text-xs text-muted-foreground">{u.email}</p>
+                        </div>
+                        <div className="flex gap-2 ml-3">
+                          <Button size="sm" onClick={() => handleApprove(u.id)}>Approve</Button>
+                          <Button size="sm" variant="destructive" onClick={() => handleReject(u.id)}>Reject</Button>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+              </GlassCard>
+
+              {/* Recent Activity */}
+              <GlassCard interactive={false} className="p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Recent Activity</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Latest platform events and user actions.</p>
+                  </div>
+                  <Button asChild variant="link" className="h-auto p-0 text-xs">
+                    <Link to="/activity" className="flex items-center gap-1">
+                      View all <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                </div>
+                <div className="mt-4 space-y-2">
+                  {recentActivity.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-4 text-center">No recent activity.</p>
+                  ) : (
+                    recentActivity.map((entry, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.04 * i, duration: 0.25 }}
+                        className="flex items-start gap-3 rounded-2xl border border-border bg-background/30 px-4 py-3"
+                      >
+                        <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                          <Activity className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground">{actionLabel(entry.action)}</p>
+                          <p className="text-xs text-muted-foreground truncate">{entry.target} — {entry.details}</p>
+                          <p className="text-[10px] text-muted-foreground/70 mt-0.5">{new Date(entry.timestamp).toLocaleString()}</p>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+              </GlassCard>
+            </div>
+
+            {/* Right sidebar: Quick actions */}
+            <div className="space-y-4">
+              <GlassCard className="p-5">
+                <p className="text-sm font-semibold text-foreground mb-4">Quick Actions</p>
+                <div className="space-y-2">
+                  <Button asChild variant="outline" className="w-full justify-between">
+                    <Link to="/users">
+                      <span className="flex items-center gap-2"><Users className="h-4 w-4" /> Manage Users</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-between">
+                    <Link to="/approvals">
+                      <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Approvals</span>
+                      <Badge variant={((stats?.pending_approvals ?? 0) > 0) ? "destructive" : "secondary"} className="text-[10px]">{stats?.pending_approvals ?? 0}</Badge>
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-between">
+                    <Link to="/companies">
+                      <span className="flex items-center gap-2"><Building2 className="h-4 w-4" /> Browse Companies</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-between">
+                    <Link to="/activity">
+                      <span className="flex items-center gap-2"><Activity className="h-4 w-4" /> Activity Log</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </GlassCard>
+
+              <GlassCard className="p-5">
+                <p className="text-sm font-semibold text-foreground mb-1">Platform Overview</p>
+                <p className="text-xs text-muted-foreground mb-4">Role distribution at a glance.</p>
+                <div className="space-y-3">
+                  {[
+                    { label: "Clients", count: stats?.clients ?? 0, total: stats?.total_users ?? 1, color: "bg-blue-500" },
+                    { label: "Companies", count: stats?.companies ?? 0, total: stats?.total_users ?? 1, color: "bg-emerald-500" },
+                    { label: "Suppliers", count: stats?.suppliers ?? 0, total: stats?.total_users ?? 1, color: "bg-amber-500" },
+                  ].map((item) => {
+                    const pct = item.total > 0 ? Math.round((item.count / item.total) * 100) : 0;
+                    return (
+                      <div key={item.label}>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="text-foreground font-medium">{item.label}</span>
+                          <span className="text-muted-foreground">{item.count} ({pct}%)</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-muted overflow-hidden">
+                          <motion.div
+                            className={`h-full rounded-full ${item.color}`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${pct}%` }}
+                            transition={{ duration: 0.8, delay: 0.3 }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </GlassCard>
+
+              <GlassCard className="p-5">
+                <p className="text-sm font-semibold text-foreground mb-1">Dataset Health</p>
+                <p className="text-xs text-muted-foreground mb-3">AI training data counts.</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-xl border border-border bg-background/30 p-3 text-center">
+                    <p className="text-lg font-bold text-foreground">{stats?.dataset_companies ?? "—"}</p>
+                    <p className="text-[10px] text-muted-foreground">Companies</p>
+                  </div>
+                  <div className="rounded-xl border border-border bg-background/30 p-3 text-center">
+                    <p className="text-lg font-bold text-foreground">{stats?.dataset_suppliers ?? "—"}</p>
+                    <p className="text-[10px] text-muted-foreground">Suppliers</p>
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
+          </div>
         </motion.div>
-      ) : (
-        <GlassCard className="p-5">
-          <p className="text-sm text-muted-foreground">Failed to load stats. Please try again later.</p>
-        </GlassCard>
       )}
     </div>
   );

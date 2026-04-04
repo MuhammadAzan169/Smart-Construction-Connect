@@ -686,18 +686,39 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
                         <Switch checked={Boolean(scope.design_included)} onCheckedChange={(v) => updateScope(pkg.id, "design_included", v)} />
                       </div>
                       <div className="grid gap-3 sm:grid-cols-2">
-                        {(["fixtures", "ceiling", "kitchen", "bathroom"] as const).map((field) => (
+                        {(["fixtures", "ceiling", "kitchen", "bathroom"] as const).map((field) => {
+                          const val = scope[field] || "__none__";
+                          const knownOpts = scopeOptions[field] ?? [];
+                          const isCustomVal = val !== "__none__" && val !== "" && !knownOpts.includes(val);
+                          return (
                           <div key={field} className="space-y-2">
                             <Label className="text-xs text-muted-foreground capitalize">{field}</Label>
-                            <Select value={scope[field] || "__none__"} onValueChange={(v) => updateScope(pkg.id, field, v === "__none__" ? "" : v)}>
+                            {isCustomVal ? (
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  value={val === "__none__" ? "" : val}
+                                  onChange={(e) => updateScope(pkg.id, field, e.target.value)}
+                                  placeholder="Type custom value…"
+                                  className="bg-background/40 h-9 text-sm flex-1"
+                                  autoFocus
+                                />
+                                <Button type="button" variant="ghost" size="sm" className="h-9 px-2 text-xs text-muted-foreground" onClick={() => updateScope(pkg.id, field, "")}>
+                                  Cancel
+                                </Button>
+                              </div>
+                            ) : (
+                            <Select value={val} onValueChange={(v) => { if (v === "__custom__") { updateScope(pkg.id, field, " "); } else { updateScope(pkg.id, field, v === "__none__" ? "" : v); } }}>
                               <SelectTrigger className="bg-background/40"><SelectValue placeholder={`Select ${field}`} /></SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="__none__">Not set</SelectItem>
-                                {(scopeOptions[field] ?? []).map((opt) => <SelectItem key={opt} value={opt}>{humanizeToken(opt)}</SelectItem>)}
+                                {knownOpts.map((opt) => <SelectItem key={opt} value={opt}>{humanizeToken(opt)}</SelectItem>)}
+                                <SelectItem value="__custom__" className="text-primary">Custom…</SelectItem>
                               </SelectContent>
                             </Select>
+                            )}
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </TabsContent>
                   );

@@ -564,6 +564,122 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
     return list.filter((x) => x !== c);
   };
 
+  const [customInputs, setCustomInputs] = useState<Record<string, string>>({});
+  const setCustomInput = (key: string, value: string) => setCustomInputs((prev) => ({ ...prev, [key]: value }));
+
+  /** Render a list of checkboxes with an "Other (custom)" text input at the end. */
+  function CheckboxListWithCustom({
+    fieldKey,
+    options,
+    selected,
+    onToggle,
+    columns = "sm:grid-cols-4",
+  }: {
+    fieldKey: string;
+    options: string[];
+    selected: string[];
+    onToggle: (value: string, on: boolean) => void;
+    columns?: string;
+  }) {
+    const customValues = selected.filter((v) => !options.includes(v));
+    const inputKey = `chk-${fieldKey}`;
+    return (
+      <div className={`mt-2 grid gap-2 ${columns}`}>
+        {options.map((opt) => (
+          <label key={opt} className="flex items-center gap-2 text-sm text-foreground">
+            <Checkbox checked={selected.includes(opt)} onCheckedChange={(v) => onToggle(opt, Boolean(v))} />
+            {opt}
+          </label>
+        ))}
+        {customValues.map((cv) => (
+          <label key={cv} className="flex items-center gap-2 text-sm text-foreground">
+            <Checkbox checked onCheckedChange={() => onToggle(cv, false)} />
+            <span className="text-primary">{cv}</span>
+          </label>
+        ))}
+        <div className="flex items-center gap-2 col-span-full">
+          <Input
+            value={customInputs[inputKey] ?? ""}
+            onChange={(e) => setCustomInput(inputKey, e.target.value)}
+            placeholder="Other (type custom)…"
+            className="bg-background/40 h-8 text-xs max-w-[14rem]"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                const val = (customInputs[inputKey] ?? "").trim();
+                if (val && !selected.includes(val)) {
+                  onToggle(val, true);
+                  setCustomInput(inputKey, "");
+                }
+              }
+            }}
+          />
+          <Button
+            type="button" variant="secondary" size="sm" className="h-8 px-2"
+            disabled={!(customInputs[inputKey] ?? "").trim()}
+            onClick={() => {
+              const val = (customInputs[inputKey] ?? "").trim();
+              if (val && !selected.includes(val)) {
+                onToggle(val, true);
+                setCustomInput(inputKey, "");
+              }
+            }}
+          >
+            <Plus className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  /** Select dropdown with a "Custom…" option that reveals an inline text input. */
+  function SelectWithCustom({
+    value,
+    onValueChange,
+    placeholder = "Select",
+    notSetLabel = "Not set",
+    options,
+    className = "bg-background/40",
+  }: {
+    value: string;
+    onValueChange: (v: string) => void;
+    placeholder?: string;
+    notSetLabel?: string;
+    options: { value: string; label: string }[];
+    className?: string;
+  }) {
+    const [customMode, setCustomMode] = useState(false);
+    const knownValues = useMemo(() => new Set(options.map((o) => o.value)), [options]);
+    const isCustom = customMode || (value !== "__none__" && value !== "" && !knownValues.has(value));
+
+    if (isCustom) {
+      return (
+        <div className="flex items-center gap-2">
+          <Input
+            value={value === "__none__" ? "" : value}
+            onChange={(e) => onValueChange(e.target.value)}
+            placeholder="Type custom value…"
+            className={`${className} h-9 text-sm flex-1`}
+            autoFocus
+          />
+          <Button type="button" variant="ghost" size="sm" className="h-9 px-2 text-xs text-muted-foreground" onClick={() => { setCustomMode(false); onValueChange("__none__"); }}>
+            Cancel
+          </Button>
+        </div>
+      );
+    }
+    return (
+      <Select value={value} onValueChange={(v) => { if (v === "__custom__") { setCustomMode(true); onValueChange(""); } else { onValueChange(v); } }}>
+        <SelectTrigger className={className}><SelectValue placeholder={placeholder} /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="__none__">{notSetLabel}</SelectItem>
+          {options.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+          <SelectItem value="__custom__" className="text-primary">Custom…</SelectItem>
+        </SelectContent>
+      </Select>
+    );
+  }
+
   const addArea = () => {
     const id = `op-${Date.now()}`;
     const rates: Record<string, number | null> = {};
@@ -920,19 +1036,17 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
 
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Warranty duration</Label>
-                <Select
+                <SelectWithCustom
                   value={settings.legal_contract.warranty_duration_years != null ? String(settings.legal_contract.warranty_duration_years) : "__none__"}
-                  onValueChange={(v) => setSettings((prev) => ({ ...prev, legal_contract: { ...prev.legal_contract, warranty_duration_years: v === "__none__" ? null : Number(v) } }))}
-                >
-                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select duration" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not set</SelectItem>
-                    <SelectItem value="1">1 Year</SelectItem>
-                    <SelectItem value="2">2 Years</SelectItem>
-                    <SelectItem value="5">5 Years</SelectItem>
-                    <SelectItem value="10">10 Years</SelectItem>
-                  </SelectContent>
-                </Select>
+                  onValueChange={(v) => setSettings((prev) => ({ ...prev, legal_contract: { ...prev.legal_contract, warranty_duration_years: v === "__none__" || v === "" ? null : Number(v) || null } }))}
+                  placeholder="Select duration"
+                  options={[
+                    { value: "1", label: "1 Year" },
+                    { value: "2", label: "2 Years" },
+                    { value: "5", label: "5 Years" },
+                    { value: "10", label: "10 Years" },
+                  ]}
+                />
               </div>
             </div>
           </GlassCard>
@@ -953,29 +1067,19 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
               </div>
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Installment type</Label>
-                <Select
+                <SelectWithCustom
                   value={settings.payment_terms.installments || "__none__"}
                   onValueChange={(v) => setSettings((prev) => ({ ...prev, payment_terms: { ...prev.payment_terms, installments: v === "__none__" ? "" : v } }))}
-                >
-                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not set</SelectItem>
-                    {paymentOptions.installments.map((o) => <SelectItem key={o} value={o}>{humanizeToken(o)}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                  options={paymentOptions.installments.map((o) => ({ value: o, label: humanizeToken(o) }))}
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Price type</Label>
-                <Select
+                <SelectWithCustom
                   value={settings.payment_terms.price_type || "__none__"}
                   onValueChange={(v) => setSettings((prev) => ({ ...prev, payment_terms: { ...prev.payment_terms, price_type: v === "__none__" ? "" : v } }))}
-                >
-                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not set</SelectItem>
-                    {paymentOptions.priceTypes.map((o) => <SelectItem key={o} value={o}>{humanizeToken(o)}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                  options={paymentOptions.priceTypes.map((o) => ({ value: o, label: humanizeToken(o) }))}
+                />
               </div>
               <div className="flex items-center justify-between rounded-2xl border border-border bg-background/40 p-3">
                 <div>
@@ -1062,36 +1166,32 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Defect liability period</Label>
-                <Select
+                <SelectWithCustom
                   value={settings.after_handover_support.defect_liability_period_months != null ? String(settings.after_handover_support.defect_liability_period_months) : "__none__"}
-                  onValueChange={(v) => setSettings((prev) => ({ ...prev, after_handover_support: { ...prev.after_handover_support, defect_liability_period_months: v === "__none__" ? null : Number(v) } }))}
-                >
-                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select period" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not set</SelectItem>
-                    <SelectItem value="0">No Warranty</SelectItem>
-                    <SelectItem value="6">6 Months</SelectItem>
-                    <SelectItem value="12">12 Months</SelectItem>
-                    <SelectItem value="24">24 Months</SelectItem>
-                    <SelectItem value="36">36 Months</SelectItem>
-                  </SelectContent>
-                </Select>
+                  onValueChange={(v) => setSettings((prev) => ({ ...prev, after_handover_support: { ...prev.after_handover_support, defect_liability_period_months: v === "__none__" || v === "" ? null : Number(v) || null } }))}
+                  placeholder="Select period"
+                  options={[
+                    { value: "0", label: "No Warranty" },
+                    { value: "6", label: "6 Months" },
+                    { value: "12", label: "12 Months" },
+                    { value: "24", label: "24 Months" },
+                    { value: "36", label: "36 Months" },
+                  ]}
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Support response time</Label>
-                <Select
+                <SelectWithCustom
                   value={settings.after_handover_support.support_response_time_days != null ? String(settings.after_handover_support.support_response_time_days) : "__none__"}
-                  onValueChange={(v) => setSettings((prev) => ({ ...prev, after_handover_support: { ...prev.after_handover_support, support_response_time_days: v === "__none__" ? null : Number(v) } }))}
-                >
-                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select time" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not set</SelectItem>
-                    <SelectItem value="1">Within 1 Day</SelectItem>
-                    <SelectItem value="3">Within 3 Days</SelectItem>
-                    <SelectItem value="7">Within 7 Days</SelectItem>
-                    <SelectItem value="14">Within 14 Days</SelectItem>
-                  </SelectContent>
-                </Select>
+                  onValueChange={(v) => setSettings((prev) => ({ ...prev, after_handover_support: { ...prev.after_handover_support, support_response_time_days: v === "__none__" || v === "" ? null : Number(v) || null } }))}
+                  placeholder="Select time"
+                  options={[
+                    { value: "1", label: "Within 1 Day" },
+                    { value: "3", label: "Within 3 Days" },
+                    { value: "7", label: "Within 7 Days" },
+                    { value: "14", label: "Within 14 Days" },
+                  ]}
+                />
               </div>
               <div className="flex items-center justify-between rounded-2xl border border-border bg-background/30 p-3">
                 <div>
@@ -1116,45 +1216,31 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
             <div className="mt-4 space-y-4">
               <div>
                 <Label className="text-xs text-muted-foreground">Plot sizes (Marla)</Label>
-                <div className="mt-2 grid gap-2 sm:grid-cols-4">
-                  {plotSizesMarla.map((opt) => (
-                    <label key={opt} className="flex items-center gap-2 text-sm text-foreground">
-                      <Checkbox
-                        checked={settings.construction_capability.plot_sizes.includes(opt)}
-                        onCheckedChange={(v) => setSettings((prev) => ({ ...prev, construction_capability: { ...prev.construction_capability, plot_sizes: toggleInList(prev.construction_capability.plot_sizes, opt, Boolean(v)) } }))}
-                      />
-                      {opt}
-                    </label>
-                  ))}
-                </div>
+                <CheckboxListWithCustom
+                  fieldKey="plot_sizes_marla"
+                  options={plotSizesMarla}
+                  selected={settings.construction_capability.plot_sizes}
+                  onToggle={(opt, v) => setSettings((prev) => ({ ...prev, construction_capability: { ...prev.construction_capability, plot_sizes: toggleInList(prev.construction_capability.plot_sizes, opt, v) } }))}
+                />
               </div>
               <div>
                 <Label className="text-xs text-muted-foreground">Plot sizes (Kanal)</Label>
-                <div className="mt-2 grid gap-2 sm:grid-cols-3">
-                  {plotSizesKanal.map((opt) => (
-                    <label key={opt} className="flex items-center gap-2 text-sm text-foreground">
-                      <Checkbox
-                        checked={settings.construction_capability.plot_sizes.includes(opt)}
-                        onCheckedChange={(v) => setSettings((prev) => ({ ...prev, construction_capability: { ...prev.construction_capability, plot_sizes: toggleInList(prev.construction_capability.plot_sizes, opt, Boolean(v)) } }))}
-                      />
-                      {opt}
-                    </label>
-                  ))}
-                </div>
+                <CheckboxListWithCustom
+                  fieldKey="plot_sizes_kanal"
+                  options={plotSizesKanal}
+                  columns="sm:grid-cols-3"
+                  selected={settings.construction_capability.plot_sizes}
+                  onToggle={(opt, v) => setSettings((prev) => ({ ...prev, construction_capability: { ...prev.construction_capability, plot_sizes: toggleInList(prev.construction_capability.plot_sizes, opt, v) } }))}
+                />
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label className="text-xs text-muted-foreground">Maximum floors</Label>
-                  <Select
+                  <SelectWithCustom
                     value={settings.construction_capability.max_floors != null ? String(settings.construction_capability.max_floors) : "__none__"}
-                    onValueChange={(v) => setSettings((prev) => ({ ...prev, construction_capability: { ...prev.construction_capability, max_floors: v === "__none__" ? null : Number(v) } }))}
-                  >
-                    <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__none__">Not set</SelectItem>
-                      {maxFloorsOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                    onValueChange={(v) => setSettings((prev) => ({ ...prev, construction_capability: { ...prev.construction_capability, max_floors: v === "__none__" || v === "" ? null : Number(v) || null } }))}
+                    options={maxFloorsOptions}
+                  />
                 </div>
                 <div className="flex items-center justify-between rounded-2xl border border-border bg-background/30 p-3">
                   <div>
@@ -1169,17 +1255,12 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
               </div>
               <div>
                 <Label className="text-xs text-muted-foreground">House types</Label>
-                <div className="mt-2 grid gap-2 sm:grid-cols-4">
-                  {houseTypeOptions.map((opt) => (
-                    <label key={opt} className="flex items-center gap-2 text-sm text-foreground">
-                      <Checkbox
-                        checked={settings.construction_capability.house_types.includes(opt)}
-                        onCheckedChange={(v) => setSettings((prev) => ({ ...prev, construction_capability: { ...prev.construction_capability, house_types: toggleInList(prev.construction_capability.house_types, opt, Boolean(v)) } }))}
-                      />
-                      {opt}
-                    </label>
-                  ))}
-                </div>
+                <CheckboxListWithCustom
+                  fieldKey="house_types"
+                  options={houseTypeOptions}
+                  selected={settings.construction_capability.house_types}
+                  onToggle={(opt, v) => setSettings((prev) => ({ ...prev, construction_capability: { ...prev.construction_capability, house_types: toggleInList(prev.construction_capability.house_types, opt, v) } }))}
+                />
               </div>
             </div>
           </GlassCard>
@@ -1197,17 +1278,13 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
               ].map(({ key, label, opts }) => (
                 <div key={key}>
                   <p className="text-xs font-semibold text-foreground">{label}</p>
-                  <div className="mt-2 grid gap-2">
-                    {opts.map((opt) => (
-                      <label key={opt} className="flex items-center gap-2 text-sm text-foreground">
-                        <Checkbox
-                          checked={settings.services_offered[key].includes(opt)}
-                          onCheckedChange={(v) => setSettings((prev) => ({ ...prev, services_offered: { ...prev.services_offered, [key]: toggleInList(prev.services_offered[key], opt, Boolean(v)) } }))}
-                        />
-                        {opt}
-                      </label>
-                    ))}
-                  </div>
+                  <CheckboxListWithCustom
+                    fieldKey={`svc-${key}`}
+                    options={opts}
+                    selected={settings.services_offered[key]}
+                    onToggle={(opt, v) => setSettings((prev) => ({ ...prev, services_offered: { ...prev.services_offered, [key]: toggleInList(prev.services_offered[key], opt, v) } }))}
+                    columns="sm:grid-cols-1"
+                  />
                 </div>
               ))}
             </div>
@@ -1277,42 +1354,29 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Total projects completed</Label>
-                <Select
+                <SelectWithCustom
                   value={settings.experience_track.total_projects_completed || "__none__"}
                   onValueChange={(v) => setSettings((prev) => ({ ...prev, experience_track: { ...prev.experience_track, total_projects_completed: v === "__none__" ? "" : v } }))}
-                >
-                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select range" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not set</SelectItem>
-                    {["0-5", "6-20", "21-50", "51-100", "100+"].map((v) => <SelectItem key={v} value={v}>{v} Projects</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                  placeholder="Select range"
+                  options={["0-5", "6-20", "21-50", "51-100", "100+"].map((v) => ({ value: v, label: `${v} Projects` }))}
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Houses completed</Label>
-                <Select
+                <SelectWithCustom
                   value={settings.experience_track.houses_completed || "__none__"}
                   onValueChange={(v) => setSettings((prev) => ({ ...prev, experience_track: { ...prev.experience_track, houses_completed: v === "__none__" ? "" : v } }))}
-                >
-                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select range" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not set</SelectItem>
-                    {["0-10", "11-30", "31-100", "101-500", "500+"].map((v) => <SelectItem key={v} value={v}>{v} Houses</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                  placeholder="Select range"
+                  options={["0-10", "11-30", "31-100", "101-500", "500+"].map((v) => ({ value: v, label: `${v} Houses` }))}
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Ongoing projects</Label>
-                <Select
+                <SelectWithCustom
                   value={settings.experience_track.ongoing_projects || "__none__"}
                   onValueChange={(v) => setSettings((prev) => ({ ...prev, experience_track: { ...prev.experience_track, ongoing_projects: v === "__none__" ? "" : v } }))}
-                >
-                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not set</SelectItem>
-                    {["0", "1-3", "4-10", "11-20", "20+"].map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                  options={["0", "1-3", "4-10", "11-20", "20+"].map((v) => ({ value: v, label: v }))}
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Reliability score (0–1)</Label>
@@ -1330,17 +1394,12 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
 
             <div className="mt-4">
               <p className="text-xs font-semibold text-foreground">Specializations</p>
-              <div className="mt-2 grid gap-2 sm:grid-cols-4">
-                {specializationOptions.map((opt) => (
-                  <label key={opt} className="flex items-center gap-2 text-sm text-foreground">
-                    <Checkbox
-                      checked={settings.experience_track.specializations.includes(opt)}
-                      onCheckedChange={(v) => setSettings((prev) => ({ ...prev, experience_track: { ...prev.experience_track, specializations: toggleInList(prev.experience_track.specializations, opt, Boolean(v)) } }))}
-                    />
-                    {opt}
-                  </label>
-                ))}
-              </div>
+              <CheckboxListWithCustom
+                fieldKey="specializations"
+                options={specializationOptions}
+                selected={settings.experience_track.specializations}
+                onToggle={(opt, v) => setSettings((prev) => ({ ...prev, experience_track: { ...prev.experience_track, specializations: toggleInList(prev.experience_track.specializations, opt, v) } }))}
+              />
             </div>
           </GlassCard>
 
@@ -1375,31 +1434,23 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
             <div className="mt-4 grid gap-6 sm:grid-cols-2">
               <div>
                 <p className="text-xs font-semibold text-foreground">Best for</p>
-                <div className="mt-2 grid gap-2">
-                  {bestForOptions.map((opt) => (
-                    <label key={opt} className="flex items-center gap-2 text-sm text-foreground">
-                      <Checkbox
-                        checked={settings.ideal_customer_profile.best_for.includes(opt)}
-                        onCheckedChange={(v) => setSettings((prev) => ({ ...prev, ideal_customer_profile: { ...prev.ideal_customer_profile, best_for: toggleInList(prev.ideal_customer_profile.best_for, opt, Boolean(v)) } }))}
-                      />
-                      {opt}
-                    </label>
-                  ))}
-                </div>
+                <CheckboxListWithCustom
+                  fieldKey="best_for"
+                  options={bestForOptions}
+                  columns="sm:grid-cols-1"
+                  selected={settings.ideal_customer_profile.best_for}
+                  onToggle={(opt, v) => setSettings((prev) => ({ ...prev, ideal_customer_profile: { ...prev.ideal_customer_profile, best_for: toggleInList(prev.ideal_customer_profile.best_for, opt, v) } }))}
+                />
               </div>
               <div>
                 <p className="text-xs font-semibold text-foreground">Not ideal for</p>
-                <div className="mt-2 grid gap-2">
-                  {notIdealForOptions.map((opt) => (
-                    <label key={opt} className="flex items-center gap-2 text-sm text-foreground">
-                      <Checkbox
-                        checked={settings.ideal_customer_profile.not_ideal_for.includes(opt)}
-                        onCheckedChange={(v) => setSettings((prev) => ({ ...prev, ideal_customer_profile: { ...prev.ideal_customer_profile, not_ideal_for: toggleInList(prev.ideal_customer_profile.not_ideal_for, opt, Boolean(v)) } }))}
-                      />
-                      {opt}
-                    </label>
-                  ))}
-                </div>
+                <CheckboxListWithCustom
+                  fieldKey="not_ideal_for"
+                  options={notIdealForOptions}
+                  columns="sm:grid-cols-1"
+                  selected={settings.ideal_customer_profile.not_ideal_for}
+                  onToggle={(opt, v) => setSettings((prev) => ({ ...prev, ideal_customer_profile: { ...prev.ideal_customer_profile, not_ideal_for: toggleInList(prev.ideal_customer_profile.not_ideal_for, opt, v) } }))}
+                />
               </div>
             </div>
 
@@ -1737,16 +1788,12 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>City</Label>
-                <Select
+                <SelectWithCustom
                   value={settings.city || "__none__"}
                   onValueChange={(v) => setSettings((prev) => ({ ...prev, city: v === "__none__" ? "" : v }))}
-                >
-                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select city" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not set</SelectItem>
-                    {supplierCityOptions.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                  placeholder="Select city"
+                  options={supplierCityOptions.map((c) => ({ value: c, label: c }))}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Area / District</Label>
@@ -1856,33 +1903,25 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
           <GlassCard interactive={false} className="p-5">
             <p className="text-sm font-semibold text-foreground">Cities Served</p>
             <p className="mt-1 text-xs text-muted-foreground">Select all cities where you deliver or operate.</p>
-            <div className="mt-4 grid gap-2 sm:grid-cols-3">
-              {supplierCityOptions.map((city) => (
-                <label key={city} className="flex items-center gap-2 text-sm text-foreground">
-                  <Checkbox
-                    checked={settings.cities_served.includes(city)}
-                    onCheckedChange={(v) => toggleCity(city, Boolean(v))}
-                  />
-                  {city}
-                </label>
-              ))}
-            </div>
+            <CheckboxListWithCustom
+              fieldKey="supplier_cities"
+              options={supplierCityOptions}
+              columns="sm:grid-cols-3"
+              selected={settings.cities_served}
+              onToggle={(city, v) => toggleCity(city, v)}
+            />
           </GlassCard>
 
           <GlassCard interactive={false} className="p-5">
             <p className="text-sm font-semibold text-foreground">Material Categories</p>
             <p className="mt-1 text-xs text-muted-foreground">What types of materials does your business supply?</p>
-            <div className="mt-4 grid gap-2 sm:grid-cols-2">
-              {materialCategoryOptions.map((cat) => (
-                <label key={cat} className="flex items-center gap-2 text-sm text-foreground">
-                  <Checkbox
-                    checked={settings.material_categories.includes(cat)}
-                    onCheckedChange={(v) => toggleCategory(cat, Boolean(v))}
-                  />
-                  {cat}
-                </label>
-              ))}
-            </div>
+            <CheckboxListWithCustom
+              fieldKey="material_categories"
+              options={materialCategoryOptions}
+              columns="sm:grid-cols-2"
+              selected={settings.material_categories}
+              onToggle={(cat, v) => toggleCategory(cat, v)}
+            />
           </GlassCard>
 
           <GlassCard interactive={false} className="p-5">

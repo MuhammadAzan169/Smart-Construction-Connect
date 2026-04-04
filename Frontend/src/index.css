@@ -381,3 +381,80 @@
 .scroll-styled {
   scrollbar-color: rgb(var(--primary) / 0.25) rgb(var(--card));
 }
+
+/* ─── Themed native form controls ────────────────────────────── */
+/* Number input spinner arrows */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+  height: 28px;
+}
+
+/* Color picker */
+input[type="color"] {
+  -webkit-appearance: none;
+  border: 1px solid rgb(var(--border));
+  border-radius: var(--radius);
+  background: rgb(var(--card));
+  cursor: pointer;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: calc(var(--radius) - 4px);
+}
+
+/* Date / time pickers */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  color-scheme: dark;
+}
+.dark input[type="date"],
+.dark input[type="time"],
+.dark input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
+/* Native datalist dropdown */
+input::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+  cursor: pointer;
+}
+.dark input::-webkit-calendar-picker-indicator {
+  filter: invert(0.7) sepia(1) saturate(3) hue-rotate(10deg);
+}
+
+/* Autofill style override */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill {
+  -webkit-text-fill-color: rgb(var(--foreground));
+  -webkit-box-shadow: 0 0 0px 1000px rgb(var(--card)) inset;
+  box-shadow: 0 0 0px 1000px rgb(var(--card)) inset;
+  border-color: rgb(var(--border));
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Selection highlight */
+::selection {
+  background: rgb(var(--primary) / 0.3);
+  color: rgb(var(--foreground));
+}
+
+/* Placeholder */
+::placeholder {
+  color: rgb(var(--muted-foreground));
+  opacity: 0.6;
+}
+
+/* Focus ring consistency */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgb(var(--ring));
+  outline-offset: 2px;
+}

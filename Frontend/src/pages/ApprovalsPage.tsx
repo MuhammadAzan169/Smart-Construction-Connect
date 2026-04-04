@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
-import { ArrowLeft, ShieldCheck, Building2, Package } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Building2, Package, Users } from "lucide-react";
 
 type UserRow = {
   id: string;
@@ -37,6 +39,12 @@ export default function ApprovalsPage() {
   }
 
   const pendingUsers = users.filter((u) => u.status === "pending");
+  const recentlyApproved = users.filter((u) => u.status === "active").slice(0, 5);
+  const recentlyRejected = users.filter((u) => u.status === "banned").slice(0, 5);
+
+  const pendingCompanies = pendingUsers.filter((u) => u.role === "company");
+  const pendingSuppliers = pendingUsers.filter((u) => u.role === "supplier");
+  const pendingOther = pendingUsers.filter((u) => u.role !== "company" && u.role !== "supplier");
 
   const handleApprove = async (userId: string) => {
     try {
@@ -78,6 +86,37 @@ export default function ApprovalsPage() {
         <p className="text-sm text-muted-foreground">Review and approve pending company and supplier accounts.</p>
       </motion.div>
 
+      {/* Summary banner */}
+      <div className="grid gap-3 sm:grid-cols-3">
+        <GlassCard interactive={false} className="p-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
+            <Users className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-lg font-bold text-foreground">{pendingUsers.length}</p>
+            <p className="text-xs text-muted-foreground">Total Pending</p>
+          </div>
+        </GlassCard>
+        <GlassCard interactive={false} className="p-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Building2 className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-lg font-bold text-foreground">{pendingCompanies.length}</p>
+            <p className="text-xs text-muted-foreground">Companies</p>
+          </div>
+        </GlassCard>
+        <GlassCard interactive={false} className="p-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
+            <Package className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-lg font-bold text-foreground">{pendingSuppliers.length}</p>
+            <p className="text-xs text-muted-foreground">Suppliers</p>
+          </div>
+        </GlassCard>
+      </div>
+
       {loading ? (
         <GlassCard interactive={false} className="p-6">
           <p className="text-muted-foreground">Loading...</p>
@@ -89,8 +128,22 @@ export default function ApprovalsPage() {
           <p className="mt-1 text-sm text-muted-foreground">No pending approvals at this time.</p>
         </GlassCard>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {pendingUsers.map((u, idx) => (
+        <Tabs defaultValue="all" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="all">All ({pendingUsers.length})</TabsTrigger>
+            <TabsTrigger value="companies">Companies ({pendingCompanies.length})</TabsTrigger>
+            <TabsTrigger value="suppliers">Suppliers ({pendingSuppliers.length})</TabsTrigger>
+            {pendingOther.length > 0 && <TabsTrigger value="other">Other ({pendingOther.length})</TabsTrigger>}
+          </TabsList>
+          {[
+            { key: "all", list: pendingUsers },
+            { key: "companies", list: pendingCompanies },
+            { key: "suppliers", list: pendingSuppliers },
+            { key: "other", list: pendingOther },
+          ].map(({ key, list }) => (
+            <TabsContent key={key} value={key}>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {list.map((u, idx) => (
             <motion.div
               key={u.id}
               initial={{ opacity: 0, y: 16 }}
@@ -109,7 +162,7 @@ export default function ApprovalsPage() {
               </div>
               <div className="mt-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs capitalize text-muted-foreground">{u.role}</span>
+                  <Badge variant="secondary" className="text-[10px] capitalize">{u.role}</Badge>
                   <StatusBadge status={u.status as any} />
                 </div>
                 <span className="text-xs text-muted-foreground">{u.joinDate}</span>
@@ -124,8 +177,11 @@ export default function ApprovalsPage() {
               </div>
             </GlassCard>
             </motion.div>
+                ))}
+              </div>
+            </TabsContent>
           ))}
-        </div>
+        </Tabs>
       )}
     </motion.div>
   );
