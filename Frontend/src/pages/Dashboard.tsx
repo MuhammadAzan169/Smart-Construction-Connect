@@ -600,7 +600,7 @@ function AdminDashboard() {
     Promise.all([
       api.admin.getStats().then(setStats).catch(() => {}),
       api.admin.getActivity().then(setActivity).catch(() => {}),
-      api.admin.getUsers().then((users) => setPendingUsers(users.filter((u) => u.status === "pending").slice(0, 5) as typeof pendingUsers)).catch(() => {}),
+      api.admin.getUsers().then((users) => setPendingUsers(users.filter((u) => u.status?.toLowerCase() === "pending").slice(0, 5) as typeof pendingUsers)).catch(() => {}),
     ]).finally(() => setLoading(false));
   }, []);
 
@@ -704,10 +704,25 @@ function AdminDashboard() {
                 </div>
                 <div className="mt-4 space-y-2">
                   {pendingUsers.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-border p-6 text-center">
-                      <ShieldCheck className="mx-auto h-8 w-8 text-success" />
-                      <p className="mt-2 text-sm text-muted-foreground">No pending approvals. All clear!</p>
-                    </div>
+                    (stats?.pending_approvals ?? 0) > 0 ? (
+                      <div className="rounded-2xl border border-warning/30 bg-warning/5 p-5 text-center">
+                        <ShieldCheck className="mx-auto h-8 w-8 text-warning" />
+                        <p className="mt-2 text-sm font-semibold text-foreground">
+                          {stats.pending_approvals} accounts awaiting approval
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          These users are waiting for access. Review them on the Approvals page.
+                        </p>
+                        <Button asChild size="sm" className="mt-3">
+                          <Link to="/approvals">Go to Approvals</Link>
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="rounded-2xl border border-dashed border-border p-6 text-center">
+                        <ShieldCheck className="mx-auto h-8 w-8 text-success" />
+                        <p className="mt-2 text-sm text-muted-foreground">No pending approvals. All clear!</p>
+                      </div>
+                    )
                   ) : (
                     pendingUsers.map((u, i) => (
                       <motion.div
@@ -729,7 +744,13 @@ function AdminDashboard() {
                           <Button size="sm" variant="destructive" onClick={() => handleReject(u.user_id)}>Reject</Button>
                         </div>
                       </motion.div>
-                    ))
+                    )).concat(
+                      (stats?.pending_approvals ?? 0) > pendingUsers.length ? [
+                        <div key="more" className="pt-1 text-center text-xs text-muted-foreground">
+                          Showing {pendingUsers.length} of {stats.pending_approvals} — <Link to="/approvals" className="text-primary underline-offset-2 hover:underline">View all</Link>
+                        </div>
+                      ] : []
+                    )
                   )}
                 </div>
               </GlassCard>
