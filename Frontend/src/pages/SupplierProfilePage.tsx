@@ -9,9 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-import { ArrowLeft, ChevronLeft, ChevronRight, Download, Eye, MapPin, MessageSquare, Package, Phone, Mail, Globe, ShieldCheck, Star, AlertTriangle, X } from "lucide-react";
+import {
+  ArrowLeft, ChevronLeft, ChevronRight, Download, Eye,
+  MapPin, MessageSquare, Package, Phone, Mail, Globe,
+  ShieldCheck, Star, AlertTriangle, Layers, TrendingUp,
+  BarChart3, Truck, Tag,
+} from "lucide-react";
 
 type SupplierMaterial = {
   name: string;
@@ -49,6 +55,8 @@ type SupplierData = {
 const formatPKR = (value: number) =>
   new Intl.NumberFormat("en-PK", { style: "currency", currency: "PKR", maximumFractionDigits: 0 }).format(value);
 
+/* ------------------------------------------------------------------ */
+
 export default function SupplierProfilePage() {
   const navigate = useNavigate();
   const params = useParams();
@@ -58,30 +66,42 @@ export default function SupplierProfilePage() {
   const [pdfViewer, setPdfViewer] = useState<{ url: string; title: string } | null>(null);
   const [selectedMaterial, setSelectedMaterial] = useState<SupplierMaterial | null>(null);
   const [galleryIdx, setGalleryIdx] = useState(0);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   useEffect(() => {
     if (!params.id) return;
     api.suppliers
       .get(params.id)
-      .then(setSupplier)
+      .then((data) => setSupplier(data as unknown as SupplierData))
       .catch(() => setSupplier(null))
       .finally(() => setLoading(false));
   }, [params.id]);
 
+  /* ---------- Loading ---------- */
   if (loading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-64 w-full" />
+      <div className="space-y-6 p-2">
+        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-56 w-full rounded-2xl" />
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Skeleton className="h-28 rounded-2xl" />
+          <Skeleton className="h-28 rounded-2xl" />
+          <Skeleton className="h-28 rounded-2xl" />
+        </div>
+        <Skeleton className="h-64 w-full rounded-2xl" />
       </div>
     );
   }
 
+  /* ---------- Not Found ---------- */
   if (!supplier) {
     return (
-      <GlassCard interactive={false} className="p-6">
-        <div className="flex items-center justify-between gap-3">
-          <div>
+      <GlassCard interactive={false} className="p-8">
+        <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-destructive/10">
+            <Package className="h-6 w-6 text-destructive" />
+          </div>
+          <div className="flex-1">
             <h1 className="text-lg font-semibold text-foreground">Supplier not found</h1>
             <p className="mt-1 text-sm text-muted-foreground">This supplier doesn't exist in the current dataset.</p>
           </div>
@@ -93,397 +113,486 @@ export default function SupplierProfilePage() {
     );
   }
 
+  /* ---------- Derived Data ---------- */
   const supplierCity = supplier.city || supplier.location?.city || "—";
   const supplierArea = supplier.area || supplier.location?.area || "";
   const supplierLogo = supplier.logo_url || supplier.logo || "";
   const isVerified = supplier.verification_status === "verified";
 
   const categories = Array.from(new Set(supplier.materials.map((m) => m.category))).sort();
+  const filteredMaterials = activeCategory
+    ? supplier.materials.filter((m) => m.category === activeCategory)
+    : supplier.materials;
   const prices = supplier.materials.map((m) => m.price).filter((p) => p > 0);
   const minPrice = prices.length ? Math.min(...prices) : null;
   const maxPrice = prices.length ? Math.max(...prices) : null;
   const lowStockCount = supplier.materials.filter((m) => m.stock > 0 && m.stock <= 50).length;
+  const totalStock = supplier.materials.reduce((sum, m) => sum + m.stock, 0);
 
+  /* ================================================================ */
   return (
     <>
-    <motion.div
-      className="space-y-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-    >
-      {/* Hero banner */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
+        className="space-y-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
       >
-        <div className="flex items-center gap-2 mb-4">
-          <Button type="button" variant="secondary" onClick={() => navigate(-1)}>
+        {/* ===== BACK BUTTON ===== */}
+        <div className="flex items-center gap-3">
+          <Button type="button" variant="ghost" size="sm" className="gap-1.5" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
-          {isVerified && <StatusBadge status="verified" />}
         </div>
 
-        <GlassCard className="overflow-hidden p-0">
-          <div className="group relative h-48 overflow-hidden sm:h-56">
-            {supplier.dp_url ? (
-              <img src={supplier.dp_url} alt={supplier.supplier_name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-            ) : supplierLogo ? (
-              <img src={supplierLogo} alt={supplier.supplier_name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-            ) : (
-              <div className="h-full w-full bg-gradient-to-br from-primary/20 via-primary/5 to-secondary/20" />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
-            {/* Logo overlay */}
-            {supplierLogo && (
-              <div className="absolute left-5 bottom-[-2rem] h-20 w-20 overflow-hidden rounded-2xl border-4 border-background bg-background shadow-lg z-10">
-                <img src={supplierLogo} alt={`${supplier.supplier_name} logo`} className="h-full w-full object-cover" />
-              </div>
-            )}
-          </div>
-
-          <div className={`px-5 pb-5 ${supplierLogo ? "pt-12" : "pt-5"}`}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div className="min-w-0">
-                <h1 className="truncate text-2xl font-bold text-foreground">{supplier.supplier_name}</h1>
-                <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{supplier.description}</p>
-                <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    {supplierCity}{supplierArea ? `, ${supplierArea}` : ""}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-warning text-warning" />
-                    {supplier.rating}/5 ({supplier.review_count} reviews)
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Package className="h-4 w-4" />
-                    {supplier.materials.length} materials
-                  </span>
-                </div>
-              </div>
-
-              {user && user.role !== "admin" && (
-                <div className="flex items-center gap-3 shrink-0">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => {
-                      const contactEmail = supplier.contact?.email || "";
-                      if (!contactEmail) return;
-                      api.messages
-                        .startConversation(contactEmail, supplier.supplier_name, `Hi, I'm interested in your materials/products.`)
-                        .then(() => navigate(`/messages`));
-                    }}
-                  >
-                    <MessageSquare className="mr-1.5 h-4 w-4" />
-                    Send Message
-                  </Button>
-                </div>
+        {/* ===== HERO BANNER ===== */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.05 }}
+        >
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            {/* Banner image */}
+            <div className="group relative h-52 overflow-hidden sm:h-60">
+              {supplier.dp_url ? (
+                <img src={supplier.dp_url} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              ) : supplierLogo ? (
+                <img src={supplierLogo} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-br from-primary/20 via-primary/5 to-secondary/20" />
               )}
-            </div>
-          </div>
-        </GlassCard>
-      </motion.div>
-
-      <SectionReveal>
-      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-        {/* Left — Material details */}
-        <div className="space-y-6">
-          <GlassCard interactive={false} className="p-6">
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground">MATERIAL CATEGORIES</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {categories.map((c) => (
-                <Badge key={c} variant="secondary" className="rounded-lg">
-                  {c}
-                </Badge>
-              ))}
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-border bg-background/30 p-4">
-                <p className="text-xs font-semibold tracking-wide text-muted-foreground">PRICE RANGE</p>
-                <p className="mt-2 text-sm font-semibold text-foreground">
-                  {minPrice == null || maxPrice == null
-                    ? "Contact for pricing"
-                    : minPrice === maxPrice
-                      ? formatPKR(minPrice)
-                      : `${formatPKR(minPrice)} - ${formatPKR(maxPrice)}`}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border bg-background/30 p-4">
-                <p className="text-xs font-semibold tracking-wide text-muted-foreground">CITIES SERVED</p>
-                <p className="mt-2 text-sm font-semibold text-foreground">
-                  {supplier.cities_served.join(", ") || "—"}
-                </p>
-              </div>
-            </div>
-          </GlassCard>
-
-          <GlassCard interactive={false} className="p-6">
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground">ALL MATERIALS</p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              {supplier.materials.map((m, idx) => {
-                const isLowStock = m.stock > 0 && m.stock <= 50;
-                const isOutOfStock = m.stock === 0;
-                const hasImages = m.image_urls && m.image_urls.length > 0;
-                return (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: Math.min(idx * 0.05, 0.4), duration: 0.3 }}
-                >
-                <button
-                  type="button"
-                  className={`w-full text-left rounded-2xl border bg-background/30 overflow-hidden transition-all hover:border-primary/20 hover:shadow-md ${
-                    isOutOfStock ? "border-destructive/30 opacity-60" : isLowStock ? "border-warning/30" : "border-border"
-                  }`}
-                  onClick={() => { setSelectedMaterial(m); setGalleryIdx(0); }}
-                >
-                  {hasImages && (
-                    <div className="relative h-32 overflow-hidden">
-                      <img src={m.image_urls![0]} alt={m.name} className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
-                      {m.image_urls!.length > 1 && (
-                        <span className="absolute bottom-2 right-2 rounded-lg bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
-                          +{m.image_urls!.length - 1}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <div className="p-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="truncate text-sm font-semibold text-foreground">{m.name}</p>
-                      {isLowStock && (
-                        <Badge variant="outline" className="shrink-0 border-warning/40 text-warning text-[10px]">
-                          <AlertTriangle className="mr-1 h-3 w-3" />
-                          Low
-                        </Badge>
-                      )}
-                      {isOutOfStock && (
-                        <Badge variant="destructive" className="shrink-0 text-[10px]">
-                          Out of Stock
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="mt-1 flex items-center gap-2">
-                      <Badge variant="outline" className="text-[10px]">{m.category}</Badge>
-                      <span className="text-xs text-muted-foreground">{m.brand}</span>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">Price per {m.unit}</span>
-                      <span className="font-semibold text-foreground">{formatPKR(m.price)}</span>
-                    </div>
-                    <div className="mt-2 flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">Stock</span>
-                      <span className={`font-semibold ${isOutOfStock ? "text-destructive" : isLowStock ? "text-warning" : "text-foreground"}`}>
-                        {m.stock.toLocaleString()} {m.unit}
-                      </span>
-                    </div>
+            {/* Logo + info overlay */}
+            <div className="relative -mt-16 px-6 pb-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-5">
+                {supplierLogo && (
+                  <div className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-4 border-card bg-card shadow-lg">
+                    <img src={supplierLogo} alt={`${supplier.supplier_name} logo`} className="h-full w-full object-cover" />
                   </div>
-                </button>
-                </motion.div>
-                );
-              })}
-            </div>
-          </GlassCard>
-        </div>
+                )}
 
-        {/* Right — Contact & Info */}
-        <div className="space-y-4">
-          <GlassCard interactive={false} className="p-6">
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground">CONTACT INFORMATION</p>
-            <div className="mt-4 space-y-3">
-              {supplier.contact.phone && (
-                <div className="flex items-center gap-3 text-sm">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-foreground">{supplier.contact.phone}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2.5">
+                    <h1 className="truncate text-2xl font-bold text-foreground sm:text-3xl">{supplier.supplier_name}</h1>
+                    {isVerified && <StatusBadge status="verified" />}
+                  </div>
+                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{supplier.description}</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm text-muted-foreground">
+                    <span className="inline-flex items-center gap-1.5">
+                      <MapPin className="h-4 w-4 text-primary/70" />
+                      {supplierCity}{supplierArea ? `, ${supplierArea}` : ""}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                      <span className="font-semibold text-foreground">{supplier.rating}</span>/5
+                      <span className="text-muted-foreground">({supplier.review_count})</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <Package className="h-4 w-4 text-primary/70" />
+                      {supplier.materials.length} materials
+                    </span>
+                  </div>
                 </div>
-              )}
-              {supplier.contact.email && (
-                <div className="flex items-center gap-3 text-sm">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-foreground">{supplier.contact.email}</span>
-                </div>
-              )}
-              {supplier.contact.website && (
-                <div className="flex items-center gap-3 text-sm">
-                  <Globe className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-foreground">{supplier.contact.website}</span>
-                </div>
-              )}
-            </div>
-          </GlassCard>
 
-          {/* Verification Documents — only show for verified suppliers */}
-          {isVerified && (() => {
-            const vDocs = supplier.verification_documents ?? {};
-            const vStatus = supplier.verification ?? {};
-            const docLabels: Record<string, string> = {
-              secp_certificate: "SECP Certificate",
-              ntn_certificate: "NTN Certificate",
-              registration_certificate: "Registration Certificate",
-              business_license: "Business License",
-            };
-            const docs = Object.entries(vDocs)
-              .filter(([, url]) => !!url)
-              .map(([key, url]) => {
-                const docType = key.replace(/_url$/, "");
-                return { docType, url, status: vStatus[docType]?.status ?? "pending" };
-              });
-            if (!docs.length) return null;
-            return (
-              <GlassCard interactive={false} className="p-6">
-                <p className="text-xs font-semibold tracking-wide text-muted-foreground flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4" />
-                  VERIFICATION DOCUMENTS
-                </p>
-                <div className="mt-3 space-y-2">
-                  {docs.map((doc) => (
-                    <div key={doc.docType} className="flex items-center justify-between gap-2 rounded-xl border border-border bg-background/30 p-3">
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs font-medium text-foreground">{docLabels[doc.docType] ?? doc.docType}</p>
-                        <span className={`text-[10px] font-medium ${doc.status === "approved" ? "text-green-500" : doc.status === "rejected" ? "text-red-500" : "text-amber-500"}`}>
-                          {doc.status === "approved" ? "Verified" : doc.status === "rejected" ? "Rejected" : "Pending"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <button type="button" onClick={() => setPdfViewer({ url: doc.url, title: docLabels[doc.docType] ?? doc.docType })} className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-primary hover:bg-primary/10" title="View">
-                          <Eye className="h-3.5 w-3.5" />
-                        </button>
-                        <a href={doc.url} download={`${doc.docType}.pdf`} className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-primary hover:bg-primary/10" title="Download">
-                          <Download className="h-3.5 w-3.5" />
-                        </a>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </GlassCard>
-            );
-          })()}
-
-          <GlassCard interactive={false} className="p-6">
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground">SUPPLIER STATS</p>
-            <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Status</span>
-                {isVerified ? <StatusBadge status="verified" /> : <StatusBadge status="pending" />}
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Rating</span>
-                <span className="flex items-center gap-1 font-semibold text-foreground">
-                  <Star className="h-4 w-4 fill-warning text-warning" />
-                  {supplier.rating}/5
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Reviews</span>
-                <span className="font-semibold text-foreground">{supplier.review_count}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Materials Listed</span>
-                <span className="font-semibold text-foreground">{supplier.materials.length}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Categories</span>
-                <span className="font-semibold text-foreground">{categories.length}</span>
-              </div>
-              {lowStockCount > 0 && (
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-warning">Low Stock Items</span>
-                  <span className="font-semibold text-warning">{lowStockCount}</span>
-                </div>
-              )}
-            </div>
-          </GlassCard>
-        </div>
-      </div>
-      </SectionReveal>
-    </motion.div>
-
-    {pdfViewer && (
-      <PdfViewerDialog
-        open
-        onClose={() => setPdfViewer(null)}
-        url={pdfViewer.url}
-        title={pdfViewer.title}
-      />
-    )}
-
-    {/* Material Detail Modal */}
-    <Dialog open={!!selectedMaterial} onOpenChange={(open) => { if (!open) setSelectedMaterial(null); }}>
-      <DialogContent className="max-w-lg p-0 overflow-hidden">
-        <DialogTitle className="sr-only">{selectedMaterial?.name ?? "Material"}</DialogTitle>
-        {selectedMaterial && (
-          <div>
-            {/* Image gallery */}
-            {selectedMaterial.image_urls && selectedMaterial.image_urls.length > 0 && (
-              <div className="relative h-64 bg-secondary/20">
-                <img
-                  src={selectedMaterial.image_urls[galleryIdx]}
-                  alt={selectedMaterial.name}
-                  className="h-full w-full object-cover"
-                />
-                {selectedMaterial.image_urls.length > 1 && (
-                  <>
-                    <button
+                {user && user.role !== "admin" && (
+                  <div className="shrink-0 pt-2 sm:pt-0">
+                    <Button
                       type="button"
-                      className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white hover:bg-black/70 transition-colors"
-                      onClick={() => setGalleryIdx((prev) => (prev - 1 + selectedMaterial.image_urls!.length) % selectedMaterial.image_urls!.length)}
+                      className="gap-2"
+                      onClick={() => {
+                        const contactEmail = supplier.contact?.email || "";
+                        if (!contactEmail) return;
+                        api.messages
+                          .startConversation(contactEmail, supplier.supplier_name, `Hi, I'm interested in your materials/products.`)
+                          .then(() => navigate(`/messages`));
+                      }}
                     >
-                      <ChevronLeft className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white hover:bg-black/70 transition-colors"
-                      onClick={() => setGalleryIdx((prev) => (prev + 1) % selectedMaterial.image_urls!.length)}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
-                      {selectedMaterial.image_urls.map((_, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          className={`h-1.5 rounded-full transition-all ${i === galleryIdx ? "w-4 bg-white" : "w-1.5 bg-white/50"}`}
-                          onClick={() => setGalleryIdx(i)}
-                        />
-                      ))}
-                    </div>
-                  </>
+                      <MessageSquare className="h-4 w-4" />
+                      Send Message
+                    </Button>
+                  </div>
                 )}
               </div>
-            )}
-            <div className="p-6 space-y-4">
-              <div>
-                <h3 className="text-lg font-bold text-foreground">{selectedMaterial.name}</h3>
-                <div className="mt-1 flex items-center gap-2">
-                  <Badge variant="secondary">{selectedMaterial.category}</Badge>
-                  <span className="text-sm text-muted-foreground">{selectedMaterial.brand}</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ===== QUICK STATS ROW ===== */}
+        <SectionReveal>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <QuickStat icon={<Layers className="h-5 w-5" />} label="Categories" value={String(categories.length)} accent="primary" />
+            <QuickStat icon={<Tag className="h-5 w-5" />} label="Price Range" value={minPrice == null || maxPrice == null ? "Contact" : minPrice === maxPrice ? formatPKR(minPrice) : `${formatPKR(minPrice)} – ${formatPKR(maxPrice)}`} accent="primary" />
+            <QuickStat icon={<Truck className="h-5 w-5" />} label="Cities Served" value={String(supplier.cities_served.length)} accent="primary" />
+            <QuickStat icon={<BarChart3 className="h-5 w-5" />} label="Total Stock" value={totalStock.toLocaleString()} accent={lowStockCount > 0 ? "warning" : "primary"} subtitle={lowStockCount > 0 ? `${lowStockCount} low stock` : undefined} />
+          </div>
+        </SectionReveal>
+
+        {/* ===== MAIN CONTENT 2-COLUMN ===== */}
+        <SectionReveal>
+          <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+            {/* LEFT — Materials */}
+            <div className="space-y-6">
+              {/* Category filter pills */}
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <SectionHeader icon={<Layers className="h-4 w-4" />} title="Material Categories" />
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveCategory(null)}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                      activeCategory === null
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    }`}
+                  >
+                    All ({supplier.materials.length})
+                  </button>
+                  {categories.map((c) => {
+                    const count = supplier.materials.filter((m) => m.category === c).length;
+                    return (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setActiveCategory(activeCategory === c ? null : c)}
+                        className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                          activeCategory === c
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                        }`}
+                      >
+                        {c} ({count})
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-              {selectedMaterial.description && (
-                <p className="text-sm text-muted-foreground">{selectedMaterial.description}</p>
-              )}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-border bg-background/30 p-3">
-                  <p className="text-xs text-muted-foreground">Price per {selectedMaterial.unit}</p>
-                  <p className="mt-1 text-base font-bold text-foreground">{formatPKR(selectedMaterial.price)}</p>
-                </div>
-                <div className="rounded-xl border border-border bg-background/30 p-3">
-                  <p className="text-xs text-muted-foreground">Stock Available</p>
-                  <p className={`mt-1 text-base font-bold ${selectedMaterial.stock === 0 ? "text-destructive" : selectedMaterial.stock <= 50 ? "text-warning" : "text-foreground"}`}>
-                    {selectedMaterial.stock.toLocaleString()} {selectedMaterial.unit}
-                  </p>
+
+              {/* Materials grid */}
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <SectionHeader icon={<Package className="h-4 w-4" />} title="Materials Catalog" subtitle={`${filteredMaterials.length} items`} />
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  {filteredMaterials.map((m, idx) => {
+                    const isLowStock = m.stock > 0 && m.stock <= 50;
+                    const isOutOfStock = m.stock === 0;
+                    const hasImages = m.image_urls && m.image_urls.length > 0;
+                    return (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: Math.min(idx * 0.04, 0.3), duration: 0.3 }}
+                      >
+                        <button
+                          type="button"
+                          className={`group w-full text-left rounded-xl border overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${
+                            isOutOfStock
+                              ? "border-destructive/30 opacity-70"
+                              : isLowStock
+                                ? "border-amber-400/30"
+                                : "border-border hover:border-primary/30"
+                          }`}
+                          onClick={() => { setSelectedMaterial(m); setGalleryIdx(0); }}
+                        >
+                          {hasImages ? (
+                            <div className="relative h-36 overflow-hidden bg-secondary/20">
+                              <img src={m.image_urls![0]} alt={m.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                              {m.image_urls!.length > 1 && (
+                                <span className="absolute bottom-2 right-2 rounded-md bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+                                  +{m.image_urls!.length - 1} photos
+                                </span>
+                              )}
+                              {isOutOfStock && (
+                                <Badge variant="destructive" className="absolute top-2 left-2 text-[10px]">Out of Stock</Badge>
+                              )}
+                              {isLowStock && (
+                                <Badge variant="outline" className="absolute top-2 left-2 border-amber-400/60 bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400 text-[10px]">
+                                  <AlertTriangle className="mr-1 h-3 w-3" /> Low Stock
+                                </Badge>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex h-28 items-center justify-center bg-secondary/10">
+                              <Package className="h-8 w-8 text-muted-foreground/30" />
+                            </div>
+                          )}
+
+                          <div className="p-4 space-y-2.5">
+                            <div>
+                              <p className="truncate text-sm font-semibold text-foreground">{m.name}</p>
+                              <div className="mt-1 flex items-center gap-2">
+                                <Badge variant="secondary" className="text-[10px] font-normal">{m.category}</Badge>
+                                <span className="text-xs text-muted-foreground">{m.brand}</span>
+                              </div>
+                            </div>
+                            <Separator />
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-muted-foreground">per {m.unit}</span>
+                              <span className="text-sm font-bold text-foreground">{formatPKR(m.price)}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-muted-foreground">Stock</span>
+                              <span className={`text-xs font-semibold ${isOutOfStock ? "text-destructive" : isLowStock ? "text-amber-500" : "text-green-600 dark:text-green-400"}`}>
+                                {m.stock.toLocaleString()} {m.unit}
+                              </span>
+                            </div>
+                          </div>
+                        </button>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
+
+            {/* RIGHT — Sidebar */}
+            <div className="space-y-5">
+              {/* Contact */}
+              <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15, duration: 0.35 }}>
+                <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                  <SectionHeader icon={<Phone className="h-4 w-4" />} title="Contact Information" />
+                  <div className="mt-4 space-y-3">
+                    {supplier.contact.phone && (
+                      <a href={`tel:${supplier.contact.phone}`} className="flex items-center gap-3 rounded-lg p-2 text-sm transition-colors hover:bg-secondary/50">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10"><Phone className="h-4 w-4 text-primary" /></div>
+                        <span className="text-foreground">{supplier.contact.phone}</span>
+                      </a>
+                    )}
+                    {supplier.contact.email && (
+                      <a href={`mailto:${supplier.contact.email}`} className="flex items-center gap-3 rounded-lg p-2 text-sm transition-colors hover:bg-secondary/50">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10"><Mail className="h-4 w-4 text-primary" /></div>
+                        <span className="text-foreground break-all">{supplier.contact.email}</span>
+                      </a>
+                    )}
+                    {supplier.contact.website && (
+                      <div className="flex items-center gap-3 rounded-lg p-2 text-sm">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10"><Globe className="h-4 w-4 text-primary" /></div>
+                        <span className="text-foreground break-all">{supplier.contact.website}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Cities Served */}
+              {supplier.cities_served.length > 0 && (
+                <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.35 }}>
+                  <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                    <SectionHeader icon={<Truck className="h-4 w-4" />} title="Delivery Areas" />
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {supplier.cities_served.map((city) => (
+                        <Badge key={city} variant="secondary" className="gap-1 rounded-lg">
+                          <MapPin className="h-3 w-3" />
+                          {city}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Supplier Stats */}
+              <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25, duration: 0.35 }}>
+                <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                  <SectionHeader icon={<TrendingUp className="h-4 w-4" />} title="Supplier Summary" />
+                  <div className="mt-4 space-y-3">
+                    <StatRow label="Status" value={isVerified ? <StatusBadge status="verified" /> : <StatusBadge status="pending" />} />
+                    <Separator />
+                    <StatRow label="Rating" value={
+                      <span className="inline-flex items-center gap-1.5 font-semibold text-foreground">
+                        <Star className="h-4 w-4 fill-amber-400 text-amber-400" /> {supplier.rating}/5
+                      </span>
+                    } />
+                    <StatRow label="Reviews" value={<span className="font-semibold text-foreground">{supplier.review_count}</span>} />
+                    <Separator />
+                    <StatRow label="Materials" value={<span className="font-semibold text-foreground">{supplier.materials.length}</span>} />
+                    <StatRow label="Categories" value={<span className="font-semibold text-foreground">{categories.length}</span>} />
+                    {lowStockCount > 0 && (
+                      <StatRow label="Low Stock" value={<span className="font-semibold text-amber-500">{lowStockCount}</span>} />
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Verification Documents */}
+              {isVerified && (() => {
+                const vDocs = supplier.verification_documents ?? {};
+                const vStatus = supplier.verification ?? {};
+                const docLabels: Record<string, string> = {
+                  secp_certificate: "SECP Certificate",
+                  ntn_certificate: "NTN Certificate",
+                  registration_certificate: "Registration Certificate",
+                  business_license: "Business License",
+                };
+                const docs = Object.entries(vDocs)
+                  .filter(([, url]) => !!url)
+                  .map(([key, url]) => {
+                    const docType = key.replace(/_url$/, "");
+                    return { docType, url, status: vStatus[docType]?.status ?? "pending" };
+                  });
+                if (!docs.length) return null;
+                return (
+                  <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.35 }}>
+                    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                      <SectionHeader icon={<ShieldCheck className="h-4 w-4" />} title="Verification Documents" />
+                      <div className="mt-3 space-y-2">
+                        {docs.map((doc) => (
+                          <div key={doc.docType} className="flex items-center justify-between gap-2 rounded-xl border border-border bg-background/50 p-3 transition-colors hover:bg-secondary/30">
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-medium text-foreground">{docLabels[doc.docType] ?? doc.docType}</p>
+                              <span className={`text-[10px] font-medium ${doc.status === "approved" ? "text-green-500" : doc.status === "rejected" ? "text-red-500" : "text-amber-500"}`}>
+                                {doc.status === "approved" ? "Verified" : doc.status === "rejected" ? "Rejected" : "Pending"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <button type="button" onClick={() => setPdfViewer({ url: doc.url, title: docLabels[doc.docType] ?? doc.docType })} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-primary hover:bg-primary/10 transition-colors" title="View">
+                                <Eye className="h-4 w-4" />
+                              </button>
+                              <a href={doc.url} download={`${doc.docType}.pdf`} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-primary hover:bg-primary/10 transition-colors" title="Download">
+                                <Download className="h-4 w-4" />
+                              </a>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })()}
+            </div>
           </div>
-        )}
-      </DialogContent>
-    </Dialog>
+        </SectionReveal>
+      </motion.div>
+
+      {/* ===== PDF Viewer ===== */}
+      {pdfViewer && (
+        <PdfViewerDialog open onClose={() => setPdfViewer(null)} url={pdfViewer.url} title={pdfViewer.title} />
+      )}
+
+      {/* ===== Material Detail Modal ===== */}
+      <Dialog open={!!selectedMaterial} onOpenChange={(open) => { if (!open) setSelectedMaterial(null); }}>
+        <DialogContent className="max-w-lg p-0 overflow-hidden">
+          <DialogTitle className="sr-only">{selectedMaterial?.name ?? "Material"}</DialogTitle>
+          {selectedMaterial && (
+            <div>
+              {selectedMaterial.image_urls && selectedMaterial.image_urls.length > 0 && (
+                <div className="relative h-72 bg-secondary/20">
+                  <img
+                    src={selectedMaterial.image_urls[galleryIdx]}
+                    alt={selectedMaterial.name}
+                    className="h-full w-full object-cover"
+                  />
+                  {selectedMaterial.image_urls.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors backdrop-blur-sm"
+                        onClick={() => setGalleryIdx((prev) => (prev - 1 + selectedMaterial.image_urls!.length) % selectedMaterial.image_urls!.length)}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors backdrop-blur-sm"
+                        onClick={() => setGalleryIdx((prev) => (prev + 1) % selectedMaterial.image_urls!.length)}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                        {selectedMaterial.image_urls.map((_, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            className={`rounded-full transition-all ${i === galleryIdx ? "h-2 w-5 bg-white" : "h-2 w-2 bg-white/50 hover:bg-white/70"}`}
+                            onClick={() => setGalleryIdx(i)}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  <div className="absolute top-3 right-3 rounded-md bg-black/50 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                    {galleryIdx + 1} / {selectedMaterial.image_urls.length}
+                  </div>
+                </div>
+              )}
+              <div className="p-6 space-y-5">
+                <div>
+                  <h3 className="text-xl font-bold text-foreground">{selectedMaterial.name}</h3>
+                  <div className="mt-2 flex items-center gap-2">
+                    <Badge variant="secondary">{selectedMaterial.category}</Badge>
+                    <span className="text-sm text-muted-foreground">{selectedMaterial.brand}</span>
+                  </div>
+                </div>
+                {selectedMaterial.description && (
+                  <p className="text-sm leading-relaxed text-muted-foreground">{selectedMaterial.description}</p>
+                )}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-xl border border-border bg-secondary/20 p-4">
+                    <p className="text-xs text-muted-foreground">Price per {selectedMaterial.unit}</p>
+                    <p className="mt-1.5 text-lg font-bold text-foreground">{formatPKR(selectedMaterial.price)}</p>
+                  </div>
+                  <div className="rounded-xl border border-border bg-secondary/20 p-4">
+                    <p className="text-xs text-muted-foreground">Stock Available</p>
+                    <p className={`mt-1.5 text-lg font-bold ${selectedMaterial.stock === 0 ? "text-destructive" : selectedMaterial.stock <= 50 ? "text-amber-500" : "text-green-600 dark:text-green-400"}`}>
+                      {selectedMaterial.stock.toLocaleString()} {selectedMaterial.unit}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
+  );
+}
+
+/* ================================================================== */
+/*  Helper Components                                                  */
+/* ================================================================== */
+
+function SectionHeader({ icon, title, subtitle }: { icon: React.ReactNode; title: string; subtitle?: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">{icon}</div>
+      <div className="flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        {subtitle && <span className="text-xs text-muted-foreground">· {subtitle}</span>}
+      </div>
+    </div>
+  );
+}
+
+function QuickStat({ icon, label, value, accent, subtitle }: { icon: React.ReactNode; label: string; value: string; accent: string; subtitle?: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="rounded-2xl border border-border bg-card p-4 shadow-sm"
+    >
+      <div className="flex items-center gap-3">
+        <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${accent === "warning" ? "bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400" : "bg-primary/10 text-primary"}`}>
+          {icon}
+        </div>
+        <div>
+          <p className="text-xs text-muted-foreground">{label}</p>
+          <p className="text-sm font-bold text-foreground">{value}</p>
+          {subtitle && <p className="text-[10px] text-amber-500">{subtitle}</p>}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function StatRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between text-sm">
+      <span className="text-muted-foreground">{label}</span>
+      {value}
+    </div>
   );
 }
