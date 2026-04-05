@@ -77,10 +77,12 @@ async def root():
 if DIST.is_dir():
     app.mount("/assets", StaticFiles(directory=str(DIST / "assets")), name="static-assets")
 
-# ── Uploaded images ──
-IMAGES_DIR = ROOT / "images"
-IMAGES_DIR.mkdir(exist_ok=True)
-app.mount("/images", StaticFiles(directory=str(IMAGES_DIR)), name="static-images")
+# ── Uploaded files (images + documents) ──
+COMPANY_DATA_DIR = ROOT / "company_data"
+COMPANY_DATA_DIR.mkdir(exist_ok=True)
+for _sub in ("construction_company", "client", "material_supplier"):
+    (COMPANY_DATA_DIR / _sub).mkdir(exist_ok=True)
+app.mount("/company_data", StaticFiles(directory=str(COMPANY_DATA_DIR)), name="static-company-data")
 
 
 # ── SPA catch-all: must be LAST so API routes take priority ──
@@ -165,14 +167,13 @@ def _run_prod():
 
     print()
     print("  ╔══════════════════════════════════════════════════════╗")
-    print("  ║  Smart Construction Connect                         ║")
+    print("  ║  Smart Construction Connect                          ║")
     print("  ║  http://localhost:8000                               ║")
     print("  ║  API docs: http://localhost:8000/docs                ║")
     print("  ╚══════════════════════════════════════════════════════╝")
     print()
 
     uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
-
 
 if __name__ == "__main__":
     if "--dev" in sys.argv:

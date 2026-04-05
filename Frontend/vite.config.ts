@@ -18,6 +18,10 @@ export default defineConfig({
         target: "http://localhost:8000",
         changeOrigin: true,
       },
+      "/company_data": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
     },
   },
   plugins: [react()],

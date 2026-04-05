@@ -44,12 +44,12 @@ const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { label: "Browse Suppliers", icon: Package, path: "/companies" },
     { label: "Requests", icon: FileText, path: "/requests" },
+    { label: "AI Assistant", icon: Bot, path: "/ai-chat" },
     { label: "Packages & Pricing", icon: CreditCard, path: "/pricing" },
     { label: "Settings", icon: Settings, path: "/settings" },
   ],
   supplier: [
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-    { label: "Browse Companies", icon: Building2, path: "/companies" },
     { label: "Inventory", icon: Package, path: "/products" },
     { label: "Requests", icon: FileText, path: "/requests" },
     { label: "Settings", icon: Settings, path: "/settings" },

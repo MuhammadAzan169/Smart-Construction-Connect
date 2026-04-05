@@ -83,10 +83,6 @@ export default function CompaniesPage() {
     return <ClientCompaniesView defaultTab="materials" hideTabs />;
   }
 
-  if (user.role === "supplier") {
-    return <ClientCompaniesView defaultTab="companies" hideTabs />;
-  }
-
   return (
     <GlassCard interactive={false} className="p-6">
       <h1 className="text-lg font-semibold text-foreground">Companies</h1>

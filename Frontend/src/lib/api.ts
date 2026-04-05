@@ -131,15 +131,45 @@ export const api = {
   },
 
   upload: {
-    image: async (file: File, entityName: string, imageType: "profile" | "dp"): Promise<string> => {
+    image: async (file: File, entityName: string, imageType: "profile" | "dp", role: string = "company"): Promise<string> => {
       const form = new FormData();
       form.append("file", file);
       form.append("entity_name", entityName);
       form.append("image_type", imageType);
+      form.append("role", role);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30_000);
       try {
         const res = await fetch(`${API_BASE}/upload/image`, {
+          method: "POST",
+          body: form,
+          signal: controller.signal,
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({})) as { detail?: string };
+          throw new Error(body.detail ?? `Upload failed: ${res.status}`);
+        }
+        const data = await res.json() as { url: string };
+        return data.url;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          throw new Error("Upload timed out. Please try again.");
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    },
+    document: async (file: File, entityName: string, docType: string, role: string = "company"): Promise<string> => {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("entity_name", entityName);
+      form.append("doc_type", docType);
+      form.append("role", role);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30_000);
+      try {
+        const res = await fetch(`${API_BASE}/upload/document`, {
           method: "POST",
           body: form,
           signal: controller.signal,

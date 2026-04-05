@@ -38,7 +38,7 @@ import { cities as cityOptions, societiesByCity } from "@/data/locationOptions";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
-import { ArrowLeft, Loader2, Plus, Save, Upload, X } from "lucide-react";
+import { ArrowLeft, FileCheck, Loader2, Plus, Save, Shield, Upload, X } from "lucide-react";
 import { api } from "@/lib/api";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -139,6 +139,16 @@ type CompanySettings = {
     best_for: string[];
     not_ideal_for: string[];
     accept_terms: boolean;
+  };
+  verification_documents: {
+    secp_certificate_url: string;
+    ntn_certificate_url: string;
+    registration_certificate_url: string;
+    cnic_front_url: string;
+    cnic_back_url: string;
+    other_document_url: string;
+    verification_status: string; // "not_submitted" | "pending" | "verified" | "rejected"
+    verification_notes: string;
   };
 };
 
@@ -326,6 +336,19 @@ function normalizeSettingsFromRaw(obj: Record<string, unknown>, defaults: Compan
       not_ideal_for: strArr(idealRaw.not_ideal_for, defaults.ideal_customer_profile.not_ideal_for),
       accept_terms: bool(idealRaw.accept_terms, defaults.ideal_customer_profile.accept_terms),
     },
+    verification_documents: (() => {
+      const vdRaw = obj.verification_documents && typeof obj.verification_documents === "object" ? (obj.verification_documents as Record<string, unknown>) : {};
+      return {
+        secp_certificate_url: str(vdRaw.secp_certificate_url, defaults.verification_documents.secp_certificate_url),
+        ntn_certificate_url: str(vdRaw.ntn_certificate_url, defaults.verification_documents.ntn_certificate_url),
+        registration_certificate_url: str(vdRaw.registration_certificate_url, defaults.verification_documents.registration_certificate_url),
+        cnic_front_url: str(vdRaw.cnic_front_url, defaults.verification_documents.cnic_front_url),
+        cnic_back_url: str(vdRaw.cnic_back_url, defaults.verification_documents.cnic_back_url),
+        other_document_url: str(vdRaw.other_document_url, defaults.verification_documents.other_document_url),
+        verification_status: str(vdRaw.verification_status, defaults.verification_documents.verification_status),
+        verification_notes: str(vdRaw.verification_notes, defaults.verification_documents.verification_notes),
+      };
+    })(),
   };
 }
 
@@ -385,6 +408,16 @@ function defaultSettings(company: CompanyDatasetCompany | null, email: string): 
     after_handover_support: { defect_liability_period_months: null, maintenance_support: false, support_response_time_days: null },
     legal_contract: { written_contract_provided: false, boq_provided: false, penalty_for_delay: false, warranty_duration_years: null },
     ideal_customer_profile: { best_for: [], not_ideal_for: [], accept_terms: false },
+    verification_documents: {
+      secp_certificate_url: "",
+      ntn_certificate_url: "",
+      registration_certificate_url: "",
+      cnic_front_url: "",
+      cnic_back_url: "",
+      other_document_url: "",
+      verification_status: "not_submitted",
+      verification_notes: "",
+    },
   };
 }
 
@@ -409,102 +442,6 @@ const bestForOptions = ["First Time Builders", "Low Budget Projects", "Fast Trac
 const notIdealForOptions = ["Luxury Homes", "Large Commercial", "High-rise Buildings", "Urgent Projects"];
 const phaseSuggestions = ["Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5", "Phase 6", "Phase 7", "Phase 8", "Block A", "Block B", "Block C", "Block D", "Sector A", "Sector B"];
 const paymentOptions = getPaymentTermOptions(companyDataset);
-
-// ─── ImageUploadField ──────────────────────────────────────────────────────────
-
-function ImageUploadField({
-  label,
-  currentUrl,
-  onUploaded,
-  entityName,
-  imageType,
-}: {
-  label: string;
-  currentUrl: string;
-  onUploaded: (url: string) => void;
-  entityName: string;
-  imageType: "profile" | "dp";
-}) {
-  const { toast } = useToast();
-  const [localPreview, setLocalPreview] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const displayUrl = localPreview ?? (currentUrl || null);
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => setLocalPreview(ev.target?.result as string);
-    reader.readAsDataURL(file);
-    setUploading(true);
-    try {
-      const url = await api.upload.image(file, entityName || "unknown", imageType);
-      onUploaded(url);
-      toast({ title: "Image uploaded", description: `${label} updated successfully.` });
-    } catch (err) {
-      setLocalPreview(null);
-      toast({ variant: "destructive", title: "Upload failed", description: err instanceof Error ? err.message : "Could not upload image." });
-    } finally {
-      setUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
-    }
-  };
-
-  return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
-      <div className="flex items-center gap-4">
-        {displayUrl ? (
-          <img
-            src={displayUrl}
-            alt={label}
-            className="h-16 w-16 rounded-xl border border-border object-cover"
-            onError={() => setLocalPreview(null)}
-          />
-        ) : (
-          <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-dashed border-border bg-background/30 text-muted-foreground">
-            <Upload className="h-6 w-6" />
-          </div>
-        )}
-        <div className="flex-1 space-y-1">
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              disabled={uploading}
-              onClick={() => inputRef.current?.click()}
-            >
-              {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
-              {uploading ? "Uploading…" : displayUrl ? "Change" : "Upload"}
-            </Button>
-            {displayUrl && !uploading && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:text-destructive"
-                onClick={() => { setLocalPreview(null); onUploaded(""); }}
-              >
-                <X className="h-3.5 w-3.5" /> Remove
-              </Button>
-            )}
-          </div>
-          <p className="text-xs text-muted-foreground">JPEG, PNG or WebP · Max 5 MB</p>
-        </div>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
-          className="hidden"
-          onChange={handleFileChange}
-        />
-      </div>
-    </div>
-  );
-}
 
 // ─── SettingsEditor ────────────────────────────────────────────────────────────
 
@@ -760,6 +697,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
         after_handover_support: settings.after_handover_support,
         legal_contract: settings.legal_contract,
         ideal_customer_profile: settings.ideal_customer_profile,
+        verification_documents: settings.verification_documents,
         _editor_settings: settings,
       };
       await api.companies.updateProfile(companySlug, profileData);
@@ -817,6 +755,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
         <TabsList className="flex h-auto flex-wrap gap-1">
           <TabsTrigger value="profile">Company Profile</TabsTrigger>
           <TabsTrigger value="legal">Legal & Registration</TabsTrigger>
+          <TabsTrigger value="verification">Verification</TabsTrigger>
           <TabsTrigger value="contact">Contact & Social</TabsTrigger>
           <TabsTrigger value="capability">Capability & Services</TabsTrigger>
           <TabsTrigger value="experience">Experience & QC</TabsTrigger>
@@ -856,7 +795,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                     const file = e.target.files?.[0];
                     if (!file) return;
                     try {
-                      const url = await api.upload.image(file, settings.company_name || email, "dp");
+                      const url = await api.upload.image(file, settings.company_name || email, "dp", "company");
                       setSettings((prev) => ({ ...prev, dp_url: url }));
                       toast({ title: "Cover photo updated" });
                     } catch { toast({ variant: "destructive", title: "Upload failed" }); }
@@ -896,7 +835,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                       const file = e.target.files?.[0];
                       if (!file) return;
                       try {
-                        const url = await api.upload.image(file, settings.company_name || email, "profile");
+                        const url = await api.upload.image(file, settings.company_name || email, "profile", "company");
                         setSettings((prev) => ({ ...prev, logo_url: url }));
                         toast({ title: "Profile picture updated" });
                       } catch { toast({ variant: "destructive", title: "Upload failed" }); }
@@ -1115,6 +1054,124 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
               </div>
             </div>
           </GlassCard>
+        </TabsContent>
+
+        {/* ── Tab: Verification ──────────────────────────────────────────────── */}
+        <TabsContent value="verification" className="mt-6 space-y-4">
+          <GlassCard interactive={false} className="p-5">
+            <div className="flex items-center gap-3 mb-1">
+              <Shield className="h-5 w-5 text-primary" />
+              <p className="text-sm font-semibold text-foreground">Company Verification</p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Upload legal documents to verify your company. Verified companies get higher trust scores and better visibility to clients. Admin will review your documents.
+            </p>
+
+            {/* Verification Status Banner */}
+            <div className={cn(
+              "mt-4 flex items-center gap-3 rounded-2xl border p-4",
+              settings.verification_documents.verification_status === "verified" && "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400",
+              settings.verification_documents.verification_status === "pending" && "border-yellow-500/30 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
+              settings.verification_documents.verification_status === "rejected" && "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400",
+              settings.verification_documents.verification_status === "not_submitted" && "border-border bg-background/30 text-muted-foreground",
+            )}>
+              <FileCheck className="h-5 w-5 shrink-0" />
+              <div>
+                <p className="text-sm font-medium">
+                  {settings.verification_documents.verification_status === "verified" && "Verified — Your company is verified."}
+                  {settings.verification_documents.verification_status === "pending" && "Pending Review — Documents submitted, awaiting admin review."}
+                  {settings.verification_documents.verification_status === "rejected" && "Rejected — Please re-upload corrected documents."}
+                  {settings.verification_documents.verification_status === "not_submitted" && "Not Submitted — Upload your documents below to start verification."}
+                </p>
+                {settings.verification_documents.verification_notes && (
+                  <p className="mt-1 text-xs opacity-80">Note: {settings.verification_documents.verification_notes}</p>
+                )}
+              </div>
+            </div>
+          </GlassCard>
+
+          {/* Document upload cards */}
+          {[
+            { key: "registration_certificate_url" as const, docType: "registration_certificate", label: "Company Registration Certificate", desc: "Official registration document from relevant authority (FBR, provincial registrar, etc.)." },
+            { key: "secp_certificate_url" as const, docType: "secp_certificate", label: "SECP Certificate", desc: "Securities and Exchange Commission of Pakistan certificate (if registered)." },
+            { key: "ntn_certificate_url" as const, docType: "ntn_certificate", label: "NTN Certificate", desc: "National Tax Number certificate from FBR." },
+            { key: "cnic_front_url" as const, docType: "cnic_front", label: "Owner CNIC — Front", desc: "Front side of the company owner's CNIC / National ID Card." },
+            { key: "cnic_back_url" as const, docType: "cnic_back", label: "Owner CNIC — Back", desc: "Back side of the company owner's CNIC / National ID Card." },
+            { key: "other_document_url" as const, docType: "other_document", label: "Other Supporting Document", desc: "Any additional document that proves legitimacy (e.g., PEC certificate, trade license)." },
+          ].map(({ key, docType, label, desc }) => {
+            const currentUrl = settings.verification_documents[key];
+            return (
+              <GlassCard key={key} interactive={false} className="p-5">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-foreground">{label}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{desc}</p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    {currentUrl ? (
+                      <>
+                        <Badge variant="secondary" className="gap-1.5">
+                          <FileCheck className="h-3 w-3" />
+                          Uploaded
+                        </Badge>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.open(currentUrl, "_blank")}
+                        >
+                          View
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setSettings((prev) => ({
+                            ...prev,
+                            verification_documents: { ...prev.verification_documents, [key]: "", verification_status: "not_submitted" },
+                          }))}
+                        >
+                          <X className="h-3.5 w-3.5" /> Remove
+                        </Button>
+                      </>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground">Not uploaded</Badge>
+                    )}
+                  </div>
+                </div>
+
+                {/* Upload area */}
+                <div className="mt-3">
+                  <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-background/30 p-4 text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/5">
+                    <Upload className="h-4 w-4" />
+                    {currentUrl ? "Replace document" : "Upload document"}
+                    <span className="text-xs">(PDF, JPEG, PNG · Max 10 MB)</span>
+                    <input
+                      type="file"
+                      accept="application/pdf,image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          const url = await api.upload.document(file, settings.company_name || email, docType, "company");
+                          setSettings((prev) => ({
+                            ...prev,
+                            verification_documents: { ...prev.verification_documents, [key]: url, verification_status: "pending" },
+                          }));
+                          toast({ title: "Document uploaded", description: `${label} uploaded successfully.` });
+                        } catch (err) {
+                          toast({ variant: "destructive", title: "Upload failed", description: err instanceof Error ? err.message : "Could not upload document." });
+                        }
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                </div>
+              </GlassCard>
+            );
+          })}
         </TabsContent>
 
         {/* ── Tab 3: Contact & Social ────────────────────────────────────────── */}
@@ -1400,18 +1457,6 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                   options={["0", "1-3", "4-10", "11-20", "20+"].map((v) => ({ value: v, label: v }))}
                 />
               </div>
-              <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">Reliability score (0–1)</Label>
-                <Input
-                  type="number" min={0} max={1} step={0.1}
-                  value={settings.reliability_score ?? ""}
-                  onChange={(e) => {
-                    const n = parseOptionalFloat(e.target.value);
-                    setSettings((prev) => ({ ...prev, reliability_score: n == null ? null : Math.max(0, Math.min(1, n)) }));
-                  }}
-                  className="bg-background/40" placeholder="e.g., 0.85"
-                />
-              </div>
             </div>
 
             <div className="mt-4">
@@ -1532,6 +1577,16 @@ type SupplierSettings = {
     public_profile: boolean;
     show_contact: boolean;
   };
+  verification_documents: {
+    secp_certificate_url: string;
+    ntn_certificate_url: string;
+    registration_certificate_url: string;
+    cnic_front_url: string;
+    cnic_back_url: string;
+    other_document_url: string;
+    verification_status: string;
+    verification_notes: string;
+  };
 };
 
 const supplierSettingsStorageKey = (key: string) => `scc_supplier_settings_v1:${key}`;
@@ -1581,6 +1636,19 @@ function defaultSupplierSettings(profile: Record<string, unknown> | null, email:
       public_profile: bool(editorProfile.public_profile, true),
       show_contact: bool(editorProfile.show_contact, true),
     },
+    verification_documents: (() => {
+      const vdRaw = editorSettings.verification_documents && typeof editorSettings.verification_documents === "object" ? (editorSettings.verification_documents as Record<string, unknown>) : {};
+      return {
+        secp_certificate_url: str(vdRaw.secp_certificate_url, ""),
+        ntn_certificate_url: str(vdRaw.ntn_certificate_url, ""),
+        registration_certificate_url: str(vdRaw.registration_certificate_url, ""),
+        cnic_front_url: str(vdRaw.cnic_front_url, ""),
+        cnic_back_url: str(vdRaw.cnic_back_url, ""),
+        other_document_url: str(vdRaw.other_document_url, ""),
+        verification_status: str(vdRaw.verification_status, "not_submitted"),
+        verification_notes: str(vdRaw.verification_notes, ""),
+      };
+    })(),
   };
 }
 
@@ -1735,6 +1803,7 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
           status: settings.status,
           material_categories: settings.material_categories,
           profile_settings: settings.profile_settings,
+          verification_documents: settings.verification_documents,
         },
       };
       await api.suppliers.updateProfile(supplierSlug, profileData);
@@ -1783,6 +1852,7 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
           <TabsTrigger value="profile">Supplier Profile</TabsTrigger>
           <TabsTrigger value="contact">Contact & Social</TabsTrigger>
           <TabsTrigger value="business">Business & Legal</TabsTrigger>
+          <TabsTrigger value="verification">Verification</TabsTrigger>
           <TabsTrigger value="operations">Operations & Delivery</TabsTrigger>
         </TabsList>
 
@@ -1815,7 +1885,7 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
                     const file = e.target.files?.[0];
                     if (!file) return;
                     try {
-                      const url = await api.upload.image(file, settings.supplier_name || email, "dp");
+                      const url = await api.upload.image(file, settings.supplier_name || email, "dp", "supplier");
                       setSettings((prev) => ({ ...prev, dp_url: url }));
                       toast({ title: "Cover photo updated" });
                     } catch { toast({ variant: "destructive", title: "Upload failed" }); }
@@ -1854,7 +1924,7 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
                       const file = e.target.files?.[0];
                       if (!file) return;
                       try {
-                        const url = await api.upload.image(file, settings.supplier_name || email, "profile");
+                        const url = await api.upload.image(file, settings.supplier_name || email, "profile", "supplier");
                         setSettings((prev) => ({ ...prev, logo_url: url }));
                         toast({ title: "Profile picture updated" });
                       } catch { toast({ variant: "destructive", title: "Upload failed" }); }
@@ -2083,6 +2153,112 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
               </div>
             </div>
           </GlassCard>
+        </TabsContent>
+
+        {/* ── Tab: Verification ──────────────────────────────────────────── */}
+        <TabsContent value="verification" className="mt-6 space-y-4">
+          <GlassCard interactive={false} className="p-5">
+            <div className="flex items-center gap-3 mb-1">
+              <Shield className="h-5 w-5 text-primary" />
+              <p className="text-sm font-semibold text-foreground">Supplier Verification</p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Upload legal documents to verify your business. Verified suppliers get higher trust scores and better visibility to construction companies. Admin will review your documents.
+            </p>
+
+            <div className={cn(
+              "mt-4 flex items-center gap-3 rounded-2xl border p-4",
+              settings.verification_documents.verification_status === "verified" && "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400",
+              settings.verification_documents.verification_status === "pending" && "border-yellow-500/30 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
+              settings.verification_documents.verification_status === "rejected" && "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400",
+              settings.verification_documents.verification_status === "not_submitted" && "border-border bg-background/30 text-muted-foreground",
+            )}>
+              <FileCheck className="h-5 w-5 shrink-0" />
+              <div>
+                <p className="text-sm font-medium">
+                  {settings.verification_documents.verification_status === "verified" && "Verified — Your supplier business is verified."}
+                  {settings.verification_documents.verification_status === "pending" && "Pending Review — Documents submitted, awaiting admin review."}
+                  {settings.verification_documents.verification_status === "rejected" && "Rejected — Please re-upload corrected documents."}
+                  {settings.verification_documents.verification_status === "not_submitted" && "Not Submitted — Upload your documents below to start verification."}
+                </p>
+                {settings.verification_documents.verification_notes && (
+                  <p className="mt-1 text-xs opacity-80">Note: {settings.verification_documents.verification_notes}</p>
+                )}
+              </div>
+            </div>
+          </GlassCard>
+
+          {[
+            { key: "registration_certificate_url" as const, docType: "registration_certificate", label: "Business Registration Certificate", desc: "Official registration document from relevant authority (FBR, provincial registrar, etc.)." },
+            { key: "secp_certificate_url" as const, docType: "secp_certificate", label: "SECP Certificate", desc: "Securities and Exchange Commission of Pakistan certificate (if registered)." },
+            { key: "ntn_certificate_url" as const, docType: "ntn_certificate", label: "NTN Certificate", desc: "National Tax Number certificate from FBR." },
+            { key: "cnic_front_url" as const, docType: "cnic_front", label: "Owner CNIC — Front", desc: "Front side of the business owner's CNIC / National ID Card." },
+            { key: "cnic_back_url" as const, docType: "cnic_back", label: "Owner CNIC — Back", desc: "Back side of the business owner's CNIC / National ID Card." },
+            { key: "other_document_url" as const, docType: "other_document", label: "Other Supporting Document", desc: "Any additional document that proves legitimacy (e.g., trade license, sales tax certificate)." },
+          ].map(({ key, docType, label, desc }) => {
+            const currentUrl = settings.verification_documents[key];
+            return (
+              <GlassCard key={key} interactive={false} className="p-5">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-foreground">{label}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{desc}</p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    {currentUrl ? (
+                      <>
+                        <Badge variant="secondary" className="gap-1.5">
+                          <FileCheck className="h-3 w-3" />
+                          Uploaded
+                        </Badge>
+                        <Button type="button" variant="outline" size="sm" onClick={() => window.open(currentUrl, "_blank")}>
+                          View
+                        </Button>
+                        <Button
+                          type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive"
+                          onClick={() => setSettings((prev) => ({
+                            ...prev,
+                            verification_documents: { ...prev.verification_documents, [key]: "", verification_status: "not_submitted" },
+                          }))}
+                        >
+                          <X className="h-3.5 w-3.5" /> Remove
+                        </Button>
+                      </>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground">Not uploaded</Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-background/30 p-4 text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/5">
+                    <Upload className="h-4 w-4" />
+                    {currentUrl ? "Replace document" : "Upload document"}
+                    <span className="text-xs">(PDF, JPEG, PNG · Max 10 MB)</span>
+                    <input
+                      type="file"
+                      accept="application/pdf,image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          const url = await api.upload.document(file, settings.supplier_name || email, docType, "supplier");
+                          setSettings((prev) => ({
+                            ...prev,
+                            verification_documents: { ...prev.verification_documents, [key]: url, verification_status: "pending" },
+                          }));
+                          toast({ title: "Document uploaded", description: `${label} uploaded successfully.` });
+                        } catch (err) {
+                          toast({ variant: "destructive", title: "Upload failed", description: err instanceof Error ? err.message : "Could not upload document." });
+                        }
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                </div>
+              </GlassCard>
+            );
+          })}
         </TabsContent>
 
         {/* ── Tab 4: Operations & Delivery ────────────────────────────────── */}
