@@ -50,7 +50,7 @@ export function DashboardLayout() {
   return (
     <SidebarProvider defaultOpen>
       <AppSidebar />
-      <SidebarInset className="relative bg-background">
+      <SidebarInset className="relative bg-background border-l border-border">
         <TopNavbar />
         <main className="relative flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
           <AnimatePresence mode="wait" initial={false}>

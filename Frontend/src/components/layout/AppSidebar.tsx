@@ -21,7 +21,6 @@ import {
   Bot,
   Building2,
   FileText,
-  HardHat,
   MessageSquare,
   Package,
   Settings,
@@ -80,19 +79,17 @@ export function AppSidebar() {
 
   return (
     <>
-      <Sidebar variant="floating" collapsible="icon" className="border-sidebar-border">
+      <Sidebar variant="sidebar" collapsible="icon" className="border-r-0">
         <SidebarHeader className="p-3">
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Smart Construction Connect" className="h-11">
-                <Link to="/dashboard" className="flex items-center gap-3">
-                  <motion.div
-                    className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground"
-                    whileHover={{ scale: 1.05, rotate: 4 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <HardHat className="h-5 w-5" />
-                  </motion.div>
+              <SidebarMenuButton asChild tooltip="Smart Construction Connect" className="h-14">
+                <Link to="/dashboard" className="flex items-center gap-2">
+                  <img
+                    src="/Logo.png"
+                    alt="Smart Connect"
+                    className="h-10 w-10 shrink-0 rounded-xl object-contain group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8"
+                  />
                   <div className="flex min-w-0 flex-col">
                     <span className="truncate text-sm font-semibold">Smart Connect</span>
                     <span className="truncate text-xs text-muted-foreground">Construction SaaS</span>
