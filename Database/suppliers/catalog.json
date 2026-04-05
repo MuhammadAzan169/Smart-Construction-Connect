@@ -80,15 +80,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/bestway-building-materials/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/bestway-building-materials/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/bestway-building-materials/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-002",
     "supplier_name": "Pakistan Steel Hub",
     "slug": "pakistan-steel-hub",
     "description": "Premium steel supplier offering a wide range of steel products from top Pakistani manufacturers. Trusted by major construction companies across the country.",
-    "logo_url": "https://images.unsplash.com/photo-1590846083693-f23fdede3a7e?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=200&h=200&fit=crop",
     "rating": 4.5,
     "review_count": 98,
     "city": "Karachi",
@@ -156,15 +175,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/pakistan-steel-hub/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/pakistan-steel-hub/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/pakistan-steel-hub/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-003",
     "supplier_name": "National Paint & Coatings",
     "slug": "national-paint-coatings",
     "description": "Authorized distributor for ICI Dulux, Nippon, and Berger paints. Complete range of interior and exterior paints, primers, and coatings for construction projects.",
-    "logo_url": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&h=200&fit=crop",
     "rating": 4.8,
     "review_count": 210,
     "city": "Islamabad",
@@ -239,15 +277,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/national-paint-coatings/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/national-paint-coatings/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/national-paint-coatings/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-004",
     "supplier_name": "Lahore Brick & Block Works",
     "slug": "lahore-brick-block-works",
     "description": "Manufacturer and supplier of premium quality bricks, concrete blocks, and masonry products. Serving construction industry in Punjab for over 25 years.",
-    "logo_url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 87,
     "city": "Lahore",
@@ -315,15 +372,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "pending",
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "business_license": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/lahore-brick-block-works/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/lahore-brick-block-works/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/lahore-brick-block-works/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-005",
     "supplier_name": "Master Tiles & Ceramics",
     "slug": "master-tiles-ceramics",
     "description": "Premium tile showroom and wholesale dealer. Offering imported and local tiles, sanitary ware, and bathroom fittings from top brands including Master, Shabbir, and Porta.",
-    "logo_url": "https://images.unsplash.com/photo-1541976590-713941681591?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=200&h=200&fit=crop",
     "rating": 4.6,
     "review_count": 134,
     "city": "Faisalabad",
@@ -392,15 +468,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "pending",
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "business_license": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/master-tiles-ceramics/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/master-tiles-ceramics/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/master-tiles-ceramics/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-006",
     "supplier_name": "Peshawar Timber & Wood Works",
     "slug": "peshawar-timber-wood-works",
     "description": "Quality timber and wood products supplier. Specializing in Deodar, Partal, and imported wood for construction, furniture, and interior work.",
-    "logo_url": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop",
     "rating": 4.3,
     "review_count": 67,
     "city": "Peshawar",
@@ -468,15 +563,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/peshawar-timber-wood-works/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/peshawar-timber-wood-works/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/peshawar-timber-wood-works/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-007",
     "supplier_name": "Al-Noor Electrical & Wiring",
     "slug": "al-noor-electrical-wiring",
     "description": "Complete electrical solutions provider. Authorized dealer for Pakistan Cables, Newage Cables, and Fast Cables with all types of wiring, switches, and distribution boards.",
-    "logo_url": "https://images.unsplash.com/photo-1590846083693-f23fdede3a7e?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
     "rating": 4.5,
     "review_count": 112,
     "city": "Rawalpindi",
@@ -544,15 +658,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/al-noor-electrical-wiring/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/al-noor-electrical-wiring/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/al-noor-electrical-wiring/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-008",
     "supplier_name": "Multan Plumbing & Sanitary",
     "slug": "multan-plumbing-sanitary",
     "description": "One-stop shop for all plumbing and sanitary needs. Stocking Grohe, Porta, and Master sanitary ware along with complete plumbing pipe systems.",
-    "logo_url": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&h=200&fit=crop",
     "rating": 4.2,
     "review_count": 73,
     "city": "Multan",
@@ -628,15 +761,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/multan-plumbing-sanitary/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/multan-plumbing-sanitary/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/multan-plumbing-sanitary/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-009",
     "supplier_name": "Karachi Glass & Aluminum",
     "slug": "karachi-glass-aluminum",
     "description": "Premium glass and aluminum products for modern construction. Specializing in tempered glass, aluminum windows, curtain walls, and glass partitions.",
-    "logo_url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=200&h=200&fit=crop",
     "rating": 4.6,
     "review_count": 89,
     "city": "Karachi",
@@ -703,15 +855,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "pending",
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "business_license": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/karachi-glass-aluminum/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/karachi-glass-aluminum/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/karachi-glass-aluminum/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-010",
     "supplier_name": "Islamabad Hardware & Tools",
     "slug": "islamabad-hardware-tools",
     "description": "Construction hardware and tools specialist. Complete range of fasteners, hand tools, power tools, and construction accessories for professional builders.",
-    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 65,
     "city": "Islamabad",
@@ -778,15 +949,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "pending",
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "business_license": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/islamabad-hardware-tools/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/islamabad-hardware-tools/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/islamabad-hardware-tools/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-011",
     "supplier_name": "Hyderabad Cement Depot",
     "slug": "hyderabad-cement-depot",
     "description": "Largest cement wholesale distributor in Sindh. Stocking all major Pakistani cement brands with competitive bulk pricing and same-day delivery.",
-    "logo_url": "https://images.unsplash.com/photo-1541976590-713941681591?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=200&h=200&fit=crop",
     "rating": 4.3,
     "review_count": 54,
     "city": "Hyderabad",
@@ -845,15 +1035,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/hyderabad-cement-depot/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/hyderabad-cement-depot/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/hyderabad-cement-depot/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-012",
     "supplier_name": "Faisalabad Waterproofing Solutions",
     "slug": "faisalabad-waterproofing-solutions",
     "description": "Specialized supplier for waterproofing, insulation, and damp-proofing materials. Offering solutions from international brands for roofs, basements, and bathrooms.",
-    "logo_url": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop",
     "rating": 4.5,
     "review_count": 78,
     "city": "Faisalabad",
@@ -920,15 +1129,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/faisalabad-waterproofing-solutions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/faisalabad-waterproofing-solutions/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/faisalabad-waterproofing-solutions/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-013",
     "supplier_name": "Sialkot Door & Window Mart",
     "slug": "sialkot-door-window-mart",
     "description": "Premium doors, windows, and fixtures supplier. Offering wooden, UPVC, and aluminum doors and windows with custom sizing and installation services.",
-    "logo_url": "https://images.unsplash.com/photo-1590846083693-f23fdede3a7e?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 42,
     "city": "Sialkot",
@@ -996,15 +1224,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/sialkot-door-window-mart/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/sialkot-door-window-mart/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/sialkot-door-window-mart/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-014",
     "supplier_name": "Gujranwala Ready Mix Concrete",
     "slug": "gujranwala-ready-mix-concrete",
     "description": "Ready-mix concrete supplier with modern batching plants. Serving major construction sites with precise concrete mix designs and timely delivery.",
-    "logo_url": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 91,
     "city": "Gujranwala",
@@ -1063,15 +1310,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "pending",
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "business_license": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/gujranwala-ready-mix-concrete/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/gujranwala-ready-mix-concrete/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/gujranwala-ready-mix-concrete/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-015",
     "supplier_name": "Quetta Stone & Marble Gallery",
     "slug": "quetta-stone-marble-gallery",
     "description": "Natural stone and marble supplier from Balochistan. Premium Ziarat marble, Onyx, and granite sourced directly from quarries with competitive pricing.",
-    "logo_url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
+    "logo_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=200&h=200&fit=crop",
     "rating": 4.8,
     "review_count": 145,
     "city": "Quetta",
@@ -1139,15 +1405,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "pending",
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "business_license": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/quetta-stone-marble-gallery/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/quetta-stone-marble-gallery/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/quetta-stone-marble-gallery/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-115",
     "supplier_name": "Punjab Cement Traders",
     "slug": "punjab-cement-traders",
     "description": "General construction materials supplier in Pakistan.",
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 53,
     "city": "Lahore",
@@ -1181,15 +1466,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/punjab-cement-traders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/punjab-cement-traders/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/punjab-cement-traders/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-116",
     "supplier_name": "Steel Hub PK",
     "slug": "steel-hub-pk",
     "description": "General construction materials supplier in Pakistan.",
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 53,
     "city": "Lahore",
@@ -1223,15 +1527,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/steel-hub-pk/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/steel-hub-pk/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/steel-hub-pk/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-118",
     "supplier_name": "Hyderabad Building Supplies",
     "slug": "hyderabad-building-supplies",
     "description": "Quality construction materials supplier serving Hyderabad and surrounding areas.",
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop",
     "rating": 4.6,
     "review_count": 102,
     "city": "Hyderabad",
@@ -1281,15 +1604,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/hyderabad-building-supplies/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/hyderabad-building-supplies/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/hyderabad-building-supplies/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-119",
     "supplier_name": "Abbottabad Timber House",
     "slug": "abbottabad-timber-house",
     "description": "Quality construction materials supplier serving Abbottabad and surrounding areas.",
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
     "rating": 4.0,
     "review_count": 119,
     "city": "Abbottabad",
@@ -1339,15 +1681,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "pending",
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "business_license": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/abbottabad-timber-house/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/abbottabad-timber-house/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/abbottabad-timber-house/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-120",
     "supplier_name": "Sargodha Cement & Steel",
     "slug": "sargodha-cement-steel",
     "description": "Quality construction materials supplier serving Sargodha and surrounding areas.",
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&h=200&fit=crop",
     "rating": 3.9,
     "review_count": 74,
     "city": "Sargodha",
@@ -1397,15 +1758,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "pending",
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "business_license": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/sargodha-cement-steel/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/sargodha-cement-steel/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/sargodha-cement-steel/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-121",
     "supplier_name": "DG Khan Hardware Center",
     "slug": "dg-khan-hardware-center",
     "description": "Quality construction materials supplier serving DG Khan and surrounding areas.",
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=200&h=200&fit=crop",
     "rating": 4.8,
     "review_count": 105,
     "city": "DG Khan",
@@ -1455,15 +1835,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/dg-khan-hardware-center/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/dg-khan-hardware-center/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/dg-khan-hardware-center/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-122",
     "supplier_name": "Mirpur Marble & Granite",
     "slug": "mirpur-marble-granite",
     "description": "Quality construction materials supplier serving Mirpur and surrounding areas.",
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 137,
     "city": "Mirpur",
@@ -1513,15 +1912,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/mirpur-marble-granite/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/mirpur-marble-granite/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/mirpur-marble-granite/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-123",
     "supplier_name": "Sahiwal Paint & Finish",
     "slug": "sahiwal-paint-finish",
     "description": "Quality construction materials supplier serving Sahiwal and surrounding areas.",
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=200&h=200&fit=crop",
     "rating": 4.6,
     "review_count": 83,
     "city": "Sahiwal",
@@ -1571,15 +1989,34 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "verified",
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "business_license": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/sahiwal-paint-finish/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/sahiwal-paint-finish/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/sahiwal-paint-finish/documents/business_license.pdf"
+    }
   },
   {
     "supplier_id": "MS-124",
     "supplier_name": "Rahim Yar Khan Steel Works",
     "slug": "rahim-yar-khan-steel-works",
     "description": "Quality construction materials supplier serving Rahim Yar Khan and surrounding areas.",
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop",
     "rating": 4.5,
     "review_count": 149,
     "city": "Rahim Yar Khan",
@@ -1629,7 +2066,26 @@
       }
     ],
     "status": "active",
-    "verification_status": "not_submitted",
-    "verification": {}
+    "verification_status": "pending",
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "business_license": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "dp_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/material_supplier/rahim-yar-khan-steel-works/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/material_supplier/rahim-yar-khan-steel-works/documents/ntn_certificate.pdf",
+      "business_license_url": "/company_data/material_supplier/rahim-yar-khan-steel-works/documents/business_license.pdf"
+    }
   }
 ]

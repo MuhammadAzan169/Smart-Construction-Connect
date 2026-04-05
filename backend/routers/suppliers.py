@@ -53,8 +53,9 @@ class SupplierProfileUpdate(BaseModel):
 
 
 _ALLOWED_PROFILE_FIELDS = {
-    "supplier_name", "description", "logo_url",
+    "supplier_name", "description", "logo_url", "dp_url",
     "city", "area", "contact", "cities_served",
+    "verification_documents",
 }
 
 _PROTECTED_FIELDS = {

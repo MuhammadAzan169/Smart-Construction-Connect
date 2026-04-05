@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-import { ArrowLeft, MapPin, MessageSquare, Package, Phone, Mail, Globe, Star, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Download, Eye, MapPin, MessageSquare, Package, Phone, Mail, Globe, ShieldCheck, Star, AlertTriangle } from "lucide-react";
 
 type SupplierMaterial = {
   name: string;
@@ -38,6 +38,8 @@ type SupplierData = {
   review_count: number;
   slug?: string;
   verification_status?: string;
+  verification?: Record<string, { status: string }>;
+  verification_documents?: Record<string, string>;
 };
 
 const formatPKR = (value: number) =>
@@ -289,6 +291,53 @@ export default function SupplierProfilePage() {
               )}
             </div>
           </GlassCard>
+
+          {/* Verification Documents */}
+          {(() => {
+            const vDocs = supplier.verification_documents ?? {};
+            const vStatus = supplier.verification ?? {};
+            const docLabels: Record<string, string> = {
+              secp_certificate: "SECP Certificate",
+              ntn_certificate: "NTN Certificate",
+              registration_certificate: "Registration Certificate",
+              business_license: "Business License",
+            };
+            const docs = Object.entries(vDocs)
+              .filter(([, url]) => !!url)
+              .map(([key, url]) => {
+                const docType = key.replace(/_url$/, "");
+                return { docType, url, status: vStatus[docType]?.status ?? "pending" };
+              });
+            if (!docs.length) return null;
+            return (
+              <GlassCard interactive={false} className="p-6">
+                <p className="text-xs font-semibold tracking-wide text-muted-foreground flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4" />
+                  VERIFICATION DOCUMENTS
+                </p>
+                <div className="mt-3 space-y-2">
+                  {docs.map((doc) => (
+                    <div key={doc.docType} className="flex items-center justify-between gap-2 rounded-xl border border-border bg-background/30 p-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-medium text-foreground">{docLabels[doc.docType] ?? doc.docType}</p>
+                        <span className={`text-[10px] font-medium ${doc.status === "approved" ? "text-green-500" : doc.status === "rejected" ? "text-red-500" : "text-amber-500"}`}>
+                          {doc.status === "approved" ? "Verified" : doc.status === "rejected" ? "Rejected" : "Pending"}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <a href={doc.url} target="_blank" rel="noopener noreferrer" className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-primary hover:bg-primary/10" title="View">
+                          <Eye className="h-3.5 w-3.5" />
+                        </a>
+                        <a href={doc.url} download={`${doc.docType}.pdf`} className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-primary hover:bg-primary/10" title="Download">
+                          <Download className="h-3.5 w-3.5" />
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </GlassCard>
+            );
+          })()}
 
           <GlassCard interactive={false} className="p-6">
             <p className="text-xs font-semibold tracking-wide text-muted-foreground">SUPPLIER STATS</p>

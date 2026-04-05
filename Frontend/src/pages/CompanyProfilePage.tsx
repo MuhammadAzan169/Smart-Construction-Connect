@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { fetchCompanyDirectory, getPackageKeys, humanizeToken, type CompanyDirectoryItem } from "@/data/companyData";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
-import { ArrowLeft, Building2, Briefcase, CheckCircle, CreditCard, FileText, HardHat, MapPin, MessageSquare, Phone, Mail, Globe, Shield, Star, Users } from "lucide-react";
+import { ArrowLeft, Building2, Briefcase, CheckCircle, CreditCard, Download, Eye, FileText, HardHat, MapPin, MessageSquare, Phone, Mail, Globe, Shield, ShieldCheck, Star, Users } from "lucide-react";
 
 function previewList(items: string[], max: number) {
   const cleaned = items.filter((x) => x && x !== "—");
@@ -530,6 +530,56 @@ export default function CompanyProfilePage() {
             </div>
           </GlassCard>
           </motion.div>
+
+          {/* Verification Documents */}
+          {(() => {
+            const raw = company.raw as Record<string, unknown>;
+            const vDocs = (raw.verification_documents ?? {}) as Record<string, string>;
+            const vStatus = (raw.verification ?? {}) as Record<string, { status: string }>;
+            const docLabels: Record<string, string> = {
+              secp_certificate: "SECP Certificate",
+              ntn_certificate: "NTN Certificate",
+              registration_certificate: "Registration Certificate",
+              business_license: "Business License",
+            };
+            const docs = Object.entries(vDocs)
+              .filter(([, url]) => !!url)
+              .map(([key, url]) => {
+                const docType = key.replace(/_url$/, "");
+                return { docType, url, status: vStatus[docType]?.status ?? "pending" };
+              });
+            if (!docs.length) return null;
+            return (
+              <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25, duration: 0.35 }}>
+                <GlassCard interactive={false} className="p-6">
+                  <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4" />
+                    Verification Documents
+                  </p>
+                  <div className="mt-3 space-y-2">
+                    {docs.map((doc) => (
+                      <div key={doc.docType} className="flex items-center justify-between gap-2 rounded-xl border border-border bg-background/30 p-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-medium text-foreground">{docLabels[doc.docType] ?? doc.docType}</p>
+                          <span className={`text-[10px] font-medium ${doc.status === "approved" ? "text-green-500" : doc.status === "rejected" ? "text-red-500" : "text-amber-500"}`}>
+                            {doc.status === "approved" ? "Verified" : doc.status === "rejected" ? "Rejected" : "Pending"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <a href={doc.url} target="_blank" rel="noopener noreferrer" className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-primary hover:bg-primary/10" title="View">
+                            <Eye className="h-3.5 w-3.5" />
+                          </a>
+                          <a href={doc.url} download={`${doc.docType}.pdf`} className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-primary hover:bg-primary/10" title="Download">
+                            <Download className="h-3.5 w-3.5" />
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </GlassCard>
+              </motion.div>
+            );
+          })()}
 
           <motion.div
             initial={{ opacity: 0, x: 16 }}

@@ -64,13 +64,14 @@ class CompanyProfileUpdate(BaseModel):
 # Fields that users are allowed to set via profile update.
 # Anything not in this set is silently dropped.
 _ALLOWED_PROFILE_FIELDS = {
-    "company_name", "description", "logo_url", "city",
+    "company_name", "description", "logo_url", "dp_url", "city",
     "contact", "legal_info",
     "construction_capability", "services",
     "payment_terms", "timeline_estimates",
     "experience", "quality_control",
     "after_handover_support", "legal_and_contract",
     "ideal_customer_profile",
+    "verification_documents",
 }
 
 # Fields that only admins can modify — never writable by regular users.

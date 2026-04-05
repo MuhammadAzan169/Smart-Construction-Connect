@@ -4,7 +4,7 @@
     "company_name": "Ravi Grey Builders",
     "slug": "ravi-grey-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop",
     "rating": 3.7,
     "review_count": 165,
     "city": "Lahore",
@@ -496,15 +496,34 @@
       "quality_consistency": 0.69
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/ravi-grey-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/ravi-grey-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/ravi-grey-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-002",
     "company_name": "Shaheen Construction Works",
     "slug": "shaheen-construction-works",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 176,
     "city": "Lahore",
@@ -939,15 +958,34 @@
       "quality_consistency": 0.9
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1541976590-713941681591?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/shaheen-construction-works/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/shaheen-construction-works/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/shaheen-construction-works/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-003",
     "company_name": "Al-Rehman Builders",
     "slug": "al-rehman-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=200&h=200&fit=crop",
     "rating": 4.0,
     "review_count": 274,
     "city": "Lahore",
@@ -1439,15 +1477,34 @@
       "quality_consistency": 0.81
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/al-rehman-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/al-rehman-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/al-rehman-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-004",
     "company_name": "Minar Low-Cost Constructions",
     "slug": "minar-low-cost-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 184,
     "city": "Lahore",
@@ -1934,15 +1991,34 @@
       "quality_consistency": 0.8
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/minar-low-cost-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/minar-low-cost-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/minar-low-cost-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-005",
     "company_name": "Shalimar Building Associates",
     "slug": "shalimar-building-associates",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1460317442991-0ec209397118?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 214,
     "city": "Lahore",
@@ -2437,15 +2513,34 @@
       "quality_consistency": 0.86
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1590846083693-f23fdede3a7e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/shalimar-building-associates/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/shalimar-building-associates/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/shalimar-building-associates/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-006",
     "company_name": "Punjab Modern Constructions",
     "slug": "punjab-modern-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1498409785966-ab341407de6e?w=200&h=200&fit=crop",
     "rating": 4.5,
     "review_count": 137,
     "city": "Lahore",
@@ -2885,15 +2980,34 @@
       "quality_consistency": 0.79
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/punjab-modern-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/punjab-modern-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/punjab-modern-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-007",
     "company_name": "Iqbal Developers",
     "slug": "iqbal-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 41,
     "city": "Lahore",
@@ -3332,15 +3446,34 @@
       "quality_consistency": 0.68
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/iqbal-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/iqbal-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/iqbal-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-008",
     "company_name": "Heritage Builders Lahore",
     "slug": "heritage-builders-lahore",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 27,
     "city": "Lahore",
@@ -3753,15 +3886,34 @@
       "quality_consistency": 0.78
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/heritage-builders-lahore/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/heritage-builders-lahore/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/heritage-builders-lahore/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-009",
     "company_name": "Gulberg Elite Developers",
     "slug": "gulberg-elite-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=200&h=200&fit=crop",
     "rating": 3.7,
     "review_count": 238,
     "city": "Lahore",
@@ -4235,15 +4387,34 @@
       "quality_consistency": 0.85
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1517089596392-fb9a9033e05b?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/gulberg-elite-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/gulberg-elite-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/gulberg-elite-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-010",
     "company_name": "Lahore Luxury Constructions",
     "slug": "lahore-luxury-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 69,
     "city": "Lahore",
@@ -4823,15 +4994,34 @@
       "quality_consistency": 0.8
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/lahore-luxury-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/lahore-luxury-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/lahore-luxury-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-011",
     "company_name": "Coastal Economy Builders",
     "slug": "coastal-economy-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=200&h=200&fit=crop",
     "rating": 3.7,
     "review_count": 230,
     "city": "Karachi",
@@ -5269,15 +5459,34 @@
       "quality_consistency": 0.85
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/coastal-economy-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/coastal-economy-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/coastal-economy-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-012",
     "company_name": "Al-Noor Grey Structure Co.",
     "slug": "al-noor-grey-structure-co",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600210491736-f7f8e0ed1a33?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 203,
     "city": "Karachi",
@@ -5847,15 +6056,34 @@
       "quality_consistency": 0.85
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/al-noor-grey-structure-co/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/al-noor-grey-structure-co/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/al-noor-grey-structure-co/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-013",
     "company_name": "Sindh Affordable Constructions",
     "slug": "sindh-affordable-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 152,
     "city": "Karachi",
@@ -6319,15 +6547,34 @@
       "quality_consistency": 0.7
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/sindh-affordable-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/sindh-affordable-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/sindh-affordable-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-014",
     "company_name": "Arabian Sea Developers",
     "slug": "arabian-sea-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1599707367812-457c7eb76346?w=200&h=200&fit=crop",
     "rating": 4.8,
     "review_count": 296,
     "city": "Karachi",
@@ -6767,15 +7014,34 @@
       "quality_consistency": 0.74
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/arabian-sea-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/arabian-sea-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/arabian-sea-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-015",
     "company_name": "Metro City Builders",
     "slug": "metro-city-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 241,
     "city": "Karachi",
@@ -7296,15 +7562,34 @@
       "quality_consistency": 0.83
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/metro-city-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/metro-city-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/metro-city-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-016",
     "company_name": "Indus Construction Group",
     "slug": "indus-construction-group",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=200&h=200&fit=crop",
     "rating": 4.2,
     "review_count": 267,
     "city": "Karachi",
@@ -7770,15 +8055,34 @@
       "quality_consistency": 0.86
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1565953522043-baea692e5e77?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/indus-construction-group/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/indus-construction-group/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/indus-construction-group/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-017",
     "company_name": "Paramount Building Solutions",
     "slug": "paramount-building-solutions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=200&h=200&fit=crop",
     "rating": 3.8,
     "review_count": 200,
     "city": "Karachi",
@@ -8244,15 +8548,34 @@
       "quality_consistency": 0.74
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/paramount-building-solutions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/paramount-building-solutions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/paramount-building-solutions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-018",
     "company_name": "Clifton Crown Developers",
     "slug": "clifton-crown-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 225,
     "city": "Karachi",
@@ -8833,15 +9156,34 @@
       "quality_consistency": 0.87
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1455587734955-081b22074882?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/clifton-crown-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/clifton-crown-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/clifton-crown-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-019",
     "company_name": "Karachi Elite Constructions",
     "slug": "karachi-elite-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=200&h=200&fit=crop",
     "rating": 3.8,
     "review_count": 286,
     "city": "Karachi",
@@ -9343,15 +9685,34 @@
       "quality_consistency": 0.72
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1628744448840-55bdb2497bd4?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/karachi-elite-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/karachi-elite-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/karachi-elite-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-020",
     "company_name": "Seaview Premium Builders",
     "slug": "seaview-premium-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1488972685288-c3fd157d7c7a?w=200&h=200&fit=crop",
     "rating": 3.9,
     "review_count": 85,
     "city": "Karachi",
@@ -9876,15 +10237,34 @@
       "quality_consistency": 0.79
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/seaview-premium-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/seaview-premium-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/seaview-premium-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-021",
     "company_name": "Capital Economy Constructions",
     "slug": "capital-economy-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop",
     "rating": 4.2,
     "review_count": 247,
     "city": "Islamabad",
@@ -10321,15 +10701,34 @@
       "quality_consistency": 0.82
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/capital-economy-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/capital-economy-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/capital-economy-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-022",
     "company_name": "Rawal Budget Builders",
     "slug": "rawal-budget-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 247,
     "city": "Islamabad",
@@ -10822,15 +11221,34 @@
       "quality_consistency": 0.82
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/rawal-budget-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/rawal-budget-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/rawal-budget-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-023",
     "company_name": "Margalla Developers",
     "slug": "margalla-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=200&h=200&fit=crop",
     "rating": 4.3,
     "review_count": 246,
     "city": "Islamabad",
@@ -11268,15 +11686,34 @@
       "quality_consistency": 0.89
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1593604340846-4fbe9763a8f3?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/margalla-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/margalla-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/margalla-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-024",
     "company_name": "Federal Building Associates",
     "slug": "federal-building-associates",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
     "rating": 3.7,
     "review_count": 205,
     "city": "Islamabad",
@@ -11796,15 +12233,34 @@
       "quality_consistency": 0.81
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/federal-building-associates/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/federal-building-associates/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/federal-building-associates/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-025",
     "company_name": "CDA Approved Builders",
     "slug": "cda-approved-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1460317442991-0ec209397118?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 189,
     "city": "Islamabad",
@@ -12270,15 +12726,34 @@
       "quality_consistency": 0.91
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/cda-approved-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/cda-approved-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/cda-approved-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-026",
     "company_name": "Diplomatic Enclave Developers",
     "slug": "diplomatic-enclave-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1498409785966-ab341407de6e?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 271,
     "city": "Islamabad",
@@ -12725,15 +13200,34 @@
       "quality_consistency": 0.78
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/diplomatic-enclave-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/diplomatic-enclave-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/diplomatic-enclave-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-027",
     "company_name": "Zenith Premium Constructions",
     "slug": "zenith-premium-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?w=200&h=200&fit=crop",
     "rating": 3.8,
     "review_count": 116,
     "city": "Islamabad",
@@ -13178,15 +13672,34 @@
       "quality_consistency": 0.7
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/zenith-premium-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/zenith-premium-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/zenith-premium-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-028",
     "company_name": "Pindi Affordable Builders",
     "slug": "pindi-affordable-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 239,
     "city": "Rawalpindi",
@@ -13677,15 +14190,34 @@
       "quality_consistency": 0.77
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600563438938-a9a27216b4f5?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/pindi-affordable-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/pindi-affordable-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/pindi-affordable-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-029",
     "company_name": "Garrison Grey Structure Co.",
     "slug": "garrison-grey-structure-co",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=200&h=200&fit=crop",
     "rating": 4.0,
     "review_count": 82,
     "city": "Rawalpindi",
@@ -14149,15 +14681,34 @@
       "quality_consistency": 0.85
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/garrison-grey-structure-co/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/garrison-grey-structure-co/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/garrison-grey-structure-co/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-030",
     "company_name": "Rawalpindi Modern Constructions",
     "slug": "rawalpindi-modern-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=200&h=200&fit=crop",
     "rating": 3.7,
     "review_count": 272,
     "city": "Rawalpindi",
@@ -14651,15 +15202,34 @@
       "quality_consistency": 0.73
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/rawalpindi-modern-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/rawalpindi-modern-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/rawalpindi-modern-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-031",
     "company_name": "Chaklala Developers",
     "slug": "chaklala-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=200&h=200&fit=crop",
     "rating": 4.5,
     "review_count": 68,
     "city": "Rawalpindi",
@@ -15207,15 +15777,34 @@
       "quality_consistency": 0.88
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/chaklala-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/chaklala-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/chaklala-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-032",
     "company_name": "Murree Road Premium Builders",
     "slug": "murree-road-premium-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600210491736-f7f8e0ed1a33?w=200&h=200&fit=crop",
     "rating": 4.0,
     "review_count": 110,
     "city": "Rawalpindi",
@@ -15633,15 +16222,34 @@
       "quality_consistency": 0.8
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600210491736-f7f8e0ed1a33?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/murree-road-premium-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/murree-road-premium-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/murree-road-premium-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-033",
     "company_name": "Lyallpur Budget Builders",
     "slug": "lyallpur-budget-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=200&h=200&fit=crop",
     "rating": 3.7,
     "review_count": 202,
     "city": "Faisalabad",
@@ -16076,15 +16684,34 @@
       "quality_consistency": 0.83
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/lyallpur-budget-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/lyallpur-budget-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/lyallpur-budget-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-034",
     "company_name": "Susan Road Economy Constructions",
     "slug": "susan-road-economy-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1599707367812-457c7eb76346?w=200&h=200&fit=crop",
     "rating": 4.5,
     "review_count": 104,
     "city": "Faisalabad",
@@ -16548,15 +17175,34 @@
       "quality_consistency": 0.73
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/susan-road-economy-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/susan-road-economy-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/susan-road-economy-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-035",
     "company_name": "Chenab Modern Developers",
     "slug": "chenab-modern-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 130,
     "city": "Faisalabad",
@@ -16994,15 +17640,34 @@
       "quality_consistency": 0.74
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/chenab-modern-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/chenab-modern-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/chenab-modern-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-036",
     "company_name": "Industrial City Builders",
     "slug": "industrial-city-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=200&h=200&fit=crop",
     "rating": 3.8,
     "review_count": 204,
     "city": "Faisalabad",
@@ -17470,15 +18135,34 @@
       "quality_consistency": 0.79
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/industrial-city-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/industrial-city-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/industrial-city-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-037",
     "company_name": "Manchester Premium Constructions",
     "slug": "manchester-premium-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=200&h=200&fit=crop",
     "rating": 4.2,
     "review_count": 271,
     "city": "Faisalabad",
@@ -18031,15 +18715,34 @@
       "quality_consistency": 0.87
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/manchester-premium-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/manchester-premium-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/manchester-premium-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-038",
     "company_name": "Bosan Economy Builders",
     "slug": "bosan-economy-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?w=200&h=200&fit=crop",
     "rating": 3.8,
     "review_count": 121,
     "city": "Multan",
@@ -18530,15 +19233,34 @@
       "quality_consistency": 0.77
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600047508788-786f3865b4b9?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/bosan-economy-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/bosan-economy-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/bosan-economy-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-039",
     "company_name": "Sufi City Grey Structure Co.",
     "slug": "sufi-city-grey-structure-co",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=200&h=200&fit=crop",
     "rating": 3.9,
     "review_count": 55,
     "city": "Multan",
@@ -18948,15 +19670,34 @@
       "quality_consistency": 0.86
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1560184897-ae75f418493e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/sufi-city-grey-structure-co/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/sufi-city-grey-structure-co/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/sufi-city-grey-structure-co/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-040",
     "company_name": "Blue Mosque Developers",
     "slug": "blue-mosque-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1488972685288-c3fd157d7c7a?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 60,
     "city": "Multan",
@@ -19343,15 +20084,34 @@
       "quality_consistency": 0.69
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/blue-mosque-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/blue-mosque-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/blue-mosque-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-041",
     "company_name": "Saraiki Modern Constructions",
     "slug": "saraiki-modern-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop",
     "rating": 4.3,
     "review_count": 20,
     "city": "Multan",
@@ -19844,15 +20604,34 @@
       "quality_consistency": 0.84
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/saraiki-modern-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/saraiki-modern-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/saraiki-modern-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-042",
     "company_name": "Multan Premium Builders",
     "slug": "multan-premium-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 277,
     "city": "Multan",
@@ -20326,15 +21105,34 @@
       "quality_consistency": 0.84
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/multan-premium-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/multan-premium-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/multan-premium-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-043",
     "company_name": "Khyber Budget Constructions",
     "slug": "khyber-budget-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=200&h=200&fit=crop",
     "rating": 3.8,
     "review_count": 72,
     "city": "Peshawar",
@@ -20824,15 +21622,34 @@
       "quality_consistency": 0.86
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/khyber-budget-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/khyber-budget-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/khyber-budget-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-044",
     "company_name": "Frontier Grey Structure Co.",
     "slug": "frontier-grey-structure-co",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
     "rating": 4.8,
     "review_count": 210,
     "city": "Peshawar",
@@ -21295,15 +22112,34 @@
       "quality_consistency": 0.75
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/frontier-grey-structure-co/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/frontier-grey-structure-co/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/frontier-grey-structure-co/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-045",
     "company_name": "Hayatabad Modern Builders",
     "slug": "hayatabad-modern-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1460317442991-0ec209397118?w=200&h=200&fit=crop",
     "rating": 3.9,
     "review_count": 112,
     "city": "Peshawar",
@@ -21743,15 +22579,34 @@
       "quality_consistency": 0.74
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/hayatabad-modern-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/hayatabad-modern-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/hayatabad-modern-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-046",
     "company_name": "Pukhtoon Construction Group",
     "slug": "pukhtoon-construction-group",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1498409785966-ab341407de6e?w=200&h=200&fit=crop",
     "rating": 3.6,
     "review_count": 53,
     "city": "Peshawar",
@@ -22273,15 +23128,34 @@
       "quality_consistency": 0.74
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/pukhtoon-construction-group/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/pukhtoon-construction-group/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/pukhtoon-construction-group/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-047",
     "company_name": "Pashtun Premier Developers",
     "slug": "pashtun-premier-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 293,
     "city": "Peshawar",
@@ -22861,15 +23735,34 @@
       "quality_consistency": 0.91
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/pashtun-premier-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/pashtun-premier-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/pashtun-premier-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-048",
     "company_name": "Baloch Economy Builders",
     "slug": "baloch-economy-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 93,
     "city": "Quetta",
@@ -23307,15 +24200,34 @@
       "quality_consistency": 0.68
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1416331108676-a22ccb276e35?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/baloch-economy-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/baloch-economy-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/baloch-economy-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-049",
     "company_name": "Chiltan Modern Constructions",
     "slug": "chiltan-modern-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 183,
     "city": "Quetta",
@@ -23835,15 +24747,34 @@
       "quality_consistency": 0.84
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1467803738586-46b7eb7b16a1?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/chiltan-modern-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/chiltan-modern-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/chiltan-modern-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-050",
     "company_name": "Zarghoon Developers",
     "slug": "zarghoon-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 260,
     "city": "Quetta",
@@ -24310,15 +25241,34 @@
       "quality_consistency": 0.85
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/zarghoon-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/zarghoon-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/zarghoon-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-051",
     "company_name": "Highland Premium Builders",
     "slug": "highland-premium-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=200&h=200&fit=crop",
     "rating": 3.7,
     "review_count": 99,
     "city": "Quetta",
@@ -24844,15 +25794,34 @@
       "quality_consistency": 0.81
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/highland-premium-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/highland-premium-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/highland-premium-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-052",
     "company_name": "Rachna Economy Constructions",
     "slug": "rachna-economy-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600210491736-f7f8e0ed1a33?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 167,
     "city": "Gujranwala",
@@ -25290,15 +26259,34 @@
       "quality_consistency": 0.74
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1488972685288-c3fd157d7c7a?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/rachna-economy-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/rachna-economy-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/rachna-economy-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-053",
     "company_name": "G-City Modern Builders",
     "slug": "g-city-modern-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=200&h=200&fit=crop",
     "rating": 4.3,
     "review_count": 268,
     "city": "Gujranwala",
@@ -25764,15 +26752,34 @@
       "quality_consistency": 0.88
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1549407035-53e3eaa31f28?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/g-city-modern-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/g-city-modern-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/g-city-modern-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-054",
     "company_name": "Sports City Budget Builders",
     "slug": "sports-city-budget-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1599707367812-457c7eb76346?w=200&h=200&fit=crop",
     "rating": 4.6,
     "review_count": 79,
     "city": "Sialkot",
@@ -26235,15 +27242,34 @@
       "quality_consistency": 0.88
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/sports-city-budget-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/sports-city-budget-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/sports-city-budget-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-055",
     "company_name": "Cantt Road Modern Constructions",
     "slug": "cantt-road-modern-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
     "rating": 3.6,
     "review_count": 234,
     "city": "Sialkot",
@@ -26736,15 +27762,34 @@
       "quality_consistency": 0.75
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/cantt-road-modern-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/cantt-road-modern-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/cantt-road-modern-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-056",
     "company_name": "Cholistan Economy Builders",
     "slug": "cholistan-economy-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=200&h=200&fit=crop",
     "rating": 4.3,
     "review_count": 241,
     "city": "Bahawalpur",
@@ -27233,15 +28278,34 @@
       "quality_consistency": 0.86
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1527192491265-7e15c55b1ed2?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/cholistan-economy-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/cholistan-economy-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/cholistan-economy-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-057",
     "company_name": "Noor Mahal Modern Developers",
     "slug": "noor-mahal-modern-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=200&h=200&fit=crop",
     "rating": 3.8,
     "review_count": 230,
     "city": "Bahawalpur",
@@ -27653,15 +28717,34 @@
       "quality_consistency": 0.91
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1594398901394-4e34939a4fd0?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/noor-mahal-modern-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/noor-mahal-modern-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/noor-mahal-modern-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-158",
     "company_name": "Sindh Valley Constructions",
     "slug": "sindh-valley-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?w=200&h=200&fit=crop",
     "rating": 3.3,
     "review_count": 67,
     "city": "Hyderabad",
@@ -28051,15 +29134,34 @@
       "quality_consistency": 0.85
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1577495508326-19a1b3cf65b7?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/sindh-valley-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/sindh-valley-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/sindh-valley-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-159",
     "company_name": "Indus Modern Builders",
     "slug": "indus-modern-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=200&h=200&fit=crop",
     "rating": 4.0,
     "review_count": 158,
     "city": "Hyderabad",
@@ -28473,15 +29575,34 @@
       "quality_consistency": 0.68
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1587582423116-ec07293f0395?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/indus-modern-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/indus-modern-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/indus-modern-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-160",
     "company_name": "Hyderabad Elite Developers",
     "slug": "hyderabad-elite-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1488972685288-c3fd157d7c7a?w=200&h=200&fit=crop",
     "rating": 4.8,
     "review_count": 154,
     "city": "Hyderabad",
@@ -28872,15 +29993,34 @@
       "quality_consistency": 0.61
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/hyderabad-elite-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/hyderabad-elite-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/hyderabad-elite-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-161",
     "company_name": "Pine Hills Construction",
     "slug": "pine-hills-construction",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop",
     "rating": 4.3,
     "review_count": 129,
     "city": "Abbottabad",
@@ -29298,15 +30438,34 @@
       "quality_consistency": 0.6
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/pine-hills-construction/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/pine-hills-construction/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/pine-hills-construction/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-162",
     "company_name": "Galiyat Modern Builders",
     "slug": "galiyat-modern-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=200&fit=crop",
     "rating": 3.5,
     "review_count": 280,
     "city": "Abbottabad",
@@ -29699,15 +30858,34 @@
       "quality_consistency": 0.88
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/galiyat-modern-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/galiyat-modern-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/galiyat-modern-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-163",
     "company_name": "Abbottabad Green Developers",
     "slug": "abbottabad-green-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=200&h=200&fit=crop",
     "rating": 3.5,
     "review_count": 155,
     "city": "Abbottabad",
@@ -30100,15 +31278,34 @@
       "quality_consistency": 0.88
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/abbottabad-green-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/abbottabad-green-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/abbottabad-green-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-164",
     "company_name": "Mardan Premier Builders",
     "slug": "mardan-premier-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
     "rating": 3.9,
     "review_count": 162,
     "city": "Mardan",
@@ -30503,14 +31700,15 @@
     },
     "verification_status": "not_submitted",
     "verification": {},
-    "status": "active"
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=600&fit=crop"
   },
   {
     "company_id": "CC-165",
     "company_name": "Takht Bahi Construction",
     "slug": "takht-bahi-construction",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1460317442991-0ec209397118?w=200&h=200&fit=crop",
     "rating": 3.3,
     "review_count": 283,
     "city": "Mardan",
@@ -30900,15 +32098,34 @@
       "quality_consistency": 0.68
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/takht-bahi-construction/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/takht-bahi-construction/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/takht-bahi-construction/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-166",
     "company_name": "Swabi Road Developers",
     "slug": "swabi-road-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1498409785966-ab341407de6e?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 232,
     "city": "Mardan",
@@ -31301,15 +32518,34 @@
       "quality_consistency": 0.73
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/swabi-road-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/swabi-road-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/swabi-road-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-167",
     "company_name": "Sukkur Bridge Builders",
     "slug": "sukkur-bridge-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?w=200&h=200&fit=crop",
     "rating": 3.5,
     "review_count": 30,
     "city": "Sukkur",
@@ -31701,14 +32937,15 @@
     },
     "verification_status": "not_submitted",
     "verification": {},
-    "status": "active"
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1593604340846-4fbe9763a8f3?w=1200&h=600&fit=crop"
   },
   {
     "company_id": "CC-168",
     "company_name": "Upper Sindh Construction",
     "slug": "upper-sindh-construction",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=200&h=200&fit=crop",
     "rating": 3.8,
     "review_count": 34,
     "city": "Sukkur",
@@ -32102,15 +33339,34 @@
       "quality_consistency": 0.81
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/upper-sindh-construction/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/upper-sindh-construction/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/upper-sindh-construction/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-169",
     "company_name": "Lansdowne Developers",
     "slug": "lansdowne-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 84,
     "city": "Sukkur",
@@ -32501,15 +33757,34 @@
       "quality_consistency": 0.67
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/lansdowne-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/lansdowne-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/lansdowne-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-170",
     "company_name": "Sargodha City Builders",
     "slug": "sargodha-city-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 252,
     "city": "Sargodha",
@@ -32899,15 +34174,34 @@
       "quality_consistency": 0.68
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/sargodha-city-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/sargodha-city-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/sargodha-city-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-171",
     "company_name": "Sillanwali Developers",
     "slug": "sillanwali-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=200&h=200&fit=crop",
     "rating": 3.3,
     "review_count": 149,
     "city": "Sargodha",
@@ -33298,15 +34592,34 @@
       "quality_consistency": 0.75
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/sillanwali-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/sillanwali-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/sillanwali-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-172",
     "company_name": "Punjab Heart Constructions",
     "slug": "punjab-heart-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600210491736-f7f8e0ed1a33?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 248,
     "city": "Sargodha",
@@ -33723,15 +35036,34 @@
       "quality_consistency": 0.71
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/punjab-heart-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/punjab-heart-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/punjab-heart-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-173",
     "company_name": "Sahiwal Modern Builders",
     "slug": "sahiwal-modern-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=200&h=200&fit=crop",
     "rating": 3.8,
     "review_count": 48,
     "city": "Sahiwal",
@@ -34100,14 +35432,15 @@
     },
     "verification_status": "not_submitted",
     "verification": {},
-    "status": "active"
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1200&h=600&fit=crop"
   },
   {
     "company_id": "CC-174",
     "company_name": "Farid Town Developers",
     "slug": "farid-town-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1599707367812-457c7eb76346?w=200&h=200&fit=crop",
     "rating": 4.3,
     "review_count": 40,
     "city": "Sahiwal",
@@ -34497,15 +35830,34 @@
       "quality_consistency": 0.7
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600047508788-786f3865b4b9?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/farid-town-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/farid-town-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/farid-town-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-175",
     "company_name": "Canal City Constructions",
     "slug": "canal-city-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
     "rating": 3.6,
     "review_count": 295,
     "city": "Sahiwal",
@@ -34896,15 +36248,34 @@
       "quality_consistency": 0.78
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1560184897-ae75f418493e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/canal-city-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/canal-city-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/canal-city-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-176",
     "company_name": "Larkana Heritage Builders",
     "slug": "larkana-heritage-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=200&h=200&fit=crop",
     "rating": 3.4,
     "review_count": 235,
     "city": "Larkana",
@@ -35272,15 +36643,34 @@
       "quality_consistency": 0.72
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/larkana-heritage-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/larkana-heritage-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/larkana-heritage-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-177",
     "company_name": "Mohenjo Developers",
     "slug": "mohenjo-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=200&h=200&fit=crop",
     "rating": 3.4,
     "review_count": 69,
     "city": "Larkana",
@@ -35673,15 +37063,34 @@
       "quality_consistency": 0.61
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1541976590-713941681591?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/mohenjo-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/mohenjo-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/mohenjo-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-178",
     "company_name": "Sindh Star Constructions",
     "slug": "sindh-star-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?w=200&h=200&fit=crop",
     "rating": 4.3,
     "review_count": 159,
     "city": "Larkana",
@@ -36071,15 +37480,34 @@
       "quality_consistency": 0.69
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/sindh-star-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/sindh-star-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/sindh-star-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-179",
     "company_name": "Gujrat Royal Builders",
     "slug": "gujrat-royal-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 193,
     "city": "Gujrat",
@@ -36468,15 +37896,34 @@
       "quality_consistency": 0.62
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/gujrat-royal-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/gujrat-royal-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/gujrat-royal-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-180",
     "company_name": "Chenab River Developers",
     "slug": "chenab-river-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1488972685288-c3fd157d7c7a?w=200&h=200&fit=crop",
     "rating": 4.2,
     "review_count": 116,
     "city": "Gujrat",
@@ -36869,15 +38316,34 @@
       "quality_consistency": 0.71
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1590846083693-f23fdede3a7e?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/chenab-river-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/chenab-river-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/chenab-river-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-181",
     "company_name": "Industrial City Constructions",
     "slug": "industrial-city-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 87,
     "city": "Gujrat",
@@ -37245,15 +38711,34 @@
       "quality_consistency": 0.85
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/industrial-city-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/industrial-city-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/industrial-city-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-182",
     "company_name": "Jhelum Fort Builders",
     "slug": "jhelum-fort-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=200&fit=crop",
     "rating": 3.3,
     "review_count": 261,
     "city": "Jhelum",
@@ -37617,15 +39102,34 @@
       "quality_consistency": 0.72
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/jhelum-fort-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/jhelum-fort-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/jhelum-fort-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-183",
     "company_name": "Salt Range Developers",
     "slug": "salt-range-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=200&h=200&fit=crop",
     "rating": 4.6,
     "review_count": 109,
     "city": "Jhelum",
@@ -37991,15 +39495,34 @@
       "quality_consistency": 0.76
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1517089596392-fb9a9033e05b?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/salt-range-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/salt-range-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/salt-range-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-184",
     "company_name": "Pind Dadan Khan Constructions",
     "slug": "pind-dadan-khan-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
     "rating": 3.3,
     "review_count": 227,
     "city": "Jhelum",
@@ -38364,15 +39887,34 @@
       "quality_consistency": 0.66
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/pind-dadan-khan-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/pind-dadan-khan-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/pind-dadan-khan-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-185",
     "company_name": "RYK Modern Builders",
     "slug": "ryk-modern-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1460317442991-0ec209397118?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 109,
     "city": "Rahim Yar Khan",
@@ -38740,15 +40282,34 @@
       "quality_consistency": 0.69
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/ryk-modern-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/ryk-modern-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/ryk-modern-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-186",
     "company_name": "Desert Rose Developers",
     "slug": "desert-rose-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1498409785966-ab341407de6e?w=200&h=200&fit=crop",
     "rating": 4.3,
     "review_count": 98,
     "city": "Rahim Yar Khan",
@@ -39117,15 +40678,34 @@
       "quality_consistency": 0.69
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/desert-rose-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/desert-rose-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/desert-rose-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-187",
     "company_name": "Khan City Constructions",
     "slug": "khan-city-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?w=200&h=200&fit=crop",
     "rating": 4.1,
     "review_count": 143,
     "city": "Rahim Yar Khan",
@@ -39493,15 +41073,34 @@
       "quality_consistency": 0.74
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/khan-city-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/khan-city-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/khan-city-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-188",
     "company_name": "DG Khan Valley Builders",
     "slug": "dg-khan-valley-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=200&h=200&fit=crop",
     "rating": 4.9,
     "review_count": 177,
     "city": "DG Khan",
@@ -39890,15 +41489,34 @@
       "quality_consistency": 0.8
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1455587734955-081b22074882?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/dg-khan-valley-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/dg-khan-valley-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/dg-khan-valley-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-189",
     "company_name": "Sulaiman Range Developers",
     "slug": "sulaiman-range-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=200&h=200&fit=crop",
     "rating": 4.8,
     "review_count": 160,
     "city": "DG Khan",
@@ -40266,15 +41884,34 @@
       "quality_consistency": 0.69
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1628744448840-55bdb2497bd4?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/sulaiman-range-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/sulaiman-range-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/sulaiman-range-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-190",
     "company_name": "Fort Munro Constructions",
     "slug": "fort-munro-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=200&h=200&fit=crop",
     "rating": 4.9,
     "review_count": 223,
     "city": "DG Khan",
@@ -40670,15 +42307,34 @@
       "quality_consistency": 0.89
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/fort-munro-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/fort-munro-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/fort-munro-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-191",
     "company_name": "Mirpur City Builders",
     "slug": "mirpur-city-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=200&h=200&fit=crop",
     "rating": 3.8,
     "review_count": 133,
     "city": "Mirpur",
@@ -41043,14 +42699,15 @@
     },
     "verification_status": "not_submitted",
     "verification": {},
-    "status": "active"
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=1200&h=600&fit=crop"
   },
   {
     "company_id": "CC-192",
     "company_name": "Mangla Lake Developers",
     "slug": "mangla-lake-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1600210491736-f7f8e0ed1a33?w=200&h=200&fit=crop",
     "rating": 3.9,
     "review_count": 89,
     "city": "Mirpur",
@@ -41417,15 +43074,34 @@
       "quality_consistency": 0.86
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/mangla-lake-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/mangla-lake-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/mangla-lake-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-193",
     "company_name": "AJK Premier Constructions",
     "slug": "ajk-premier-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=200&h=200&fit=crop",
     "rating": 3.6,
     "review_count": 93,
     "city": "Mirpur",
@@ -41791,14 +43467,15 @@
     },
     "verification_status": "not_submitted",
     "verification": {},
-    "status": "active"
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&h=600&fit=crop"
   },
   {
     "company_id": "CC-194",
     "company_name": "Neelum Valley Builders",
     "slug": "neelum-valley-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1599707367812-457c7eb76346?w=200&h=200&fit=crop",
     "rating": 4.8,
     "review_count": 124,
     "city": "Muzaffarabad",
@@ -42165,14 +43842,15 @@
     },
     "verification_status": "not_submitted",
     "verification": {},
-    "status": "active"
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600210491736-f7f8e0ed1a33?w=1200&h=600&fit=crop"
   },
   {
     "company_id": "CC-195",
     "company_name": "Capital AJK Developers",
     "slug": "capital-ajk-developers",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
     "rating": 4.4,
     "review_count": 24,
     "city": "Muzaffarabad",
@@ -42538,15 +44216,34 @@
       "quality_consistency": 0.6
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/capital-ajk-developers/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/capital-ajk-developers/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/capital-ajk-developers/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-196",
     "company_name": "Jhelum View Constructions",
     "slug": "jhelum-view-constructions",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=200&h=200&fit=crop",
     "rating": 4.8,
     "review_count": 163,
     "city": "Muzaffarabad",
@@ -42912,15 +44609,34 @@
       "quality_consistency": 0.67
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1565953522043-baea692e5e77?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/jhelum-view-constructions/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/jhelum-view-constructions/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/jhelum-view-constructions/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-197",
     "company_name": "Karachi Builders",
     "slug": "karachi-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=200&h=200&fit=crop",
     "rating": 3.7,
     "review_count": 203,
     "city": "Lahore",
@@ -43258,15 +44974,34 @@
       "quality_consistency": 0.73
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/karachi-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/karachi-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/karachi-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-198",
     "company_name": "Elite Builders",
     "slug": "elite-builders",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?w=200&h=200&fit=crop",
     "rating": 3.9,
     "review_count": 36,
     "city": "Lahore",
@@ -43659,15 +45394,34 @@
       "quality_consistency": 0.89
     },
     "verification_status": "pending",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "ntn_certificate": {
+        "status": "pending",
+        "notes": ""
+      },
+      "registration_certificate": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/elite-builders/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/elite-builders/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/elite-builders/documents/registration_certificate.pdf"
+    }
   },
   {
     "company_id": "CC-199",
     "company_name": "Multan Homes",
     "slug": "multan-homes",
     "description": null,
-    "logo_url": null,
+    "logo_url": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=200&h=200&fit=crop",
     "rating": 4.7,
     "review_count": 35,
     "city": "Lahore",
@@ -43982,7 +45736,26 @@
       "quality_consistency": 0.71
     },
     "verification_status": "verified",
-    "verification": {},
-    "status": "active"
+    "verification": {
+      "secp_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "ntn_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      },
+      "registration_certificate": {
+        "status": "approved",
+        "notes": "Auto-verified during seed."
+      }
+    },
+    "status": "active",
+    "dp_url": "https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=1200&h=600&fit=crop",
+    "verification_documents": {
+      "secp_certificate_url": "/company_data/construction_company/multan-homes/documents/secp_certificate.pdf",
+      "ntn_certificate_url": "/company_data/construction_company/multan-homes/documents/ntn_certificate.pdf",
+      "registration_certificate_url": "/company_data/construction_company/multan-homes/documents/registration_certificate.pdf"
+    }
   }
 ]

@@ -32,6 +32,10 @@ export type CompanyDatasetCompany = {
   city?: string;
   description?: string | null;
   logo_url?: string | null;
+  dp_url?: string | null;
+  verification_status?: string;
+  verification?: Record<string, { status: string; notes?: string }>;
+  verification_documents?: Record<string, string>;
   rating?: number;
   review_count?: number;
   legal_info?: {

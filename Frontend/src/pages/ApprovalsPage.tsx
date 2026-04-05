@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
-import { ArrowLeft, Building2, CheckCircle2, ExternalLink, FileCheck, Loader2, Package, ShieldCheck, Users, XCircle } from "lucide-react";
+import { ArrowLeft, Building2, CheckCircle2, Download, ExternalLink, Eye, FileCheck, Loader2, Package, ShieldCheck, Users, XCircle } from "lucide-react";
 
 type UserRow = {
   id: string;
@@ -36,6 +36,7 @@ const DOC_LABELS: Record<string, string> = {
   secp_certificate: "SECP Certificate",
   ntn_certificate: "NTN Certificate",
   registration_certificate: "Registration Certificate",
+  business_license: "Business License",
 };
 
 export default function ApprovalsPage() {
@@ -119,7 +120,20 @@ export default function ApprovalsPage() {
     return result;
   }, [companies, suppliers]);
 
+  const [docFilter, setDocFilter] = useState<"pending" | "all">("pending");
+
   const pendingVerifications = entitiesWithDocs.filter((e) => e.entity.verification_status !== "verified");
+  const displayedVerifications = docFilter === "pending" ? pendingVerifications : entitiesWithDocs;
+
+  const handleDownload = (url: string, docType: string) => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${docType}.pdf`;
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   const handleDocAction = async (slug: string, entityType: string, docType: string, status: "approved" | "rejected", notes: string) => {
     const key = `${slug}-${docType}`;
@@ -280,20 +294,28 @@ export default function ApprovalsPage() {
 
         {/* ────── Document Verification ────── */}
         <TabsContent value="verification" className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Button variant={docFilter === "pending" ? "default" : "outline"} size="sm" onClick={() => setDocFilter("pending")}>
+              Pending ({pendingVerifications.length})
+            </Button>
+            <Button variant={docFilter === "all" ? "default" : "outline"} size="sm" onClick={() => setDocFilter("all")}>
+              All ({entitiesWithDocs.length})
+            </Button>
+          </div>
           {loadingDocs ? (
             <GlassCard interactive={false} className="p-6 text-center">
               <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
               <p className="mt-2 text-sm text-muted-foreground">Loading entities…</p>
             </GlassCard>
-          ) : pendingVerifications.length === 0 ? (
+          ) : displayedVerifications.length === 0 ? (
             <GlassCard interactive={false} className="p-8 text-center">
               <ShieldCheck className="mx-auto mb-3 h-10 w-10 text-success" />
-              <h3 className="text-lg font-semibold text-foreground">All verified!</h3>
-              <p className="mt-1 text-sm text-muted-foreground">No pending document verifications.</p>
+              <h3 className="text-lg font-semibold text-foreground">{docFilter === "pending" ? "All verified!" : "No documents found"}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{docFilter === "pending" ? "No pending document verifications." : "No entities have uploaded verification documents yet."}</p>
             </GlassCard>
           ) : (
             <div className="grid gap-4">
-              {pendingVerifications.map(({ entity, entityType, docs }, idx) => {
+              {displayedVerifications.map(({ entity, entityType, docs }, idx) => {
                 const entityName = (entity.company_name ?? entity.name ?? entity.slug ?? "Unknown") as string;
                 const slug = entity.slug as string;
                 return (
@@ -338,14 +360,23 @@ export default function ApprovalsPage() {
                                 <p className="text-xs font-medium text-foreground">
                                   {DOC_LABELS[doc.docType] ?? doc.docType}
                                 </p>
-                                <a
-                                  href={doc.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="mt-0.5 inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
-                                >
-                                  View Document <ExternalLink className="h-3 w-3" />
-                                </a>
+                                <div className="mt-1 flex items-center gap-2">
+                                  <a
+                                    href={doc.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
+                                  >
+                                    <Eye className="h-3 w-3" /> View
+                                  </a>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDownload(doc.url, doc.docType)}
+                                    className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
+                                  >
+                                    <Download className="h-3 w-3" /> Download
+                                  </button>
+                                </div>
                               </div>
                               <StatusBadge status={doc.status as "pending"} />
                               {doc.status !== "approved" && (
