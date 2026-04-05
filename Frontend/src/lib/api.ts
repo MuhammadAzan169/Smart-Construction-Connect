@@ -57,13 +57,17 @@ export interface UserResponse {
 }
 
 export interface AdminUser {
-  user_id: string;
-  display_name: string;
+  id: string;
+  name: string;
   email: string;
   role: string;
   status: string;
-  created_at?: string;
+  joinDate?: string;
   phone?: string;
+  // Original field aliases (also returned by backend for backwards compat)
+  user_id: string;
+  display_name: string;
+  created_at?: string;
 }
 
 export interface ActivityEntry {

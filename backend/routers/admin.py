@@ -22,9 +22,23 @@ router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(re
 
 @router.get("/users")
 def list_all_users():
-    """Return all registered users (passwords stripped)."""
+    """Return all registered users (passwords stripped), with fields mapped for frontend."""
     users = get_all_users()
-    return [{k: v for k, v in u.items() if k not in ("password_hash", "password")} for u in users]
+    result = []
+    for u in users:
+        result.append({
+            "id": u.get("user_id") or u.get("id", ""),
+            "name": u.get("display_name") or u.get("name", ""),
+            "email": u.get("email", ""),
+            "role": u.get("role", ""),
+            "status": u.get("status", "pending"),
+            "joinDate": (u.get("created_at") or "")[:10],
+            "phone": u.get("phone"),
+            # Keep original fields so Dashboard's pendingUsers (which uses user_id/display_name) still works
+            "user_id": u.get("user_id") or u.get("id", ""),
+            "display_name": u.get("display_name") or u.get("name", ""),
+        })
+    return result
 
 
 @router.get("/activity")
@@ -135,12 +149,24 @@ def get_stats():
     pending = sum(1 for u in users if u.get("status") == "pending")
     banned = sum(1 for u in users if u.get("status") == "banned")
 
+    # Count entities with at least one document uploaded but not yet fully verified
+    pending_doc_verifications = sum(
+        1 for c in (companies if isinstance(companies, list) else [])
+        if c.get("verification_documents") and c.get("verification_status") not in ("verified",)
+        and any(v for v in c.get("verification_documents", {}).values())
+    ) + sum(
+        1 for s in (suppliers if isinstance(suppliers, list) else [])
+        if s.get("verification_documents") and s.get("verification_status") not in ("verified",)
+        and any(v for v in s.get("verification_documents", {}).values())
+    )
+
     return {
         "total_users": total_users,
         "clients": clients,
         "companies": company_count,
         "suppliers": supplier_count,
         "pending_approvals": pending,
+        "pending_doc_verifications": pending_doc_verifications,
         "banned_users": banned,
         "dataset_companies": len(companies) if isinstance(companies, list) else 0,
         "dataset_suppliers": len(suppliers) if isinstance(suppliers, list) else 0,

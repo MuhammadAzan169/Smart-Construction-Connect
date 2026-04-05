@@ -3,30 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PdfViewerDialog } from "@/components/shared/PdfViewerDialog";
-import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
 import {
-  ArrowLeft, Building2, CheckCircle2, Download, Eye, FileCheck,
-  Loader2, Package, ShieldCheck, Users, XCircle, Clock, CheckCheck,
+  ArrowLeft, Building2, CheckCircle2, Clock, Download, Eye, FileCheck,
+  Loader2, Package, ShieldCheck, XCircle,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
 /* ------------------------------------------------------------------ */
-
-type UserRow = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  joinDate: string;
-};
 
 type VerificationDoc = { status: string; notes?: string };
 type EntityRecord = Record<string, unknown> & {
@@ -55,12 +44,6 @@ const DOC_LABELS: Record<string, string> = {
 export default function ApprovalsPage() {
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
-  const [mainTab, setMainTab] = useState("accounts");
-
-  /* Account approval */
-  const [users, setUsers] = useState<UserRow[]>([]);
-  const [loadingUsers, setLoadingUsers] = useState(true);
-
   /* Doc verification */
   const [companies, setCompanies] = useState<EntityRecord[]>([]);
   const [suppliers, setSuppliers] = useState<EntityRecord[]>([]);
@@ -70,7 +53,6 @@ export default function ApprovalsPage() {
   const [pdfViewer, setPdfViewer] = useState<{ url: string; title: string } | null>(null);
 
   useEffect(() => {
-    api.admin.getUsers().then((d) => setUsers(d as unknown as UserRow[])).catch(() => {}).finally(() => setLoadingUsers(false));
     Promise.all([
       api.admin.getCompanies().then((d) => setCompanies(d as EntityRecord[])),
       api.admin.getSuppliers().then((d) => setSuppliers(d as EntityRecord[])),
@@ -86,26 +68,6 @@ export default function ApprovalsPage() {
       </GlassCard>
     );
   }
-
-  /* ---------- Account helpers ---------- */
-  const pendingUsers = users.filter((u) => u.status === "pending");
-  const pendingCompanies = pendingUsers.filter((u) => u.role === "company");
-  const pendingSuppliers = pendingUsers.filter((u) => u.role === "supplier");
-  const pendingOther = pendingUsers.filter((u) => u.role !== "company" && u.role !== "supplier");
-
-  const handleApprove = async (userId: string) => {
-    try {
-      await api.admin.updateUserStatus(userId, "active");
-      setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status: "active" } : u)));
-    } catch {}
-  };
-
-  const handleReject = async (userId: string) => {
-    try {
-      await api.admin.updateUserStatus(userId, "banned");
-      setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status: "banned" } : u)));
-    } catch {}
-  };
 
   /* ---------- Doc verification helpers ---------- */
   const entitiesWithDocs = useMemo(() => {
@@ -191,117 +153,14 @@ export default function ApprovalsPage() {
             <ArrowLeft className="h-4 w-4" />
             Dashboard
           </Button>
-          <h1 className="text-2xl font-bold text-foreground">Approvals &amp; Verification</h1>
+          <h1 className="text-2xl font-bold text-foreground">Document Verification</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage account registrations and review company / supplier documents.
+            Review and approve company / supplier verification documents.
           </p>
         </motion.div>
 
-        {/* ===== MAIN TABS ===== */}
-        <Tabs value={mainTab} onValueChange={setMainTab} className="space-y-5">
-          <TabsList>
-            <TabsTrigger value="accounts" className="gap-1.5">
-              <Users className="h-3.5 w-3.5" />
-              Accounts
-              {pendingUsers.length > 0 && (
-                <Badge variant="destructive" className="ml-1 h-4 min-w-4 rounded-full px-1 text-[10px]">
-                  {pendingUsers.length}
-                </Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="verification" className="gap-1.5">
-              <FileCheck className="h-3.5 w-3.5" />
-              Documents
-              {pendingVerifications.length > 0 && (
-                <Badge variant="destructive" className="ml-1 h-4 min-w-4 rounded-full px-1 text-[10px]">
-                  {pendingVerifications.length}
-                </Badge>
-              )}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* ══════════════════════════════════════════
-              ACCOUNT APPROVALS TAB
-          ══════════════════════════════════════════ */}
-          <TabsContent value="accounts" className="space-y-5">
-            {/* Summary cards */}
-            <div className="grid gap-4 sm:grid-cols-3">
-              <SummaryCard
-                icon={<Users className="h-5 w-5" />}
-                label="Pending Accounts"
-                value={pendingUsers.length}
-                color="amber"
-              />
-              <SummaryCard
-                icon={<Building2 className="h-5 w-5" />}
-                label="Companies"
-                value={pendingCompanies.length}
-                color="blue"
-              />
-              <SummaryCard
-                icon={<Package className="h-5 w-5" />}
-                label="Suppliers"
-                value={pendingSuppliers.length}
-                color="emerald"
-              />
-            </div>
-
-            {loadingUsers ? (
-              <LoadingState />
-            ) : pendingUsers.length === 0 ? (
-              <EmptyState
-                icon={<ShieldCheck className="mx-auto mb-4 h-12 w-12 text-green-500" />}
-                title="All caught up!"
-                description="No pending account approvals at this time."
-              />
-            ) : (
-              <Tabs defaultValue="all" className="space-y-4">
-                <TabsList>
-                  <TabsTrigger value="all">All ({pendingUsers.length})</TabsTrigger>
-                  <TabsTrigger value="companies">Companies ({pendingCompanies.length})</TabsTrigger>
-                  <TabsTrigger value="suppliers">Suppliers ({pendingSuppliers.length})</TabsTrigger>
-                  {pendingOther.length > 0 && (
-                    <TabsTrigger value="other">Other ({pendingOther.length})</TabsTrigger>
-                  )}
-                </TabsList>
-
-                {[
-                  { key: "all", list: pendingUsers },
-                  { key: "companies", list: pendingCompanies },
-                  { key: "suppliers", list: pendingSuppliers },
-                  { key: "other", list: pendingOther },
-                ].map(({ key, list }) => (
-                  <TabsContent key={key} value={key}>
-                    {list.length === 0 ? (
-                      <EmptyState
-                        icon={<CheckCheck className="mx-auto mb-4 h-10 w-10 text-green-500" />}
-                        title="None pending"
-                        description="No pending accounts in this category."
-                      />
-                    ) : (
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {list.map((u, idx) => (
-                          <motion.div
-                            key={u.id}
-                            initial={{ opacity: 0, y: 16 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: Math.min(idx * 0.07, 0.4), duration: 0.3 }}
-                          >
-                            <AccountCard u={u} onApprove={handleApprove} onReject={handleReject} />
-                          </motion.div>
-                        ))}
-                      </div>
-                    )}
-                  </TabsContent>
-                ))}
-              </Tabs>
-            )}
-          </TabsContent>
-
-          {/* ══════════════════════════════════════════
-              DOCUMENT VERIFICATION TAB
-          ══════════════════════════════════════════ */}
-          <TabsContent value="verification" className="space-y-5">
+        {/* ===== DOCUMENT VERIFICATION ===== */}
+        <div className="space-y-5">
             {/* Summary + filter */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="grid gap-3 sm:grid-cols-2 flex-1">
@@ -571,8 +430,7 @@ export default function ApprovalsPage() {
                 })}
               </div>
             )}
-          </TabsContent>
-        </Tabs>
+        </div>
       </motion.div>
 
       {pdfViewer && (
@@ -612,66 +470,6 @@ function SummaryCard({
       <div>
         <p className="text-xl font-bold text-foreground">{value}</p>
         <p className="text-xs text-muted-foreground">{label}</p>
-      </div>
-    </div>
-  );
-}
-
-function AccountCard({
-  u,
-  onApprove,
-  onReject,
-}: {
-  u: UserRow;
-  onApprove: (id: string) => void;
-  onReject: (id: string) => void;
-}) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <div className="flex items-center gap-3">
-        <div className={`flex h-11 w-11 items-center justify-center rounded-xl text-white ${
-          u.role === "company" ? "bg-blue-500" : u.role === "supplier" ? "bg-emerald-500" : "bg-violet-500"
-        }`}>
-          {u.role === "company"
-            ? <Building2 className="h-5 w-5" />
-            : u.role === "supplier"
-              ? <Package className="h-5 w-5" />
-              : <Users className="h-5 w-5" />
-          }
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-foreground">{u.name}</p>
-          <p className="truncate text-xs text-muted-foreground">{u.email}</p>
-        </div>
-      </div>
-
-      <div className="mt-3 flex items-center gap-2">
-        <Badge variant="secondary" className="text-[10px] capitalize">{u.role}</Badge>
-        <StatusBadge status={u.status as "pending"} />
-        <span className="ml-auto text-xs text-muted-foreground">{u.joinDate}</span>
-      </div>
-
-      <Separator className="my-3" />
-
-      <div className="flex gap-2">
-        <Button
-          variant="default"
-          size="sm"
-          className="flex-1 gap-1.5 bg-green-600 hover:bg-green-700 text-white text-xs"
-          onClick={() => onApprove(u.id)}
-        >
-          <CheckCircle2 className="h-3.5 w-3.5" />
-          Approve
-        </Button>
-        <Button
-          variant="destructive"
-          size="sm"
-          className="flex-1 gap-1.5 text-xs"
-          onClick={() => onReject(u.id)}
-        >
-          <XCircle className="h-3.5 w-3.5" />
-          Reject
-        </Button>
       </div>
     </div>
   );

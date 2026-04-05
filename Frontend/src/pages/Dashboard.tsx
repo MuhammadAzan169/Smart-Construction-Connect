@@ -17,6 +17,7 @@ import {
   Activity,
   ArrowRight,
   Building2,
+  FileCheck,
   FileText,
   Package,
   ShieldCheck,
@@ -575,16 +576,24 @@ function AdminDashboard() {
           <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08} delay={0.2}>
             <StaggerItem>
               <StatCard
-                title="Pending Approvals"
+                title="Pending Account Approvals"
                 value={stats?.pending_approvals ?? 0}
                 icon={ShieldCheck}
                 trend={(stats?.pending_approvals ?? 0) > 0 ? "up" : undefined}
                 change={(stats?.pending_approvals ?? 0) > 0 ? "Needs review" : "All clear"}
               />
             </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                title="Pending Doc Reviews"
+                value={stats?.pending_doc_verifications ?? 0}
+                icon={FileCheck}
+                trend={(stats?.pending_doc_verifications ?? 0) > 0 ? "up" : undefined}
+                change={(stats?.pending_doc_verifications ?? 0) > 0 ? "Docs awaiting review" : "All clear"}
+              />
+            </StaggerItem>
             <StaggerItem><StatCard title="Banned Users" value={stats?.banned_users ?? 0} icon={Activity} /></StaggerItem>
             <StaggerItem><StatCard title="Dataset Companies" value={stats?.dataset_companies ?? "—"} icon={Building2} /></StaggerItem>
-            <StaggerItem><StatCard title="Dataset Suppliers" value={stats?.dataset_suppliers ?? "—"} icon={Package} /></StaggerItem>
           </StaggerList>
 
           {/* Main content grid */}
@@ -689,7 +698,12 @@ function AdminDashboard() {
                   <Button asChild variant="outline" className="w-full justify-between">
                     <Link to="/approvals">
                       <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Approvals</span>
-                      <Badge variant={((stats?.pending_approvals ?? 0) > 0) ? "destructive" : "secondary"} className="text-[10px]">{stats?.pending_approvals ?? 0}</Badge>
+                      <Badge
+                        variant={((stats?.pending_approvals ?? 0) + (stats?.pending_doc_verifications ?? 0)) > 0 ? "destructive" : "secondary"}
+                        className="text-[10px]"
+                      >
+                        {(stats?.pending_approvals ?? 0) + (stats?.pending_doc_verifications ?? 0)}
+                      </Badge>
                     </Link>
                   </Button>
                   <Button asChild variant="outline" className="w-full justify-between">
