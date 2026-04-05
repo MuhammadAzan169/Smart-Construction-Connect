@@ -612,7 +612,7 @@ function AdminDashboard() {
                   ) : (
                     pendingUsers.map((u, i) => (
                       <motion.div
-                        key={u.id}
+                        key={u.user_id}
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.05 * i, duration: 0.25 }}

@@ -40,7 +40,7 @@ const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path
     { label: "Messages", icon: MessageSquare, path: "/messages" },
     { label: "Requests", icon: FileText, path: "/requests" },
     { label: "AI Assistant", icon: Bot, path: "/ai-chat" },
-    { label: "Pricing", icon: CreditCard, path: "/pricing" },
+    { label: "Settings", icon: Settings, path: "/settings" },
   ],
   company: [
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },

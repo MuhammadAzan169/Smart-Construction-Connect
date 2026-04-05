@@ -131,6 +131,17 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ name, email, password, role, phone }),
       }),
+    getProfile: () => request<Record<string, unknown>>("/auth/profile"),
+    updateProfile: (data: { display_name?: string; phone?: string; preferences?: Record<string, unknown> }) =>
+      request<{ status: string }>("/auth/profile", {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+    changePassword: (current_password: string, new_password: string) =>
+      request<{ status: string }>("/auth/change-password", {
+        method: "PUT",
+        body: JSON.stringify({ current_password, new_password }),
+      }),
   },
 
   companies: {

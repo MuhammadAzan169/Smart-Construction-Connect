@@ -38,7 +38,7 @@ import { cities as cityOptions, societiesByCity } from "@/data/locationOptions";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
-import { ArrowLeft, Eye, FileCheck, Loader2, MapPin, Plus, Save, Shield, Upload, X } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, FileCheck, Loader2, Lock, MapPin, Plus, Save, Shield, Upload, User, X } from "lucide-react";
 import { api } from "@/lib/api";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -2553,6 +2553,530 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
 
 // ─── SettingsPage (role router) ────────────────────────────────────────────────
 
+// ─── Client Settings ─────────────────────────────────────────────────────────
+
+type ClientPreferences = {
+  construction_type: string;
+  plot_size: string;
+  budget_min: number | null;
+  budget_max: number | null;
+  preferred_cities: string[];
+  timeline: string;
+  notifications: {
+    new_matches: boolean;
+    request_updates: boolean;
+    messages: boolean;
+    marketing: boolean;
+  };
+};
+
+const DEFAULT_CLIENT_PREFS: ClientPreferences = {
+  construction_type: "",
+  plot_size: "",
+  budget_min: null,
+  budget_max: null,
+  preferred_cities: [],
+  timeline: "",
+  notifications: {
+    new_matches: true,
+    request_updates: true,
+    messages: true,
+    marketing: false,
+  },
+};
+
+const CONSTRUCTION_TYPES = [
+  { value: "residential_new", label: "New Residential House" },
+  { value: "residential_renovation", label: "Renovation / Remodeling" },
+  { value: "residential_extension", label: "Extension / Addition" },
+  { value: "commercial_new", label: "New Commercial Building" },
+  { value: "commercial_renovation", label: "Commercial Renovation" },
+  { value: "plot_development", label: "Plot Development / Boundary Wall" },
+];
+
+const PLOT_SIZE_OPTIONS = [
+  "3 Marla", "5 Marla", "7 Marla", "10 Marla", "12 Marla", "15 Marla",
+  "20 Marla", "1 Kanal", "2 Kanal", "3 Kanal", "4 Kanal", "5 Kanal+",
+];
+
+const TIMELINE_OPTIONS = [
+  { value: "asap", label: "As soon as possible (within 3 months)" },
+  { value: "3_6_months", label: "3 – 6 months" },
+  { value: "6_12_months", label: "6 – 12 months" },
+  { value: "1_2_years", label: "1 – 2 years" },
+  { value: "flexible", label: "Flexible / no fixed timeline" },
+];
+
+function ClientSettingsEditor() {
+  const { user } = useAuthStore();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  // Profile
+  const [displayName, setDisplayName] = useState(user?.display_name ?? "");
+  const [phone, setPhone] = useState(user?.phone ?? "");
+  const [city, setCity] = useState("");
+
+  // Project preferences
+  const [prefs, setPrefs] = useState<ClientPreferences>(DEFAULT_CLIENT_PREFS);
+
+  // Account
+  const [currentPwd, setCurrentPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+  const [showCurrentPwd, setShowCurrentPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+
+  const [saving, setSaving] = useState(false);
+  const [savingPwd, setSavingPwd] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  // Load from API on mount
+  useEffect(() => {
+    api.auth.getProfile()
+      .then((data) => {
+        setDisplayName((data.display_name as string) ?? "");
+        setPhone((data.phone as string) ?? "");
+        setCity((data.city as string) ?? "");
+        const raw = (data.preferences ?? {}) as Record<string, unknown>;
+        setPrefs({
+          construction_type: (raw.construction_type as string) ?? "",
+          plot_size: (raw.plot_size as string) ?? "",
+          budget_min: raw.budget_min != null ? Number(raw.budget_min) : null,
+          budget_max: raw.budget_max != null ? Number(raw.budget_max) : null,
+          preferred_cities: Array.isArray(raw.preferred_cities) ? (raw.preferred_cities as string[]) : [],
+          timeline: (raw.timeline as string) ?? "",
+          notifications: {
+            new_matches: raw.notifications ? Boolean((raw.notifications as Record<string, unknown>).new_matches ?? true) : true,
+            request_updates: raw.notifications ? Boolean((raw.notifications as Record<string, unknown>).request_updates ?? true) : true,
+            messages: raw.notifications ? Boolean((raw.notifications as Record<string, unknown>).messages ?? true) : true,
+            marketing: raw.notifications ? Boolean((raw.notifications as Record<string, unknown>).marketing ?? false) : false,
+          },
+        });
+      })
+      .catch(() => {})
+      .finally(() => setLoadingProfile(false));
+  }, []);
+
+  const patchPref = <K extends keyof ClientPreferences>(key: K, value: ClientPreferences[K]) =>
+    setPrefs((p) => ({ ...p, [key]: value }));
+
+  const patchNotif = (key: keyof ClientPreferences["notifications"], value: boolean) =>
+    setPrefs((p) => ({ ...p, notifications: { ...p.notifications, [key]: value } }));
+
+  const toggleCity = (c: string) =>
+    setPrefs((p) => ({
+      ...p,
+      preferred_cities: p.preferred_cities.includes(c)
+        ? p.preferred_cities.filter((x) => x !== c)
+        : [...p.preferred_cities, c],
+    }));
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await api.auth.updateProfile({
+        display_name: displayName.trim() || undefined,
+        phone: phone.trim() || undefined,
+        preferences: {
+          city: city.trim(),
+          construction_type: prefs.construction_type,
+          plot_size: prefs.plot_size,
+          budget_min: prefs.budget_min,
+          budget_max: prefs.budget_max,
+          preferred_cities: prefs.preferred_cities,
+          timeline: prefs.timeline,
+          notifications: prefs.notifications,
+        },
+      });
+      toast({ title: "Settings saved", description: "Your profile has been updated." });
+    } catch (err) {
+      toast({ title: "Save failed", description: err instanceof Error ? err.message : "Unknown error", variant: "destructive" });
+    }
+    setSaving(false);
+  };
+
+  const handleChangePassword = async () => {
+    if (!currentPwd || !newPwd) {
+      toast({ title: "Missing fields", description: "Please fill in all password fields.", variant: "destructive" });
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      toast({ title: "Passwords don't match", description: "New password and confirmation must match.", variant: "destructive" });
+      return;
+    }
+    if (newPwd.length < 8) {
+      toast({ title: "Password too short", description: "New password must be at least 8 characters.", variant: "destructive" });
+      return;
+    }
+    setSavingPwd(true);
+    try {
+      await api.auth.changePassword(currentPwd, newPwd);
+      toast({ title: "Password changed", description: "Your password has been updated successfully." });
+      setCurrentPwd(""); setNewPwd(""); setConfirmPwd("");
+    } catch (err) {
+      toast({ title: "Failed", description: err instanceof Error ? err.message : "Unknown error", variant: "destructive" });
+    }
+    setSavingPwd(false);
+  };
+
+  if (loadingProfile) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="h-7 w-7 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="mb-2 gap-1.5 text-muted-foreground hover:text-foreground"
+          onClick={() => navigate("/dashboard")}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Dashboard
+        </Button>
+        <h1 className="text-2xl font-bold text-foreground">Settings</h1>
+        <p className="text-sm text-muted-foreground">Manage your profile, project preferences, and account security.</p>
+      </div>
+
+      <Tabs defaultValue="profile" className="space-y-4">
+        <TabsList className="flex h-auto flex-wrap gap-1">
+          <TabsTrigger value="profile" className="gap-1.5">
+            <User className="h-3.5 w-3.5" />
+            Profile
+          </TabsTrigger>
+          <TabsTrigger value="project" className="gap-1.5">
+            <MapPin className="h-3.5 w-3.5" />
+            Project Preferences
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="gap-1.5">
+            <Shield className="h-3.5 w-3.5" />
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger value="account" className="gap-1.5">
+            <Lock className="h-3.5 w-3.5" />
+            Account & Security
+          </TabsTrigger>
+        </TabsList>
+
+        {/* ── Tab 1: Profile ── */}
+        <TabsContent value="profile" className="space-y-4">
+          <GlassCard interactive={false} className="p-5 space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Personal Information</p>
+              <p className="mt-1 text-xs text-muted-foreground">Your name and contact details shown to companies when you send a request.</p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>Full Name</Label>
+                <Input
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="e.g. Ahmed Khan"
+                  className="bg-background/40"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Phone Number</Label>
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g. 0300-1234567"
+                  className="bg-background/40"
+                />
+              </div>
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label>Your City</Label>
+                <p className="text-xs text-muted-foreground">The city where you are based or planning to build.</p>
+                <Select value={city || "__none__"} onValueChange={(v) => setCity(v === "__none__" ? "" : v)}>
+                  <SelectTrigger className="bg-background/40">
+                    <SelectValue placeholder="Select city" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Select a city</SelectItem>
+                    {(cityOptions as readonly string[]).map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <Button onClick={handleSave} disabled={saving} className="gap-2">
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                Save Profile
+              </Button>
+            </div>
+          </GlassCard>
+        </TabsContent>
+
+        {/* ── Tab 2: Project Preferences ── */}
+        <TabsContent value="project" className="space-y-4">
+          <GlassCard interactive={false} className="p-5 space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Project Details</p>
+              <p className="mt-1 text-xs text-muted-foreground">Help us match you with the right construction companies. The more detail you provide, the better the match.</p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>Type of Construction</Label>
+                <Select value={prefs.construction_type || "__none__"} onValueChange={(v) => patchPref("construction_type", v === "__none__" ? "" : v)}>
+                  <SelectTrigger className="bg-background/40">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Select type</SelectItem>
+                    {CONSTRUCTION_TYPES.map((t) => (
+                      <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Plot Size</Label>
+                <Select value={prefs.plot_size || "__none__"} onValueChange={(v) => patchPref("plot_size", v === "__none__" ? "" : v)}>
+                  <SelectTrigger className="bg-background/40">
+                    <SelectValue placeholder="Select plot size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Select size</SelectItem>
+                    {PLOT_SIZE_OPTIONS.map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Budget – Minimum (PKR)</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={prefs.budget_min ?? ""}
+                  onChange={(e) => patchPref("budget_min", e.target.value ? Math.max(0, Number(e.target.value)) : null)}
+                  placeholder="e.g. 5000000"
+                  className="bg-background/40"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Budget – Maximum (PKR)</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={prefs.budget_max ?? ""}
+                  onChange={(e) => patchPref("budget_max", e.target.value ? Math.max(0, Number(e.target.value)) : null)}
+                  placeholder="e.g. 15000000"
+                  className="bg-background/40"
+                />
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label>Preferred Timeline</Label>
+                <Select value={prefs.timeline || "__none__"} onValueChange={(v) => patchPref("timeline", v === "__none__" ? "" : v)}>
+                  <SelectTrigger className="bg-background/40">
+                    <SelectValue placeholder="When do you want to start?" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Select timeline</SelectItem>
+                    {TIMELINE_OPTIONS.map((t) => (
+                      <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5 space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Preferred Cities</p>
+              <p className="mt-1 text-xs text-muted-foreground">Select all cities where you are open to hiring construction companies.</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {(cityOptions as readonly string[]).map((c) => {
+                const selected = prefs.preferred_cities.includes(c);
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => toggleCity(c)}
+                    className={cn(
+                      "rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors",
+                      selected
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-background/30 text-muted-foreground hover:border-primary/50 hover:text-foreground",
+                    )}
+                  >
+                    {c}
+                  </button>
+                );
+              })}
+            </div>
+            {prefs.preferred_cities.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                Selected: {prefs.preferred_cities.join(", ")}
+              </p>
+            )}
+          </GlassCard>
+
+          <div className="flex justify-end">
+            <Button onClick={handleSave} disabled={saving} className="gap-2">
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              Save Preferences
+            </Button>
+          </div>
+        </TabsContent>
+
+        {/* ── Tab 3: Notifications ── */}
+        <TabsContent value="notifications">
+          <GlassCard interactive={false} className="p-5 space-y-6">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Email Notifications</p>
+              <p className="mt-1 text-xs text-muted-foreground">Control which emails we send to {user?.email}.</p>
+            </div>
+
+            <div className="space-y-4">
+              {([
+                { key: "new_matches" as const, label: "New Company Matches", desc: "Notify when a construction company matching your project preferences becomes available." },
+                { key: "request_updates" as const, label: "Request Status Updates", desc: "Notify when a company responds to or updates your requests." },
+                { key: "messages" as const, label: "New Messages", desc: "Notify when you receive a new message from a company." },
+                { key: "marketing" as const, label: "Tips & Platform Updates", desc: "Occasional tips, guides, and Smart Construction Connect platform news." },
+              ] as { key: keyof ClientPreferences["notifications"]; label: string; desc: string }[]).map(({ key, label, desc }) => (
+                <div key={key} className="flex items-start justify-between gap-4 rounded-xl border border-border/40 bg-background/20 p-4">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-medium text-foreground">{label}</p>
+                    <p className="text-xs text-muted-foreground">{desc}</p>
+                  </div>
+                  <Switch
+                    checked={prefs.notifications[key]}
+                    onCheckedChange={(v) => patchNotif(key, v)}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-end">
+              <Button onClick={handleSave} disabled={saving} className="gap-2">
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                Save Notifications
+              </Button>
+            </div>
+          </GlassCard>
+        </TabsContent>
+
+        {/* ── Tab 4: Account & Security ── */}
+        <TabsContent value="account" className="space-y-4">
+          <GlassCard interactive={false} className="p-5 space-y-2">
+            <p className="text-sm font-semibold text-foreground">Account Info</p>
+            <div className="grid gap-3 rounded-xl border border-border/40 bg-background/20 p-4 text-sm sm:grid-cols-2">
+              <div>
+                <p className="text-xs text-muted-foreground">Email</p>
+                <p className="font-medium text-foreground">{user?.email}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Role</p>
+                <p className="font-medium capitalize text-foreground">{user?.role}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Display Name</p>
+                <p className="font-medium text-foreground">{user?.display_name || "—"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Phone</p>
+                <p className="font-medium text-foreground">{user?.phone || "—"}</p>
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5 space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Change Password</p>
+              <p className="mt-1 text-xs text-muted-foreground">Use a strong password of at least 8 characters.</p>
+            </div>
+
+            <div className="grid gap-4">
+              <div className="space-y-1.5">
+                <Label>Current Password</Label>
+                <div className="relative">
+                  <Input
+                    type={showCurrentPwd ? "text" : "password"}
+                    value={currentPwd}
+                    onChange={(e) => setCurrentPwd(e.target.value)}
+                    placeholder="Enter current password"
+                    className="bg-background/40 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPwd((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showCurrentPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>New Password</Label>
+                <div className="relative">
+                  <Input
+                    type={showNewPwd ? "text" : "password"}
+                    value={newPwd}
+                    onChange={(e) => setNewPwd(e.target.value)}
+                    placeholder="At least 8 characters"
+                    className="bg-background/40 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPwd((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showNewPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Confirm New Password</Label>
+                <Input
+                  type="password"
+                  value={confirmPwd}
+                  onChange={(e) => setConfirmPwd(e.target.value)}
+                  placeholder="Repeat new password"
+                  className="bg-background/40"
+                />
+                {confirmPwd && newPwd !== confirmPwd && (
+                  <p className="text-xs text-destructive">Passwords do not match.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <Button onClick={handleChangePassword} disabled={savingPwd || !currentPwd || !newPwd || newPwd !== confirmPwd} className="gap-2">
+                {savingPwd ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+                Change Password
+              </Button>
+            </div>
+          </GlassCard>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+// ─── Page entry point ─────────────────────────────────────────────────────────
+
 export default function SettingsPage() {
   const user = useAuthStore((s) => s.user);
   if (!user) {
@@ -2562,6 +3086,9 @@ export default function SettingsPage() {
       </GlassCard>
     );
   }
+  if (user.role === "client") {
+    return <ClientSettingsEditor />;
+  }
   if (user.role === "supplier") {
     return <SupplierSettingsEditor email={user.email} supplierSlug={user.supplierFile} />;
   }
@@ -2570,7 +3097,7 @@ export default function SettingsPage() {
   }
   return (
     <GlassCard interactive={false} className="p-6">
-      <p className="text-sm text-muted-foreground">Settings are only available for company and supplier accounts.</p>
+      <p className="text-sm text-muted-foreground">Settings are not available for your account type.</p>
     </GlassCard>
   );
 }

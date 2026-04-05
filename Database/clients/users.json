@@ -2,13 +2,13 @@
   {
     "user_id": "62c3dd22-2db0-4d9b-8326-2ceebc7e7137",
     "email": "ahmed@example.com",
-    "password_hash": "$2b$12$5AAP99tkJd4rL2wfSCay5.zVuF9Vy8RFl1E5/tIN.ChQLJo4O5sjS",
+    "password_hash": "$2b$12$TmajnSfNyxgYtPRZQ7SoneEYLbWo0vRSQmzPSTaXuFJJFXlaQCn2u",
     "display_name": "Ahmed Khan",
     "phone": null,
     "role": "client",
     "status": "active",
     "created_at": "2026-01-15T00:00:00+00:00",
-    "updated_at": "2026-01-15T00:00:00+00:00",
+    "updated_at": "2026-04-05T16:57:28.928638+00:00",
     "last_login_at": null,
     "legacy_id": "U-001",
     "preferences": {}

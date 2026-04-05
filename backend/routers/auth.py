@@ -21,6 +21,7 @@ from backend.utils.data_handler import (
     companies_dataset_path,
     suppliers_dataset_path,
     add_activity_log,
+    _ROLE_DIRS,
 )
 
 def _hash_password(plain: str) -> str:
@@ -187,3 +188,84 @@ def signup(req: SignupRequest):
     add_activity_log("user_signup", req.email, f"New {req.role} signup: {req.name}")
 
     return _user_to_response(new_user)
+
+
+# ── Profile management ────────────────────────────────────────────────────────
+
+from backend.utils.auth_deps import get_current_user
+from fastapi import Depends
+
+
+class ProfileUpdateRequest(BaseModel):
+    display_name: str | None = None
+    phone: str | None = None
+    preferences: dict | None = None
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
+@router.get("/profile")
+def get_profile(user: dict = Depends(get_current_user)):
+    """Return the current user's profile (all non-sensitive fields)."""
+    safe = {k: v for k, v in user.items() if k != "password_hash"}
+    return safe
+
+
+@router.put("/profile")
+def update_profile(body: ProfileUpdateRequest, user: dict = Depends(get_current_user)):
+    """Update display_name, phone, and/or preferences for the current user."""
+    role = user.get("role", "client")
+    path = _ROLE_DIRS.get(role)
+    if not path:
+        raise HTTPException(status_code=400, detail="Unsupported role")
+
+    users_file = path / "users.json"
+    records = read_json(users_file)
+
+    updated = False
+    for record in records:
+        if record.get("email") == user.get("email"):
+            if body.display_name is not None:
+                record["display_name"] = body.display_name.strip()
+            if body.phone is not None:
+                record["phone"] = body.phone.strip() or None
+            if body.preferences is not None:
+                existing = record.get("preferences") or {}
+                existing.update(body.preferences)
+                record["preferences"] = existing
+            record["updated_at"] = datetime.now(timezone.utc).isoformat()
+            updated = True
+            break
+
+    if not updated:
+        raise HTTPException(status_code=404, detail="User record not found")
+
+    write_json(users_file, records)
+    return {"status": "ok"}
+
+
+@router.put("/change-password")
+def change_password(body: ChangePasswordRequest, user: dict = Depends(get_current_user)):
+    """Change the current user's password after verifying the current one."""
+    if not _verify_password(body.current_password, user.get("password_hash", "")):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+    role = user.get("role", "client")
+    path = _ROLE_DIRS.get(role)
+    if not path:
+        raise HTTPException(status_code=400, detail="Unsupported role")
+
+    users_file = path / "users.json"
+    records = read_json(users_file)
+
+    for record in records:
+        if record.get("email") == user.get("email"):
+            record["password_hash"] = _hash_password(body.new_password)
+            record["updated_at"] = datetime.now(timezone.utc).isoformat()
+            break
+
+    write_json(users_file, records)
+    return {"status": "ok"}
