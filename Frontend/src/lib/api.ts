@@ -178,6 +178,11 @@ export const api = {
     getStats: () => request<Record<string, unknown>>("/admin/stats"),
     getCompanies: () => request<Record<string, unknown>[]>("/admin/companies"),
     getSuppliers: () => request<Record<string, unknown>[]>("/admin/suppliers"),
+    updateVerification: (slug: string, entityType: string, docType: string, status: string, notes = "") =>
+      request<{ status: string; verification_status: string }>("/admin/verification", {
+        method: "PUT",
+        body: JSON.stringify({ slug, entity_type: entityType, doc_type: docType, status, notes }),
+      }),
   },
 
   messages: {

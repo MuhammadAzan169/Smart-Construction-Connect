@@ -146,8 +146,14 @@ export default function CompanyProfilePage() {
       <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <GlassCard className="overflow-hidden p-0">
           <div className="group relative h-56 overflow-hidden">
-            <img src={company.image} alt={company.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img src={(company.raw as Record<string, unknown>).dp_url as string || company.image} alt={company.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
             <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-background/70 to-transparent" />
+            {/* Logo overlay */}
+            {company.raw.logo_url && (
+              <div className="absolute left-4 bottom-4 h-16 w-16 overflow-hidden rounded-2xl border-2 border-background bg-background shadow-lg">
+                <img src={company.raw.logo_url} alt={`${company.name} logo`} className="h-full w-full object-cover" />
+              </div>
+            )}
           </div>
           <div className="space-y-4 p-6">
             <div>

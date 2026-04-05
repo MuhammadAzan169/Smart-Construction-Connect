@@ -38,7 +38,7 @@ import { cities as cityOptions, societiesByCity } from "@/data/locationOptions";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
-import { ArrowLeft, Eye, FileCheck, Loader2, Plus, Save, Shield, Upload, X } from "lucide-react";
+import { ArrowLeft, Eye, FileCheck, Loader2, MapPin, Plus, Save, Shield, Upload, X } from "lucide-react";
 import { api } from "@/lib/api";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -1427,6 +1427,161 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                   onChange={(e) => setSettings((prev) => ({ ...prev, timeline_notes: e.target.value }))}
                   className="bg-background/40" placeholder="Any caveats or conditions affecting timelines…"
                 />
+              </div>
+            </GlassCard>
+          )}
+
+          {/* Operational Area Rates */}
+          <GlassCard interactive={false} className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Operational Area Rates</p>
+                <p className="mt-1 text-xs text-muted-foreground">Set per-sqft pricing for each city/society/phase by package.</p>
+              </div>
+              <Button type="button" size="sm" onClick={addArea}>
+                <Plus className="h-3.5 w-3.5" />
+                Add Area
+              </Button>
+            </div>
+
+            {settings.operational_area_rates.length === 0 ? (
+              <div className="mt-4 rounded-xl border border-dashed border-border bg-background/20 py-8 text-center">
+                <MapPin className="mx-auto mb-2 h-6 w-6 text-muted-foreground/40" />
+                <p className="text-xs text-muted-foreground">No operational areas yet. Click "Add Area" to set pricing.</p>
+              </div>
+            ) : (
+              <div className="mt-4 overflow-x-auto rounded-2xl border border-border bg-card">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-36">City</TableHead>
+                      <TableHead className="w-36">Society / Area</TableHead>
+                      <TableHead className="w-28">Phase</TableHead>
+                      {packages.map((p) => (
+                        <TableHead key={p.id} className="min-w-[7rem]">{p.label} (PKR/sqft)</TableHead>
+                      ))}
+                      <TableHead className="w-12" />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {settings.operational_area_rates.map((row) => {
+                      const citySocieties = row.city && societiesByCity[row.city] ? societiesByCity[row.city] : [];
+                      return (
+                        <TableRow key={row.id}>
+                          <TableCell>
+                            <Select
+                              value={row.city || "__none__"}
+                              onValueChange={(v) => patchArea(row.id, { city: v === "__none__" ? "" : v, society: "", phase: "" })}
+                            >
+                              <SelectTrigger className="bg-background/40 h-8 text-xs">
+                                <SelectValue placeholder="City" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="__none__">Select</SelectItem>
+                                {(cityOptions as readonly string[]).map((c) => (
+                                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell>
+                            {citySocieties.length > 0 ? (
+                              <Select
+                                value={row.society || "__none__"}
+                                onValueChange={(v) => patchArea(row.id, { society: v === "__none__" ? "" : v })}
+                              >
+                                <SelectTrigger className="bg-background/40 h-8 text-xs">
+                                  <SelectValue placeholder="Society" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="__none__">Select</SelectItem>
+                                  {citySocieties.map((s: string) => (
+                                    <SelectItem key={s} value={s}>{s}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <Input
+                                value={row.society}
+                                onChange={(e) => patchArea(row.id, { society: e.target.value })}
+                                className="bg-background/40 h-8 text-xs"
+                                placeholder="Society"
+                              />
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              value={row.phase}
+                              onChange={(e) => patchArea(row.id, { phase: e.target.value })}
+                              className="bg-background/40 h-8 text-xs"
+                              placeholder="Phase"
+                              list={`phase-sugg-${row.id}`}
+                            />
+                            <datalist id={`phase-sugg-${row.id}`}>
+                              {phaseSuggestions.map((s) => <option key={s} value={s} />)}
+                            </datalist>
+                          </TableCell>
+                          {packages.map((p) => (
+                            <TableCell key={p.id}>
+                              <Input
+                                type="number"
+                                min={0}
+                                value={row.rates[p.id] ?? ""}
+                                onChange={(e) => patchRate(row.id, p.id, parseOptionalNumber(e.target.value))}
+                                className="bg-background/40 h-8 text-xs"
+                                placeholder="0"
+                              />
+                            </TableCell>
+                          ))}
+                          <TableCell>
+                            <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive" onClick={() => removeArea(row.id)}>
+                              <X className="h-3.5 w-3.5" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </GlassCard>
+
+          {/* Materials Used per Package */}
+          {packages.length > 0 && (
+            <GlassCard interactive={false} className="p-5">
+              <p className="text-sm font-semibold text-foreground">Materials Used</p>
+              <p className="mt-1 text-xs text-muted-foreground">Specify brand/type of materials used in each package.</p>
+
+              <div className="mt-4">
+                <Tabs value={activePackage} onValueChange={setActivePackage}>
+                  <TabsList className="flex h-auto flex-wrap gap-1">
+                    {packages.map((p) => (
+                      <TabsTrigger key={p.id} value={p.id}>{p.label}</TabsTrigger>
+                    ))}
+                  </TabsList>
+
+                  {packages.map((p) => {
+                    const mat = settings.materials_used[p.id] ?? { cement: "", steel: "", bricks: "", wiring: "", plumbing: "", paint: "" };
+                    return (
+                      <TabsContent key={p.id} value={p.id} className="mt-4">
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {(["cement", "steel", "bricks", "wiring", "plumbing", "paint"] as const).map((field) => (
+                            <div key={field} className="space-y-1">
+                              <Label className="text-xs capitalize text-muted-foreground">{field}</Label>
+                              <Input
+                                value={mat[field]}
+                                onChange={(e) => updateMaterial(p.id, field, e.target.value)}
+                                className="bg-background/40"
+                                placeholder={`e.g., ${field === "cement" ? "Bestway / Lucky" : field === "steel" ? "Amreli TOR 60G" : field === "bricks" ? "A+ Red Bricks" : field === "wiring" ? "Pak Cable 7/29" : field === "plumbing" ? "Master / Grohe" : "ICI Dulux / Berger"}`}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </TabsContent>
+                    );
+                  })}
+                </Tabs>
               </div>
             </GlassCard>
           )}

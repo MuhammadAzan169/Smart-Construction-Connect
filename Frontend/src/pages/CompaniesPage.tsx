@@ -159,7 +159,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
 
       return matchesQuery && matchesVerified && matchesLocation && matchesSpecs;
     });
-  }, [search, onlyVerified, locations, specializations]);
+  }, [search, onlyVerified, locations, specializations, companyData]);
 
   const materialCategoryOptions = useMemo(() => {
     return Array.from(new Set(supplierData.flatMap((s) => s.categories))).sort();
