@@ -2,7 +2,7 @@
   {
     "user_id": "d8c62811-7264-4c52-96b8-b47ff394bb06",
     "email": "admin@smartconnect.pk",
-    "password_hash": "__PLAINTEXT__admin123__HASH_BEFORE_PRODUCTION__",
+    "password_hash": "$2b$12$YaXWZXvhqmUsGIaji6e/eeowXhXnWrsh5cLIqYg.ZICbvSO6LctSK",
     "display_name": "Admin",
     "phone": null,
     "role": "admin",

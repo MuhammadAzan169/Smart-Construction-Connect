@@ -1,22 +1,22 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { mockRequests } from "@/data/mockData";
+import { api, type QuoteRequest } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-import { ArrowLeft, Building2, Check, FileText, X } from "lucide-react";
+import { ArrowLeft, Building2, Check, FileText, Loader2, X } from "lucide-react";
 
-type RequestStatus = (typeof mockRequests)[number]["status"] | "rejected";
+type RequestStatus = QuoteRequest["status"];
 
 export default function RequestsPage() {
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
-  const [requests, setRequests] = useState(() =>
-    mockRequests.map((r) => ({ ...r, status: r.status as RequestStatus })),
-  );
+  const [requests, setRequests] = useState<QuoteRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const isCompany = user?.role === "company";
   const isClient = user?.role === "client";
@@ -26,6 +26,19 @@ export default function RequestsPage() {
     ? "Review, accept, or reject new project inquiries."
     : "Track status and updates across your quote requests.";
 
+  const fetchRequests = useCallback(async () => {
+    try {
+      const data = await api.requests.list();
+      setRequests(data);
+    } catch {
+      /* silently fail – list will stay empty */
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchRequests(); }, [fetchRequests]);
+
   const stats = useMemo(() => {
     const pending = requests.filter((r) => r.status === "pending").length;
     const accepted = requests.filter((r) => r.status === "accepted").length;
@@ -33,11 +46,24 @@ export default function RequestsPage() {
     return { pending, accepted, completed };
   }, [requests]);
 
-  const setStatus = (id: string, status: RequestStatus) => {
-    setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+  const setStatus = async (id: string, status: RequestStatus) => {
+    setActionLoading(id);
+    try {
+      await api.requests.updateStatus(id, status);
+      setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+    } catch { /* ignore */ }
+    setActionLoading(null);
   };
 
   if (!user) return null;
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -94,6 +120,17 @@ export default function RequestsPage() {
         </div>
       </motion.div>
 
+      {requests.length === 0 ? (
+        <GlassCard interactive={false} className="flex flex-col items-center justify-center py-16 text-center">
+          <FileText className="mb-3 h-10 w-10 text-muted-foreground/50" />
+          <p className="text-sm font-medium text-muted-foreground">No requests yet</p>
+          {isClient && (
+            <Button asChild size="sm" variant="outline" className="mt-4">
+              <Link to="/companies">Browse companies to send a request</Link>
+            </Button>
+          )}
+        </GlassCard>
+      ) : (
       <div className="grid gap-4">
         {requests.map((req, idx) => (
           <motion.div
@@ -110,7 +147,7 @@ export default function RequestsPage() {
                     <FileText className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">{req.project}</p>
+                    <p className="truncate text-sm font-semibold text-foreground">{req.project_title}</p>
                     <p className="truncate text-xs text-muted-foreground">{req.location}</p>
                   </div>
                   <StatusBadge status={req.status} />
@@ -119,15 +156,15 @@ export default function RequestsPage() {
                 <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <div>
                     <p className="text-xs font-medium text-muted-foreground">Client</p>
-                    <p className="text-sm text-foreground">{req.clientName}</p>
+                    <p className="text-sm text-foreground">{req.client_name}</p>
                   </div>
                   <div>
                     <p className="text-xs font-medium text-muted-foreground">Budget</p>
-                    <p className="text-sm text-foreground">{req.budget}</p>
+                    <p className="text-sm text-foreground">{req.budget || "—"}</p>
                   </div>
                   <div>
                     <p className="text-xs font-medium text-muted-foreground">Date</p>
-                    <p className="text-sm text-foreground">{req.date}</p>
+                    <p className="text-sm text-foreground">{new Date(req.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
               </div>
@@ -137,14 +174,16 @@ export default function RequestsPage() {
                   <div className="flex w-full gap-2 sm:w-auto">
                     <Button
                       className="flex-1 sm:flex-none"
+                      disabled={actionLoading === req.id}
                       onClick={() => setStatus(req.id, "accepted")}
                     >
-                      <Check className="h-4 w-4" />
+                      {actionLoading === req.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                       Accept
                     </Button>
                     <Button
                       className="flex-1 sm:flex-none"
                       variant="destructive"
+                      disabled={actionLoading === req.id}
                       onClick={() => setStatus(req.id, "rejected")}
                     >
                       <X className="h-4 w-4" />
@@ -166,6 +205,7 @@ export default function RequestsPage() {
           </motion.div>
         ))}
       </div>
+      )}
     </motion.div>
   );
 }

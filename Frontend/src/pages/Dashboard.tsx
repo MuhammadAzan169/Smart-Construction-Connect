@@ -9,11 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StaggerList, StaggerItem, SectionReveal } from "@/components/shared/AnimationPrimitives";
 import { TiltCard } from "@/components/shared/TiltCard";
-import {
-  mockCompanies,
-  mockRequests,
-} from "@/data/mockData";
 import { api } from "@/lib/api";
+import type { QuoteRequest } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 import { motion } from "framer-motion";
 import {
@@ -29,12 +26,51 @@ import {
 } from "lucide-react";
 
 function ClientDashboard() {
-  const topPicks = useMemo(() => {
-    return [...mockCompanies].sort((a, b) => b.matchScore - a.matchScore).slice(0, 4);
+  const [companies, setCompanies] = useState<Record<string, unknown>[]>([]);
+  const [requestStats, setRequestStats] = useState({ total: 0, pending: 0, accepted: 0, completed: 0 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.companies.list().then(setCompanies).catch(() => {}),
+      api.requests.stats().then((s) => setRequestStats(s as typeof requestStats)).catch(() => {}),
+    ]).finally(() => setLoading(false));
   }, []);
 
+  const topPicks = useMemo(() => {
+    return companies
+      .filter((c) => c.company_name && c.company_id)
+      .map((c) => {
+        const scores = c.ai_scores as { timeline_reliability?: number; budget_accuracy?: number; quality_consistency?: number } | undefined;
+        const parts = [scores?.timeline_reliability, scores?.budget_accuracy, scores?.quality_consistency]
+          .filter((x): x is number => typeof x === "number" && Number.isFinite(x));
+        const matchScore = parts.length ? Math.round((parts.reduce((a, b) => a + b, 0) / parts.length) * 100) : 80;
+        const legal = c.legal_info as { registered?: boolean; secp_registered?: boolean; year_established?: number } | undefined;
+        const verified = c.verification_status === "verified" || (Boolean(legal?.registered) && Boolean(legal?.secp_registered));
+        const exp = c.experience as { specializations?: string[] } | undefined;
+        const feedback = c.customer_feedback as { average_rating?: number; review_count?: number } | undefined;
+        const areas = (c.flattened_operational_areas as { city?: string }[] | undefined) ?? [];
+        const city = areas[0]?.city ?? (c.city as string) ?? "—";
+        return {
+          id: c.company_id as string,
+          name: c.company_name as string,
+          location: city,
+          rating: feedback?.average_rating ?? (c.rating as number) ?? 0,
+          reviews: feedback?.review_count ?? (c.review_count as number) ?? 0,
+          specialization: (exp?.specializations ?? []).slice(0, 3),
+          matchScore,
+          verified,
+          logo: c.logo_url as string | null,
+        };
+      })
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .slice(0, 4);
+  }, [companies]);
+
   const bestMatchScore = topPicks[0]?.matchScore ?? 0;
-  const verifiedCount = useMemo(() => mockCompanies.filter((c) => c.verified).length, []);
+  const verifiedCount = useMemo(() => companies.filter((c) => c.verification_status === "verified" || (
+    (c.legal_info as { registered?: boolean })?.registered && (c.legal_info as { secp_registered?: boolean })?.secp_registered
+  )).length, [companies]);
 
   return (
     <div className="space-y-6">
@@ -55,16 +91,16 @@ function ClientDashboard() {
 
       <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
         <StaggerItem>
-          <StatCard title="Companies" value={mockCompanies.length} icon={Building2} />
+          <StatCard title="Companies" value={loading ? "…" : companies.length} icon={Building2} />
         </StaggerItem>
         <StaggerItem>
-          <StatCard title="Verified" value={verifiedCount} icon={ShieldCheck} />
+          <StatCard title="Verified" value={loading ? "…" : verifiedCount} icon={ShieldCheck} />
         </StaggerItem>
         <StaggerItem>
-          <StatCard title="Requests" value={mockRequests.length} icon={FileText} />
+          <StatCard title="My Requests" value={loading ? "…" : requestStats.total} icon={FileText} />
         </StaggerItem>
         <StaggerItem>
-          <StatCard title="Best Match" value={`${bestMatchScore}%`} icon={TrendingUp} trend="up" change="Recommended" />
+          <StatCard title="Best Match" value={loading ? "…" : `${bestMatchScore}%`} icon={TrendingUp} trend="up" change="Recommended" />
         </StaggerItem>
       </StaggerList>
 
@@ -84,22 +120,38 @@ function ClientDashboard() {
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2 focus-highlight">
-              {topPicks.map((c, i) => (
+              {loading ? (
+                <p className="col-span-2 text-center text-sm text-muted-foreground py-4">Loading companies…</p>
+              ) : topPicks.length === 0 ? (
+                <p className="col-span-2 text-center text-sm text-muted-foreground py-4">No companies found.</p>
+              ) : topPicks.map((c, i) => (
                 <motion.div
                   key={c.id}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.08, duration: 0.3 }}
                 >
+                  <Link to={`/companies/${c.id}`}>
                   <TiltCard tiltMaxAngleX={5} tiltMaxAngleY={5} scale={1.01}>
                     <GlassCard className="p-4">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-foreground">{c.name}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">{c.location}</p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        {c.logo ? (
+                          <img src={c.logo} alt="" className="h-8 w-8 rounded-lg object-cover" />
+                        ) : (
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold">
+                            {c.name.charAt(0)}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-foreground">{c.name}</p>
+                          <p className="text-xs text-muted-foreground">{c.location}</p>
+                        </div>
+                      </div>
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {c.specialization.slice(0, 2).map((s) => (
-                          <Badge key={s} variant="secondary" className="rounded-lg">
+                          <Badge key={s} variant="secondary" className="rounded-lg text-[10px]">
                             {s}
                           </Badge>
                         ))}
@@ -111,13 +163,14 @@ function ClientDashboard() {
                   <div className="mt-3 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Star className="h-3.5 w-3.5 fill-warning text-warning" />
-                      <span className="font-semibold text-foreground">{c.rating}</span>
+                      <span className="font-semibold text-foreground">{c.rating.toFixed(1)}</span>
                       <span>({c.reviews})</span>
                     </div>
                     <StatusBadge status={c.verified ? "verified" : "pending"} />
                   </div>
                     </GlassCard>
                   </TiltCard>
+                  </Link>
                 </motion.div>
               ))}
             </div>
@@ -153,26 +206,39 @@ function ClientDashboard() {
 
 function CompanyDashboard() {
   const user = useAuthStore((s) => s.user);
-  const email = user?.email ?? "";
-  const companyKey = email;
+  const companySlug = user?.companyFile ?? user?.company_slug ?? "";
+  const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
+  const [requests, setRequests] = useState<QuoteRequest[]>([]);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loadingReqs, setLoadingReqs] = useState(true);
 
-  const pricingState = useMemo(() => {
-    try {
-      const raw = localStorage.getItem(`scc_pricing_v3:${companyKey}`);
-      if (!raw) return null;
-      return JSON.parse(raw) as { packages?: unknown[]; areaRates?: unknown[] };
-    } catch { return null; }
-  }, [companyKey]);
+  useEffect(() => {
+    if (companySlug) {
+      api.companies.getProfile(companySlug)
+        .then((d) => setProfile(d))
+        .catch(() => {})
+        .finally(() => setLoadingProfile(false));
+    } else {
+      setLoadingProfile(false);
+    }
+    api.requests.list()
+      .then(setRequests)
+      .catch(() => {})
+      .finally(() => setLoadingReqs(false));
+  }, [companySlug]);
 
-  const activePackages = (pricingState?.packages as { id: string }[] | undefined)?.length ?? 0;
+  const activePackages = useMemo(() => {
+    const scope = profile?.package_scope as Record<string, unknown> | undefined;
+    return scope ? Object.keys(scope).length : 0;
+  }, [profile]);
+
   const coveredCities = useMemo(() => {
-    const areas = pricingState?.areaRates as { city?: string }[] | undefined;
-    if (!areas) return 0;
+    const areas = (profile?.flattened_operational_areas as { city?: string }[] | undefined) ?? [];
     return new Set(areas.map((r) => r.city).filter(Boolean)).size;
-  }, [pricingState]);
+  }, [profile]);
 
-  const pendingRequests = useMemo(() => mockRequests.filter((r) => r.status === "pending").length, []);
-  const recentRequests = useMemo(() => mockRequests.slice(0, 4), []);
+  const pendingRequests = useMemo(() => requests.filter((r) => r.status === "pending").length, [requests]);
+  const recentRequests = useMemo(() => requests.slice(0, 4), [requests]);
 
   return (
     <div className="space-y-6">
@@ -193,16 +259,16 @@ function CompanyDashboard() {
 
       <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
         <StaggerItem>
-          <StatCard title="Active Packages" value={activePackages || "—"} icon={Package} />
+          <StatCard title="Active Packages" value={loadingProfile ? "…" : (activePackages || "—")} icon={Package} />
         </StaggerItem>
         <StaggerItem>
-          <StatCard title="Covered Cities" value={coveredCities || "—"} icon={Building2} />
+          <StatCard title="Covered Cities" value={loadingProfile ? "…" : (coveredCities || "—")} icon={Building2} />
         </StaggerItem>
         <StaggerItem>
-          <StatCard title="Pending Requests" value={pendingRequests} icon={FileText} />
+          <StatCard title="Pending Requests" value={loadingReqs ? "…" : pendingRequests} icon={FileText} />
         </StaggerItem>
         <StaggerItem>
-          <StatCard title="Total Requests" value={mockRequests.length} icon={Activity} trend="up" change="All time" />
+          <StatCard title="Total Requests" value={loadingReqs ? "…" : requests.length} icon={Activity} trend="up" change="All time" />
         </StaggerItem>
       </StaggerList>
 
@@ -221,7 +287,9 @@ function CompanyDashboard() {
               </Button>
             </div>
             <div className="mt-4 space-y-2">
-              {recentRequests.length === 0 ? (
+              {loadingReqs ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">Loading requests…</p>
+              ) : recentRequests.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No requests yet.</p>
               ) : (
                 recentRequests.map((req, i) => (
@@ -233,8 +301,8 @@ function CompanyDashboard() {
                     className="flex items-center justify-between rounded-2xl border border-border bg-background/30 px-4 py-3"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-foreground">{req.clientName}</p>
-                      <p className="truncate text-xs text-muted-foreground">{req.location ?? "—"}</p>
+                      <p className="truncate text-sm font-medium text-foreground">{req.client_name}</p>
+                      <p className="truncate text-xs text-muted-foreground">{req.project_title} · {req.location || "—"}</p>
                     </div>
                     <StatusBadge status={req.status} />
                   </motion.div>
@@ -435,20 +503,20 @@ function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activity, setActivity] = useState<{ timestamp: string; action: string; target: string; details: string }[]>([]);
-  const [pendingUsers, setPendingUsers] = useState<{ id: string; name: string; email: string; role: string; status: string; joinDate: string }[]>([]);
+  const [pendingUsers, setPendingUsers] = useState<{ user_id: string; display_name: string; email: string; role: string; status: string }[]>([]);
 
   useEffect(() => {
     Promise.all([
       api.admin.getStats().then(setStats).catch(() => {}),
       api.admin.getActivity().then(setActivity).catch(() => {}),
-      api.admin.getUsers().then((users: any[]) => setPendingUsers(users.filter((u) => u.status === "pending").slice(0, 5))).catch(() => {}),
+      api.admin.getUsers().then((users) => setPendingUsers(users.filter((u) => u.status === "pending").slice(0, 5) as typeof pendingUsers)).catch(() => {}),
     ]).finally(() => setLoading(false));
   }, []);
 
   const handleApprove = async (userId: string) => {
     try {
       await api.admin.updateUserStatus(userId, "active");
-      setPendingUsers((prev) => prev.filter((u) => u.id !== userId));
+      setPendingUsers((prev) => prev.filter((u) => u.user_id !== userId));
       if (stats) setStats({ ...stats, pending_approvals: Math.max(0, (stats.pending_approvals ?? 1) - 1) });
     } catch {}
   };
@@ -456,7 +524,7 @@ function AdminDashboard() {
   const handleReject = async (userId: string) => {
     try {
       await api.admin.updateUserStatus(userId, "banned");
-      setPendingUsers((prev) => prev.filter((u) => u.id !== userId));
+      setPendingUsers((prev) => prev.filter((u) => u.user_id !== userId));
       if (stats) setStats({ ...stats, pending_approvals: Math.max(0, (stats.pending_approvals ?? 1) - 1), banned_users: (stats.banned_users ?? 0) + 1 });
     } catch {}
   };
@@ -552,14 +620,14 @@ function AdminDashboard() {
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <p className="truncate text-sm font-medium text-foreground">{u.name}</p>
+                            <p className="truncate text-sm font-medium text-foreground">{u.display_name}</p>
                             <Badge variant="secondary" className="text-[10px] capitalize">{u.role}</Badge>
                           </div>
                           <p className="truncate text-xs text-muted-foreground">{u.email}</p>
                         </div>
                         <div className="flex gap-2 ml-3">
-                          <Button size="sm" onClick={() => handleApprove(u.id)}>Approve</Button>
-                          <Button size="sm" variant="destructive" onClick={() => handleReject(u.id)}>Reject</Button>
+                          <Button size="sm" onClick={() => handleApprove(u.user_id)}>Approve</Button>
+                          <Button size="sm" variant="destructive" onClick={() => handleReject(u.user_id)}>Reject</Button>
                         </div>
                       </motion.div>
                     ))

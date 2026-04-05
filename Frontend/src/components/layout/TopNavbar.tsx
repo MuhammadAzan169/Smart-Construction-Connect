@@ -1,9 +1,9 @@
 import { useAuthStore } from "@/stores/authStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { Bell, Moon, Sun, LogOut, Search, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { mockNotifications } from "@/data/mockData";
+import { api } from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -11,14 +11,41 @@ import { Input } from "@/components/ui/input";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { ConfirmModal } from "@/components/shared/AnimationPrimitives";
 
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  read: boolean;
+}
+
 export function TopNavbar() {
   const { user, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const [showNotif, setShowNotif] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const unread = mockNotifications.filter((n) => !n.read).length;
+
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return;
+    try {
+      const requests = await api.requests.list();
+      const items: Notification[] = requests.slice(0, 5).map((r) => ({
+        id: r.id,
+        title: r.status === "pending" ? "New Quote Request" : `Request ${r.status}`,
+        message: `${r.client_name} — ${r.project_title}`,
+        time: new Date(r.updated_at || r.created_at).toLocaleDateString(),
+        read: r.status !== "pending",
+      }));
+      setNotifications(items);
+    } catch { /* silent */ }
+  }, [user]);
+
+  useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
+
+  const unread = notifications.filter((n) => !n.read).length;
   const canGoBack = location.pathname !== "/dashboard";
 
   return (
@@ -98,7 +125,7 @@ export function TopNavbar() {
                 >
                   <GlassCard interactive={false} className="p-2">
                     <div className="mb-2 px-3 py-2 text-xs font-semibold text-muted-foreground">NOTIFICATIONS</div>
-                    {mockNotifications.map((n, i) => (
+                    {notifications.map((n, i) => (
                       <motion.div
                         key={n.id}
                         initial={{ opacity: 0, x: -8 }}

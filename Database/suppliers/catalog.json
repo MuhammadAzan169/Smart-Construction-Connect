@@ -79,7 +79,9 @@
         "stock": 15000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-002",
@@ -153,7 +155,9 @@
         "stock": 4000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-003",
@@ -234,7 +238,9 @@
         "stock": 60
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-004",
@@ -308,7 +314,9 @@
         "stock": 25000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-005",
@@ -383,7 +391,9 @@
         "stock": 10000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-006",
@@ -457,7 +467,9 @@
         "stock": 350
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-007",
@@ -531,7 +543,9 @@
         "stock": 300
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-008",
@@ -613,7 +627,9 @@
         "stock": 40
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-009",
@@ -686,7 +702,9 @@
         "stock": 2000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-010",
@@ -759,7 +777,9 @@
         "stock": 500
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-011",
@@ -824,7 +844,9 @@
         "stock": 3000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-012",
@@ -897,7 +919,9 @@
         "stock": 5000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-013",
@@ -971,7 +995,9 @@
         "stock": 1000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-014",
@@ -1036,7 +1062,9 @@
         "stock": 500
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-015",
@@ -1110,7 +1138,9 @@
         "stock": 2000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-115",
@@ -1150,7 +1180,9 @@
         "stock": 100
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-116",
@@ -1190,7 +1222,9 @@
         "stock": 100
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-118",
@@ -1246,7 +1280,9 @@
         "stock": 500000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-119",
@@ -1302,7 +1338,9 @@
         "stock": 200
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-120",
@@ -1358,7 +1396,9 @@
         "stock": 60
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-121",
@@ -1414,7 +1454,9 @@
         "stock": 600
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-122",
@@ -1470,7 +1512,9 @@
         "stock": 3000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-123",
@@ -1526,7 +1570,9 @@
         "stock": 120
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   },
   {
     "supplier_id": "MS-124",
@@ -1582,6 +1628,8 @@
         "stock": 3000
       }
     ],
-    "status": "active"
+    "status": "active",
+    "verification_status": "not_submitted",
+    "verification": {}
   }
 ]

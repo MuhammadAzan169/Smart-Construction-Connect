@@ -20,7 +20,7 @@ if __package__ in (None, ""):
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import admin, ai_chat, auth, companies, messages, suppliers, upload
+from backend.routers import admin, ai_chat, auth, companies, messages, requests, suppliers, upload
 
 app = FastAPI(
     title="Smart Construction Connect API",
@@ -43,6 +43,7 @@ app.include_router(admin.router)
 app.include_router(ai_chat.router)
 app.include_router(upload.router)
 app.include_router(messages.router)
+app.include_router(requests.router)
 
 
 @app.get("/api/health")

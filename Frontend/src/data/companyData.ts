@@ -314,3 +314,57 @@ export function getPaymentTermOptions(dataset: CompanyDatasetCompany[]) {
 export function humanizeToken(value: string) {
   return titleCaseToken(value);
 }
+
+// ── Async API-based fetcher (production) ──
+
+const COMPANY_API =
+  window.location.port === "5173"
+    ? "http://localhost:8000/api/companies/"
+    : "/api/companies/";
+
+let _cachedDirectory: CompanyDirectoryItem[] | null = null;
+
+function _buildDirectoryItem(raw: CompanyDatasetCompany): CompanyDirectoryItem {
+  const price = computePriceRange(raw);
+  const coverage = computeCoverage(raw);
+  return {
+    id: raw.company_id,
+    name: raw.company_name,
+    location: coverage.cities[0] ?? pickPrimaryCity(raw),
+    cities: coverage.cities,
+    areas: coverage.areas,
+    societies: coverage.societies,
+    locations: coverage.locations,
+    rating: raw.customer_feedback?.average_rating ?? 0,
+    reviews: raw.customer_feedback?.review_count ?? 0,
+    specialization: computeSpecializations(raw),
+    priceRange: price ? formatSqFtRange(price.min, price.max) : "Pricing —",
+    verified: (raw as Record<string, unknown>).verification_status === "verified" || computeVerified(raw),
+    matchScore: computeMatchScore(raw),
+    image: raw.logo_url || placeholderImages[hashToIndex(raw.company_id, placeholderImages.length)],
+    yearEstablished: raw.legal_info?.year_established,
+    completedProjects: raw.experience?.houses_completed,
+    raw,
+  };
+}
+
+export async function fetchCompanyDirectory(): Promise<CompanyDirectoryItem[]> {
+  if (_cachedDirectory) return _cachedDirectory;
+  try {
+    const res = await fetch(COMPANY_API);
+    if (!res.ok) throw new Error("Failed to fetch companies");
+    const data = (await res.json()) as CompanyDatasetCompany[];
+    const dir = data
+      .filter((c) => c && typeof c.company_id === "string" && typeof c.company_name === "string")
+      .map(_buildDirectoryItem);
+    _cachedDirectory = dir;
+    return dir;
+  } catch {
+    // Fallback to static import
+    return companyDirectory;
+  }
+}
+
+export function invalidateCompanyCache() {
+  _cachedDirectory = null;
+}

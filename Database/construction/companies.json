@@ -494,7 +494,10 @@
       "timeline_reliability": 0.85,
       "budget_accuracy": 0.86,
       "quality_consistency": 0.69
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-002",
@@ -934,7 +937,10 @@
       "timeline_reliability": 0.87,
       "budget_accuracy": 0.79,
       "quality_consistency": 0.9
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-003",
@@ -1431,7 +1437,10 @@
       "timeline_reliability": 0.76,
       "budget_accuracy": 0.88,
       "quality_consistency": 0.81
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-004",
@@ -1923,7 +1932,10 @@
       "timeline_reliability": 0.84,
       "budget_accuracy": 0.76,
       "quality_consistency": 0.8
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-005",
@@ -2423,7 +2435,10 @@
       "timeline_reliability": 0.79,
       "budget_accuracy": 0.86,
       "quality_consistency": 0.86
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-006",
@@ -2868,7 +2883,10 @@
       "timeline_reliability": 0.75,
       "budget_accuracy": 0.85,
       "quality_consistency": 0.79
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-007",
@@ -3312,7 +3330,10 @@
       "timeline_reliability": 0.82,
       "budget_accuracy": 0.76,
       "quality_consistency": 0.68
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-008",
@@ -3730,7 +3751,10 @@
       "timeline_reliability": 0.93,
       "budget_accuracy": 0.88,
       "quality_consistency": 0.78
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-009",
@@ -4209,7 +4233,10 @@
       "timeline_reliability": 0.93,
       "budget_accuracy": 0.82,
       "quality_consistency": 0.85
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-010",
@@ -4794,7 +4821,10 @@
       "timeline_reliability": 0.76,
       "budget_accuracy": 0.92,
       "quality_consistency": 0.8
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-011",
@@ -5237,7 +5267,10 @@
       "timeline_reliability": 0.93,
       "budget_accuracy": 0.83,
       "quality_consistency": 0.85
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-012",
@@ -5812,7 +5845,10 @@
       "timeline_reliability": 0.86,
       "budget_accuracy": 0.92,
       "quality_consistency": 0.85
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-013",
@@ -6281,7 +6317,10 @@
       "timeline_reliability": 0.92,
       "budget_accuracy": 0.89,
       "quality_consistency": 0.7
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-014",
@@ -6726,7 +6765,10 @@
       "timeline_reliability": 0.88,
       "budget_accuracy": 0.76,
       "quality_consistency": 0.74
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-015",
@@ -7252,7 +7294,10 @@
       "timeline_reliability": 0.95,
       "budget_accuracy": 0.77,
       "quality_consistency": 0.83
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-016",
@@ -7723,7 +7768,10 @@
       "timeline_reliability": 0.86,
       "budget_accuracy": 0.9,
       "quality_consistency": 0.86
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-017",
@@ -8194,7 +8242,10 @@
       "timeline_reliability": 0.82,
       "budget_accuracy": 0.71,
       "quality_consistency": 0.74
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-018",
@@ -8780,7 +8831,10 @@
       "timeline_reliability": 0.89,
       "budget_accuracy": 0.86,
       "quality_consistency": 0.87
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-019",
@@ -9287,7 +9341,10 @@
       "timeline_reliability": 0.88,
       "budget_accuracy": 0.74,
       "quality_consistency": 0.72
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-020",
@@ -9817,7 +9874,10 @@
       "timeline_reliability": 0.87,
       "budget_accuracy": 0.77,
       "quality_consistency": 0.79
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-021",
@@ -10259,7 +10319,10 @@
       "timeline_reliability": 0.87,
       "budget_accuracy": 0.85,
       "quality_consistency": 0.82
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-022",
@@ -10757,7 +10820,10 @@
       "timeline_reliability": 0.87,
       "budget_accuracy": 0.85,
       "quality_consistency": 0.82
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-023",
@@ -11200,7 +11266,10 @@
       "timeline_reliability": 0.73,
       "budget_accuracy": 0.88,
       "quality_consistency": 0.89
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-024",
@@ -11725,7 +11794,10 @@
       "timeline_reliability": 0.73,
       "budget_accuracy": 0.92,
       "quality_consistency": 0.81
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-025",
@@ -12196,7 +12268,10 @@
       "timeline_reliability": 0.79,
       "budget_accuracy": 0.77,
       "quality_consistency": 0.91
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-026",
@@ -12648,7 +12723,10 @@
       "timeline_reliability": 0.81,
       "budget_accuracy": 0.87,
       "quality_consistency": 0.78
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-027",
@@ -13098,7 +13176,10 @@
       "timeline_reliability": 0.76,
       "budget_accuracy": 0.87,
       "quality_consistency": 0.7
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-028",
@@ -13594,7 +13675,10 @@
       "timeline_reliability": 0.8,
       "budget_accuracy": 0.91,
       "quality_consistency": 0.77
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-029",
@@ -14063,7 +14147,10 @@
       "timeline_reliability": 0.76,
       "budget_accuracy": 0.74,
       "quality_consistency": 0.85
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-030",
@@ -14562,7 +14649,10 @@
       "timeline_reliability": 0.81,
       "budget_accuracy": 0.72,
       "quality_consistency": 0.73
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-031",
@@ -15115,7 +15205,10 @@
       "timeline_reliability": 0.73,
       "budget_accuracy": 0.83,
       "quality_consistency": 0.88
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-032",
@@ -15538,7 +15631,10 @@
       "timeline_reliability": 0.83,
       "budget_accuracy": 0.91,
       "quality_consistency": 0.8
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-033",
@@ -15978,7 +16074,10 @@
       "timeline_reliability": 0.81,
       "budget_accuracy": 0.83,
       "quality_consistency": 0.83
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-034",
@@ -16447,7 +16546,10 @@
       "timeline_reliability": 0.84,
       "budget_accuracy": 0.73,
       "quality_consistency": 0.73
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-035",
@@ -16890,7 +16992,10 @@
       "timeline_reliability": 0.93,
       "budget_accuracy": 0.89,
       "quality_consistency": 0.74
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-036",
@@ -17363,7 +17468,10 @@
       "timeline_reliability": 0.78,
       "budget_accuracy": 0.73,
       "quality_consistency": 0.79
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-037",
@@ -17921,7 +18029,10 @@
       "timeline_reliability": 0.73,
       "budget_accuracy": 0.86,
       "quality_consistency": 0.87
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-038",
@@ -18417,7 +18528,10 @@
       "timeline_reliability": 0.95,
       "budget_accuracy": 0.81,
       "quality_consistency": 0.77
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-039",
@@ -18832,7 +18946,10 @@
       "timeline_reliability": 0.93,
       "budget_accuracy": 0.85,
       "quality_consistency": 0.86
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-040",
@@ -19224,7 +19341,10 @@
       "timeline_reliability": 0.89,
       "budget_accuracy": 0.9,
       "quality_consistency": 0.69
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-041",
@@ -19722,7 +19842,10 @@
       "timeline_reliability": 0.8,
       "budget_accuracy": 0.75,
       "quality_consistency": 0.84
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-042",
@@ -20201,7 +20324,10 @@
       "timeline_reliability": 0.85,
       "budget_accuracy": 0.83,
       "quality_consistency": 0.84
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-043",
@@ -20696,7 +20822,10 @@
       "timeline_reliability": 0.91,
       "budget_accuracy": 0.8,
       "quality_consistency": 0.86
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-044",
@@ -21164,7 +21293,10 @@
       "timeline_reliability": 0.88,
       "budget_accuracy": 0.79,
       "quality_consistency": 0.75
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-045",
@@ -21609,7 +21741,10 @@
       "timeline_reliability": 0.95,
       "budget_accuracy": 0.81,
       "quality_consistency": 0.74
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-046",
@@ -22136,7 +22271,10 @@
       "timeline_reliability": 0.81,
       "budget_accuracy": 0.89,
       "quality_consistency": 0.74
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-047",
@@ -22721,7 +22859,10 @@
       "timeline_reliability": 0.93,
       "budget_accuracy": 0.77,
       "quality_consistency": 0.91
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-048",
@@ -23164,7 +23305,10 @@
       "timeline_reliability": 0.79,
       "budget_accuracy": 0.72,
       "quality_consistency": 0.68
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-049",
@@ -23689,7 +23833,10 @@
       "timeline_reliability": 0.82,
       "budget_accuracy": 0.89,
       "quality_consistency": 0.84
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-050",
@@ -24161,7 +24308,10 @@
       "timeline_reliability": 0.84,
       "budget_accuracy": 0.91,
       "quality_consistency": 0.85
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-051",
@@ -24692,7 +24842,10 @@
       "timeline_reliability": 0.76,
       "budget_accuracy": 0.74,
       "quality_consistency": 0.81
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-052",
@@ -25135,7 +25288,10 @@
       "timeline_reliability": 0.87,
       "budget_accuracy": 0.77,
       "quality_consistency": 0.74
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-053",
@@ -25606,7 +25762,10 @@
       "timeline_reliability": 0.75,
       "budget_accuracy": 0.88,
       "quality_consistency": 0.88
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-054",
@@ -26074,7 +26233,10 @@
       "timeline_reliability": 0.78,
       "budget_accuracy": 0.86,
       "quality_consistency": 0.88
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-055",
@@ -26572,7 +26734,10 @@
       "timeline_reliability": 0.93,
       "budget_accuracy": 0.9,
       "quality_consistency": 0.75
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-056",
@@ -27066,7 +27231,10 @@
       "timeline_reliability": 0.74,
       "budget_accuracy": 0.72,
       "quality_consistency": 0.86
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-057",
@@ -27483,7 +27651,10 @@
       "timeline_reliability": 0.88,
       "budget_accuracy": 0.88,
       "quality_consistency": 0.91
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-158",
@@ -27878,7 +28049,10 @@
       "timeline_reliability": 0.76,
       "budget_accuracy": 0.81,
       "quality_consistency": 0.85
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-159",
@@ -28297,7 +28471,10 @@
       "timeline_reliability": 0.83,
       "budget_accuracy": 0.82,
       "quality_consistency": 0.68
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-160",
@@ -28693,7 +28870,10 @@
       "timeline_reliability": 0.72,
       "budget_accuracy": 0.72,
       "quality_consistency": 0.61
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-161",
@@ -29116,7 +29296,10 @@
       "timeline_reliability": 0.92,
       "budget_accuracy": 0.74,
       "quality_consistency": 0.6
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-162",
@@ -29514,7 +29697,10 @@
       "timeline_reliability": 0.85,
       "budget_accuracy": 0.84,
       "quality_consistency": 0.88
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-163",
@@ -29912,7 +30098,10 @@
       "timeline_reliability": 0.87,
       "budget_accuracy": 0.78,
       "quality_consistency": 0.88
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-164",
@@ -30311,7 +30500,10 @@
       "timeline_reliability": 0.86,
       "budget_accuracy": 0.84,
       "quality_consistency": 0.66
-    }
+    },
+    "verification_status": "not_submitted",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-165",
@@ -30706,7 +30898,10 @@
       "timeline_reliability": 0.88,
       "budget_accuracy": 0.91,
       "quality_consistency": 0.68
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-166",
@@ -31104,7 +31299,10 @@
       "timeline_reliability": 0.73,
       "budget_accuracy": 0.94,
       "quality_consistency": 0.73
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-167",
@@ -31500,7 +31698,10 @@
       "timeline_reliability": 0.78,
       "budget_accuracy": 0.79,
       "quality_consistency": 0.87
-    }
+    },
+    "verification_status": "not_submitted",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-168",
@@ -31899,7 +32100,10 @@
       "timeline_reliability": 0.87,
       "budget_accuracy": 0.94,
       "quality_consistency": 0.81
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-169",
@@ -32295,7 +32499,10 @@
       "timeline_reliability": 0.73,
       "budget_accuracy": 0.72,
       "quality_consistency": 0.67
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-170",
@@ -32690,7 +32897,10 @@
       "timeline_reliability": 0.81,
       "budget_accuracy": 0.81,
       "quality_consistency": 0.68
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-171",
@@ -33086,7 +33296,10 @@
       "timeline_reliability": 0.77,
       "budget_accuracy": 0.93,
       "quality_consistency": 0.75
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-172",
@@ -33508,7 +33721,10 @@
       "timeline_reliability": 0.91,
       "budget_accuracy": 0.91,
       "quality_consistency": 0.71
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-173",
@@ -33881,7 +34097,10 @@
       "timeline_reliability": 0.95,
       "budget_accuracy": 0.77,
       "quality_consistency": 0.89
-    }
+    },
+    "verification_status": "not_submitted",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-174",
@@ -34276,7 +34495,10 @@
       "timeline_reliability": 0.84,
       "budget_accuracy": 0.94,
       "quality_consistency": 0.7
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-175",
@@ -34672,7 +34894,10 @@
       "timeline_reliability": 0.88,
       "budget_accuracy": 0.9,
       "quality_consistency": 0.78
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-176",
@@ -35045,7 +35270,10 @@
       "timeline_reliability": 0.75,
       "budget_accuracy": 0.81,
       "quality_consistency": 0.72
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-177",
@@ -35443,7 +35671,10 @@
       "timeline_reliability": 0.69,
       "budget_accuracy": 0.86,
       "quality_consistency": 0.61
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-178",
@@ -35838,7 +36069,10 @@
       "timeline_reliability": 0.79,
       "budget_accuracy": 0.72,
       "quality_consistency": 0.69
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-179",
@@ -36232,7 +36466,10 @@
       "timeline_reliability": 0.67,
       "budget_accuracy": 0.91,
       "quality_consistency": 0.62
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-180",
@@ -36630,7 +36867,10 @@
       "timeline_reliability": 0.84,
       "budget_accuracy": 0.81,
       "quality_consistency": 0.71
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-181",
@@ -37003,7 +37243,10 @@
       "timeline_reliability": 0.68,
       "budget_accuracy": 0.93,
       "quality_consistency": 0.85
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-182",
@@ -37372,7 +37615,10 @@
       "timeline_reliability": 0.91,
       "budget_accuracy": 0.71,
       "quality_consistency": 0.72
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-183",
@@ -37743,7 +37989,10 @@
       "timeline_reliability": 0.83,
       "budget_accuracy": 0.91,
       "quality_consistency": 0.76
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-184",
@@ -38113,7 +38362,10 @@
       "timeline_reliability": 0.86,
       "budget_accuracy": 0.95,
       "quality_consistency": 0.66
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-185",
@@ -38486,7 +38738,10 @@
       "timeline_reliability": 0.93,
       "budget_accuracy": 0.83,
       "quality_consistency": 0.69
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-186",
@@ -38860,7 +39115,10 @@
       "timeline_reliability": 0.72,
       "budget_accuracy": 0.72,
       "quality_consistency": 0.69
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-187",
@@ -39233,7 +39491,10 @@
       "timeline_reliability": 0.69,
       "budget_accuracy": 0.78,
       "quality_consistency": 0.74
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-188",
@@ -39627,7 +39888,10 @@
       "timeline_reliability": 0.85,
       "budget_accuracy": 0.92,
       "quality_consistency": 0.8
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-189",
@@ -40000,7 +40264,10 @@
       "timeline_reliability": 0.88,
       "budget_accuracy": 0.77,
       "quality_consistency": 0.69
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-190",
@@ -40401,7 +40668,10 @@
       "timeline_reliability": 0.72,
       "budget_accuracy": 0.89,
       "quality_consistency": 0.89
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-191",
@@ -40770,7 +41040,10 @@
       "timeline_reliability": 0.77,
       "budget_accuracy": 0.9,
       "quality_consistency": 0.82
-    }
+    },
+    "verification_status": "not_submitted",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-192",
@@ -41142,7 +41415,10 @@
       "timeline_reliability": 0.72,
       "budget_accuracy": 0.75,
       "quality_consistency": 0.86
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-193",
@@ -41512,7 +41788,10 @@
       "timeline_reliability": 0.91,
       "budget_accuracy": 0.75,
       "quality_consistency": 0.83
-    }
+    },
+    "verification_status": "not_submitted",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-194",
@@ -41883,7 +42162,10 @@
       "timeline_reliability": 0.69,
       "budget_accuracy": 0.84,
       "quality_consistency": 0.66
-    }
+    },
+    "verification_status": "not_submitted",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-195",
@@ -42254,7 +42536,10 @@
       "timeline_reliability": 0.82,
       "budget_accuracy": 0.71,
       "quality_consistency": 0.6
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-196",
@@ -42625,7 +42910,10 @@
       "timeline_reliability": 0.88,
       "budget_accuracy": 0.77,
       "quality_consistency": 0.67
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-197",
@@ -42968,7 +43256,10 @@
       "timeline_reliability": 0.94,
       "budget_accuracy": 0.88,
       "quality_consistency": 0.73
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-198",
@@ -43366,7 +43657,10 @@
       "timeline_reliability": 0.74,
       "budget_accuracy": 0.78,
       "quality_consistency": 0.89
-    }
+    },
+    "verification_status": "pending",
+    "verification": {},
+    "status": "active"
   },
   {
     "company_id": "CC-199",
@@ -43686,6 +43980,9 @@
       "timeline_reliability": 0.71,
       "budget_accuracy": 0.92,
       "quality_consistency": 0.71
-    }
+    },
+    "verification_status": "verified",
+    "verification": {},
+    "status": "active"
   }
 ]

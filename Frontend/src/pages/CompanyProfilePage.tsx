@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { companyDirectory, getPackageKeys, humanizeToken } from "@/data/companyData";
+import { fetchCompanyDirectory, getPackageKeys, humanizeToken, type CompanyDirectoryItem } from "@/data/companyData";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
 import { ArrowLeft, Building2, Briefcase, CheckCircle, CreditCard, FileText, HardHat, MapPin, MessageSquare, Phone, Mail, Globe, Shield, Star, Users } from "lucide-react";
@@ -29,7 +29,7 @@ function formatSqFt(value: number) {
   return `${new Intl.NumberFormat("en-PK", { maximumFractionDigits: 0 }).format(value)} PKR/sq ft`;
 }
 
-function packagePriceRange(company: (typeof companyDirectory)[number], pkgId: string) {
+function packagePriceRange(company: CompanyDirectoryItem, pkgId: string) {
   const rows = (company.raw.flattened_operational_areas ?? []).filter((x) => x.package === pkgId);
   const prices = rows.map((x) => x.price_per_sqft).filter((n) => typeof n === "number" && Number.isFinite(n));
   if (!prices.length) return null;
@@ -42,12 +42,27 @@ export default function CompanyProfilePage() {
   const navigate = useNavigate();
   const params = useParams();
   const user = useAuthStore((s) => s.user);
+  const [company, setCompany] = useState<CompanyDirectoryItem | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
 
-  const company = useMemo(() => {
+  useEffect(() => {
     const id = params.id;
-    if (!id) return undefined;
-    return companyDirectory.find((c) => c.id === id);
+    if (!id) { setLoading(false); return; }
+    fetchCompanyDirectory()
+      .then((dir) => {
+        setCompany(dir.find((c) => c.id === id));
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [params.id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <p className="text-sm text-muted-foreground">Loading company profile…</p>
+      </div>
+    );
+  }
 
   if (!company) {
     return (

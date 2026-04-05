@@ -23,7 +23,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 
-from backend.routers import admin, ai_chat, auth, companies, messages, suppliers, upload
+from backend.routers import admin, ai_chat, auth, companies, messages, requests, suppliers, upload
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FastAPI app
@@ -60,6 +60,7 @@ app.include_router(admin.router)
 app.include_router(ai_chat.router)
 app.include_router(upload.router)
 app.include_router(messages.router)
+app.include_router(requests.router)
 
 
 @app.get("/api/health")

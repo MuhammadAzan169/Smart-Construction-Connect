@@ -35,8 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { companyDirectory, getPackageKeys, humanizeToken, type CompanyDirectoryItem } from "@/data/companyData";
-import { mockCompanies } from "@/data/mockData";
+import { fetchCompanyDirectory, getPackageKeys, humanizeToken, type CompanyDirectoryItem } from "@/data/companyData";
 import { fetchSupplierDirectory, type SupplierDirectoryItem } from "@/data/supplierData";
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
@@ -114,12 +113,15 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
 
   const [materialCategories, setMaterialCategories] = useState<string[]>([]);
   const [supplierData, setSupplierData] = useState<SupplierDirectoryItem[]>([]);
+  const [companyData, setCompanyData] = useState<CompanyDirectoryItem[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [compareOpen, setCompareOpen] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 650);
-    return () => clearTimeout(t);
+    fetchCompanyDirectory().then((data) => {
+      setCompanyData(data);
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -127,18 +129,18 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
   }, []);
 
   const locationOptions = useMemo(() => {
-    const allCities = companyDirectory.flatMap((c) => (c.cities.length ? c.cities : [c.location]));
+    const allCities = companyData.flatMap((c) => (c.cities.length ? c.cities : [c.location]));
     return Array.from(new Set(allCities.filter((x) => x && x !== "—"))).sort();
-  }, []);
+  }, [companyData]);
 
   const specializationOptions = useMemo(() => {
-    return Array.from(new Set(companyDirectory.flatMap((c) => c.specialization))).sort();
-  }, []);
+    return Array.from(new Set(companyData.flatMap((c) => c.specialization))).sort();
+  }, [companyData]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
 
-    return companyDirectory.filter((c) => {
+    return companyData.filter((c) => {
       const cities = c.cities.length ? c.cities : [c.location];
 
       const matchesQuery =
@@ -179,8 +181,8 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
   }, [supplierData, search, materialCategories]);
 
   const selectedCompanies = useMemo(
-    () => companyDirectory.filter((c) => compareIds.includes(c.id)),
-    [compareIds],
+    () => companyData.filter((c) => compareIds.includes(c.id)),
+    [compareIds, companyData],
   );
 
   const toggleCompare = (id: string) => {
@@ -1252,7 +1254,13 @@ function AdminCompaniesView() {
   // Suppliers state
   const [supplierData, setSupplierData] = useState<SupplierDirectoryItem[]>([]);
   const [suppliersLoading, setSuppliersLoading] = useState(true);
+  const [adminCompanyData, setAdminCompanyData] = useState<CompanyDirectoryItem[]>([]);
+  const [companiesLoading, setCompaniesLoading] = useState(true);
   useEffect(() => {
+    fetchCompanyDirectory()
+      .then(setAdminCompanyData)
+      .catch(() => {})
+      .finally(() => setCompaniesLoading(false));
     fetchSupplierDirectory()
       .then(setSupplierData)
       .catch(() => {})
@@ -1265,8 +1273,8 @@ function AdminCompaniesView() {
   // ── Companies ──
   const filteredCompanies = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return companyDirectory;
-    return companyDirectory.filter((c) => {
+    if (!q) return adminCompanyData;
+    return adminCompanyData.filter((c) => {
       const cities = c.cities.length ? c.cities : [c.location];
       return (
         c.name.toLowerCase().includes(q) ||
@@ -1274,7 +1282,7 @@ function AdminCompaniesView() {
         c.specialization.some((s) => s.toLowerCase().includes(q))
       );
     });
-  }, [search]);
+  }, [search, adminCompanyData]);
 
   const totalCompanyPages = Math.max(1, Math.ceil(filteredCompanies.length / ADMIN_PAGE_SIZE));
   const pagedCompanies = filteredCompanies.slice((page - 1) * ADMIN_PAGE_SIZE, page * ADMIN_PAGE_SIZE);

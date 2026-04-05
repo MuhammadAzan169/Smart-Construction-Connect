@@ -92,6 +92,31 @@ export interface Conversation {
   unread: Record<string, number>;
 }
 
+export interface QuoteRequest {
+  id: string;
+  client_email: string;
+  client_name: string;
+  client_id: string;
+  company_slug: string;
+  project_title: string;
+  description: string;
+  location: string;
+  budget: string;
+  plot_size: string;
+  status: "pending" | "accepted" | "rejected" | "completed";
+  created_at: string;
+  updated_at: string;
+  company_notes: string;
+}
+
+export interface RequestStats {
+  total: number;
+  pending: number;
+  accepted: number;
+  rejected: number;
+  completed: number;
+}
+
 // ── API client ───────────────────────────────────────────────────────────────
 
 export const api = {
@@ -180,6 +205,34 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ messages, user_email: userEmail }),
       }),
+  },
+
+  requests: {
+    list: () => request<QuoteRequest[]>("/requests/"),
+    get: (id: string) => request<QuoteRequest>(`/requests/${encodeURIComponent(id)}`),
+    create: (data: {
+      company_slug: string;
+      project_title: string;
+      description?: string;
+      location?: string;
+      budget?: string;
+      plot_size?: string;
+    }) =>
+      request<QuoteRequest>("/requests/", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    updateStatus: (id: string, status: string) =>
+      request<{ status: string; request: QuoteRequest }>(`/requests/${encodeURIComponent(id)}/status`, {
+        method: "PUT",
+        body: JSON.stringify({ status }),
+      }),
+    respond: (id: string, notes: string) =>
+      request<{ status: string }>(`/requests/${encodeURIComponent(id)}/respond`, {
+        method: "PUT",
+        body: JSON.stringify({ notes }),
+      }),
+    stats: () => request<RequestStats>("/requests/stats/summary"),
   },
 
   upload: {
