@@ -65,6 +65,7 @@ const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path
     { label: "Materials & Suppliers", icon: Package, path: "/companies?tab=materials" },
     { label: "Approvals", icon: ShieldCheck, path: "/approvals" },
     { label: "Activity", icon: Activity, path: "/activity" },
+    { label: "Settings", icon: Settings, path: "/settings" },
   ],
 };
 

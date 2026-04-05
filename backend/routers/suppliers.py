@@ -39,15 +39,6 @@ def list_suppliers():
     return _load_suppliers()
 
 
-@router.get("/{supplier_id}")
-def get_supplier(supplier_id: str):
-    """Get a single supplier by ID."""
-    s = _find_supplier(_load_suppliers(), supplier_id=supplier_id)
-    if not s:
-        raise HTTPException(status_code=404, detail="Supplier not found")
-    return s
-
-
 @router.get("/profile/{slug}")
 def get_supplier_profile(slug: str):
     """Get a supplier's profile by slug."""
@@ -101,6 +92,16 @@ def update_supplier_profile(
 
 class MaterialsUpdate(BaseModel):
     materials: list[dict[str, Any]]
+
+
+@router.get("/{supplier_id}")
+def get_supplier(supplier_id: str):
+    """Get a single supplier by ID or slug."""
+    suppliers = _load_suppliers()
+    s = _find_supplier(suppliers, supplier_id=supplier_id) or _find_supplier(suppliers, slug=supplier_id)
+    if not s:
+        raise HTTPException(status_code=404, detail="Supplier not found")
+    return s
 
 
 @router.put("/profile/{slug}/materials")

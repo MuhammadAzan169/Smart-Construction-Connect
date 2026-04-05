@@ -474,6 +474,38 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
   const dpInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
+  // Password change state
+  const [currentPwd, setCurrentPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+  const [showCurrentPwd, setShowCurrentPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  const [savingPwd, setSavingPwd] = useState(false);
+
+  const handleChangePassword = async () => {
+    if (!currentPwd || !newPwd) {
+      toast({ title: "Missing fields", description: "Please fill in all password fields.", variant: "destructive" });
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      toast({ title: "Passwords don't match", description: "New password and confirmation must match.", variant: "destructive" });
+      return;
+    }
+    if (newPwd.length < 8) {
+      toast({ title: "Password too short", description: "New password must be at least 8 characters.", variant: "destructive" });
+      return;
+    }
+    setSavingPwd(true);
+    try {
+      await api.auth.changePassword(currentPwd, newPwd);
+      toast({ title: "Password changed", description: "Your password has been updated successfully." });
+      setCurrentPwd(""); setNewPwd(""); setConfirmPwd("");
+    } catch (err) {
+      toast({ title: "Failed", description: err instanceof Error ? err.message : "Unknown error", variant: "destructive" });
+    }
+    setSavingPwd(false);
+  };
+
   useEffect(() => {
     if (!companySlug) { setLoading(false); return; }
     let cancelled = false;
@@ -767,6 +799,10 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
           <TabsTrigger value="contact">Contact & Social</TabsTrigger>
           <TabsTrigger value="capability">Capability & Services</TabsTrigger>
           <TabsTrigger value="experience">Experience & QC</TabsTrigger>
+          <TabsTrigger value="account" className="gap-1.5">
+            <Lock className="h-3.5 w-3.5" />
+            Account &amp; Security
+          </TabsTrigger>
         </TabsList>
 
         {/* ── Tab 1: Company Profile ─────────────────────────────────────────── */}
@@ -1696,6 +1732,61 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
             </div>
           </GlassCard>
         </TabsContent>
+
+        {/* ── Account & Security ── */}
+        <TabsContent value="account" className="mt-6 space-y-4">
+          <GlassCard interactive={false} className="p-5 space-y-2">
+            <p className="text-sm font-semibold text-foreground">Account Info</p>
+            <div className="grid gap-3 rounded-xl border border-border/40 bg-background/20 p-4 text-sm sm:grid-cols-2">
+              <div>
+                <p className="text-xs text-muted-foreground">Email</p>
+                <p className="font-medium text-foreground">{email}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Role</p>
+                <p className="font-medium capitalize text-foreground">Construction Company</p>
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5 space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Change Password</p>
+              <p className="mt-1 text-xs text-muted-foreground">Use a strong password of at least 8 characters.</p>
+            </div>
+            <div className="grid gap-4">
+              <div className="space-y-1.5">
+                <Label>Current Password</Label>
+                <div className="relative">
+                  <Input type={showCurrentPwd ? "text" : "password"} value={currentPwd} onChange={(e) => setCurrentPwd(e.target.value)} placeholder="Enter current password" className="bg-background/40 pr-10" />
+                  <button type="button" onClick={() => setShowCurrentPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showCurrentPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>New Password</Label>
+                <div className="relative">
+                  <Input type={showNewPwd ? "text" : "password"} value={newPwd} onChange={(e) => setNewPwd(e.target.value)} placeholder="At least 8 characters" className="bg-background/40 pr-10" />
+                  <button type="button" onClick={() => setShowNewPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showNewPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Confirm New Password</Label>
+                <Input type="password" value={confirmPwd} onChange={(e) => setConfirmPwd(e.target.value)} placeholder="Repeat new password" className="bg-background/40" />
+                {confirmPwd && newPwd !== confirmPwd && <p className="text-xs text-destructive">Passwords do not match.</p>}
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={handleChangePassword} disabled={savingPwd || !currentPwd || !newPwd || newPwd !== confirmPwd} className="gap-2">
+                {savingPwd ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+                Change Password
+              </Button>
+            </div>
+          </GlassCard>
+        </TabsContent>
       </Tabs>
     </div>
   );
@@ -1845,6 +1936,38 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
   const profileRef = useRef<Record<string, unknown> | null>(null);
   const sDpInputRef = useRef<HTMLInputElement>(null);
   const sLogoInputRef = useRef<HTMLInputElement>(null);
+
+  // Password change state
+  const [currentPwd, setCurrentPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+  const [showCurrentPwd, setShowCurrentPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  const [savingPwd, setSavingPwd] = useState(false);
+
+  const handleChangePassword = async () => {
+    if (!currentPwd || !newPwd) {
+      toast({ title: "Missing fields", description: "Please fill in all password fields.", variant: "destructive" });
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      toast({ title: "Passwords don't match", description: "New password and confirmation must match.", variant: "destructive" });
+      return;
+    }
+    if (newPwd.length < 8) {
+      toast({ title: "Password too short", description: "New password must be at least 8 characters.", variant: "destructive" });
+      return;
+    }
+    setSavingPwd(true);
+    try {
+      await api.auth.changePassword(currentPwd, newPwd);
+      toast({ title: "Password changed", description: "Your password has been updated successfully." });
+      setCurrentPwd(""); setNewPwd(""); setConfirmPwd("");
+    } catch (err) {
+      toast({ title: "Failed", description: err instanceof Error ? err.message : "Unknown error", variant: "destructive" });
+    }
+    setSavingPwd(false);
+  };
 
   const [customInputs, setCustomInputs] = useState<Record<string, string>>({});
   const setCustomInput = (key: string, value: string) => setCustomInputs((prev) => ({ ...prev, [key]: value }));
@@ -2025,6 +2148,10 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
           <TabsTrigger value="business">Business & Legal</TabsTrigger>
           <TabsTrigger value="verification">Verification</TabsTrigger>
           <TabsTrigger value="operations">Operations & Delivery</TabsTrigger>
+          <TabsTrigger value="account" className="gap-1.5">
+            <Lock className="h-3.5 w-3.5" />
+            Account &amp; Security
+          </TabsTrigger>
         </TabsList>
 
         {/* ── Tab 1: Supplier Profile ──────────────────────────────────────── */}
@@ -2543,6 +2670,61 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
                   className="bg-background/40" placeholder="e.g., 50000"
                 />
               </div>
+            </div>
+          </GlassCard>
+        </TabsContent>
+
+        {/* ── Account & Security ── */}
+        <TabsContent value="account" className="mt-6 space-y-4">
+          <GlassCard interactive={false} className="p-5 space-y-2">
+            <p className="text-sm font-semibold text-foreground">Account Info</p>
+            <div className="grid gap-3 rounded-xl border border-border/40 bg-background/20 p-4 text-sm sm:grid-cols-2">
+              <div>
+                <p className="text-xs text-muted-foreground">Email</p>
+                <p className="font-medium text-foreground">{email}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Role</p>
+                <p className="font-medium capitalize text-foreground">Material Supplier</p>
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5 space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Change Password</p>
+              <p className="mt-1 text-xs text-muted-foreground">Use a strong password of at least 8 characters.</p>
+            </div>
+            <div className="grid gap-4">
+              <div className="space-y-1.5">
+                <Label>Current Password</Label>
+                <div className="relative">
+                  <Input type={showCurrentPwd ? "text" : "password"} value={currentPwd} onChange={(e) => setCurrentPwd(e.target.value)} placeholder="Enter current password" className="bg-background/40 pr-10" />
+                  <button type="button" onClick={() => setShowCurrentPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showCurrentPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>New Password</Label>
+                <div className="relative">
+                  <Input type={showNewPwd ? "text" : "password"} value={newPwd} onChange={(e) => setNewPwd(e.target.value)} placeholder="At least 8 characters" className="bg-background/40 pr-10" />
+                  <button type="button" onClick={() => setShowNewPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showNewPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Confirm New Password</Label>
+                <Input type="password" value={confirmPwd} onChange={(e) => setConfirmPwd(e.target.value)} placeholder="Repeat new password" className="bg-background/40" />
+                {confirmPwd && newPwd !== confirmPwd && <p className="text-xs text-destructive">Passwords do not match.</p>}
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={handleChangePassword} disabled={savingPwd || !currentPwd || !newPwd || newPwd !== confirmPwd} className="gap-2">
+                {savingPwd ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+                Change Password
+              </Button>
             </div>
           </GlassCard>
         </TabsContent>
@@ -3075,6 +3257,164 @@ function ClientSettingsEditor() {
   );
 }
 
+// ─── Admin Settings ───────────────────────────────────────────────────────────
+
+function AdminSettingsEditor() {
+  const { user } = useAuthStore();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const [displayName, setDisplayName] = useState(user?.display_name ?? "");
+  const [phone, setPhone] = useState(user?.phone ?? "");
+  const [currentPwd, setCurrentPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+  const [showCurrentPwd, setShowCurrentPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [savingPwd, setSavingPwd] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await api.auth.updateProfile({ display_name: displayName.trim() || undefined, phone: phone.trim() || undefined });
+      toast({ title: "Profile updated", description: "Your admin profile has been saved." });
+    } catch (err) {
+      toast({ title: "Save failed", description: err instanceof Error ? err.message : "Unknown error", variant: "destructive" });
+    }
+    setSaving(false);
+  };
+
+  const handleChangePassword = async () => {
+    if (!currentPwd || !newPwd) {
+      toast({ title: "Missing fields", description: "Please fill in all password fields.", variant: "destructive" });
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      toast({ title: "Passwords don't match", description: "New password and confirmation must match.", variant: "destructive" });
+      return;
+    }
+    if (newPwd.length < 8) {
+      toast({ title: "Password too short", description: "New password must be at least 8 characters.", variant: "destructive" });
+      return;
+    }
+    setSavingPwd(true);
+    try {
+      await api.auth.changePassword(currentPwd, newPwd);
+      toast({ title: "Password changed", description: "Your password has been updated successfully." });
+      setCurrentPwd(""); setNewPwd(""); setConfirmPwd("");
+    } catch (err) {
+      toast({ title: "Failed", description: err instanceof Error ? err.message : "Unknown error", variant: "destructive" });
+    }
+    setSavingPwd(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <Button type="button" variant="ghost" size="sm" className="mb-2 gap-1.5 text-muted-foreground hover:text-foreground" onClick={() => navigate("/dashboard")}>
+          <ArrowLeft className="h-4 w-4" />
+          Dashboard
+        </Button>
+        <h1 className="text-2xl font-bold text-foreground">Admin Settings</h1>
+        <p className="text-sm text-muted-foreground">Manage your admin account profile and security.</p>
+      </div>
+
+      <Tabs defaultValue="profile" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="profile" className="gap-1.5">
+            <User className="h-3.5 w-3.5" />
+            Profile
+          </TabsTrigger>
+          <TabsTrigger value="account" className="gap-1.5">
+            <Lock className="h-3.5 w-3.5" />
+            Account &amp; Security
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile" className="space-y-4">
+          <GlassCard interactive={false} className="p-5 space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Personal Information</p>
+              <p className="mt-1 text-xs text-muted-foreground">Your admin display name and contact number.</p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>Display Name</Label>
+                <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="e.g. Admin User" className="bg-background/40" />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Phone Number</Label>
+                <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="e.g. 0300-1234567" className="bg-background/40" />
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={handleSave} disabled={saving} className="gap-2">
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                Save Profile
+              </Button>
+            </div>
+          </GlassCard>
+        </TabsContent>
+
+        <TabsContent value="account" className="space-y-4">
+          <GlassCard interactive={false} className="p-5 space-y-2">
+            <p className="text-sm font-semibold text-foreground">Account Info</p>
+            <div className="grid gap-3 rounded-xl border border-border/40 bg-background/20 p-4 text-sm sm:grid-cols-2">
+              <div>
+                <p className="text-xs text-muted-foreground">Email</p>
+                <p className="font-medium text-foreground">{user?.email}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Role</p>
+                <p className="font-medium capitalize text-foreground">Administrator</p>
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard interactive={false} className="p-5 space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Change Password</p>
+              <p className="mt-1 text-xs text-muted-foreground">Use a strong password of at least 8 characters.</p>
+            </div>
+            <div className="grid gap-4">
+              <div className="space-y-1.5">
+                <Label>Current Password</Label>
+                <div className="relative">
+                  <Input type={showCurrentPwd ? "text" : "password"} value={currentPwd} onChange={(e) => setCurrentPwd(e.target.value)} placeholder="Enter current password" className="bg-background/40 pr-10" />
+                  <button type="button" onClick={() => setShowCurrentPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showCurrentPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>New Password</Label>
+                <div className="relative">
+                  <Input type={showNewPwd ? "text" : "password"} value={newPwd} onChange={(e) => setNewPwd(e.target.value)} placeholder="At least 8 characters" className="bg-background/40 pr-10" />
+                  <button type="button" onClick={() => setShowNewPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showNewPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Confirm New Password</Label>
+                <Input type="password" value={confirmPwd} onChange={(e) => setConfirmPwd(e.target.value)} placeholder="Repeat new password" className="bg-background/40" />
+                {confirmPwd && newPwd !== confirmPwd && <p className="text-xs text-destructive">Passwords do not match.</p>}
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={handleChangePassword} disabled={savingPwd || !currentPwd || !newPwd || newPwd !== confirmPwd} className="gap-2">
+                {savingPwd ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+                Change Password
+              </Button>
+            </div>
+          </GlassCard>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
 // ─── Page entry point ─────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
@@ -3094,6 +3434,9 @@ export default function SettingsPage() {
   }
   if (user.role === "company") {
     return <SettingsEditor email={user.email} companySlug={user.companyFile} />;
+  }
+  if (user.role === "admin") {
+    return <AdminSettingsEditor />;
   }
   return (
     <GlassCard interactive={false} className="p-6">
