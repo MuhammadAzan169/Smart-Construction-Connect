@@ -2,6 +2,20 @@
 const API_BASE = "/api";
 const REQUEST_TIMEOUT_MS = 15_000;
 
+function _authHeaders(): Record<string, string> {
+  try {
+    const stored = localStorage.getItem("scc_user");
+    if (stored) {
+      const user = JSON.parse(stored) as { email?: string; role?: string };
+      return {
+        "X-User-Email": user.email ?? "",
+        "X-User-Role": user.role ?? "",
+      };
+    }
+  } catch { /* ignore */ }
+  return {};
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -9,7 +23,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   try {
     const res = await fetch(`${API_BASE}${path}`, {
       signal: controller.signal,
-      headers: { "Content-Type": "application/json", ...options?.headers },
+      headers: { "Content-Type": "application/json", ..._authHeaders(), ...options?.headers },
       ...options,
     });
 

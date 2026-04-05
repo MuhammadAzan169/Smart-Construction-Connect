@@ -1,10 +1,11 @@
 """Company CRUD routes — backed by Database/construction/companies.json."""
 
 from __future__ import annotations
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Any
 
+from backend.utils.auth_deps import get_current_user, require_role
 from backend.utils.data_handler import (
     read_json,
     write_json,
@@ -60,14 +61,49 @@ class CompanyProfileUpdate(BaseModel):
     data: dict[str, Any]
 
 
+# Fields that users are allowed to set via profile update.
+# Anything not in this set is silently dropped.
+_ALLOWED_PROFILE_FIELDS = {
+    "company_name", "description", "logo_url", "city",
+    "contact", "legal_info",
+    "construction_capability", "services",
+    "payment_terms", "timeline_estimates",
+    "experience", "quality_control",
+    "after_handover_support", "legal_and_contract",
+    "ideal_customer_profile",
+}
+
+# Fields that only admins can modify — never writable by regular users.
+_PROTECTED_FIELDS = {
+    "rating", "review_count", "ai_scores", "reliability_score",
+    "verification", "verification_status", "company_id", "slug",
+}
+
+
 @router.put("/profile/{slug}")
-def update_company_profile(slug: str, body: CompanyProfileUpdate):
+def update_company_profile(
+    slug: str,
+    body: CompanyProfileUpdate,
+    user: dict = Depends(require_role("company", "admin")),
+):
     """Update a company's profile data."""
     companies = _load_companies()
     company = _find_company(companies, slug=slug)
     if not company:
         raise HTTPException(status_code=404, detail="Company profile not found")
-    company.update(body.data)
+
+    # Non-admin users can only edit their own company
+    if user.get("role") != "admin" and user.get("company_slug") != slug:
+        raise HTTPException(status_code=403, detail="You can only edit your own company profile")
+
+    # Filter to allowed fields only
+    is_admin = user.get("role") == "admin"
+    for key, value in body.data.items():
+        if key in _PROTECTED_FIELDS and not is_admin:
+            continue
+        if key in _ALLOWED_PROFILE_FIELDS or is_admin:
+            company[key] = value
+
     _save_companies(companies)
     add_activity_log("company_profile_updated", slug, f"Company {slug} updated their profile")
     return {"status": "ok"}
@@ -82,12 +118,19 @@ class PackageUpdate(BaseModel):
 
 
 @router.put("/profile/{slug}/packages")
-def update_packages(slug: str, body: PackageUpdate):
+def update_packages(
+    slug: str,
+    body: PackageUpdate,
+    user: dict = Depends(require_role("company", "admin")),
+):
     """Update company packages & pricing."""
     companies = _load_companies()
     company = _find_company(companies, slug=slug)
     if not company:
         raise HTTPException(status_code=404, detail="Company profile not found")
+
+    if user.get("role") != "admin" and user.get("company_slug") != slug:
+        raise HTTPException(status_code=403, detail="You can only edit your own company profile")
 
     company["operational_areas"] = body.operational_areas
     company["flattened_operational_areas"] = body.flattened_operational_areas

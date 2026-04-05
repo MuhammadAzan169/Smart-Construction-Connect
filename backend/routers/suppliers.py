@@ -1,10 +1,11 @@
 """Supplier CRUD routes — backed by Database/suppliers/catalog.json."""
 
 from __future__ import annotations
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Any
 
+from backend.utils.auth_deps import get_current_user, require_role
 from backend.utils.data_handler import (
     read_json,
     write_json,
@@ -60,14 +61,39 @@ class SupplierProfileUpdate(BaseModel):
     data: dict[str, Any]
 
 
+_ALLOWED_PROFILE_FIELDS = {
+    "supplier_name", "description", "logo_url",
+    "city", "area", "contact", "cities_served",
+}
+
+_PROTECTED_FIELDS = {
+    "rating", "review_count", "reliability_score",
+    "verification", "verification_status", "supplier_id", "slug",
+}
+
+
 @router.put("/profile/{slug}")
-def update_supplier_profile(slug: str, body: SupplierProfileUpdate):
+def update_supplier_profile(
+    slug: str,
+    body: SupplierProfileUpdate,
+    user: dict = Depends(require_role("supplier", "admin")),
+):
     """Update supplier profile."""
     suppliers = _load_suppliers()
     supplier = _find_supplier(suppliers, slug=slug)
     if not supplier:
         raise HTTPException(status_code=404, detail="Supplier profile not found")
-    supplier.update(body.data)
+
+    if user.get("role") != "admin" and user.get("supplier_slug") != slug:
+        raise HTTPException(status_code=403, detail="You can only edit your own supplier profile")
+
+    is_admin = user.get("role") == "admin"
+    for key, value in body.data.items():
+        if key in _PROTECTED_FIELDS and not is_admin:
+            continue
+        if key in _ALLOWED_PROFILE_FIELDS or is_admin:
+            supplier[key] = value
+
     _save_suppliers(suppliers)
     add_activity_log("supplier_profile_updated", slug, f"Supplier {slug} updated their profile")
     return {"status": "ok"}
@@ -78,12 +104,19 @@ class MaterialsUpdate(BaseModel):
 
 
 @router.put("/profile/{slug}/materials")
-def update_materials(slug: str, body: MaterialsUpdate):
+def update_materials(
+    slug: str,
+    body: MaterialsUpdate,
+    user: dict = Depends(require_role("supplier", "admin")),
+):
     """Update supplier materials/products."""
     suppliers = _load_suppliers()
     supplier = _find_supplier(suppliers, slug=slug)
     if not supplier:
         raise HTTPException(status_code=404, detail="Supplier profile not found")
+
+    if user.get("role") != "admin" and user.get("supplier_slug") != slug:
+        raise HTTPException(status_code=403, detail="You can only edit your own supplier profile")
     supplier["materials"] = body.materials
     _save_suppliers(suppliers)
     add_activity_log("materials_updated", slug, f"Supplier {slug} updated materials")

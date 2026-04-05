@@ -86,14 +86,6 @@ def admin_activity_log_path() -> Path:
     return ADMIN_DIR / "activity_log.json"
 
 
-def company_file_path(slug: str) -> Path:
-    """Individual company profile file (optional, for per-company edits)."""
-    return CONSTRUCTION_DIR / f"{slug}.json"
-
-
-def supplier_file_path(slug: str) -> Path:
-    """Individual supplier profile file (optional, for per-supplier edits)."""
-    return SUPPLIERS_DIR / f"{slug}.json"
 
 
 def slugify(name: str) -> str:
@@ -183,21 +175,3 @@ def add_activity_log(action: str, target: str, details: str):
     })
     save_activity_log(log[:200])  # keep last 200
 
-
-# ── Legacy compatibility aliases ──
-# These keep old import sites working during transition.
-
-def get_admin_data() -> dict:
-    """Legacy: returns a dict shaped like the old admin.json."""
-    return {
-        "platform_settings": get_admin_settings(),
-        "activity_log": get_activity_log(),
-    }
-
-
-def save_admin_data(data: dict):
-    """Legacy: accepts the old admin.json shape and splits it."""
-    if "platform_settings" in data:
-        save_admin_settings(data["platform_settings"])
-    if "activity_log" in data:
-        save_activity_log(data["activity_log"])

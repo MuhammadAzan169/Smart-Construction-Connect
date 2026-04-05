@@ -1,10 +1,14 @@
-"""FastAPI entry point for Smart Construction Connect backend."""
+"""FastAPI entry point for Smart Construction Connect backend.
+
+NOTE: The primary entry point is app.py at the repo root, which includes
+all routers (including upload) and serves the built frontend.  This file
+exists as a convenience for running the API standalone during development:
+
+    uvicorn backend.main:app --reload
+"""
 
 from __future__ import annotations
 
-# If this file is executed directly (e.g. `python backend/main.py`), Python sets
-# sys.path[0] to the `backend/` folder. That breaks absolute imports like
-# `from backend.routers import ...`. We fix that by adding the repo root.
 import sys
 from pathlib import Path
 
@@ -16,7 +20,7 @@ if __package__ in (None, ""):
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import admin, ai_chat, auth, companies, suppliers
+from backend.routers import admin, ai_chat, auth, companies, suppliers, upload
 
 app = FastAPI(
     title="Smart Construction Connect API",
@@ -24,13 +28,12 @@ app = FastAPI(
     description="Backend API for the Smart Construction Connect platform",
 )
 
-# CORS — allow the Vite dev server
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:8080", "http://localhost:5173", "http://127.0.0.1:8080", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "Accept"],
+    allow_headers=["Content-Type", "Authorization", "Accept", "X-User-Email", "X-User-Role"],
 )
 
 app.include_router(auth.router)
@@ -38,6 +41,7 @@ app.include_router(companies.router)
 app.include_router(suppliers.router)
 app.include_router(admin.router)
 app.include_router(ai_chat.router)
+app.include_router(upload.router)
 
 
 @app.get("/api/health")
