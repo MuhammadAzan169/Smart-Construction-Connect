@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { PdfViewerDialog } from "@/components/shared/PdfViewerDialog";
 import { SectionReveal } from "@/components/shared/AnimationPrimitives";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Badge } from "@/components/ui/badge";
@@ -51,6 +52,7 @@ export default function SupplierProfilePage() {
   const user = useAuthStore((s) => s.user);
   const [supplier, setSupplier] = useState<SupplierData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [pdfViewer, setPdfViewer] = useState<{ url: string; title: string } | null>(null);
 
   useEffect(() => {
     if (!params.id) return;
@@ -98,6 +100,7 @@ export default function SupplierProfilePage() {
   const lowStockCount = supplier.materials.filter((m) => m.stock > 0 && m.stock <= 50).length;
 
   return (
+    <>
     <motion.div
       className="space-y-6"
       initial={{ opacity: 0 }}
@@ -325,9 +328,9 @@ export default function SupplierProfilePage() {
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <a href={doc.url} target="_blank" rel="noopener noreferrer" className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-primary hover:bg-primary/10" title="View">
+                        <button type="button" onClick={() => setPdfViewer({ url: doc.url, title: docLabels[doc.docType] ?? doc.docType })} className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-primary hover:bg-primary/10" title="View">
                           <Eye className="h-3.5 w-3.5" />
-                        </a>
+                        </button>
                         <a href={doc.url} download={`${doc.docType}.pdf`} className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-primary hover:bg-primary/10" title="Download">
                           <Download className="h-3.5 w-3.5" />
                         </a>
@@ -377,5 +380,15 @@ export default function SupplierProfilePage() {
       </div>
       </SectionReveal>
     </motion.div>
+
+    {pdfViewer && (
+      <PdfViewerDialog
+        open
+        onClose={() => setPdfViewer(null)}
+        url={pdfViewer.url}
+        title={pdfViewer.title}
+      />
+    )}
+    </>
   );
 }

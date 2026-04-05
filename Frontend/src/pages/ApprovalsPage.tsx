@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { PdfViewerDialog } from "@/components/shared/PdfViewerDialog";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -121,6 +122,7 @@ export default function ApprovalsPage() {
   }, [companies, suppliers]);
 
   const [docFilter, setDocFilter] = useState<"pending" | "all">("pending");
+  const [pdfViewer, setPdfViewer] = useState<{ url: string; title: string } | null>(null);
 
   const pendingVerifications = entitiesWithDocs.filter((e) => e.entity.verification_status !== "verified");
   const displayedVerifications = docFilter === "pending" ? pendingVerifications : entitiesWithDocs;
@@ -154,6 +156,7 @@ export default function ApprovalsPage() {
   };
 
   return (
+    <>
     <motion.div
       className="space-y-6"
       initial={{ opacity: 0 }}
@@ -361,14 +364,13 @@ export default function ApprovalsPage() {
                                   {DOC_LABELS[doc.docType] ?? doc.docType}
                                 </p>
                                 <div className="mt-1 flex items-center gap-2">
-                                  <a
-                                    href={doc.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                  <button
+                                    type="button"
+                                    onClick={() => setPdfViewer({ url: doc.url, title: DOC_LABELS[doc.docType] ?? doc.docType })}
                                     className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
                                   >
                                     <Eye className="h-3 w-3" /> View
-                                  </a>
+                                  </button>
                                   <button
                                     type="button"
                                     onClick={() => handleDownload(doc.url, doc.docType)}
@@ -416,5 +418,15 @@ export default function ApprovalsPage() {
         </TabsContent>
       </Tabs>
     </motion.div>
+
+    {pdfViewer && (
+      <PdfViewerDialog
+        open
+        onClose={() => setPdfViewer(null)}
+        url={pdfViewer.url}
+        title={pdfViewer.title}
+      />
+    )}
+    </>
   );
 }
