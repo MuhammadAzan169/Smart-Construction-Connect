@@ -1,5 +1,23 @@
 [
   {
+    "timestamp": "2026-04-05T19:53:51.208390+00:00",
+    "action": "verification_updated",
+    "target": "iqbal-developers",
+    "details": "Admin set registration_certificate to approved for company iqbal-developers"
+  },
+  {
+    "timestamp": "2026-04-05T19:53:50.382711+00:00",
+    "action": "verification_updated",
+    "target": "iqbal-developers",
+    "details": "Admin set ntn_certificate to approved for company iqbal-developers"
+  },
+  {
+    "timestamp": "2026-04-05T19:53:49.639903+00:00",
+    "action": "verification_updated",
+    "target": "iqbal-developers",
+    "details": "Admin set secp_certificate to approved for company iqbal-developers"
+  },
+  {
     "timestamp": "2026-04-03T23:08:06.300182+00:00",
     "action": "materials_updated",
     "target": "islamabad-hardware-tools",
