@@ -73,6 +73,25 @@ export interface ActivityEntry {
   details: string;
 }
 
+export interface Message {
+  id: string;
+  sender: string;
+  sender_name: string;
+  content: string;
+  timestamp: string;
+  read: boolean;
+}
+
+export interface Conversation {
+  id: string;
+  participants: string[];
+  participant_names: string[];
+  created_at: string;
+  updated_at: string;
+  last_message: { content: string; sender: string; timestamp: string } | null;
+  unread: Record<string, number>;
+}
+
 // ── API client ───────────────────────────────────────────────────────────────
 
 export const api = {
@@ -134,6 +153,25 @@ export const api = {
     getStats: () => request<Record<string, unknown>>("/admin/stats"),
     getCompanies: () => request<Record<string, unknown>[]>("/admin/companies"),
     getSuppliers: () => request<Record<string, unknown>[]>("/admin/suppliers"),
+  },
+
+  messages: {
+    getConversations: () =>
+      request<Conversation[]>("/messages/conversations"),
+    startConversation: (recipientEmail: string, recipientName: string, message: string) =>
+      request<{ conversation_id: string; message: Message }>("/messages/conversations", {
+        method: "POST",
+        body: JSON.stringify({ recipient_email: recipientEmail, recipient_name: recipientName, message }),
+      }),
+    getMessages: (conversationId: string) =>
+      request<{ conversation: Conversation; messages: Message[] }>(`/messages/conversations/${encodeURIComponent(conversationId)}`),
+    sendMessage: (conversationId: string, content: string) =>
+      request<Message>(`/messages/conversations/${encodeURIComponent(conversationId)}`, {
+        method: "POST",
+        body: JSON.stringify({ content }),
+      }),
+    getUnreadCount: () =>
+      request<{ unread: number }>("/messages/unread"),
   },
 
   ai: {

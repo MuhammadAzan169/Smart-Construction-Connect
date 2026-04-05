@@ -7,14 +7,24 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build output
 dist
 dist-ssr
+Frontend/dist
+
+# Environment / secrets
 *.local
+.env
+.env.*
+!.env.example
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -22,3 +32,33 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+Thumbs.db
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.egg-info
+.eggs
+*.egg
+.venv
+venv
+env
+.mypy_cache
+.pytest_cache
+.ruff_cache
+
+# Uploaded files (user data)
+company_data/
+
+# Database messages (runtime data)
+Database/messages/
+
+# OS files
+.DS_Store
+desktop.ini
+
+# Test coverage
+coverage
+*.lcov
+.nyc_output

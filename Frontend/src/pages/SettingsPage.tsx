@@ -38,7 +38,7 @@ import { cities as cityOptions, societiesByCity } from "@/data/locationOptions";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
-import { ArrowLeft, FileCheck, Loader2, Plus, Save, Shield, Upload, X } from "lucide-react";
+import { ArrowLeft, Eye, FileCheck, Loader2, Plus, Save, Shield, Upload, X } from "lucide-react";
 import { api } from "@/lib/api";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -745,10 +745,18 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
           <h1 className="text-2xl font-bold text-foreground">Settings</h1>
           <p className="text-sm text-muted-foreground">Manage your company profile, legal info, contact details, and more.</p>
         </div>
-        <Button type="button" onClick={save} disabled={saving}>
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-          {saving ? "Saving…" : "Save changes"}
-        </Button>
+        <div className="flex items-center gap-2">
+          {company && (
+            <Button type="button" variant="outline" onClick={() => navigate(`/companies/${company.company_id}`)}>
+              <Eye className="h-4 w-4" />
+              Preview Profile
+            </Button>
+          )}
+          <Button type="button" onClick={save} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {saving ? "Saving…" : "Save changes"}
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="profile">
@@ -1841,10 +1849,18 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
           <h1 className="text-2xl font-bold text-foreground">Supplier Settings</h1>
           <p className="text-sm text-muted-foreground">Manage your supplier profile, contact details, cities served, and more.</p>
         </div>
-        <Button type="button" onClick={save} disabled={saving}>
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-          {saving ? "Saving…" : "Save changes"}
-        </Button>
+        <div className="flex items-center gap-2">
+          {supplierSlug && (
+            <Button type="button" variant="outline" onClick={() => navigate(`/suppliers/${supplierSlug}`)}>
+              <Eye className="h-4 w-4" />
+              Preview Profile
+            </Button>
+          )}
+          <Button type="button" onClick={save} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {saving ? "Saving…" : "Save changes"}
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="profile">

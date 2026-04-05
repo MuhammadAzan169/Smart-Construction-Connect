@@ -22,6 +22,7 @@ import {
   Building2,
   FileText,
   HardHat,
+  MessageSquare,
   Package,
   Settings,
   ShieldCheck,
@@ -36,6 +37,7 @@ const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path
   client: [
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { label: "Browse Companies", icon: Building2, path: "/companies" },
+    { label: "Messages", icon: MessageSquare, path: "/messages" },
     { label: "Requests", icon: FileText, path: "/requests" },
     { label: "AI Assistant", icon: Bot, path: "/ai-chat" },
     { label: "Pricing", icon: CreditCard, path: "/pricing" },
@@ -43,6 +45,7 @@ const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path
   company: [
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { label: "Browse Suppliers", icon: Package, path: "/companies" },
+    { label: "Messages", icon: MessageSquare, path: "/messages" },
     { label: "Requests", icon: FileText, path: "/requests" },
     { label: "AI Assistant", icon: Bot, path: "/ai-chat" },
     { label: "Packages & Pricing", icon: CreditCard, path: "/pricing" },
@@ -51,6 +54,7 @@ const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path
   supplier: [
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { label: "Inventory", icon: Package, path: "/products" },
+    { label: "Messages", icon: MessageSquare, path: "/messages" },
     { label: "Requests", icon: FileText, path: "/requests" },
     { label: "Settings", icon: Settings, path: "/settings" },
   ],

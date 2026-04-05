@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
-import { ArrowLeft, MapPin, Package, Phone, Mail, Globe, Star } from "lucide-react";
+import { useAuthStore } from "@/stores/authStore";
+import { ArrowLeft, MapPin, MessageSquare, Package, Phone, Mail, Globe, Star } from "lucide-react";
 
 type SupplierMaterial = {
   name: string;
@@ -42,6 +43,7 @@ const formatPKR = (value: number) =>
 export default function SupplierProfilePage() {
   const navigate = useNavigate();
   const params = useParams();
+  const user = useAuthStore((s) => s.user);
   const [supplier, setSupplier] = useState<SupplierData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -123,6 +125,25 @@ export default function SupplierProfilePage() {
             </span>
           </div>
         </div>
+
+        {user && user.role !== "admin" && (
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                const contactEmail = supplier.contact?.email || "";
+                if (!contactEmail) return;
+                api.messages
+                  .startConversation(contactEmail, supplier.supplier_name, `Hi, I'm interested in your materials/products.`)
+                  .then(() => navigate(`/messages`));
+              }}
+            >
+              <MessageSquare className="mr-1.5 h-4 w-4" />
+              Send Message
+            </Button>
+          </div>
+        )}
       </motion.div>
 
       <SectionReveal>

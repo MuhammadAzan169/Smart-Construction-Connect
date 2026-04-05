@@ -19,6 +19,7 @@ import UsersPage from "./pages/UsersPage";
 import ApprovalsPage from "./pages/ApprovalsPage";
 import ActivityPage from "./pages/ActivityPage";
 import SettingsPage from "./pages/SettingsPage";
+import MessagesPage from "./pages/MessagesPage";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/approvals" element={<ApprovalsPage />} />
             <Route path="/activity" element={<ActivityPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/messages" element={<MessagesPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

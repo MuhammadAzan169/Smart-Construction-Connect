@@ -11,7 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { companyDirectory, getPackageKeys, humanizeToken } from "@/data/companyData";
-import { ArrowLeft, Building2, Briefcase, CheckCircle, CreditCard, FileText, HardHat, MapPin, Phone, Mail, Globe, Shield, Star, Users } from "lucide-react";
+import { useAuthStore } from "@/stores/authStore";
+import { api } from "@/lib/api";
+import { ArrowLeft, Building2, Briefcase, CheckCircle, CreditCard, FileText, HardHat, MapPin, MessageSquare, Phone, Mail, Globe, Shield, Star, Users } from "lucide-react";
 
 function previewList(items: string[], max: number) {
   const cleaned = items.filter((x) => x && x !== "—");
@@ -39,6 +41,7 @@ function packagePriceRange(company: (typeof companyDirectory)[number], pkgId: st
 export default function CompanyProfilePage() {
   const navigate = useNavigate();
   const params = useParams();
+  const user = useAuthStore((s) => s.user);
 
   const company = useMemo(() => {
     const id = params.id;
@@ -105,6 +108,22 @@ export default function CompanyProfilePage() {
         <div className="flex items-center gap-3">
           <MatchScoreRing score={company.matchScore} size={64} />
           <Button type="button">Request quote</Button>
+          {user && user.role !== "admin" && (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                const contactEmail = company.raw.contact?.email || "";
+                if (!contactEmail) return;
+                api.messages
+                  .startConversation(contactEmail, company.name, `Hi, I'm interested in your construction services.`)
+                  .then((res) => navigate(`/messages`));
+              }}
+            >
+              <MessageSquare className="mr-1.5 h-4 w-4" />
+              Message
+            </Button>
+          )}
         </div>
       </motion.div>
 

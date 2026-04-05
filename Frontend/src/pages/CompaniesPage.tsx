@@ -39,6 +39,7 @@ import { companyDirectory, getPackageKeys, humanizeToken, type CompanyDirectoryI
 import { mockCompanies } from "@/data/mockData";
 import { fetchSupplierDirectory, type SupplierDirectoryItem } from "@/data/supplierData";
 import { cn } from "@/lib/utils";
+import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 import {
   Building2,
@@ -46,6 +47,7 @@ import {
   ChevronDown,
   Filter,
   MapPin,
+  MessageSquare,
   Minus,
   Package,
   Plus,
@@ -578,9 +580,17 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                               type="button"
                               size="sm"
                               className="w-full"
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const contactEmail = company.raw.contact?.email || "";
+                                if (!contactEmail) return;
+                                api.messages
+                                  .startConversation(contactEmail, company.name, "Hi, I'm interested in your construction services.")
+                                  .then(() => navigate("/messages"));
+                              }}
                             >
-                              Request quote
+                              <MessageSquare className="mr-1 h-3.5 w-3.5" />
+                              Message
                             </Button>
                             <Button
                               type="button"
@@ -883,8 +893,16 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                         )}
 
                         <div className="grid grid-cols-2 gap-2 pt-0.5">
-                          <Button type="button" size="sm" className="w-full" onClick={(e) => e.stopPropagation()}>
-                            Request quote
+                          <Button type="button" size="sm" className="w-full" onClick={(e) => {
+                            e.stopPropagation();
+                            const contactEmail = s.contact?.email || "";
+                            if (!contactEmail) return;
+                            api.messages
+                              .startConversation(contactEmail, s.name, "Hi, I'm interested in your materials/products.")
+                              .then(() => navigate("/messages"));
+                          }}>
+                            <MessageSquare className="mr-1 h-3.5 w-3.5" />
+                            Message
                           </Button>
                           <Button
                             type="button"
