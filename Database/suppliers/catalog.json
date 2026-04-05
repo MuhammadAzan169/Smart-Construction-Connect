@@ -4,7 +4,7 @@
     "supplier_name": "Bestway Building Materials",
     "slug": "bestway-building-materials",
     "description": "Leading cement and construction materials distributor in Pakistan, authorized dealer for Bestway Cement with extensive coverage across Punjab and Sindh.",
-    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/bestway-building-materials/logo.jpg",
     "rating": 4.7,
     "review_count": 156,
     "city": "Lahore",
@@ -28,7 +28,11 @@
         "brand": "Bestway",
         "price": 1350,
         "unit": "bag",
-        "stock": 5000
+        "stock": 5000,
+        "image_urls": [
+          "/company_data/material_supplier/bestway-building-materials/gallery/material_0_0.jpg"
+        ],
+        "description": "Bestway - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "Bestway White Cement (40kg)",
@@ -36,7 +40,11 @@
         "brand": "Bestway",
         "price": 2100,
         "unit": "bag",
-        "stock": 1200
+        "stock": 1200,
+        "image_urls": [
+          "/company_data/material_supplier/bestway-building-materials/gallery/material_1_0.jpg"
+        ],
+        "description": "Bestway - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "Bestway Sulphate Resistant Cement (50kg)",
@@ -44,7 +52,11 @@
         "brand": "Bestway",
         "price": 1550,
         "unit": "bag",
-        "stock": 800
+        "stock": 800,
+        "image_urls": [
+          "/company_data/material_supplier/bestway-building-materials/gallery/material_2_0.jpg"
+        ],
+        "description": "Bestway - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "TOR Steel Bar 40G (per ton)",
@@ -52,7 +64,11 @@
         "brand": "Amreli Steel",
         "price": 265000,
         "unit": "ton",
-        "stock": 120
+        "stock": 120,
+        "image_urls": [
+          "/company_data/material_supplier/bestway-building-materials/gallery/material_3_0.jpg"
+        ],
+        "description": "Amreli Steel - Quality Steel materials for construction projects."
       },
       {
         "name": "TOR Steel Bar 60G (per ton)",
@@ -60,7 +76,11 @@
         "brand": "Amreli Steel",
         "price": 285000,
         "unit": "ton",
-        "stock": 85
+        "stock": 85,
+        "image_urls": [
+          "/company_data/material_supplier/bestway-building-materials/gallery/material_4_0.jpg"
+        ],
+        "description": "Amreli Steel - Quality Steel materials for construction projects."
       },
       {
         "name": "Crush Stone (per CFT)",
@@ -68,7 +88,11 @@
         "brand": "Local",
         "price": 95,
         "unit": "cft",
-        "stock": 10000
+        "stock": 10000,
+        "image_urls": [
+          "/company_data/material_supplier/bestway-building-materials/gallery/material_5_0.jpg"
+        ],
+        "description": "Local - Quality Aggregate materials for construction projects."
       },
       {
         "name": "Sand Ravi (per CFT)",
@@ -76,7 +100,11 @@
         "brand": "Local",
         "price": 65,
         "unit": "cft",
-        "stock": 15000
+        "stock": 15000,
+        "image_urls": [
+          "/company_data/material_supplier/bestway-building-materials/gallery/material_6_0.jpg"
+        ],
+        "description": "Local - Quality Aggregate materials for construction projects."
       }
     ],
     "status": "active",
@@ -95,7 +123,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/bestway-building-materials/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/bestway-building-materials/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/bestway-building-materials/documents/ntn_certificate.pdf",
@@ -107,7 +135,7 @@
     "supplier_name": "Pakistan Steel Hub",
     "slug": "pakistan-steel-hub",
     "description": "Premium steel supplier offering a wide range of steel products from top Pakistani manufacturers. Trusted by major construction companies across the country.",
-    "logo_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/pakistan-steel-hub/logo.jpg",
     "rating": 4.5,
     "review_count": 98,
     "city": "Karachi",
@@ -131,7 +159,11 @@
         "brand": "Amreli Steel",
         "price": 260000,
         "unit": "ton",
-        "stock": 200
+        "stock": 200,
+        "image_urls": [
+          "/company_data/material_supplier/pakistan-steel-hub/gallery/material_0_0.jpg"
+        ],
+        "description": "Amreli Steel - Quality Steel materials for construction projects."
       },
       {
         "name": "TOR Steel Bar 60G (per ton)",
@@ -139,7 +171,11 @@
         "brand": "Ittefaq Steel",
         "price": 280000,
         "unit": "ton",
-        "stock": 150
+        "stock": 150,
+        "image_urls": [
+          "/company_data/material_supplier/pakistan-steel-hub/gallery/material_1_0.jpg"
+        ],
+        "description": "Ittefaq Steel - Quality Steel materials for construction projects."
       },
       {
         "name": "MS Pipe 2 inch (per ft)",
@@ -147,7 +183,11 @@
         "brand": "International Steel",
         "price": 450,
         "unit": "ft",
-        "stock": 5000
+        "stock": 5000,
+        "image_urls": [
+          "/company_data/material_supplier/pakistan-steel-hub/gallery/material_2_0.jpg"
+        ],
+        "description": "International Steel - Quality Steel materials for construction projects."
       },
       {
         "name": "GI Pipe 1 inch (per ft)",
@@ -155,7 +195,11 @@
         "brand": "Crescent Steel",
         "price": 380,
         "unit": "ft",
-        "stock": 3500
+        "stock": 3500,
+        "image_urls": [
+          "/company_data/material_supplier/pakistan-steel-hub/gallery/material_3_0.jpg"
+        ],
+        "description": "Crescent Steel - Quality Steel materials for construction projects."
       },
       {
         "name": "Steel Sheet 18 Gauge (per kg)",
@@ -163,7 +207,11 @@
         "brand": "Mughal Steel",
         "price": 320,
         "unit": "kg",
-        "stock": 8000
+        "stock": 8000,
+        "image_urls": [
+          "/company_data/material_supplier/pakistan-steel-hub/gallery/material_4_0.jpg"
+        ],
+        "description": "Mughal Steel - Quality Steel materials for construction projects."
       },
       {
         "name": "Angle Iron 2x2 (per ft)",
@@ -171,7 +219,11 @@
         "brand": "Mughal Steel",
         "price": 280,
         "unit": "ft",
-        "stock": 4000
+        "stock": 4000,
+        "image_urls": [
+          "/company_data/material_supplier/pakistan-steel-hub/gallery/material_5_0.jpg"
+        ],
+        "description": "Mughal Steel - Quality Steel materials for construction projects."
       }
     ],
     "status": "active",
@@ -190,7 +242,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/pakistan-steel-hub/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/pakistan-steel-hub/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/pakistan-steel-hub/documents/ntn_certificate.pdf",
@@ -202,7 +254,7 @@
     "supplier_name": "National Paint & Coatings",
     "slug": "national-paint-coatings",
     "description": "Authorized distributor for ICI Dulux, Nippon, and Berger paints. Complete range of interior and exterior paints, primers, and coatings for construction projects.",
-    "logo_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/national-paint-coatings/logo.jpg",
     "rating": 4.8,
     "review_count": 210,
     "city": "Islamabad",
@@ -225,7 +277,11 @@
         "brand": "ICI Dulux",
         "price": 14500,
         "unit": "bucket",
-        "stock": 200
+        "stock": 200,
+        "image_urls": [
+          "/company_data/material_supplier/national-paint-coatings/gallery/material_0_0.jpg"
+        ],
+        "description": "ICI Dulux - Quality Paint materials for construction projects."
       },
       {
         "name": "ICI Dulux Velvet Touch (20L)",
@@ -233,7 +289,11 @@
         "brand": "ICI Dulux",
         "price": 12800,
         "unit": "bucket",
-        "stock": 300
+        "stock": 300,
+        "image_urls": [
+          "/company_data/material_supplier/national-paint-coatings/gallery/material_1_0.jpg"
+        ],
+        "description": "ICI Dulux - Quality Paint materials for construction projects."
       },
       {
         "name": "Nippon Matex (20L)",
@@ -241,7 +301,11 @@
         "brand": "Nippon",
         "price": 9500,
         "unit": "bucket",
-        "stock": 250
+        "stock": 250,
+        "image_urls": [
+          "/company_data/material_supplier/national-paint-coatings/gallery/material_2_0.jpg"
+        ],
+        "description": "Nippon - Quality Paint materials for construction projects."
       },
       {
         "name": "Berger Breathe Easy (20L)",
@@ -249,7 +313,11 @@
         "brand": "Berger",
         "price": 11000,
         "unit": "bucket",
-        "stock": 180
+        "stock": 180,
+        "image_urls": [
+          "/company_data/material_supplier/national-paint-coatings/gallery/material_3_0.jpg"
+        ],
+        "description": "Berger - Quality Paint materials for construction projects."
       },
       {
         "name": "Wall Primer (20L)",
@@ -257,7 +325,11 @@
         "brand": "ICI Dulux",
         "price": 5500,
         "unit": "bucket",
-        "stock": 400
+        "stock": 400,
+        "image_urls": [
+          "/company_data/material_supplier/national-paint-coatings/gallery/material_4_0.jpg"
+        ],
+        "description": "ICI Dulux - Quality Paint materials for construction projects."
       },
       {
         "name": "Wood Varnish (4L)",
@@ -265,7 +337,11 @@
         "brand": "Berger",
         "price": 3200,
         "unit": "tin",
-        "stock": 150
+        "stock": 150,
+        "image_urls": [
+          "/company_data/material_supplier/national-paint-coatings/gallery/material_5_0.jpg"
+        ],
+        "description": "Berger - Quality Paint materials for construction projects."
       },
       {
         "name": "Epoxy Floor Coating (10L)",
@@ -273,7 +349,11 @@
         "brand": "ICI Dulux",
         "price": 18000,
         "unit": "bucket",
-        "stock": 60
+        "stock": 60,
+        "image_urls": [
+          "/company_data/material_supplier/national-paint-coatings/gallery/material_6_0.jpg"
+        ],
+        "description": "ICI Dulux - Quality Paint materials for construction projects."
       }
     ],
     "status": "active",
@@ -292,7 +372,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/national-paint-coatings/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/national-paint-coatings/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/national-paint-coatings/documents/ntn_certificate.pdf",
@@ -304,7 +384,7 @@
     "supplier_name": "Lahore Brick & Block Works",
     "slug": "lahore-brick-block-works",
     "description": "Manufacturer and supplier of premium quality bricks, concrete blocks, and masonry products. Serving construction industry in Punjab for over 25 years.",
-    "logo_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/lahore-brick-block-works/logo.jpg",
     "rating": 4.4,
     "review_count": 87,
     "city": "Lahore",
@@ -328,7 +408,11 @@
         "brand": "LBW Premium",
         "price": 18,
         "unit": "piece",
-        "stock": 500000
+        "stock": 500000,
+        "image_urls": [
+          "/company_data/material_supplier/lahore-brick-block-works/gallery/material_0_0.jpg"
+        ],
+        "description": "LBW Premium - Quality Bricks materials for construction projects."
       },
       {
         "name": "A Grade Red Bricks",
@@ -336,7 +420,11 @@
         "brand": "LBW Standard",
         "price": 15,
         "unit": "piece",
-        "stock": 800000
+        "stock": 800000,
+        "image_urls": [
+          "/company_data/material_supplier/lahore-brick-block-works/gallery/material_1_0.jpg"
+        ],
+        "description": "LBW Standard - Quality Bricks materials for construction projects."
       },
       {
         "name": "Concrete Block 6 inch",
@@ -344,7 +432,11 @@
         "brand": "LBW Block",
         "price": 85,
         "unit": "piece",
-        "stock": 50000
+        "stock": 50000,
+        "image_urls": [
+          "/company_data/material_supplier/lahore-brick-block-works/gallery/material_2_0.jpg"
+        ],
+        "description": "LBW Block - Quality Bricks materials for construction projects."
       },
       {
         "name": "Concrete Block 8 inch",
@@ -352,7 +444,11 @@
         "brand": "LBW Block",
         "price": 110,
         "unit": "piece",
-        "stock": 40000
+        "stock": 40000,
+        "image_urls": [
+          "/company_data/material_supplier/lahore-brick-block-works/gallery/material_3_0.jpg"
+        ],
+        "description": "LBW Block - Quality Bricks materials for construction projects."
       },
       {
         "name": "Fire Bricks",
@@ -360,7 +456,11 @@
         "brand": "LBW Special",
         "price": 45,
         "unit": "piece",
-        "stock": 30000
+        "stock": 30000,
+        "image_urls": [
+          "/company_data/material_supplier/lahore-brick-block-works/gallery/material_4_0.jpg"
+        ],
+        "description": "LBW Special - Quality Bricks materials for construction projects."
       },
       {
         "name": "Hollow Block 4 inch",
@@ -368,7 +468,11 @@
         "brand": "LBW Block",
         "price": 65,
         "unit": "piece",
-        "stock": 25000
+        "stock": 25000,
+        "image_urls": [
+          "/company_data/material_supplier/lahore-brick-block-works/gallery/material_5_0.jpg"
+        ],
+        "description": "LBW Block - Quality Bricks materials for construction projects."
       }
     ],
     "status": "active",
@@ -387,7 +491,7 @@
         "notes": ""
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/lahore-brick-block-works/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/lahore-brick-block-works/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/lahore-brick-block-works/documents/ntn_certificate.pdf",
@@ -399,7 +503,7 @@
     "supplier_name": "Master Tiles & Ceramics",
     "slug": "master-tiles-ceramics",
     "description": "Premium tile showroom and wholesale dealer. Offering imported and local tiles, sanitary ware, and bathroom fittings from top brands including Master, Shabbir, and Porta.",
-    "logo_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/master-tiles-ceramics/logo.jpg",
     "rating": 4.6,
     "review_count": 134,
     "city": "Faisalabad",
@@ -424,7 +528,11 @@
         "brand": "Master Tiles",
         "price": 180,
         "unit": "sq ft",
-        "stock": 25000
+        "stock": 25000,
+        "image_urls": [
+          "/company_data/material_supplier/master-tiles-ceramics/gallery/material_0_0.jpg"
+        ],
+        "description": "Master Tiles - Quality Tiles materials for construction projects."
       },
       {
         "name": "Porcelain Tile 2x4 ft",
@@ -432,7 +540,11 @@
         "brand": "Master Tiles",
         "price": 350,
         "unit": "sq ft",
-        "stock": 15000
+        "stock": 15000,
+        "image_urls": [
+          "/company_data/material_supplier/master-tiles-ceramics/gallery/material_1_0.jpg"
+        ],
+        "description": "Master Tiles - Quality Tiles materials for construction projects."
       },
       {
         "name": "Bathroom Wall Tile 1x1 ft",
@@ -440,7 +552,11 @@
         "brand": "Shabbir Tiles",
         "price": 120,
         "unit": "sq ft",
-        "stock": 30000
+        "stock": 30000,
+        "image_urls": [
+          "/company_data/material_supplier/master-tiles-ceramics/gallery/material_2_0.jpg"
+        ],
+        "description": "Shabbir Tiles - Quality Tiles materials for construction projects."
       },
       {
         "name": "Granite Floor Tile (per sq ft)",
@@ -448,7 +564,11 @@
         "brand": "Imported",
         "price": 550,
         "unit": "sq ft",
-        "stock": 8000
+        "stock": 8000,
+        "image_urls": [
+          "/company_data/material_supplier/master-tiles-ceramics/gallery/material_3_0.jpg"
+        ],
+        "description": "Imported - Quality Tiles materials for construction projects."
       },
       {
         "name": "Kitchen Backsplash Tile",
@@ -456,7 +576,11 @@
         "brand": "Porta",
         "price": 250,
         "unit": "sq ft",
-        "stock": 12000
+        "stock": 12000,
+        "image_urls": [
+          "/company_data/material_supplier/master-tiles-ceramics/gallery/material_4_0.jpg"
+        ],
+        "description": "Porta - Quality Tiles materials for construction projects."
       },
       {
         "name": "Marble Floor Tile (per sq ft)",
@@ -464,7 +588,11 @@
         "brand": "Local Marble",
         "price": 400,
         "unit": "sq ft",
-        "stock": 10000
+        "stock": 10000,
+        "image_urls": [
+          "/company_data/material_supplier/master-tiles-ceramics/gallery/material_5_0.jpg"
+        ],
+        "description": "Local Marble - Quality Tiles materials for construction projects."
       }
     ],
     "status": "active",
@@ -483,7 +611,7 @@
         "notes": ""
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/master-tiles-ceramics/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/master-tiles-ceramics/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/master-tiles-ceramics/documents/ntn_certificate.pdf",
@@ -495,7 +623,7 @@
     "supplier_name": "Peshawar Timber & Wood Works",
     "slug": "peshawar-timber-wood-works",
     "description": "Quality timber and wood products supplier. Specializing in Deodar, Partal, and imported wood for construction, furniture, and interior work.",
-    "logo_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/peshawar-timber-wood-works/logo.jpg",
     "rating": 4.3,
     "review_count": 67,
     "city": "Peshawar",
@@ -519,7 +647,11 @@
         "brand": "Local Premium",
         "price": 4500,
         "unit": "cft",
-        "stock": 500
+        "stock": 500,
+        "image_urls": [
+          "/company_data/material_supplier/peshawar-timber-wood-works/gallery/material_0_0.jpg"
+        ],
+        "description": "Local Premium - Quality Wood materials for construction projects."
       },
       {
         "name": "Partal Wood (per cft)",
@@ -527,7 +659,11 @@
         "brand": "Local",
         "price": 2800,
         "unit": "cft",
-        "stock": 800
+        "stock": 800,
+        "image_urls": [
+          "/company_data/material_supplier/peshawar-timber-wood-works/gallery/material_1_0.jpg"
+        ],
+        "description": "Local - Quality Wood materials for construction projects."
       },
       {
         "name": "Sheesham Wood (per cft)",
@@ -535,7 +671,11 @@
         "brand": "Local Premium",
         "price": 5500,
         "unit": "cft",
-        "stock": 300
+        "stock": 300,
+        "image_urls": [
+          "/company_data/material_supplier/peshawar-timber-wood-works/gallery/material_2_0.jpg"
+        ],
+        "description": "Local Premium - Quality Wood materials for construction projects."
       },
       {
         "name": "Plywood 8x4 ft (18mm)",
@@ -543,7 +683,11 @@
         "brand": "Imported",
         "price": 4200,
         "unit": "sheet",
-        "stock": 600
+        "stock": 600,
+        "image_urls": [
+          "/company_data/material_supplier/peshawar-timber-wood-works/gallery/material_3_0.jpg"
+        ],
+        "description": "Imported - Quality Wood materials for construction projects."
       },
       {
         "name": "MDF Board 8x4 ft (16mm)",
@@ -551,7 +695,11 @@
         "brand": "Imported",
         "price": 3500,
         "unit": "sheet",
-        "stock": 400
+        "stock": 400,
+        "image_urls": [
+          "/company_data/material_supplier/peshawar-timber-wood-works/gallery/material_4_0.jpg"
+        ],
+        "description": "Imported - Quality Wood materials for construction projects."
       },
       {
         "name": "Chipboard 8x4 ft (16mm)",
@@ -559,7 +707,11 @@
         "brand": "Local",
         "price": 2200,
         "unit": "sheet",
-        "stock": 350
+        "stock": 350,
+        "image_urls": [
+          "/company_data/material_supplier/peshawar-timber-wood-works/gallery/material_5_0.jpg"
+        ],
+        "description": "Local - Quality Wood materials for construction projects."
       }
     ],
     "status": "active",
@@ -578,7 +730,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/peshawar-timber-wood-works/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/peshawar-timber-wood-works/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/peshawar-timber-wood-works/documents/ntn_certificate.pdf",
@@ -590,7 +742,7 @@
     "supplier_name": "Al-Noor Electrical & Wiring",
     "slug": "al-noor-electrical-wiring",
     "description": "Complete electrical solutions provider. Authorized dealer for Pakistan Cables, Newage Cables, and Fast Cables with all types of wiring, switches, and distribution boards.",
-    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/al-noor-electrical-wiring/logo.jpg",
     "rating": 4.5,
     "review_count": 112,
     "city": "Rawalpindi",
@@ -614,7 +766,11 @@
         "brand": "Pakistan Cables",
         "price": 28000,
         "unit": "roll",
-        "stock": 200
+        "stock": 200,
+        "image_urls": [
+          "/company_data/material_supplier/al-noor-electrical-wiring/gallery/material_0_0.jpg"
+        ],
+        "description": "Pakistan Cables - Certified electrical supplies including wiring, switches, and panels."
       },
       {
         "name": "Pakistan Cable 3/29 (per roll)",
@@ -622,7 +778,11 @@
         "brand": "Pakistan Cables",
         "price": 15000,
         "unit": "roll",
-        "stock": 350
+        "stock": 350,
+        "image_urls": [
+          "/company_data/material_supplier/al-noor-electrical-wiring/gallery/material_1_0.jpg"
+        ],
+        "description": "Pakistan Cables - Certified electrical supplies including wiring, switches, and panels."
       },
       {
         "name": "Newage Cable 7/29 (per roll)",
@@ -630,7 +790,11 @@
         "brand": "Newage Cables",
         "price": 26500,
         "unit": "roll",
-        "stock": 180
+        "stock": 180,
+        "image_urls": [
+          "/company_data/material_supplier/al-noor-electrical-wiring/gallery/material_2_0.jpg"
+        ],
+        "description": "Newage Cables - Certified electrical supplies including wiring, switches, and panels."
       },
       {
         "name": "MCB Distribution Board 8-way",
@@ -638,7 +802,11 @@
         "brand": "Schneider",
         "price": 4500,
         "unit": "piece",
-        "stock": 100
+        "stock": 100,
+        "image_urls": [
+          "/company_data/material_supplier/al-noor-electrical-wiring/gallery/material_3_0.jpg"
+        ],
+        "description": "Schneider - Certified electrical supplies including wiring, switches, and panels."
       },
       {
         "name": "LED Panel Light 18W",
@@ -646,7 +814,11 @@
         "brand": "Philips",
         "price": 1200,
         "unit": "piece",
-        "stock": 500
+        "stock": 500,
+        "image_urls": [
+          "/company_data/material_supplier/al-noor-electrical-wiring/gallery/material_4_0.jpg"
+        ],
+        "description": "Philips - Certified electrical supplies including wiring, switches, and panels."
       },
       {
         "name": "Modular Switch Plate (6 gang)",
@@ -654,7 +826,11 @@
         "brand": "Schneider",
         "price": 2800,
         "unit": "piece",
-        "stock": 300
+        "stock": 300,
+        "image_urls": [
+          "/company_data/material_supplier/al-noor-electrical-wiring/gallery/material_5_0.jpg"
+        ],
+        "description": "Schneider - Certified electrical supplies including wiring, switches, and panels."
       }
     ],
     "status": "active",
@@ -673,7 +849,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/al-noor-electrical-wiring/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/al-noor-electrical-wiring/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/al-noor-electrical-wiring/documents/ntn_certificate.pdf",
@@ -685,7 +861,7 @@
     "supplier_name": "Multan Plumbing & Sanitary",
     "slug": "multan-plumbing-sanitary",
     "description": "One-stop shop for all plumbing and sanitary needs. Stocking Grohe, Porta, and Master sanitary ware along with complete plumbing pipe systems.",
-    "logo_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/multan-plumbing-sanitary/logo.jpg",
     "rating": 4.2,
     "review_count": 73,
     "city": "Multan",
@@ -709,7 +885,11 @@
         "brand": "Popular Pipes",
         "price": 120,
         "unit": "ft",
-        "stock": 5000
+        "stock": 5000,
+        "image_urls": [
+          "/company_data/material_supplier/multan-plumbing-sanitary/gallery/material_0_0.jpg"
+        ],
+        "description": "Popular Pipes - High-quality PVC and CPVC pipes with fittings for water supply and drainage."
       },
       {
         "name": "PVC Pipe 2 inch (per ft)",
@@ -717,7 +897,11 @@
         "brand": "Popular Pipes",
         "price": 65,
         "unit": "ft",
-        "stock": 8000
+        "stock": 8000,
+        "image_urls": [
+          "/company_data/material_supplier/multan-plumbing-sanitary/gallery/material_1_0.jpg"
+        ],
+        "description": "Popular Pipes - High-quality PVC and CPVC pipes with fittings for water supply and drainage."
       },
       {
         "name": "CPVC Hot Water Pipe 1 inch (per ft)",
@@ -725,7 +909,11 @@
         "brand": "Popular Pipes",
         "price": 180,
         "unit": "ft",
-        "stock": 3000
+        "stock": 3000,
+        "image_urls": [
+          "/company_data/material_supplier/multan-plumbing-sanitary/gallery/material_2_0.jpg"
+        ],
+        "description": "Popular Pipes - High-quality PVC and CPVC pipes with fittings for water supply and drainage."
       },
       {
         "name": "Grohe Basin Mixer",
@@ -733,7 +921,11 @@
         "brand": "Grohe",
         "price": 45000,
         "unit": "piece",
-        "stock": 50
+        "stock": 50,
+        "image_urls": [
+          "/company_data/material_supplier/multan-plumbing-sanitary/gallery/material_3_0.jpg"
+        ],
+        "description": "Grohe - High-quality PVC and CPVC pipes with fittings for water supply and drainage."
       },
       {
         "name": "Porta Commode Set",
@@ -741,7 +933,11 @@
         "brand": "Porta",
         "price": 18000,
         "unit": "set",
-        "stock": 80
+        "stock": 80,
+        "image_urls": [
+          "/company_data/material_supplier/multan-plumbing-sanitary/gallery/material_4_0.jpg"
+        ],
+        "description": "Porta - Quality Sanitary materials for construction projects."
       },
       {
         "name": "Master Wash Basin",
@@ -749,7 +945,11 @@
         "brand": "Master",
         "price": 8500,
         "unit": "piece",
-        "stock": 120
+        "stock": 120,
+        "image_urls": [
+          "/company_data/material_supplier/multan-plumbing-sanitary/gallery/material_5_0.jpg"
+        ],
+        "description": "Master - Quality Sanitary materials for construction projects."
       },
       {
         "name": "Shower Set Complete",
@@ -757,7 +957,11 @@
         "brand": "Grohe",
         "price": 35000,
         "unit": "set",
-        "stock": 40
+        "stock": 40,
+        "image_urls": [
+          "/company_data/material_supplier/multan-plumbing-sanitary/gallery/material_6_0.jpg"
+        ],
+        "description": "Grohe - Quality Sanitary materials for construction projects."
       }
     ],
     "status": "active",
@@ -776,7 +980,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/multan-plumbing-sanitary/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/multan-plumbing-sanitary/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/multan-plumbing-sanitary/documents/ntn_certificate.pdf",
@@ -788,7 +992,7 @@
     "supplier_name": "Karachi Glass & Aluminum",
     "slug": "karachi-glass-aluminum",
     "description": "Premium glass and aluminum products for modern construction. Specializing in tempered glass, aluminum windows, curtain walls, and glass partitions.",
-    "logo_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/karachi-glass-aluminum/logo.jpg",
     "rating": 4.6,
     "review_count": 89,
     "city": "Karachi",
@@ -811,7 +1015,11 @@
         "brand": "Ghani Glass",
         "price": 450,
         "unit": "sq ft",
-        "stock": 5000
+        "stock": 5000,
+        "image_urls": [
+          "/company_data/material_supplier/karachi-glass-aluminum/gallery/material_0_0.jpg"
+        ],
+        "description": "Ghani Glass - Quality Glass materials for construction projects."
       },
       {
         "name": "Float Glass 6mm (per sq ft)",
@@ -819,7 +1027,11 @@
         "brand": "Ghani Glass",
         "price": 180,
         "unit": "sq ft",
-        "stock": 8000
+        "stock": 8000,
+        "image_urls": [
+          "/company_data/material_supplier/karachi-glass-aluminum/gallery/material_1_0.jpg"
+        ],
+        "description": "Ghani Glass - Quality Glass materials for construction projects."
       },
       {
         "name": "Reflective Glass 8mm (per sq ft)",
@@ -827,7 +1039,11 @@
         "brand": "Imported",
         "price": 650,
         "unit": "sq ft",
-        "stock": 3000
+        "stock": 3000,
+        "image_urls": [
+          "/company_data/material_supplier/karachi-glass-aluminum/gallery/material_2_0.jpg"
+        ],
+        "description": "Imported - Quality Glass materials for construction projects."
       },
       {
         "name": "Aluminum Window Frame (per ft)",
@@ -835,7 +1051,11 @@
         "brand": "Master Aluminum",
         "price": 800,
         "unit": "ft",
-        "stock": 2000
+        "stock": 2000,
+        "image_urls": [
+          "/company_data/material_supplier/karachi-glass-aluminum/gallery/material_3_0.jpg"
+        ],
+        "description": "Master Aluminum - Quality Aluminum materials for construction projects."
       },
       {
         "name": "Aluminum Sliding Door Track",
@@ -843,7 +1063,11 @@
         "brand": "Master Aluminum",
         "price": 1200,
         "unit": "ft",
-        "stock": 1500
+        "stock": 1500,
+        "image_urls": [
+          "/company_data/material_supplier/karachi-glass-aluminum/gallery/material_4_0.jpg"
+        ],
+        "description": "Master Aluminum - Quality Aluminum materials for construction projects."
       },
       {
         "name": "Glass Partition Panel (per sq ft)",
@@ -851,7 +1075,11 @@
         "brand": "Ghani Glass",
         "price": 550,
         "unit": "sq ft",
-        "stock": 2000
+        "stock": 2000,
+        "image_urls": [
+          "/company_data/material_supplier/karachi-glass-aluminum/gallery/material_5_0.jpg"
+        ],
+        "description": "Ghani Glass - Quality Glass materials for construction projects."
       }
     ],
     "status": "active",
@@ -870,7 +1098,7 @@
         "notes": ""
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/karachi-glass-aluminum/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/karachi-glass-aluminum/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/karachi-glass-aluminum/documents/ntn_certificate.pdf",
@@ -882,7 +1110,7 @@
     "supplier_name": "Islamabad Hardware & Tools",
     "slug": "islamabad-hardware-tools",
     "description": "Construction hardware and tools specialist. Complete range of fasteners, hand tools, power tools, and construction accessories for professional builders.",
-    "logo_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/islamabad-hardware-tools/logo.jpg",
     "rating": 4.4,
     "review_count": 65,
     "city": "Islamabad",
@@ -905,7 +1133,11 @@
         "brand": "Hilti",
         "price": 45000,
         "unit": "piece",
-        "stock": 30
+        "stock": 30,
+        "image_urls": [
+          "/company_data/material_supplier/islamabad-hardware-tools/gallery/material_0_0.jpg"
+        ],
+        "description": "Hilti - Quality Tools materials for construction projects."
       },
       {
         "name": "Concrete Mixer 350L",
@@ -913,7 +1145,11 @@
         "brand": "Honda",
         "price": 185000,
         "unit": "piece",
-        "stock": 10
+        "stock": 10,
+        "image_urls": [
+          "/company_data/material_supplier/islamabad-hardware-tools/gallery/material_1_0.jpg"
+        ],
+        "description": "Honda - Quality Tools materials for construction projects."
       },
       {
         "name": "Wheelbarrow Heavy Duty",
@@ -921,7 +1157,11 @@
         "brand": "Local",
         "price": 8500,
         "unit": "piece",
-        "stock": 50
+        "stock": 50,
+        "image_urls": [
+          "/company_data/material_supplier/islamabad-hardware-tools/gallery/material_2_0.jpg"
+        ],
+        "description": "Local - Quality Tools materials for construction projects."
       },
       {
         "name": "Safety Helmet (Pack of 10)",
@@ -929,7 +1169,11 @@
         "brand": "3M",
         "price": 5500,
         "unit": "pack",
-        "stock": 100
+        "stock": 100,
+        "image_urls": [
+          "/company_data/material_supplier/islamabad-hardware-tools/gallery/material_3_0.jpg"
+        ],
+        "description": "3M - Quality Safety materials for construction projects."
       },
       {
         "name": "Construction Nails 4 inch (per kg)",
@@ -937,7 +1181,11 @@
         "brand": "Local",
         "price": 350,
         "unit": "kg",
-        "stock": 2000
+        "stock": 2000,
+        "image_urls": [
+          "/company_data/material_supplier/islamabad-hardware-tools/gallery/material_4_0.jpg"
+        ],
+        "description": "Local - Quality Hardware materials for construction projects."
       },
       {
         "name": "Door Hinges SS (pair)",
@@ -945,7 +1193,11 @@
         "brand": "Imported",
         "price": 850,
         "unit": "pair",
-        "stock": 500
+        "stock": 500,
+        "image_urls": [
+          "/company_data/material_supplier/islamabad-hardware-tools/gallery/material_5_0.jpg"
+        ],
+        "description": "Imported - Quality Hardware materials for construction projects."
       }
     ],
     "status": "active",
@@ -964,7 +1216,7 @@
         "notes": ""
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/islamabad-hardware-tools/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/islamabad-hardware-tools/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/islamabad-hardware-tools/documents/ntn_certificate.pdf",
@@ -976,7 +1228,7 @@
     "supplier_name": "Hyderabad Cement Depot",
     "slug": "hyderabad-cement-depot",
     "description": "Largest cement wholesale distributor in Sindh. Stocking all major Pakistani cement brands with competitive bulk pricing and same-day delivery.",
-    "logo_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/hyderabad-cement-depot/logo.jpg",
     "rating": 4.3,
     "review_count": 54,
     "city": "Hyderabad",
@@ -999,7 +1251,11 @@
         "brand": "Lucky Cement",
         "price": 1380,
         "unit": "bag",
-        "stock": 8000
+        "stock": 8000,
+        "image_urls": [
+          "/company_data/material_supplier/hyderabad-cement-depot/gallery/material_0_0.jpg"
+        ],
+        "description": "Lucky Cement - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "DG Khan Cement (50kg)",
@@ -1007,7 +1263,11 @@
         "brand": "DG Khan Cement",
         "price": 1320,
         "unit": "bag",
-        "stock": 6000
+        "stock": 6000,
+        "image_urls": [
+          "/company_data/material_supplier/hyderabad-cement-depot/gallery/material_1_0.jpg"
+        ],
+        "description": "DG Khan Cement - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "Maple Leaf Cement (50kg)",
@@ -1015,7 +1275,11 @@
         "brand": "Maple Leaf",
         "price": 1340,
         "unit": "bag",
-        "stock": 4000
+        "stock": 4000,
+        "image_urls": [
+          "/company_data/material_supplier/hyderabad-cement-depot/gallery/material_2_0.jpg"
+        ],
+        "description": "Maple Leaf - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "Fauji Cement (50kg)",
@@ -1023,7 +1287,11 @@
         "brand": "Fauji Cement",
         "price": 1360,
         "unit": "bag",
-        "stock": 5000
+        "stock": 5000,
+        "image_urls": [
+          "/company_data/material_supplier/hyderabad-cement-depot/gallery/material_3_0.jpg"
+        ],
+        "description": "Fauji Cement - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "Cherat Cement (50kg)",
@@ -1031,7 +1299,11 @@
         "brand": "Cherat Cement",
         "price": 1310,
         "unit": "bag",
-        "stock": 3000
+        "stock": 3000,
+        "image_urls": [
+          "/company_data/material_supplier/hyderabad-cement-depot/gallery/material_4_0.jpg"
+        ],
+        "description": "Cherat Cement - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       }
     ],
     "status": "active",
@@ -1050,7 +1322,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/hyderabad-cement-depot/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/hyderabad-cement-depot/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/hyderabad-cement-depot/documents/ntn_certificate.pdf",
@@ -1062,7 +1334,7 @@
     "supplier_name": "Faisalabad Waterproofing Solutions",
     "slug": "faisalabad-waterproofing-solutions",
     "description": "Specialized supplier for waterproofing, insulation, and damp-proofing materials. Offering solutions from international brands for roofs, basements, and bathrooms.",
-    "logo_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/faisalabad-waterproofing-solutions/logo.jpg",
     "rating": 4.5,
     "review_count": 78,
     "city": "Faisalabad",
@@ -1085,7 +1357,11 @@
         "brand": "Sika",
         "price": 85,
         "unit": "sq ft",
-        "stock": 20000
+        "stock": 20000,
+        "image_urls": [
+          "/company_data/material_supplier/faisalabad-waterproofing-solutions/gallery/material_0_0.jpg"
+        ],
+        "description": "Sika - Quality Waterproofing materials for construction projects."
       },
       {
         "name": "Roof Cool Coating (20L)",
@@ -1093,7 +1369,11 @@
         "brand": "Dr. Fixit",
         "price": 8500,
         "unit": "bucket",
-        "stock": 150
+        "stock": 150,
+        "image_urls": [
+          "/company_data/material_supplier/faisalabad-waterproofing-solutions/gallery/material_1_0.jpg"
+        ],
+        "description": "Dr. Fixit - Quality Waterproofing materials for construction projects."
       },
       {
         "name": "Bathroom Waterproof Membrane (per sq ft)",
@@ -1101,7 +1381,11 @@
         "brand": "Fosroc",
         "price": 120,
         "unit": "sq ft",
-        "stock": 10000
+        "stock": 10000,
+        "image_urls": [
+          "/company_data/material_supplier/faisalabad-waterproofing-solutions/gallery/material_2_0.jpg"
+        ],
+        "description": "Fosroc - Quality Waterproofing materials for construction projects."
       },
       {
         "name": "Thermopore Sheet 2 inch (4x8 ft)",
@@ -1109,7 +1393,11 @@
         "brand": "Local",
         "price": 1800,
         "unit": "sheet",
-        "stock": 500
+        "stock": 500,
+        "image_urls": [
+          "/company_data/material_supplier/faisalabad-waterproofing-solutions/gallery/material_3_0.jpg"
+        ],
+        "description": "Local - Quality Insulation materials for construction projects."
       },
       {
         "name": "XPS Insulation Board (4x8 ft)",
@@ -1117,7 +1405,11 @@
         "brand": "Imported",
         "price": 3200,
         "unit": "sheet",
-        "stock": 300
+        "stock": 300,
+        "image_urls": [
+          "/company_data/material_supplier/faisalabad-waterproofing-solutions/gallery/material_4_0.jpg"
+        ],
+        "description": "Imported - Quality Insulation materials for construction projects."
       },
       {
         "name": "Damp Proof Course Roll (per ft)",
@@ -1125,7 +1417,11 @@
         "brand": "Sika",
         "price": 150,
         "unit": "ft",
-        "stock": 5000
+        "stock": 5000,
+        "image_urls": [
+          "/company_data/material_supplier/faisalabad-waterproofing-solutions/gallery/material_5_0.jpg"
+        ],
+        "description": "Sika - Quality Waterproofing materials for construction projects."
       }
     ],
     "status": "active",
@@ -1144,7 +1440,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/faisalabad-waterproofing-solutions/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/faisalabad-waterproofing-solutions/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/faisalabad-waterproofing-solutions/documents/ntn_certificate.pdf",
@@ -1156,7 +1452,7 @@
     "supplier_name": "Sialkot Door & Window Mart",
     "slug": "sialkot-door-window-mart",
     "description": "Premium doors, windows, and fixtures supplier. Offering wooden, UPVC, and aluminum doors and windows with custom sizing and installation services.",
-    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/sialkot-door-window-mart/logo.jpg",
     "rating": 4.1,
     "review_count": 42,
     "city": "Sialkot",
@@ -1180,7 +1476,11 @@
         "brand": "Custom",
         "price": 25000,
         "unit": "piece",
-        "stock": 80
+        "stock": 80,
+        "image_urls": [
+          "/company_data/material_supplier/sialkot-door-window-mart/gallery/material_0_0.jpg"
+        ],
+        "description": "Custom - Quality Doors materials for construction projects."
       },
       {
         "name": "Panel Door Skin (7x3 ft)",
@@ -1188,7 +1488,11 @@
         "brand": "Local",
         "price": 12000,
         "unit": "piece",
-        "stock": 150
+        "stock": 150,
+        "image_urls": [
+          "/company_data/material_supplier/sialkot-door-window-mart/gallery/material_1_0.jpg"
+        ],
+        "description": "Local - Quality Doors materials for construction projects."
       },
       {
         "name": "UPVC Window (4x3 ft)",
@@ -1196,7 +1500,11 @@
         "brand": "Imported",
         "price": 18000,
         "unit": "piece",
-        "stock": 60
+        "stock": 60,
+        "image_urls": [
+          "/company_data/material_supplier/sialkot-door-window-mart/gallery/material_2_0.jpg"
+        ],
+        "description": "Imported - Quality Windows materials for construction projects."
       },
       {
         "name": "Aluminum Sliding Window (5x4 ft)",
@@ -1204,7 +1512,11 @@
         "brand": "Master Aluminum",
         "price": 22000,
         "unit": "piece",
-        "stock": 45
+        "stock": 45,
+        "image_urls": [
+          "/company_data/material_supplier/sialkot-door-window-mart/gallery/material_3_0.jpg"
+        ],
+        "description": "Master Aluminum - Quality Windows materials for construction projects."
       },
       {
         "name": "Flush Door (7x3 ft)",
@@ -1212,7 +1524,11 @@
         "brand": "Local",
         "price": 8000,
         "unit": "piece",
-        "stock": 200
+        "stock": 200,
+        "image_urls": [
+          "/company_data/material_supplier/sialkot-door-window-mart/gallery/material_4_0.jpg"
+        ],
+        "description": "Local - Quality Doors materials for construction projects."
       },
       {
         "name": "Iron Grill Gate (per sq ft)",
@@ -1220,7 +1536,11 @@
         "brand": "Custom",
         "price": 650,
         "unit": "sq ft",
-        "stock": 1000
+        "stock": 1000,
+        "image_urls": [
+          "/company_data/material_supplier/sialkot-door-window-mart/gallery/material_5_0.jpg"
+        ],
+        "description": "Custom - Quality Doors materials for construction projects."
       }
     ],
     "status": "active",
@@ -1239,7 +1559,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/sialkot-door-window-mart/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/sialkot-door-window-mart/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/sialkot-door-window-mart/documents/ntn_certificate.pdf",
@@ -1251,7 +1571,7 @@
     "supplier_name": "Gujranwala Ready Mix Concrete",
     "slug": "gujranwala-ready-mix-concrete",
     "description": "Ready-mix concrete supplier with modern batching plants. Serving major construction sites with precise concrete mix designs and timely delivery.",
-    "logo_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/gujranwala-ready-mix-concrete/logo.jpg",
     "rating": 4.7,
     "review_count": 91,
     "city": "Gujranwala",
@@ -1274,7 +1594,11 @@
         "brand": "GRW RMC",
         "price": 180,
         "unit": "cft",
-        "stock": 50000
+        "stock": 50000,
+        "image_urls": [
+          "/company_data/material_supplier/gujranwala-ready-mix-concrete/gallery/material_0_0.jpg"
+        ],
+        "description": "GRW RMC - Quality Concrete materials for construction projects."
       },
       {
         "name": "Ready Mix Concrete M20 (per cft)",
@@ -1282,7 +1606,11 @@
         "brand": "GRW RMC",
         "price": 210,
         "unit": "cft",
-        "stock": 40000
+        "stock": 40000,
+        "image_urls": [
+          "/company_data/material_supplier/gujranwala-ready-mix-concrete/gallery/material_1_0.jpg"
+        ],
+        "description": "GRW RMC - Quality Concrete materials for construction projects."
       },
       {
         "name": "Ready Mix Concrete M25 (per cft)",
@@ -1290,7 +1618,11 @@
         "brand": "GRW RMC",
         "price": 250,
         "unit": "cft",
-        "stock": 30000
+        "stock": 30000,
+        "image_urls": [
+          "/company_data/material_supplier/gujranwala-ready-mix-concrete/gallery/material_2_0.jpg"
+        ],
+        "description": "GRW RMC - Quality Concrete materials for construction projects."
       },
       {
         "name": "Concrete Admixture (per liter)",
@@ -1298,7 +1630,11 @@
         "brand": "Sika",
         "price": 350,
         "unit": "liter",
-        "stock": 2000
+        "stock": 2000,
+        "image_urls": [
+          "/company_data/material_supplier/gujranwala-ready-mix-concrete/gallery/material_3_0.jpg"
+        ],
+        "description": "Sika - Quality Concrete materials for construction projects."
       },
       {
         "name": "Concrete Spacer Block (pack of 100)",
@@ -1306,7 +1642,11 @@
         "brand": "Local",
         "price": 1500,
         "unit": "pack",
-        "stock": 500
+        "stock": 500,
+        "image_urls": [
+          "/company_data/material_supplier/gujranwala-ready-mix-concrete/gallery/material_4_0.jpg"
+        ],
+        "description": "Local - Quality Concrete materials for construction projects."
       }
     ],
     "status": "active",
@@ -1325,7 +1665,7 @@
         "notes": ""
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/gujranwala-ready-mix-concrete/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/gujranwala-ready-mix-concrete/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/gujranwala-ready-mix-concrete/documents/ntn_certificate.pdf",
@@ -1337,7 +1677,7 @@
     "supplier_name": "Quetta Stone & Marble Gallery",
     "slug": "quetta-stone-marble-gallery",
     "description": "Natural stone and marble supplier from Balochistan. Premium Ziarat marble, Onyx, and granite sourced directly from quarries with competitive pricing.",
-    "logo_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/quetta-stone-marble-gallery/logo.jpg",
     "rating": 4.8,
     "review_count": 145,
     "city": "Quetta",
@@ -1361,7 +1701,11 @@
         "brand": "Ziarat Premium",
         "price": 250,
         "unit": "sq ft",
-        "stock": 15000
+        "stock": 15000,
+        "image_urls": [
+          "/company_data/material_supplier/quetta-stone-marble-gallery/gallery/material_0_0.jpg"
+        ],
+        "description": "Ziarat Premium - Quality Marble materials for construction projects."
       },
       {
         "name": "Ziarat Grey Marble (per sq ft)",
@@ -1369,7 +1713,11 @@
         "brand": "Ziarat",
         "price": 200,
         "unit": "sq ft",
-        "stock": 20000
+        "stock": 20000,
+        "image_urls": [
+          "/company_data/material_supplier/quetta-stone-marble-gallery/gallery/material_1_0.jpg"
+        ],
+        "description": "Ziarat - Quality Marble materials for construction projects."
       },
       {
         "name": "Black Granite (per sq ft)",
@@ -1377,7 +1725,11 @@
         "brand": "Imported",
         "price": 450,
         "unit": "sq ft",
-        "stock": 8000
+        "stock": 8000,
+        "image_urls": [
+          "/company_data/material_supplier/quetta-stone-marble-gallery/gallery/material_2_0.jpg"
+        ],
+        "description": "Imported - Quality Marble materials for construction projects."
       },
       {
         "name": "Onyx Marble (per sq ft)",
@@ -1385,7 +1737,11 @@
         "brand": "Balochistan Onyx",
         "price": 800,
         "unit": "sq ft",
-        "stock": 3000
+        "stock": 3000,
+        "image_urls": [
+          "/company_data/material_supplier/quetta-stone-marble-gallery/gallery/material_3_0.jpg"
+        ],
+        "description": "Balochistan Onyx - Quality Marble materials for construction projects."
       },
       {
         "name": "Travertine Tile (per sq ft)",
@@ -1393,7 +1749,11 @@
         "brand": "Imported",
         "price": 550,
         "unit": "sq ft",
-        "stock": 5000
+        "stock": 5000,
+        "image_urls": [
+          "/company_data/material_supplier/quetta-stone-marble-gallery/gallery/material_4_0.jpg"
+        ],
+        "description": "Imported - Quality Marble materials for construction projects."
       },
       {
         "name": "Marble Threshold (per running ft)",
@@ -1401,7 +1761,11 @@
         "brand": "Ziarat",
         "price": 350,
         "unit": "ft",
-        "stock": 2000
+        "stock": 2000,
+        "image_urls": [
+          "/company_data/material_supplier/quetta-stone-marble-gallery/gallery/material_5_0.jpg"
+        ],
+        "description": "Ziarat - Quality Marble materials for construction projects."
       }
     ],
     "status": "active",
@@ -1420,7 +1784,7 @@
         "notes": ""
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/quetta-stone-marble-gallery/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/quetta-stone-marble-gallery/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/quetta-stone-marble-gallery/documents/ntn_certificate.pdf",
@@ -1432,7 +1796,7 @@
     "supplier_name": "Punjab Cement Traders",
     "slug": "punjab-cement-traders",
     "description": "General construction materials supplier in Pakistan.",
-    "logo_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/punjab-cement-traders/logo.jpg",
     "rating": 4.1,
     "review_count": 53,
     "city": "Lahore",
@@ -1454,7 +1818,11 @@
         "brand": "Bestway",
         "price": 1350,
         "unit": "bag",
-        "stock": 5000
+        "stock": 5000,
+        "image_urls": [
+          "/company_data/material_supplier/punjab-cement-traders/gallery/material_0_0.jpg"
+        ],
+        "description": "Bestway - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "TOR Steel 40G (per ton)",
@@ -1462,7 +1830,11 @@
         "brand": "Amreli",
         "price": 265000,
         "unit": "ton",
-        "stock": 100
+        "stock": 100,
+        "image_urls": [
+          "/company_data/material_supplier/punjab-cement-traders/gallery/material_1_0.jpg"
+        ],
+        "description": "Amreli - Quality Steel materials for construction projects."
       }
     ],
     "status": "active",
@@ -1481,7 +1853,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/punjab-cement-traders/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/punjab-cement-traders/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/punjab-cement-traders/documents/ntn_certificate.pdf",
@@ -1493,7 +1865,7 @@
     "supplier_name": "Steel Hub PK",
     "slug": "steel-hub-pk",
     "description": "General construction materials supplier in Pakistan.",
-    "logo_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/steel-hub-pk/logo.jpg",
     "rating": 4.1,
     "review_count": 53,
     "city": "Lahore",
@@ -1515,7 +1887,11 @@
         "brand": "Bestway",
         "price": 1350,
         "unit": "bag",
-        "stock": 5000
+        "stock": 5000,
+        "image_urls": [
+          "/company_data/material_supplier/steel-hub-pk/gallery/material_0_0.jpg"
+        ],
+        "description": "Bestway - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "TOR Steel 40G (per ton)",
@@ -1523,7 +1899,11 @@
         "brand": "Amreli",
         "price": 265000,
         "unit": "ton",
-        "stock": 100
+        "stock": 100,
+        "image_urls": [
+          "/company_data/material_supplier/steel-hub-pk/gallery/material_1_0.jpg"
+        ],
+        "description": "Amreli - Quality Steel materials for construction projects."
       }
     ],
     "status": "active",
@@ -1542,7 +1922,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/steel-hub-pk/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/steel-hub-pk/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/steel-hub-pk/documents/ntn_certificate.pdf",
@@ -1554,7 +1934,7 @@
     "supplier_name": "Hyderabad Building Supplies",
     "slug": "hyderabad-building-supplies",
     "description": "Quality construction materials supplier serving Hyderabad and surrounding areas.",
-    "logo_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/hyderabad-building-supplies/logo.jpg",
     "rating": 4.6,
     "review_count": 102,
     "city": "Hyderabad",
@@ -1576,7 +1956,11 @@
         "brand": "Lucky",
         "price": 1370,
         "unit": "bag",
-        "stock": 6000
+        "stock": 6000,
+        "image_urls": [
+          "/company_data/material_supplier/hyderabad-building-supplies/gallery/material_0_0.jpg"
+        ],
+        "description": "Lucky - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "Sand (per CFT)",
@@ -1584,7 +1968,11 @@
         "brand": "Local",
         "price": 60,
         "unit": "cft",
-        "stock": 20000
+        "stock": 20000,
+        "image_urls": [
+          "/company_data/material_supplier/hyderabad-building-supplies/gallery/material_1_0.jpg"
+        ],
+        "description": "Local - Quality Aggregate materials for construction projects."
       },
       {
         "name": "Crush Stone (per CFT)",
@@ -1592,7 +1980,11 @@
         "brand": "Local",
         "price": 90,
         "unit": "cft",
-        "stock": 15000
+        "stock": 15000,
+        "image_urls": [
+          "/company_data/material_supplier/hyderabad-building-supplies/gallery/material_2_0.jpg"
+        ],
+        "description": "Local - Quality Aggregate materials for construction projects."
       },
       {
         "name": "Red Bricks A-Grade",
@@ -1600,7 +1992,11 @@
         "brand": "Local",
         "price": 16,
         "unit": "piece",
-        "stock": 500000
+        "stock": 500000,
+        "image_urls": [
+          "/company_data/material_supplier/hyderabad-building-supplies/gallery/material_3_0.jpg"
+        ],
+        "description": "Local - Quality Bricks materials for construction projects."
       }
     ],
     "status": "active",
@@ -1619,7 +2015,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/hyderabad-building-supplies/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/hyderabad-building-supplies/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/hyderabad-building-supplies/documents/ntn_certificate.pdf",
@@ -1631,7 +2027,7 @@
     "supplier_name": "Abbottabad Timber House",
     "slug": "abbottabad-timber-house",
     "description": "Quality construction materials supplier serving Abbottabad and surrounding areas.",
-    "logo_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/abbottabad-timber-house/logo.jpg",
     "rating": 4.0,
     "review_count": 119,
     "city": "Abbottabad",
@@ -1653,7 +2049,11 @@
         "brand": "Local Premium",
         "price": 4800,
         "unit": "cft",
-        "stock": 400
+        "stock": 400,
+        "image_urls": [
+          "/company_data/material_supplier/abbottabad-timber-house/gallery/material_0_0.jpg"
+        ],
+        "description": "Local Premium - Quality Wood materials for construction projects."
       },
       {
         "name": "Pine Wood (per cft)",
@@ -1661,7 +2061,11 @@
         "brand": "Local",
         "price": 2500,
         "unit": "cft",
-        "stock": 700
+        "stock": 700,
+        "image_urls": [
+          "/company_data/material_supplier/abbottabad-timber-house/gallery/material_1_0.jpg"
+        ],
+        "description": "Local - Quality Wood materials for construction projects."
       },
       {
         "name": "Plywood 8x4 ft (18mm)",
@@ -1669,7 +2073,11 @@
         "brand": "Imported",
         "price": 4300,
         "unit": "sheet",
-        "stock": 300
+        "stock": 300,
+        "image_urls": [
+          "/company_data/material_supplier/abbottabad-timber-house/gallery/material_2_0.jpg"
+        ],
+        "description": "Imported - Quality Wood materials for construction projects."
       },
       {
         "name": "MDF Board 8x4 ft",
@@ -1677,7 +2085,11 @@
         "brand": "Imported",
         "price": 3600,
         "unit": "sheet",
-        "stock": 200
+        "stock": 200,
+        "image_urls": [
+          "/company_data/material_supplier/abbottabad-timber-house/gallery/material_3_0.jpg"
+        ],
+        "description": "Imported - Quality Wood materials for construction projects."
       }
     ],
     "status": "active",
@@ -1696,7 +2108,7 @@
         "notes": ""
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/abbottabad-timber-house/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/abbottabad-timber-house/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/abbottabad-timber-house/documents/ntn_certificate.pdf",
@@ -1708,7 +2120,7 @@
     "supplier_name": "Sargodha Cement & Steel",
     "slug": "sargodha-cement-steel",
     "description": "Quality construction materials supplier serving Sargodha and surrounding areas.",
-    "logo_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/sargodha-cement-steel/logo.jpg",
     "rating": 3.9,
     "review_count": 74,
     "city": "Sargodha",
@@ -1730,7 +2142,11 @@
         "brand": "Fauji",
         "price": 1360,
         "unit": "bag",
-        "stock": 5000
+        "stock": 5000,
+        "image_urls": [
+          "/company_data/material_supplier/sargodha-cement-steel/gallery/material_0_0.jpg"
+        ],
+        "description": "Fauji - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "DG Khan Cement (50kg)",
@@ -1738,7 +2154,11 @@
         "brand": "DG Khan",
         "price": 1330,
         "unit": "bag",
-        "stock": 4000
+        "stock": 4000,
+        "image_urls": [
+          "/company_data/material_supplier/sargodha-cement-steel/gallery/material_1_0.jpg"
+        ],
+        "description": "DG Khan - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "TOR Steel 40G (per ton)",
@@ -1746,7 +2166,11 @@
         "brand": "Ittefaq",
         "price": 262000,
         "unit": "ton",
-        "stock": 80
+        "stock": 80,
+        "image_urls": [
+          "/company_data/material_supplier/sargodha-cement-steel/gallery/material_2_0.jpg"
+        ],
+        "description": "Ittefaq - Quality Steel materials for construction projects."
       },
       {
         "name": "TOR Steel 60G (per ton)",
@@ -1754,7 +2178,11 @@
         "brand": "Amreli",
         "price": 282000,
         "unit": "ton",
-        "stock": 60
+        "stock": 60,
+        "image_urls": [
+          "/company_data/material_supplier/sargodha-cement-steel/gallery/material_3_0.jpg"
+        ],
+        "description": "Amreli - Quality Steel materials for construction projects."
       }
     ],
     "status": "active",
@@ -1773,7 +2201,7 @@
         "notes": ""
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/sargodha-cement-steel/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/sargodha-cement-steel/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/sargodha-cement-steel/documents/ntn_certificate.pdf",
@@ -1785,7 +2213,7 @@
     "supplier_name": "DG Khan Hardware Center",
     "slug": "dg-khan-hardware-center",
     "description": "Quality construction materials supplier serving DG Khan and surrounding areas.",
-    "logo_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/dg-khan-hardware-center/logo.jpg",
     "rating": 4.8,
     "review_count": 105,
     "city": "DG Khan",
@@ -1807,7 +2235,11 @@
         "brand": "DG Khan",
         "price": 1300,
         "unit": "bag",
-        "stock": 8000
+        "stock": 8000,
+        "image_urls": [
+          "/company_data/material_supplier/dg-khan-hardware-center/gallery/material_0_0.jpg"
+        ],
+        "description": "DG Khan - High-grade Portland cement suitable for all structural work. Meets ASTM standards."
       },
       {
         "name": "Sand (per CFT)",
@@ -1815,7 +2247,11 @@
         "brand": "Local",
         "price": 55,
         "unit": "cft",
-        "stock": 25000
+        "stock": 25000,
+        "image_urls": [
+          "/company_data/material_supplier/dg-khan-hardware-center/gallery/material_1_0.jpg"
+        ],
+        "description": "Local - Quality Aggregate materials for construction projects."
       },
       {
         "name": "Construction Nails (per kg)",
@@ -1823,7 +2259,11 @@
         "brand": "Local",
         "price": 340,
         "unit": "kg",
-        "stock": 3000
+        "stock": 3000,
+        "image_urls": [
+          "/company_data/material_supplier/dg-khan-hardware-center/gallery/material_2_0.jpg"
+        ],
+        "description": "Local - Quality Hardware materials for construction projects."
       },
       {
         "name": "Door Hinges SS (pair)",
@@ -1831,7 +2271,11 @@
         "brand": "Local",
         "price": 750,
         "unit": "pair",
-        "stock": 600
+        "stock": 600,
+        "image_urls": [
+          "/company_data/material_supplier/dg-khan-hardware-center/gallery/material_3_0.jpg"
+        ],
+        "description": "Local - Quality Hardware materials for construction projects."
       }
     ],
     "status": "active",
@@ -1850,7 +2294,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/dg-khan-hardware-center/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/dg-khan-hardware-center/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/dg-khan-hardware-center/documents/ntn_certificate.pdf",
@@ -1862,7 +2306,7 @@
     "supplier_name": "Mirpur Marble & Granite",
     "slug": "mirpur-marble-granite",
     "description": "Quality construction materials supplier serving Mirpur and surrounding areas.",
-    "logo_url": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/mirpur-marble-granite/logo.jpg",
     "rating": 4.4,
     "review_count": 137,
     "city": "Mirpur",
@@ -1884,7 +2328,11 @@
         "brand": "AJK Marble",
         "price": 380,
         "unit": "sq ft",
-        "stock": 12000
+        "stock": 12000,
+        "image_urls": [
+          "/company_data/material_supplier/mirpur-marble-granite/gallery/material_0_0.jpg"
+        ],
+        "description": "AJK Marble - Quality Tiles materials for construction projects."
       },
       {
         "name": "Granite Floor Tile (per sq ft)",
@@ -1892,7 +2340,11 @@
         "brand": "Imported",
         "price": 520,
         "unit": "sq ft",
-        "stock": 6000
+        "stock": 6000,
+        "image_urls": [
+          "/company_data/material_supplier/mirpur-marble-granite/gallery/material_1_0.jpg"
+        ],
+        "description": "Imported - Quality Tiles materials for construction projects."
       },
       {
         "name": "Ceramic Wall Tile (per sq ft)",
@@ -1900,7 +2352,11 @@
         "brand": "Master",
         "price": 140,
         "unit": "sq ft",
-        "stock": 18000
+        "stock": 18000,
+        "image_urls": [
+          "/company_data/material_supplier/mirpur-marble-granite/gallery/material_2_0.jpg"
+        ],
+        "description": "Master - Quality Tiles materials for construction projects."
       },
       {
         "name": "Marble Steps (per rft)",
@@ -1908,7 +2364,11 @@
         "brand": "AJK Marble",
         "price": 650,
         "unit": "rft",
-        "stock": 3000
+        "stock": 3000,
+        "image_urls": [
+          "/company_data/material_supplier/mirpur-marble-granite/gallery/material_3_0.jpg"
+        ],
+        "description": "AJK Marble - Quality Tiles materials for construction projects."
       }
     ],
     "status": "active",
@@ -1927,7 +2387,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/mirpur-marble-granite/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/mirpur-marble-granite/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/mirpur-marble-granite/documents/ntn_certificate.pdf",
@@ -1939,7 +2399,7 @@
     "supplier_name": "Sahiwal Paint & Finish",
     "slug": "sahiwal-paint-finish",
     "description": "Quality construction materials supplier serving Sahiwal and surrounding areas.",
-    "logo_url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/sahiwal-paint-finish/logo.jpg",
     "rating": 4.6,
     "review_count": 83,
     "city": "Sahiwal",
@@ -1961,7 +2421,11 @@
         "brand": "Dulux",
         "price": 14200,
         "unit": "bucket",
-        "stock": 150
+        "stock": 150,
+        "image_urls": [
+          "/company_data/material_supplier/sahiwal-paint-finish/gallery/material_0_0.jpg"
+        ],
+        "description": "Dulux - Quality Paint materials for construction projects."
       },
       {
         "name": "Diamond Emulsion (20L)",
@@ -1969,7 +2433,11 @@
         "brand": "Diamond",
         "price": 8500,
         "unit": "bucket",
-        "stock": 250
+        "stock": 250,
+        "image_urls": [
+          "/company_data/material_supplier/sahiwal-paint-finish/gallery/material_1_0.jpg"
+        ],
+        "description": "Diamond - Quality Paint materials for construction projects."
       },
       {
         "name": "Wall Primer (20L)",
@@ -1977,7 +2445,11 @@
         "brand": "Dulux",
         "price": 5400,
         "unit": "bucket",
-        "stock": 300
+        "stock": 300,
+        "image_urls": [
+          "/company_data/material_supplier/sahiwal-paint-finish/gallery/material_2_0.jpg"
+        ],
+        "description": "Dulux - Quality Paint materials for construction projects."
       },
       {
         "name": "Wood Varnish (4L)",
@@ -1985,7 +2457,11 @@
         "brand": "Berger",
         "price": 3100,
         "unit": "tin",
-        "stock": 120
+        "stock": 120,
+        "image_urls": [
+          "/company_data/material_supplier/sahiwal-paint-finish/gallery/material_3_0.jpg"
+        ],
+        "description": "Berger - Quality Paint materials for construction projects."
       }
     ],
     "status": "active",
@@ -2004,7 +2480,7 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1580913428023-02c695666d61?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/sahiwal-paint-finish/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/sahiwal-paint-finish/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/sahiwal-paint-finish/documents/ntn_certificate.pdf",
@@ -2016,7 +2492,7 @@
     "supplier_name": "Rahim Yar Khan Steel Works",
     "slug": "rahim-yar-khan-steel-works",
     "description": "Quality construction materials supplier serving Rahim Yar Khan and surrounding areas.",
-    "logo_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop",
+    "logo_url": "/company_data/material_supplier/rahim-yar-khan-steel-works/logo.jpg",
     "rating": 4.5,
     "review_count": 149,
     "city": "Rahim Yar Khan",
@@ -2038,7 +2514,11 @@
         "brand": "Ittefaq",
         "price": 258000,
         "unit": "ton",
-        "stock": 100
+        "stock": 100,
+        "image_urls": [
+          "/company_data/material_supplier/rahim-yar-khan-steel-works/gallery/material_0_0.jpg"
+        ],
+        "description": "Ittefaq - Quality Steel materials for construction projects."
       },
       {
         "name": "MS Pipe 2 inch (per ft)",
@@ -2046,7 +2526,11 @@
         "brand": "International Steel",
         "price": 440,
         "unit": "ft",
-        "stock": 4000
+        "stock": 4000,
+        "image_urls": [
+          "/company_data/material_supplier/rahim-yar-khan-steel-works/gallery/material_1_0.jpg"
+        ],
+        "description": "International Steel - Quality Steel materials for construction projects."
       },
       {
         "name": "GI Wire (per kg)",
@@ -2054,7 +2538,11 @@
         "brand": "Local",
         "price": 320,
         "unit": "kg",
-        "stock": 5000
+        "stock": 5000,
+        "image_urls": [
+          "/company_data/material_supplier/rahim-yar-khan-steel-works/gallery/material_2_0.jpg"
+        ],
+        "description": "Local - Quality Steel materials for construction projects."
       },
       {
         "name": "Angle Iron 2x2 (per ft)",
@@ -2062,7 +2550,11 @@
         "brand": "Mughal",
         "price": 275,
         "unit": "ft",
-        "stock": 3000
+        "stock": 3000,
+        "image_urls": [
+          "/company_data/material_supplier/rahim-yar-khan-steel-works/gallery/material_3_0.jpg"
+        ],
+        "description": "Mughal - Quality Steel materials for construction projects."
       }
     ],
     "status": "active",
@@ -2081,7 +2573,7 @@
         "notes": ""
       }
     },
-    "dp_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&h=600&fit=crop",
+    "dp_url": "/company_data/material_supplier/rahim-yar-khan-steel-works/dp.jpg",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/rahim-yar-khan-steel-works/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/rahim-yar-khan-steel-works/documents/ntn_certificate.pdf",

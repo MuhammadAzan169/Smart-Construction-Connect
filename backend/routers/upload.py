@@ -139,3 +139,52 @@ async def upload_document(
 
     url = f"/company_data/{role_dir}/{safe_name}/documents/{filename}"
     return JSONResponse({"url": url, "entity_name": safe_name, "doc_type": safe_doc_type})
+
+
+@router.post("/gallery")
+async def upload_gallery_image(
+    file: UploadFile = File(...),
+    entity_name: str = Form(...),
+    gallery_type: str = Form("material"),  # "material" or "project"
+    item_id: str = Form("0"),             # index or ID to group images
+    role: str = Form("supplier"),
+) -> JSONResponse:
+    """
+    Upload a gallery image for a material or project.
+    Stores at /company_data/{role_folder}/{entity_name}/{gallery_type}_{item_id}_{n}.{ext}.
+    """
+    content_type = (file.content_type or "").lower()
+    if content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail="Only JPEG, PNG, GIF, and WebP images are allowed.",
+        )
+
+    content = await file.read()
+    if len(content) > MAX_IMAGE_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail="File size must not exceed 5 MB.",
+        )
+
+    role_dir = _role_folder(role)
+    safe_name = _safe_folder_name(entity_name)
+    safe_gallery = re.sub(r"[^a-z0-9_-]", "_", gallery_type.strip().lower())[:20] or "gallery"
+    safe_item = re.sub(r"[^a-z0-9_-]", "_", str(item_id).strip().lower())[:20] or "0"
+
+    folder = COMPANY_DATA_ROOT / role_dir / safe_name / "gallery"
+    folder.mkdir(parents=True, exist_ok=True)
+
+    ext = _IMG_EXT_MAP.get(content_type, "jpg")
+
+    # Find next available index for this item
+    prefix = f"{safe_gallery}_{safe_item}_"
+    existing = list(folder.glob(f"{prefix}*"))
+    idx = len(existing)
+    filename = f"{prefix}{idx}.{ext}"
+
+    dest = folder / filename
+    dest.write_bytes(content)
+
+    url = f"/company_data/{role_dir}/{safe_name}/gallery/{filename}"
+    return JSONResponse({"url": url, "entity_name": safe_name, "gallery_type": safe_gallery, "item_id": safe_item})

@@ -25,6 +25,20 @@ type FlattenedOperationalArea = {
   price_raw: string;
 };
 
+export type CompanyProject = {
+  id: string;
+  title: string;
+  type: string;
+  city: string;
+  year: number;
+  description: string;
+  image_urls: string[];
+  plot_size?: string;
+  budget_range?: string;
+  duration_months?: number;
+  status?: string;
+};
+
 export type CompanyDatasetCompany = {
   company_id: string;
   company_name: string;
@@ -84,6 +98,7 @@ export type CompanyDatasetCompany = {
     budget_accuracy?: number;
     quality_consistency?: number;
   };
+  projects?: CompanyProject[];
 };
 
 // Import the provided dataset JSON from the workspace Database folder.
@@ -345,7 +360,7 @@ function _buildDirectoryItem(raw: CompanyDatasetCompany): CompanyDirectoryItem {
     priceRange: price ? formatSqFtRange(price.min, price.max) : "Pricing —",
     verified: (raw as Record<string, unknown>).verification_status === "verified" || computeVerified(raw),
     matchScore: computeMatchScore(raw),
-    image: raw.logo_url || placeholderImages[hashToIndex(raw.company_id, placeholderImages.length)],
+    image: (raw as Record<string, unknown>).dp_url as string || raw.logo_url || placeholderImages[hashToIndex(raw.company_id, placeholderImages.length)],
     yearEstablished: raw.legal_info?.year_established,
     completedProjects: raw.experience?.houses_completed,
     raw,

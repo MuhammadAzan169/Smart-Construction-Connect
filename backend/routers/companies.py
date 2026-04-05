@@ -72,6 +72,7 @@ _ALLOWED_PROFILE_FIELDS = {
     "after_handover_support", "legal_and_contract",
     "ideal_customer_profile",
     "verification_documents",
+    "projects",
 }
 
 # Fields that only admins can modify — never writable by regular users.
@@ -140,4 +141,29 @@ def update_packages(
     company["estimated_cost_range"] = body.estimated_cost_range
     _save_companies(companies)
     add_activity_log("packages_updated", slug, f"Company {slug} updated packages & pricing")
+    return {"status": "ok"}
+
+
+class ProjectsUpdate(BaseModel):
+    projects: list[dict[str, Any]]
+
+
+@router.put("/profile/{slug}/projects")
+def update_projects(
+    slug: str,
+    body: ProjectsUpdate,
+    user: dict = Depends(require_role("company", "admin")),
+):
+    """Update company projects / portfolio."""
+    companies = _load_companies()
+    company = _find_company(companies, slug=slug)
+    if not company:
+        raise HTTPException(status_code=404, detail="Company profile not found")
+
+    if user.get("role") != "admin" and user.get("company_slug") != slug:
+        raise HTTPException(status_code=403, detail="You can only edit your own company profile")
+
+    company["projects"] = body.projects
+    _save_companies(companies)
+    add_activity_log("projects_updated", slug, f"Company {slug} updated projects")
     return {"status": "ok"}

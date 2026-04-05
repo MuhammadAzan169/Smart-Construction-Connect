@@ -159,6 +159,11 @@ export const api = {
         method: "PUT",
         body: JSON.stringify(payload),
       }),
+    updateProjects: (slug: string, projects: Record<string, unknown>[]) =>
+      request<{ status: string }>(`/companies/profile/${encodeURIComponent(slug)}/projects`, {
+        method: "PUT",
+        body: JSON.stringify({ projects }),
+      }),
   },
 
   suppliers: {
@@ -291,6 +296,36 @@ export const api = {
       const timeoutId = setTimeout(() => controller.abort(), 30_000);
       try {
         const res = await fetch(`${API_BASE}/upload/document`, {
+          method: "POST",
+          body: form,
+          signal: controller.signal,
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({})) as { detail?: string };
+          throw new Error(body.detail ?? `Upload failed: ${res.status}`);
+        }
+        const data = await res.json() as { url: string };
+        return data.url;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          throw new Error("Upload timed out. Please try again.");
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    },
+    gallery: async (file: File, entityName: string, galleryType: string, itemId: string, role: string = "supplier"): Promise<string> => {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("entity_name", entityName);
+      form.append("gallery_type", galleryType);
+      form.append("item_id", itemId);
+      form.append("role", role);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30_000);
+      try {
+        const res = await fetch(`${API_BASE}/upload/gallery`, {
           method: "POST",
           body: form,
           signal: controller.signal,

@@ -9,12 +9,13 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { SectionReveal } from "@/components/shared/AnimationPrimitives";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { fetchCompanyDirectory, getPackageKeys, humanizeToken, type CompanyDirectoryItem } from "@/data/companyData";
+import { fetchCompanyDirectory, getPackageKeys, humanizeToken, type CompanyDirectoryItem, type CompanyProject } from "@/data/companyData";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
-import { ArrowLeft, Building2, Briefcase, CheckCircle, CreditCard, Download, Eye, FileText, HardHat, MapPin, MessageSquare, Phone, Mail, Globe, Shield, ShieldCheck, Star, Users } from "lucide-react";
+import { ArrowLeft, Building2, Briefcase, CheckCircle, ChevronLeft, ChevronRight, CreditCard, Download, Eye, FileText, HardHat, MapPin, MessageSquare, Phone, Mail, Globe, Shield, ShieldCheck, Star, Users } from "lucide-react";
 
 function previewList(items: string[], max: number) {
   const cleaned = items.filter((x) => x && x !== "—");
@@ -46,6 +47,8 @@ export default function CompanyProfilePage() {
   const [company, setCompany] = useState<CompanyDirectoryItem | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [pdfViewer, setPdfViewer] = useState<{ url: string; title: string } | null>(null);
+  const [selectedProject, setSelectedProject] = useState<CompanyProject | null>(null);
+  const [projectGalleryIdx, setProjectGalleryIdx] = useState(0);
 
   useEffect(() => {
     const id = params.id;
@@ -500,6 +503,63 @@ export default function CompanyProfilePage() {
           </div>
         </GlassCard>
 
+        {/* Projects / Portfolio */}
+        {company.raw.projects && company.raw.projects.length > 0 && (
+          <GlassCard interactive={false} className="p-6">
+            <p className="text-xs font-semibold tracking-wide text-muted-foreground">PROJECT PORTFOLIO</p>
+            <p className="mt-1 text-sm text-muted-foreground">Completed and ongoing construction projects.</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {company.raw.projects.map((proj, idx) => (
+                <motion.div
+                  key={proj.id || idx}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(idx * 0.06, 0.4), duration: 0.3 }}
+                >
+                  <button
+                    type="button"
+                    className="w-full text-left group rounded-2xl border border-border bg-background/30 overflow-hidden transition-all hover:border-primary/20 hover:shadow-md"
+                    onClick={() => { setSelectedProject(proj); setProjectGalleryIdx(0); }}
+                  >
+                    {proj.image_urls?.[0] ? (
+                      <div className="relative h-36 overflow-hidden">
+                        <img src={proj.image_urls[0]} alt={proj.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        {proj.image_urls.length > 1 && (
+                          <span className="absolute bottom-2 right-2 rounded-lg bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+                            +{proj.image_urls.length - 1}
+                          </span>
+                        )}
+                        <Badge
+                          variant={proj.status === "completed" ? "secondary" : "default"}
+                          className="absolute top-2 left-2 text-[10px]"
+                        >
+                          {proj.status || "completed"}
+                        </Badge>
+                      </div>
+                    ) : (
+                      <div className="flex h-28 items-center justify-center bg-secondary/20">
+                        <HardHat className="h-8 w-8 text-muted-foreground/30" />
+                      </div>
+                    )}
+                    <div className="p-3">
+                      <p className="truncate text-sm font-semibold text-foreground">{proj.title}</p>
+                      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        <span>{proj.city}</span>
+                        <span>·</span>
+                        <span>{proj.year}</span>
+                      </div>
+                      {proj.plot_size && (
+                        <p className="mt-1 text-xs text-muted-foreground">{proj.type} · {proj.plot_size}</p>
+                      )}
+                    </div>
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          </GlassCard>
+        )}
+
         <div className="space-y-4">
           <motion.div
             initial={{ opacity: 0, x: 16 }}
@@ -534,8 +594,8 @@ export default function CompanyProfilePage() {
           </GlassCard>
           </motion.div>
 
-          {/* Verification Documents */}
-          {(() => {
+          {/* Verification Documents — only show for verified companies */}
+          {company.verified && (() => {
             const raw = company.raw as Record<string, unknown>;
             const vDocs = (raw.verification_documents ?? {}) as Record<string, string>;
             const vStatus = (raw.verification ?? {}) as Record<string, { status: string }>;
@@ -658,6 +718,97 @@ export default function CompanyProfilePage() {
         title={pdfViewer.title}
       />
     )}
+
+    {/* Project Detail Modal */}
+    <Dialog open={!!selectedProject} onOpenChange={(open) => { if (!open) setSelectedProject(null); }}>
+      <DialogContent className="max-w-lg p-0 overflow-hidden">
+        <DialogTitle className="sr-only">{selectedProject?.title ?? "Project"}</DialogTitle>
+        {selectedProject && (
+          <div>
+            {selectedProject.image_urls && selectedProject.image_urls.length > 0 && (
+              <div className="relative h-64 bg-secondary/20">
+                <img
+                  src={selectedProject.image_urls[projectGalleryIdx]}
+                  alt={selectedProject.title}
+                  className="h-full w-full object-cover"
+                />
+                {selectedProject.image_urls.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white hover:bg-black/70 transition-colors"
+                      onClick={() => setProjectGalleryIdx((prev) => (prev - 1 + selectedProject.image_urls.length) % selectedProject.image_urls.length)}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white hover:bg-black/70 transition-colors"
+                      onClick={() => setProjectGalleryIdx((prev) => (prev + 1) % selectedProject.image_urls.length)}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+                      {selectedProject.image_urls.map((_, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className={`h-1.5 rounded-full transition-all ${i === projectGalleryIdx ? "w-4 bg-white" : "w-1.5 bg-white/50"}`}
+                          onClick={() => setProjectGalleryIdx(i)}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            <div className="p-6 space-y-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-foreground">{selectedProject.title}</h3>
+                  <Badge variant={selectedProject.status === "completed" ? "secondary" : "default"} className="text-[10px]">
+                    {selectedProject.status || "completed"}
+                  </Badge>
+                </div>
+                <p className="mt-1 text-sm text-muted-foreground flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {selectedProject.city} · {selectedProject.year}
+                </p>
+              </div>
+              {selectedProject.description && (
+                <p className="text-sm text-muted-foreground">{selectedProject.description}</p>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                {selectedProject.type && (
+                  <div className="rounded-xl border border-border bg-background/30 p-3">
+                    <p className="text-xs text-muted-foreground">Type</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">{selectedProject.type}</p>
+                  </div>
+                )}
+                {selectedProject.plot_size && (
+                  <div className="rounded-xl border border-border bg-background/30 p-3">
+                    <p className="text-xs text-muted-foreground">Plot Size</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">{selectedProject.plot_size}</p>
+                  </div>
+                )}
+                {selectedProject.budget_range && (
+                  <div className="rounded-xl border border-border bg-background/30 p-3">
+                    <p className="text-xs text-muted-foreground">Budget</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">{selectedProject.budget_range}</p>
+                  </div>
+                )}
+                {selectedProject.duration_months && (
+                  <div className="rounded-xl border border-border bg-background/30 p-3">
+                    <p className="text-xs text-muted-foreground">Duration</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">{selectedProject.duration_months} months</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
     </>
   );
 }

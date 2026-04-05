@@ -7,10 +7,11 @@ import { SectionReveal } from "@/components/shared/AnimationPrimitives";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-import { ArrowLeft, Download, Eye, MapPin, MessageSquare, Package, Phone, Mail, Globe, ShieldCheck, Star, AlertTriangle } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Download, Eye, MapPin, MessageSquare, Package, Phone, Mail, Globe, ShieldCheck, Star, AlertTriangle, X } from "lucide-react";
 
 type SupplierMaterial = {
   name: string;
@@ -19,6 +20,8 @@ type SupplierMaterial = {
   price: number;
   unit: string;
   stock: number;
+  image_urls?: string[];
+  description?: string;
 };
 
 type SupplierData = {
@@ -53,6 +56,8 @@ export default function SupplierProfilePage() {
   const [supplier, setSupplier] = useState<SupplierData | null>(null);
   const [loading, setLoading] = useState(true);
   const [pdfViewer, setPdfViewer] = useState<{ url: string; title: string } | null>(null);
+  const [selectedMaterial, setSelectedMaterial] = useState<SupplierMaterial | null>(null);
+  const [galleryIdx, setGalleryIdx] = useState(0);
 
   useEffect(() => {
     if (!params.id) return;
@@ -223,6 +228,7 @@ export default function SupplierProfilePage() {
               {supplier.materials.map((m, idx) => {
                 const isLowStock = m.stock > 0 && m.stock <= 50;
                 const isOutOfStock = m.stock === 0;
+                const hasImages = m.image_urls && m.image_urls.length > 0;
                 return (
                 <motion.div
                   key={idx}
@@ -230,38 +236,54 @@ export default function SupplierProfilePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(idx * 0.05, 0.4), duration: 0.3 }}
                 >
-                <div className={`rounded-2xl border bg-background/30 p-4 transition-colors hover:border-primary/20 ${
-                  isOutOfStock ? "border-destructive/30 opacity-60" : isLowStock ? "border-warning/30" : "border-border"
-                }`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="truncate text-sm font-semibold text-foreground">{m.name}</p>
-                    {isLowStock && (
-                      <Badge variant="outline" className="shrink-0 border-warning/40 text-warning text-[10px]">
-                        <AlertTriangle className="mr-1 h-3 w-3" />
-                        Low
-                      </Badge>
-                    )}
-                    {isOutOfStock && (
-                      <Badge variant="destructive" className="shrink-0 text-[10px]">
-                        Out of Stock
-                      </Badge>
-                    )}
+                <button
+                  type="button"
+                  className={`w-full text-left rounded-2xl border bg-background/30 overflow-hidden transition-all hover:border-primary/20 hover:shadow-md ${
+                    isOutOfStock ? "border-destructive/30 opacity-60" : isLowStock ? "border-warning/30" : "border-border"
+                  }`}
+                  onClick={() => { setSelectedMaterial(m); setGalleryIdx(0); }}
+                >
+                  {hasImages && (
+                    <div className="relative h-32 overflow-hidden">
+                      <img src={m.image_urls![0]} alt={m.name} className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
+                      {m.image_urls!.length > 1 && (
+                        <span className="absolute bottom-2 right-2 rounded-lg bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+                          +{m.image_urls!.length - 1}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="truncate text-sm font-semibold text-foreground">{m.name}</p>
+                      {isLowStock && (
+                        <Badge variant="outline" className="shrink-0 border-warning/40 text-warning text-[10px]">
+                          <AlertTriangle className="mr-1 h-3 w-3" />
+                          Low
+                        </Badge>
+                      )}
+                      {isOutOfStock && (
+                        <Badge variant="destructive" className="shrink-0 text-[10px]">
+                          Out of Stock
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="mt-1 flex items-center gap-2">
+                      <Badge variant="outline" className="text-[10px]">{m.category}</Badge>
+                      <span className="text-xs text-muted-foreground">{m.brand}</span>
+                    </div>
+                    <div className="mt-3 flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Price per {m.unit}</span>
+                      <span className="font-semibold text-foreground">{formatPKR(m.price)}</span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Stock</span>
+                      <span className={`font-semibold ${isOutOfStock ? "text-destructive" : isLowStock ? "text-warning" : "text-foreground"}`}>
+                        {m.stock.toLocaleString()} {m.unit}
+                      </span>
+                    </div>
                   </div>
-                  <div className="mt-1 flex items-center gap-2">
-                    <Badge variant="outline" className="text-[10px]">{m.category}</Badge>
-                    <span className="text-xs text-muted-foreground">{m.brand}</span>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Price per {m.unit}</span>
-                    <span className="font-semibold text-foreground">{formatPKR(m.price)}</span>
-                  </div>
-                  <div className="mt-2 flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Stock</span>
-                    <span className={`font-semibold ${isOutOfStock ? "text-destructive" : isLowStock ? "text-warning" : "text-foreground"}`}>
-                      {m.stock.toLocaleString()} {m.unit}
-                    </span>
-                  </div>
-                </div>
+                </button>
                 </motion.div>
                 );
               })}
@@ -295,8 +317,8 @@ export default function SupplierProfilePage() {
             </div>
           </GlassCard>
 
-          {/* Verification Documents */}
-          {(() => {
+          {/* Verification Documents — only show for verified suppliers */}
+          {isVerified && (() => {
             const vDocs = supplier.verification_documents ?? {};
             const vStatus = supplier.verification ?? {};
             const docLabels: Record<string, string> = {
@@ -389,6 +411,79 @@ export default function SupplierProfilePage() {
         title={pdfViewer.title}
       />
     )}
+
+    {/* Material Detail Modal */}
+    <Dialog open={!!selectedMaterial} onOpenChange={(open) => { if (!open) setSelectedMaterial(null); }}>
+      <DialogContent className="max-w-lg p-0 overflow-hidden">
+        <DialogTitle className="sr-only">{selectedMaterial?.name ?? "Material"}</DialogTitle>
+        {selectedMaterial && (
+          <div>
+            {/* Image gallery */}
+            {selectedMaterial.image_urls && selectedMaterial.image_urls.length > 0 && (
+              <div className="relative h-64 bg-secondary/20">
+                <img
+                  src={selectedMaterial.image_urls[galleryIdx]}
+                  alt={selectedMaterial.name}
+                  className="h-full w-full object-cover"
+                />
+                {selectedMaterial.image_urls.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white hover:bg-black/70 transition-colors"
+                      onClick={() => setGalleryIdx((prev) => (prev - 1 + selectedMaterial.image_urls!.length) % selectedMaterial.image_urls!.length)}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white hover:bg-black/70 transition-colors"
+                      onClick={() => setGalleryIdx((prev) => (prev + 1) % selectedMaterial.image_urls!.length)}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+                      {selectedMaterial.image_urls.map((_, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className={`h-1.5 rounded-full transition-all ${i === galleryIdx ? "w-4 bg-white" : "w-1.5 bg-white/50"}`}
+                          onClick={() => setGalleryIdx(i)}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            <div className="p-6 space-y-4">
+              <div>
+                <h3 className="text-lg font-bold text-foreground">{selectedMaterial.name}</h3>
+                <div className="mt-1 flex items-center gap-2">
+                  <Badge variant="secondary">{selectedMaterial.category}</Badge>
+                  <span className="text-sm text-muted-foreground">{selectedMaterial.brand}</span>
+                </div>
+              </div>
+              {selectedMaterial.description && (
+                <p className="text-sm text-muted-foreground">{selectedMaterial.description}</p>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-border bg-background/30 p-3">
+                  <p className="text-xs text-muted-foreground">Price per {selectedMaterial.unit}</p>
+                  <p className="mt-1 text-base font-bold text-foreground">{formatPKR(selectedMaterial.price)}</p>
+                </div>
+                <div className="rounded-xl border border-border bg-background/30 p-3">
+                  <p className="text-xs text-muted-foreground">Stock Available</p>
+                  <p className={`mt-1 text-base font-bold ${selectedMaterial.stock === 0 ? "text-destructive" : selectedMaterial.stock <= 50 ? "text-warning" : "text-foreground"}`}>
+                    {selectedMaterial.stock.toLocaleString()} {selectedMaterial.unit}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
     </>
   );
 }

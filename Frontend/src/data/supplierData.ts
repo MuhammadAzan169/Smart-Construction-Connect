@@ -5,6 +5,8 @@ export type SupplierMaterial = {
   price: number;
   unit: string;
   stock: number;
+  image_urls?: string[];
+  description?: string;
 };
 
 export type SupplierDatasetItem = {
@@ -13,6 +15,7 @@ export type SupplierDatasetItem = {
   slug: string;
   description: string;
   logo_url: string | null;
+  dp_url?: string | null;
   city: string;
   area: string;
   /** @deprecated legacy shape — some old records may still nest location */
@@ -23,6 +26,7 @@ export type SupplierDatasetItem = {
   status: string;
   rating: number;
   review_count: number;
+  verification_status?: string;
 };
 
 export type SupplierDirectoryItem = {
@@ -30,6 +34,7 @@ export type SupplierDirectoryItem = {
   name: string;
   description: string;
   logo: string;
+  dpUrl: string;
   city: string;
   area: string;
   citiesServed: string[];
@@ -39,6 +44,7 @@ export type SupplierDirectoryItem = {
   maxPrice: number | null;
   rating: number;
   reviews: number;
+  verified: boolean;
   contact: { phone: string; email: string; website: string };
   materials: SupplierMaterial[];
   raw: SupplierDatasetItem;
@@ -78,8 +84,10 @@ export async function fetchSupplierDirectory(): Promise<SupplierDirectoryItem[]>
         name: s.supplier_name,
         description: s.description || "",
         logo: s.logo_url || "",
+        dpUrl: s.dp_url || "",
         city: s.city || s.location?.city || "",
         area: s.area || s.location?.area || "",
+        verified: s.verification_status === "verified",
         citiesServed: s.cities_served || [],
         categories,
         materialCount: s.materials.length,

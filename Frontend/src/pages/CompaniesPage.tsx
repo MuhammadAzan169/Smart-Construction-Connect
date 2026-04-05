@@ -112,6 +112,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
   const [compareSupplierIds, setCompareSupplierIds] = useState<string[]>([]);
 
   const [materialCategories, setMaterialCategories] = useState<string[]>([]);
+  const [onlyVerifiedSupplier, setOnlyVerifiedSupplier] = useState(false);
   const [supplierData, setSupplierData] = useState<SupplierDirectoryItem[]>([]);
   const [companyData, setCompanyData] = useState<CompanyDirectoryItem[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(true);
@@ -176,9 +177,10 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
       const matchesCategory =
         materialCategories.length === 0 ||
         s.categories.some((c) => materialCategories.includes(c));
-      return matchesQuery && matchesCategory;
+      const matchesVerified = !onlyVerifiedSupplier || s.verified;
+      return matchesQuery && matchesCategory && matchesVerified;
     });
-  }, [supplierData, search, materialCategories]);
+  }, [supplierData, search, materialCategories, onlyVerifiedSupplier]);
 
   const selectedCompanies = useMemo(
     () => companyData.filter((c) => compareIds.includes(c.id)),
@@ -268,6 +270,16 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
 
   const MaterialFilters = (
     <div className="space-y-5">
+      <div>
+        <div className="flex items-center justify-between">
+          <Label className="text-sm">Verified only</Label>
+          <Checkbox checked={onlyVerifiedSupplier} onCheckedChange={(v) => setOnlyVerifiedSupplier(v === true)} />
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">Show only verified material suppliers.</p>
+      </div>
+
+      <Separator />
+
       <div className="space-y-3">
         <p className="text-xs font-semibold tracking-wide text-muted-foreground">CATEGORIES</p>
         <div className="space-y-2">
@@ -730,9 +742,9 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                   <div className="flex items-center gap-2">
                     <Filter className="h-3.5 w-3.5 text-primary" />
                     <p className="text-sm font-semibold text-foreground">Filters</p>
-                    {materialCategories.length > 0 && (
+                    {(materialCategories.length > 0 || onlyVerifiedSupplier) && (
                       <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
-                        {materialCategories.length}
+                        {materialCategories.length + (onlyVerifiedSupplier ? 1 : 0)}
                       </span>
                     )}
                   </div>
@@ -754,7 +766,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                           <Button
                             variant="link"
                             className="h-auto p-0 text-xs"
-                            onClick={() => setMaterialCategories([])}
+                            onClick={() => { setMaterialCategories([]); setOnlyVerifiedSupplier(false); }}
                           >
                             Reset all
                           </Button>
@@ -812,15 +824,19 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                     >
                       {/* Image banner with overlaid name/location */}
                       <div className="relative h-44 overflow-hidden">
-                        {s.logo ? (
+                        {(s.dpUrl || s.logo) ? (
                           <img
-                            src={s.logo}
+                            src={s.dpUrl || s.logo}
                             alt={s.name}
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                           />
                         ) : (
                           <div className="h-full w-full bg-secondary opacity-80 gradient-bg transition-transform duration-500 group-hover:scale-[1.05]" />
                         )}
+                        {/* Top-left: verified badge */}
+                        <div className="absolute left-3 top-3">
+                          {s.verified ? <StatusBadge status="verified" /> : null}
+                        </div>
                         {/* Top-right: material count badge */}
                         <div className="absolute right-3 top-3">
                           <Badge variant="secondary" className="rounded-lg bg-background/30 backdrop-blur-sm text-white font-semibold">

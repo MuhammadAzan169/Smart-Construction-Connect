@@ -38,7 +38,7 @@ import { cities as cityOptions, societiesByCity } from "@/data/locationOptions";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
-import { ArrowLeft, Eye, EyeOff, FileCheck, Loader2, Lock, MapPin, Plus, Save, Shield, Upload, User, X } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, FileCheck, HardHat, ImageIcon, Loader2, Lock, MapPin, Package, Pencil, Plus, Save, Shield, Trash2, Upload, User, X } from "lucide-react";
 import { api } from "@/lib/api";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -474,6 +474,15 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
   const dpInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
+  // Project management state
+  type ProjectItem = { id: string; title: string; type: string; city: string; year: number; description: string; image_urls: string[]; plot_size: string; budget_range: string; duration_months: number; status: string };
+  const emptyProject: ProjectItem = { id: "", title: "", type: "Residential House", city: "", year: new Date().getFullYear(), description: "", image_urls: [], plot_size: "", budget_range: "", duration_months: 12, status: "completed" };
+  const [projects, setProjects] = useState<ProjectItem[]>([]);
+  const [editingProject, setEditingProject] = useState<ProjectItem | null>(null);
+  const [editingProjectIdx, setEditingProjectIdx] = useState<number>(-1);
+  const [savingProjects, setSavingProjects] = useState(false);
+  const projectImageInputRef = useRef<HTMLInputElement>(null);
+
   // Password change state
   const [currentPwd, setCurrentPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
@@ -520,6 +529,9 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
         } else {
           setSettings(defaultSettings(profile as CompanyDatasetCompany, email));
         }
+        // Load projects from profile
+        const rawProjects = Array.isArray((profile as Record<string, unknown>).projects) ? ((profile as Record<string, unknown>).projects as ProjectItem[]) : [];
+        setProjects(rawProjects.map((p) => ({ ...emptyProject, ...p, image_urls: Array.isArray(p.image_urls) ? p.image_urls : [] })));
       })
       .catch(() => {
         if (cancelled) return;
@@ -799,6 +811,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
           <TabsTrigger value="contact">Contact & Social</TabsTrigger>
           <TabsTrigger value="capability">Capability & Services</TabsTrigger>
           <TabsTrigger value="experience">Experience & QC</TabsTrigger>
+          <TabsTrigger value="projects">Projects</TabsTrigger>
           <TabsTrigger value="account" className="gap-1.5">
             <Lock className="h-3.5 w-3.5" />
             Account &amp; Security
@@ -1733,6 +1746,301 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
           </GlassCard>
         </TabsContent>
 
+        {/* ── Projects / Portfolio ── */}
+        <TabsContent value="projects" className="mt-6 space-y-4">
+          <GlassCard interactive={false} className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Project Portfolio</p>
+                <p className="mt-1 text-xs text-muted-foreground">Showcase your completed and ongoing construction projects with photos.</p>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => { setEditingProject({ ...emptyProject, id: `proj-${Date.now()}` }); setEditingProjectIdx(-1); }}
+              >
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
+                Add Project
+              </Button>
+            </div>
+
+            {projects.length === 0 && !editingProject && (
+              <div className="mt-6 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border py-12 text-center">
+                <HardHat className="h-10 w-10 text-muted-foreground/40" />
+                <p className="mt-3 text-sm text-muted-foreground">No projects added yet</p>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="mt-3"
+                  onClick={() => { setEditingProject({ ...emptyProject, id: `proj-${Date.now()}` }); setEditingProjectIdx(-1); }}
+                >
+                  Add your first project
+                </Button>
+              </div>
+            )}
+
+            {/* Project editing form */}
+            {editingProject && (
+              <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-5 space-y-4">
+                <p className="text-sm font-semibold text-foreground">
+                  {editingProjectIdx >= 0 ? "Edit Project" : "Add New Project"}
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Project title *</Label>
+                    <Input
+                      value={editingProject.title}
+                      onChange={(e) => setEditingProject((prev) => prev ? { ...prev, title: e.target.value } : prev)}
+                      placeholder="e.g., Modern 10-Marla House in DHA"
+                      className="bg-background/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Project type</Label>
+                    <Select
+                      value={editingProject.type || "Residential House"}
+                      onValueChange={(v) => setEditingProject((prev) => prev ? { ...prev, type: v } : prev)}
+                    >
+                      <SelectTrigger className="bg-background/40"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {["Residential House", "Residential Villa", "Commercial Building", "Apartment Complex", "Renovation", "Office Building", "Farmhouse", "Town House", "Duplex House", "Boundary Wall & Plot Development"].map((t) => (
+                          <SelectItem key={t} value={t}>{t}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">City</Label>
+                    <Input
+                      value={editingProject.city}
+                      onChange={(e) => setEditingProject((prev) => prev ? { ...prev, city: e.target.value } : prev)}
+                      placeholder="e.g., Lahore"
+                      className="bg-background/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Year</Label>
+                    <Input
+                      type="number"
+                      min={2000}
+                      max={2030}
+                      value={editingProject.year}
+                      onChange={(e) => setEditingProject((prev) => prev ? { ...prev, year: Number(e.target.value) || new Date().getFullYear() } : prev)}
+                      className="bg-background/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Plot size</Label>
+                    <Input
+                      value={editingProject.plot_size}
+                      onChange={(e) => setEditingProject((prev) => prev ? { ...prev, plot_size: e.target.value } : prev)}
+                      placeholder="e.g., 10 Marla"
+                      className="bg-background/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Budget range</Label>
+                    <Input
+                      value={editingProject.budget_range}
+                      onChange={(e) => setEditingProject((prev) => prev ? { ...prev, budget_range: e.target.value } : prev)}
+                      placeholder="e.g., 80 Lac - 1.5 Cr"
+                      className="bg-background/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Duration (months)</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={editingProject.duration_months || ""}
+                      onChange={(e) => setEditingProject((prev) => prev ? { ...prev, duration_months: Number(e.target.value) || 0 } : prev)}
+                      className="bg-background/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Status</Label>
+                    <Select
+                      value={editingProject.status || "completed"}
+                      onValueChange={(v) => setEditingProject((prev) => prev ? { ...prev, status: v } : prev)}
+                    >
+                      <SelectTrigger className="bg-background/40"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="ongoing">Ongoing</SelectItem>
+                        <SelectItem value="planned">Planned</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Description</Label>
+                  <Textarea
+                    value={editingProject.description}
+                    onChange={(e) => setEditingProject((prev) => prev ? { ...prev, description: e.target.value } : prev)}
+                    placeholder="Describe the project..."
+                    className="bg-background/40 min-h-[60px]"
+                  />
+                </div>
+                {/* Image upload for project */}
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Project Images (up to 6)</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {editingProject.image_urls.map((url, imgIdx) => (
+                      <div key={imgIdx} className="group relative h-20 w-20 overflow-hidden rounded-xl border border-border">
+                        <img src={url} alt="" className="h-full w-full object-cover" />
+                        <button
+                          type="button"
+                          className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+                          onClick={() => setEditingProject((prev) => prev ? { ...prev, image_urls: prev.image_urls.filter((_, i) => i !== imgIdx) } : prev)}
+                        >
+                          <X className="h-4 w-4 text-white" />
+                        </button>
+                      </div>
+                    ))}
+                    {editingProject.image_urls.length < 6 && (
+                      <button
+                        type="button"
+                        className="flex h-20 w-20 flex-col items-center justify-center rounded-xl border-2 border-dashed border-border text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+                        onClick={() => projectImageInputRef.current?.click()}
+                      >
+                        <ImageIcon className="h-5 w-5" />
+                        <span className="mt-1 text-[10px]">Add</span>
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    ref={projectImageInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !editingProject) return;
+                      try {
+                        const url = await api.upload.gallery(file, settings.company_name || email, "project", editingProject.id, "company");
+                        setEditingProject((prev) => prev ? { ...prev, image_urls: [...prev.image_urls, url] } : prev);
+                      } catch {
+                        toast({ variant: "destructive", title: "Upload failed" });
+                      }
+                      if (projectImageInputRef.current) projectImageInputRef.current.value = "";
+                    }}
+                  />
+                </div>
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <Button type="button" variant="ghost" size="sm" onClick={() => { setEditingProject(null); setEditingProjectIdx(-1); }}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={!editingProject.title.trim()}
+                    onClick={async () => {
+                      const proj = editingProject;
+                      let newProjs: ProjectItem[];
+                      if (editingProjectIdx >= 0) {
+                        newProjs = projects.map((p, i) => (i === editingProjectIdx ? proj : p));
+                      } else {
+                        newProjs = [...projects, proj];
+                      }
+                      setProjects(newProjs);
+                      setEditingProject(null);
+                      setEditingProjectIdx(-1);
+                      if (companySlug) {
+                        setSavingProjects(true);
+                        try {
+                          await api.companies.updateProjects(companySlug, newProjs as unknown as Record<string, unknown>[]);
+                          toast({ title: "Projects saved" });
+                        } catch {
+                          toast({ variant: "destructive", title: "Failed to save projects" });
+                        }
+                        setSavingProjects(false);
+                      }
+                    }}
+                  >
+                    {editingProjectIdx >= 0 ? "Update" : "Add"} Project
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Project list */}
+            {projects.length > 0 && (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {projects.map((proj, idx) => (
+                  <div
+                    key={proj.id || idx}
+                    className="group rounded-2xl border border-border bg-background/30 overflow-hidden transition-all hover:border-primary/20 hover:shadow-md"
+                  >
+                    {proj.image_urls?.[0] ? (
+                      <div className="relative h-32 overflow-hidden">
+                        <img src={proj.image_urls[0]} alt={proj.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        {proj.image_urls.length > 1 && (
+                          <span className="absolute bottom-2 right-2 rounded-lg bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+                            +{proj.image_urls.length - 1} photos
+                          </span>
+                        )}
+                        <Badge
+                          variant={proj.status === "completed" ? "secondary" : "default"}
+                          className="absolute top-2 left-2 text-[10px]"
+                        >
+                          {proj.status || "completed"}
+                        </Badge>
+                      </div>
+                    ) : (
+                      <div className="flex h-24 items-center justify-center bg-secondary/20">
+                        <HardHat className="h-8 w-8 text-muted-foreground/30" />
+                      </div>
+                    )}
+                    <div className="p-3">
+                      <p className="truncate text-sm font-semibold text-foreground">{proj.title}</p>
+                      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>{proj.city}</span>
+                        <span>·</span>
+                        <span>{proj.year}</span>
+                        {proj.plot_size && <><span>·</span><span>{proj.plot_size}</span></>}
+                      </div>
+                      <div className="mt-2 flex items-center gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-xs"
+                          onClick={() => { setEditingProject({ ...emptyProject, ...proj, image_urls: [...(proj.image_urls || [])] }); setEditingProjectIdx(idx); }}
+                        >
+                          <Pencil className="mr-1 h-3 w-3" />
+                          Edit
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-xs text-destructive hover:text-destructive"
+                          onClick={async () => {
+                            const newProjs = projects.filter((_, i) => i !== idx);
+                            setProjects(newProjs);
+                            if (companySlug) {
+                              try {
+                                await api.companies.updateProjects(companySlug, newProjs as unknown as Record<string, unknown>[]);
+                                toast({ title: "Project removed" });
+                              } catch {
+                                toast({ variant: "destructive", title: "Failed to remove" });
+                              }
+                            }
+                          }}
+                        >
+                          <Trash2 className="mr-1 h-3 w-3" />
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </GlassCard>
+        </TabsContent>
+
         {/* ── Account & Security ── */}
         <TabsContent value="account" className="mt-6 space-y-4">
           <GlassCard interactive={false} className="p-5 space-y-2">
@@ -1937,6 +2245,16 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
   const sDpInputRef = useRef<HTMLInputElement>(null);
   const sLogoInputRef = useRef<HTMLInputElement>(null);
 
+  // Material management state
+  type MaterialItem = { name: string; category: string; brand: string; price: number; unit: string; stock: number; image_urls: string[]; description: string };
+  const emptyMaterial: MaterialItem = { name: "", category: "", brand: "", price: 0, unit: "bag", stock: 0, image_urls: [], description: "" };
+  const [materials, setMaterials] = useState<MaterialItem[]>([]);
+  const [editingMaterial, setEditingMaterial] = useState<MaterialItem | null>(null);
+  const [editingMaterialIdx, setEditingMaterialIdx] = useState<number>(-1);
+  const [savingMaterials, setSavingMaterials] = useState(false);
+  const [materialsLoaded, setMaterialsLoaded] = useState(false);
+  const materialImageInputRef = useRef<HTMLInputElement>(null);
+
   // Password change state
   const [currentPwd, setCurrentPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
@@ -2034,6 +2352,10 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
         if (cancelled) return;
         profileRef.current = profile as Record<string, unknown>;
         setSettings(defaultSupplierSettings(profile as Record<string, unknown>, email));
+        // Load materials from profile
+        const mats = Array.isArray((profile as Record<string, unknown>).materials) ? ((profile as Record<string, unknown>).materials as MaterialItem[]) : [];
+        setMaterials(mats.map((m) => ({ ...emptyMaterial, ...m, image_urls: Array.isArray(m.image_urls) ? m.image_urls : [] })));
+        setMaterialsLoaded(true);
       })
       .catch(() => {
         if (cancelled) return;
@@ -2147,6 +2469,7 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
           <TabsTrigger value="contact">Contact & Social</TabsTrigger>
           <TabsTrigger value="business">Business & Legal</TabsTrigger>
           <TabsTrigger value="verification">Verification</TabsTrigger>
+          <TabsTrigger value="materials">Materials</TabsTrigger>
           <TabsTrigger value="operations">Operations & Delivery</TabsTrigger>
           <TabsTrigger value="account" className="gap-1.5">
             <Lock className="h-3.5 w-3.5" />
@@ -2557,6 +2880,272 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
               </GlassCard>
             );
           })}
+        </TabsContent>
+
+        {/* ── Materials Management Tab ────────────────────────────────────── */}
+        <TabsContent value="materials" className="mt-6 space-y-4">
+          <GlassCard interactive={false} className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Materials / Products</p>
+                <p className="mt-1 text-xs text-muted-foreground">Add and manage materials you supply. Include images to attract more buyers.</p>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => { setEditingMaterial({ ...emptyMaterial }); setEditingMaterialIdx(-1); }}
+              >
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
+                Add Material
+              </Button>
+            </div>
+
+            {materials.length === 0 && !editingMaterial && (
+              <div className="mt-6 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border py-12 text-center">
+                <Package className="h-10 w-10 text-muted-foreground/40" />
+                <p className="mt-3 text-sm text-muted-foreground">No materials added yet</p>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="mt-3"
+                  onClick={() => { setEditingMaterial({ ...emptyMaterial }); setEditingMaterialIdx(-1); }}
+                >
+                  Add your first material
+                </Button>
+              </div>
+            )}
+
+            {/* Material editing dialog */}
+            {editingMaterial && (
+              <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-5 space-y-4">
+                <p className="text-sm font-semibold text-foreground">
+                  {editingMaterialIdx >= 0 ? "Edit Material" : "Add New Material"}
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Material name *</Label>
+                    <Input
+                      value={editingMaterial.name}
+                      onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, name: e.target.value } : prev)}
+                      placeholder="e.g., Portland Cement OPC"
+                      className="bg-background/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Category *</Label>
+                    <Select
+                      value={editingMaterial.category || "__none__"}
+                      onValueChange={(v) => setEditingMaterial((prev) => prev ? { ...prev, category: v === "__none__" ? "" : v } : prev)}
+                    >
+                      <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select category" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none__">Select category</SelectItem>
+                        {materialCategoryOptions.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Brand</Label>
+                    <Input
+                      value={editingMaterial.brand}
+                      onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, brand: e.target.value } : prev)}
+                      placeholder="e.g., DG Cement"
+                      className="bg-background/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Unit</Label>
+                    <Select
+                      value={editingMaterial.unit || "bag"}
+                      onValueChange={(v) => setEditingMaterial((prev) => prev ? { ...prev, unit: v } : prev)}
+                    >
+                      <SelectTrigger className="bg-background/40"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {["bag", "ton", "kg", "piece", "sqft", "cft", "meter", "feet", "sheet", "bundle", "liter", "gallon", "truck"].map((u) => (
+                          <SelectItem key={u} value={u}>{u}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Price (PKR)</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={editingMaterial.price || ""}
+                      onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, price: Number(e.target.value) || 0 } : prev)}
+                      placeholder="e.g., 1250"
+                      className="bg-background/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Stock</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={editingMaterial.stock || ""}
+                      onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, stock: Number(e.target.value) || 0 } : prev)}
+                      placeholder="e.g., 500"
+                      className="bg-background/40"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Description</Label>
+                  <Textarea
+                    value={editingMaterial.description}
+                    onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, description: e.target.value } : prev)}
+                    placeholder="Brief description of this material..."
+                    className="bg-background/40 min-h-[60px]"
+                  />
+                </div>
+                {/* Image upload */}
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Images (up to 5)</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {editingMaterial.image_urls.map((url, imgIdx) => (
+                      <div key={imgIdx} className="group relative h-20 w-20 overflow-hidden rounded-xl border border-border">
+                        <img src={url} alt="" className="h-full w-full object-cover" />
+                        <button
+                          type="button"
+                          className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+                          onClick={() => setEditingMaterial((prev) => prev ? { ...prev, image_urls: prev.image_urls.filter((_, i) => i !== imgIdx) } : prev)}
+                        >
+                          <X className="h-4 w-4 text-white" />
+                        </button>
+                      </div>
+                    ))}
+                    {editingMaterial.image_urls.length < 5 && (
+                      <button
+                        type="button"
+                        className="flex h-20 w-20 flex-col items-center justify-center rounded-xl border-2 border-dashed border-border text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+                        onClick={() => materialImageInputRef.current?.click()}
+                      >
+                        <ImageIcon className="h-5 w-5" />
+                        <span className="mt-1 text-[10px]">Add</span>
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    ref={materialImageInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !editingMaterial) return;
+                      try {
+                        const url = await api.upload.gallery(file, settings.supplier_name || email, "material", String(editingMaterialIdx >= 0 ? editingMaterialIdx : materials.length), "supplier");
+                        setEditingMaterial((prev) => prev ? { ...prev, image_urls: [...prev.image_urls, url] } : prev);
+                      } catch {
+                        toast({ variant: "destructive", title: "Upload failed" });
+                      }
+                      if (materialImageInputRef.current) materialImageInputRef.current.value = "";
+                    }}
+                  />
+                </div>
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <Button type="button" variant="ghost" size="sm" onClick={() => { setEditingMaterial(null); setEditingMaterialIdx(-1); }}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={!editingMaterial.name.trim() || !editingMaterial.category}
+                    onClick={async () => {
+                      const mat = editingMaterial;
+                      let newMats: MaterialItem[];
+                      if (editingMaterialIdx >= 0) {
+                        newMats = materials.map((m, i) => (i === editingMaterialIdx ? mat : m));
+                      } else {
+                        newMats = [...materials, mat];
+                      }
+                      setMaterials(newMats);
+                      setEditingMaterial(null);
+                      setEditingMaterialIdx(-1);
+                      // Save to server
+                      if (supplierSlug) {
+                        setSavingMaterials(true);
+                        try {
+                          await api.suppliers.updateMaterials(supplierSlug, newMats as unknown as Record<string, unknown>[]);
+                          toast({ title: "Materials saved" });
+                        } catch {
+                          toast({ variant: "destructive", title: "Failed to save materials" });
+                        }
+                        setSavingMaterials(false);
+                      }
+                    }}
+                  >
+                    {editingMaterialIdx >= 0 ? "Update" : "Add"} Material
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Material list */}
+            {materials.length > 0 && (
+              <div className="mt-4 space-y-3">
+                {materials.map((mat, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-4 rounded-2xl border border-border bg-background/30 p-4 transition-colors hover:border-primary/20"
+                  >
+                    {mat.image_urls?.[0] ? (
+                      <img src={mat.image_urls[0]} alt={mat.name} className="h-16 w-16 shrink-0 rounded-xl object-cover" />
+                    ) : (
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-secondary/40">
+                        <Package className="h-6 w-6 text-muted-foreground/40" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-foreground">{mat.name}</p>
+                      <div className="mt-1 flex items-center gap-2">
+                        <Badge variant="outline" className="text-[10px]">{mat.category}</Badge>
+                        <span className="text-xs text-muted-foreground">{mat.brand}</span>
+                      </div>
+                      <div className="mt-1 flex items-center gap-4 text-xs text-muted-foreground">
+                        <span>PKR {mat.price.toLocaleString()} / {mat.unit}</span>
+                        <span>Stock: {mat.stock.toLocaleString()}</span>
+                        {mat.image_urls?.length > 0 && <span>{mat.image_urls.length} image{mat.image_urls.length > 1 ? "s" : ""}</span>}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        onClick={() => { setEditingMaterial({ ...emptyMaterial, ...mat, image_urls: [...(mat.image_urls || [])] }); setEditingMaterialIdx(idx); }}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        onClick={async () => {
+                          const newMats = materials.filter((_, i) => i !== idx);
+                          setMaterials(newMats);
+                          if (supplierSlug) {
+                            try {
+                              await api.suppliers.updateMaterials(supplierSlug, newMats as unknown as Record<string, unknown>[]);
+                              toast({ title: "Material removed" });
+                            } catch {
+                              toast({ variant: "destructive", title: "Failed to remove" });
+                            }
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </GlassCard>
         </TabsContent>
 
         {/* ── Tab 4: Operations & Delivery ────────────────────────────────── */}
