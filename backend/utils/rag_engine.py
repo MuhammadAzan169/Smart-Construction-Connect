@@ -1,13 +1,19 @@
 """RAG-style recommendation engine — matches clients to companies/suppliers
-and uses OpenRouter LLM for natural language responses."""
+and uses OpenRouter LLM for natural language responses.
+
+Retrieval uses TF-IDF cosine similarity over text documents built from the
+real companies.json and catalog.json datasets, so every live company and
+supplier is searchable without any external vector database.
+"""
 
 from __future__ import annotations
 
-import json
 import logging
+import math
 import os
 import re
 import threading
+from collections import Counter
 from typing import Any
 
 import httpx
@@ -120,6 +126,215 @@ _SYSTEM_PROMPTS: dict[str, str] = {
 DEFAULT_SYSTEM_PROMPT = _SYSTEM_PROMPTS["client"]
 
 
+# ── TF-IDF Embedding Engine ───────────────────────────────────────────────────
+# Builds lightweight text documents from the real JSON datasets and retrieves
+# the best matches via cosine similarity — no external vector DB required.
+
+def _tokenize(text: str) -> list[str]:
+    """Lowercase, remove punctuation, split on whitespace."""
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+
+def _build_tfidf(docs: list[list[str]]) -> tuple[dict[str, float], list[dict[str, float]]]:
+    """
+    Compute IDF weights and per-doc TF vectors.
+    Returns (idf_dict, tf_vecs) where tf_vecs[i] is a {term: tf_weight} dict.
+    """
+    N = len(docs)
+    df: Counter = Counter()
+    for tokens in docs:
+        df.update(set(tokens))
+
+    idf: dict[str, float] = {
+        term: math.log((N + 1) / (count + 1)) + 1.0
+        for term, count in df.items()
+    }
+
+    tf_vecs: list[dict[str, float]] = []
+    for tokens in docs:
+        if not tokens:
+            tf_vecs.append({})
+            continue
+        freq = Counter(tokens)
+        max_freq = max(freq.values())
+        tf_vecs.append({
+            term: (count / max_freq) * idf.get(term, 1.0)
+            for term, count in freq.items()
+        })
+    return idf, tf_vecs
+
+
+def _cosine(vec_a: dict[str, float], vec_b: dict[str, float]) -> float:
+    """Cosine similarity between two TF-IDF sparse vectors."""
+    if not vec_a or not vec_b:
+        return 0.0
+    dot = sum(vec_a.get(t, 0.0) * v for t, v in vec_b.items())
+    norm_a = math.sqrt(sum(v * v for v in vec_a.values()))
+    norm_b = math.sqrt(sum(v * v for v in vec_b.values()))
+    if norm_a == 0 or norm_b == 0:
+        return 0.0
+    return dot / (norm_a * norm_b)
+
+
+# ── In-memory embedding index (built once at startup, refreshed on change) ───
+
+class _EmbeddingIndex:
+    """Thread-safe in-memory TF-IDF index for companies and suppliers."""
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._companies: list[dict] = []
+        self._suppliers: list[dict] = []
+        self._company_vecs: list[dict[str, float]] = []
+        self._supplier_vecs: list[dict[str, float]] = []
+        self._idf: dict[str, float] = {}
+        self._built = False
+
+    def _company_document(self, c: dict) -> str:
+        """Build a rich text document for one company."""
+        parts: list[str] = []
+        parts.append(c.get("company_name", ""))
+        parts.append(c.get("description") or "")
+        parts.append(c.get("city", ""))
+
+        # Operational areas
+        for row in c.get("flattened_operational_areas", []):
+            parts.extend([
+                row.get("city", ""),
+                row.get("area", ""),
+                row.get("subarea", ""),
+                row.get("package", ""),
+            ])
+        for city_key in (c.get("operational_areas") or {}).keys():
+            parts.append(city_key)
+
+        # Specializations
+        for sp in (c.get("experience") or {}).get("specializations", []):
+            parts.append(sp)
+
+        # Services
+        for svc_key in (c.get("services") or {}).keys():
+            parts.append(svc_key)
+
+        # Materials used
+        for pkg_mats in (c.get("materials_used") or {}).values():
+            if isinstance(pkg_mats, dict):
+                parts.extend(pkg_mats.values())
+
+        # Legal / registration info
+        legal = c.get("legal_info") or {}
+        if legal.get("year_established"):
+            parts.append(str(legal["year_established"]))
+
+        return " ".join(str(p) for p in parts if p)
+
+    def _supplier_document(self, s: dict) -> str:
+        """Build a rich text document for one supplier."""
+        parts: list[str] = []
+        parts.append(s.get("supplier_name", ""))
+        parts.append(s.get("description") or "")
+        parts.append(s.get("city", ""))
+        parts.append(s.get("area", ""))
+        parts.extend(s.get("cities_served", []))
+        for mat in s.get("materials", []):
+            parts.extend([
+                mat.get("name", ""),
+                mat.get("category", ""),
+                mat.get("brand", ""),
+                mat.get("description", ""),
+            ])
+        return " ".join(str(p) for p in parts if p)
+
+    def build(self):
+        """(Re)build the TF-IDF index from the JSON datasets."""
+        companies = read_json(companies_dataset_path())
+        suppliers = read_json(suppliers_dataset_path())
+
+        if not isinstance(companies, list):
+            companies = []
+        if not isinstance(suppliers, list):
+            suppliers = []
+
+        companies = [c for c in companies if isinstance(c, dict) and c.get("company_id")]
+        suppliers = [s for s in suppliers if isinstance(s, dict) and s.get("supplier_id")]
+
+        company_docs = [_tokenize(self._company_document(c)) for c in companies]
+        supplier_docs = [_tokenize(self._supplier_document(s)) for s in suppliers]
+
+        all_docs = company_docs + supplier_docs
+        idf, all_vecs = _build_tfidf(all_docs)
+
+        with self._lock:
+            self._companies = companies
+            self._suppliers = suppliers
+            self._idf = idf
+            self._company_vecs = all_vecs[: len(company_docs)]
+            self._supplier_vecs = all_vecs[len(company_docs) :]
+            self._built = True
+
+        logger.info(
+            "Embedding index built: %d companies, %d suppliers, %d unique terms",
+            len(companies), len(suppliers), len(idf),
+        )
+
+    def _query_vec(self, query_tokens: list[str]) -> dict[str, float]:
+        """Build a TF-IDF vector for a query using the corpus IDF weights."""
+        if not query_tokens:
+            return {}
+        freq = Counter(query_tokens)
+        max_freq = max(freq.values())
+        return {
+            term: (count / max_freq) * self._idf.get(term, 1.0)
+            for term, count in freq.items()
+        }
+
+    def search_companies(self, query: str, top_k: int = 5) -> list[tuple[dict, float]]:
+        if not self._built:
+            self.build()
+        qvec = self._query_vec(_tokenize(query))
+        with self._lock:
+            scored = [
+                (c, _cosine(qvec, vec))
+                for c, vec in zip(self._companies, self._company_vecs)
+            ]
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return scored[:top_k]
+
+    def search_suppliers(self, query: str, top_k: int = 5) -> list[tuple[dict, float]]:
+        if not self._built:
+            self.build()
+        qvec = self._query_vec(_tokenize(query))
+        with self._lock:
+            scored = [
+                (s, _cosine(qvec, vec))
+                for s, vec in zip(self._suppliers, self._supplier_vecs)
+            ]
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return scored[:top_k]
+
+    def get_all_companies(self) -> list[dict]:
+        if not self._built:
+            self.build()
+        with self._lock:
+            return list(self._companies)
+
+    def get_all_suppliers(self) -> list[dict]:
+        if not self._built:
+            self.build()
+        with self._lock:
+            return list(self._suppliers)
+
+
+# Module-level singleton — built once when the server starts
+_INDEX = _EmbeddingIndex()
+
+
+def rebuild_index():
+    """Call this if the JSON datasets change at runtime."""
+    _INDEX.build()
+
+
+# ── Intent extraction (used as a query boost signal) ─────────────────────────
 
 def _parse_budget(text: str) -> tuple[float | None, float | None]:
     """Extract numeric budget range from text like '8M-12M' or '8000000'."""
@@ -207,171 +422,140 @@ def _extract_intent(messages: list[dict]) -> dict:
     return intent
 
 
-def _score_company(company: dict, intent: dict) -> float:
-    """Score a company 0-100 based on how well it matches the intent."""
-    score = 50.0  # base
+def _boost_company(company: dict, intent: dict, embed_score: float) -> float:
+    """
+    Combine TF-IDF cosine score with structural signals (city match, budget,
+    rating, experience) to produce a final 0-100 relevance score.
+    """
+    # Base from TF-IDF (0-1 → 0-60 points)
+    score = embed_score * 60.0
 
-    # City match
-    op_areas = company.get("operational_areas", {})
-    flat = company.get("flattened_operational_areas", [])
-
-    company_cities = set()
-    for c in (list(op_areas.keys()) if isinstance(op_areas, dict) else []):
-        company_cities.add(c.lower())
-    for row in flat:
+    # Exact city match boost
+    company_cities: set[str] = set()
+    for row in company.get("flattened_operational_areas", []):
         if row.get("city"):
             company_cities.add(row["city"].lower())
+    for c_key in (company.get("operational_areas") or {}).keys():
+        company_cities.add(c_key.lower())
 
-    if intent["city"]:
-        if intent["city"].lower() in company_cities:
-            score += 20
-        else:
-            score -= 15
+    if intent["city"] and intent["city"].lower() in company_cities:
+        score += 20.0
+    elif intent["city"] and not company_cities:
+        pass  # no location data, don't penalise
+    elif intent["city"]:
+        score -= 10.0
 
-    # Area match
-    if intent["area"] and flat:
-        area_lower = intent["area"].lower()
-        areas_in_company = set()
-        for row in flat:
-            if row.get("area"):
-                areas_in_company.add(row["area"].lower())
-            if row.get("subarea"):
-                areas_in_company.add(row["subarea"].lower())
-        if any(area_lower in a for a in areas_in_company):
-            score += 15
-
-    # Budget match (price per sqft vs total budget)
+    # Budget compatibility (rough: avg_price/sqft × 1000–2000 sqft)
     if intent["budget_min"] is not None:
-        prices = [r.get("price_per_sqft", 0) for r in flat if isinstance(r.get("price_per_sqft"), (int, float))]
+        prices = [
+            r.get("price_per_sqft", 0)
+            for r in company.get("flattened_operational_areas", [])
+            if isinstance(r.get("price_per_sqft"), (int, float))
+        ]
         if prices:
             avg_price = sum(prices) / len(prices)
-            # Rough: 5 marla = ~1125 sqft, assume mid-size
             est_min = avg_price * 1000
             est_max = avg_price * 2000
-            if intent["budget_min"] and intent["budget_max"]:
-                if est_min <= intent["budget_max"] and est_max >= intent["budget_min"]:
-                    score += 15
-                else:
-                    score -= 10
+            if est_min <= (intent["budget_max"] or float("inf")) and est_max >= intent["budget_min"]:
+                score += 10.0
+            else:
+                score -= 8.0
 
-    # Rating boost
-    rating = company.get("customer_feedback", {}).get("average_rating", 0)
+    # Rating
+    rating = (company.get("customer_feedback") or {}).get("average_rating", 0)
     if rating >= 4.5:
-        score += 10
+        score += 8.0
     elif rating >= 4.0:
-        score += 5
+        score += 4.0
 
-    # AI scores
-    ai = company.get("ai_scores", {})
+    # AI reliability scores
+    ai = company.get("ai_scores") or {}
     for key in ["timeline_reliability", "budget_accuracy", "quality_consistency"]:
         val = ai.get(key, 0)
         if isinstance(val, (int, float)):
-            score += val * 3  # 0-1 range → 0-3 points each
+            score += val * 2.0  # 0-1 → 0-2 each
 
-    # Experience
-    completed = company.get("experience", {}).get("houses_completed", 0)
-    if completed >= 50:
-        score += 5
-    elif completed >= 20:
-        score += 3
-
-    return max(0, min(100, score))
+    return max(0.0, min(100.0, score))
 
 
-def _score_supplier(supplier: dict, intent: dict) -> float:
-    """Score a supplier 0-100 based on intent."""
-    score = 50.0
+def _boost_supplier(supplier: dict, intent: dict, embed_score: float) -> float:
+    """
+    Combine TF-IDF cosine score with city match and rating signals.
+    """
+    score = embed_score * 60.0
 
-    # City match
     cities_served = [c.lower() for c in supplier.get("cities_served", [])]
-    if intent["city"]:
-        if intent["city"].lower() in cities_served:
-            score += 20
-        else:
-            score -= 15
+    if intent["city"] and intent["city"].lower() in cities_served:
+        score += 20.0
+    elif intent["city"] and cities_served:
+        score -= 10.0
 
-    # Material keyword match
-    materials = supplier.get("materials", [])
-    mat_names = " ".join(m.get("name", "").lower() + " " + m.get("category", "").lower() for m in materials)
-    matched_keywords = 0
-    for kw in intent.get("material_keywords", []):
-        if kw in mat_names:
-            matched_keywords += 1
-    if matched_keywords > 0:
-        score += min(20, matched_keywords * 8)
-
-    # Rating
     rating = supplier.get("rating", 0)
     if rating >= 4.5:
-        score += 10
+        score += 8.0
     elif rating >= 4.0:
-        score += 5
+        score += 4.0
 
-    # Variety of materials
-    if len(materials) >= 6:
-        score += 5
+    # More material variety = more useful
+    mat_count = len(supplier.get("materials", []))
+    if mat_count >= 6:
+        score += 4.0
+    elif mat_count >= 3:
+        score += 2.0
 
-    return max(0, min(100, score))
+    return max(0.0, min(100.0, score))
+
 
 
 def get_recommendations(messages: list[dict]) -> dict:
-    """Return top 3 recommendations based on conversation history."""
+    """
+    Return top recommendations using TF-IDF embedding similarity +
+    structural boosting signals (city, budget, rating).
+    """
     intent = _extract_intent(messages)
+    query = " ".join(m.get("content", "") for m in messages if m.get("role") == "user")
 
     results: list[dict] = []
 
     if intent["needs_company"]:
-        companies = read_json(companies_dataset_path())
-        if isinstance(companies, list):
-            for c in companies:
-                if not isinstance(c, dict) or not c.get("company_id"):
-                    continue
-                sc = _score_company(c, intent)
-                results.append({
-                    "type": "company",
-                    "id": c["company_id"],
-                    "name": c.get("company_name", "Unknown"),
-                    "score": round(sc),
-                    "location": ", ".join(list(c.get("operational_areas", {}).keys())[:2]) if isinstance(c.get("operational_areas"), dict) else "Pakistan",
-                    "rating": c.get("customer_feedback", {}).get("average_rating", 0),
-                    "reviews": c.get("customer_feedback", {}).get("review_count", 0),
-                    "specializations": c.get("experience", {}).get("specializations", [])[:3],
-                    "price_range": _get_company_price_range(c),
-                    "completed_projects": c.get("experience", {}).get("houses_completed", 0),
-                })
+        candidates = _INDEX.search_companies(query, top_k=10)
+        for c, embed_score in candidates:
+            sc = _boost_company(c, intent, embed_score)
+            results.append({
+                "type": "company",
+                "id": c["company_id"],
+                "name": c.get("company_name", "Unknown"),
+                "score": round(sc),
+                "location": ", ".join(list((c.get("operational_areas") or {}).keys())[:2]) or "Pakistan",
+                "rating": (c.get("customer_feedback") or {}).get("average_rating", 0),
+                "reviews": (c.get("customer_feedback") or {}).get("review_count", 0),
+                "specializations": (c.get("experience") or {}).get("specializations", [])[:3],
+                "price_range": _get_company_price_range(c),
+                "completed_projects": (c.get("experience") or {}).get("houses_completed", 0),
+            })
 
     if intent["needs_supplier"]:
-        suppliers = read_json(suppliers_dataset_path())
-        if isinstance(suppliers, list):
-            for s in suppliers:
-                if not isinstance(s, dict) or not s.get("supplier_id"):
-                    continue
-                sc = _score_supplier(s, intent)
-                categories = list(set(m.get("category", "") for m in s.get("materials", [])))
-                results.append({
-                    "type": "supplier",
-                    "id": s["supplier_id"],
-                    "name": s.get("supplier_name", "Unknown"),
-                    "score": round(sc),
-                    "location": s.get("location", {}).get("city", "Pakistan"),
-                    "rating": s.get("rating", 0),
-                    "reviews": s.get("review_count", 0),
-                    "categories": categories[:5],
-                    "materials_count": len(s.get("materials", [])),
-                })
+        candidates = _INDEX.search_suppliers(query, top_k=10)
+        for s, embed_score in candidates:
+            sc = _boost_supplier(s, intent, embed_score)
+            categories = list(set(m.get("category", "") for m in s.get("materials", [])))
+            results.append({
+                "type": "supplier",
+                "id": s["supplier_id"],
+                "name": s.get("supplier_name", "Unknown"),
+                "score": round(sc),
+                "location": s.get("city") or (s.get("location") or {}).get("city", "Pakistan"),
+                "rating": s.get("rating", 0),
+                "reviews": s.get("review_count", 0),
+                "categories": [c for c in categories if c][:5],
+                "materials_count": len(s.get("materials", [])),
+            })
 
-    # Sort by score descending, take top 3
     results.sort(key=lambda x: x["score"], reverse=True)
     top = results[:3]
 
-    # Build response message
     response_text = _build_response_text(top, intent)
-
-    return {
-        "intent": intent,
-        "recommendations": top,
-        "response": response_text,
-    }
+    return {"intent": intent, "recommendations": top, "response": response_text}
 
 
 def _get_company_price_range(company: dict) -> str:
@@ -480,11 +664,43 @@ def _call_openrouter(system_prompt: str, messages: list[dict]) -> str:
 
 
 def _build_rag_context(recommendations: list[dict]) -> str:
-    """Format top recommendations as context to inject into the system prompt."""
-    if not recommendations:
-        return ""
+    """
+    Format top recommendations + a brief catalog overview as grounding context
+    injected into the system prompt.
+    """
+    lines: list[str] = []
 
-    lines = ["\n\n--- RECOMMENDED MATCHES FROM DATABASE ---"]
+    # --- Full catalog overview so the LLM knows what exists ------------------
+    try:
+        all_companies = _INDEX.get_all_companies()
+        all_suppliers = _INDEX.get_all_suppliers()
+
+        if all_companies:
+            cities_set: set[str] = set()
+            for c in all_companies:
+                for row in c.get("flattened_operational_areas", []):
+                    if row.get("city"):
+                        cities_set.add(row["city"])
+                for ck in (c.get("operational_areas") or {}).keys():
+                    cities_set.add(ck)
+
+            lines.append(
+                f"\n\n--- PLATFORM CATALOG OVERVIEW ---\n"
+                f"Total construction companies available: {len(all_companies)}\n"
+                f"Total material suppliers available: {len(all_suppliers)}\n"
+                f"Cities covered: {', '.join(sorted(cities_set)[:20])}"
+            )
+    except Exception:
+        pass
+
+    # --- Top matched records -------------------------------------------------
+    if not recommendations:
+        lines.append("\n\nNo specific matches found for this query yet. Ask the user for more details.")
+        lines.append("--- END OF DATABASE CONTEXT ---")
+        lines.append("Only reference real companies and suppliers shown above. Do not invent others.")
+        return "\n".join(lines)
+
+    lines.append("\n\n--- TOP RECOMMENDED MATCHES FROM DATABASE ---")
     for i, rec in enumerate(recommendations, 1):
         if rec["type"] == "company":
             lines.append(

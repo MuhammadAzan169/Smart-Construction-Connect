@@ -65,7 +65,7 @@ export default function UsersPage() {
   useEffect(() => {
     api.admin
       .getUsers()
-      .then((d) => setUsers(d as UserRow[]))
+      .then((d) => setUsers((d.items ?? []) as UserRow[]))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);

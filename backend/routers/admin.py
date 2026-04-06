@@ -1,7 +1,8 @@
 """Admin routes — all endpoints require admin role."""
 
 from __future__ import annotations
-from fastapi import APIRouter, Depends, HTTPException
+import logging
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from backend.utils.auth_deps import require_admin
@@ -18,13 +19,32 @@ from backend.utils.data_handler import (
 )
 from backend.utils.events import event_bus, Events
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 
 
 @router.get("/users")
-def list_all_users():
-    """Return all registered users (passwords stripped), with fields mapped for frontend."""
+def list_all_users(
+    page: int = Query(1, ge=1),
+    limit: int = Query(0, ge=0, le=500),
+    role: str = Query("", description="Filter by role"),
+    status: str = Query("", description="Filter by status"),
+):
+    """Return all registered users (passwords stripped), with optional pagination."""
     users = get_all_users()
+
+    if role:
+        users = [u for u in users if u.get("role") == role]
+    if status:
+        users = [u for u in users if u.get("status") == status]
+
+    total = len(users)
+
+    if limit > 0:
+        start = (page - 1) * limit
+        users = users[start:start + limit]
+
     result = []
     for u in users:
         result.append({
@@ -39,7 +59,7 @@ def list_all_users():
             "user_id": u.get("user_id") or u.get("id", ""),
             "display_name": u.get("display_name") or u.get("name", ""),
         })
-    return result
+    return {"items": result, "total": total, "page": page, "limit": limit}
 
 
 @router.get("/activity")

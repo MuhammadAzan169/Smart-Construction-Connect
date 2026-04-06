@@ -1,7 +1,8 @@
 """Company CRUD routes — backed by Database/construction/companies.json."""
 
 from __future__ import annotations
-from fastapi import APIRouter, Depends, HTTPException
+import logging
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from typing import Any
 
@@ -14,6 +15,8 @@ from backend.utils.data_handler import (
 )
 from backend.utils.events import event_bus, Events
 from backend.utils.embeddings import update_entity_embedding
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/companies", tags=["companies"])
 
@@ -36,9 +39,31 @@ def _find_company(companies: list[dict], *, company_id: str | None = None, slug:
 
 
 @router.get("/")
-def list_companies():
-    """Return all companies."""
-    return _load_companies()
+def list_companies(
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(0, ge=0, le=500, description="Items per page (0 = all)"),
+    city: str = Query("", description="Filter by city"),
+    verified: bool | None = Query(None, description="Filter by verified status"),
+):
+    """Return companies with optional pagination and filtering."""
+    items = _load_companies()
+
+    # Filtering
+    if city:
+        city_lower = city.lower()
+        items = [c for c in items if city_lower in (c.get("city") or "").lower()]
+    if verified is not None:
+        target = "verified" if verified else "pending"
+        items = [c for c in items if c.get("verification_status") == target]
+
+    total = len(items)
+
+    # Pagination (limit=0 means return all for backward compat)
+    if limit > 0:
+        start = (page - 1) * limit
+        items = items[start:start + limit]
+
+    return {"items": items, "total": total, "page": page, "limit": limit}
 
 
 @router.get("/{company_id}")

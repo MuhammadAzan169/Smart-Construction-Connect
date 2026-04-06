@@ -1,10 +1,11 @@
 """Authentication routes — signup & login backed by per-role users.json files."""
 
 from __future__ import annotations
+import logging
 import uuid
 from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 try:
     import bcrypt
@@ -12,6 +13,7 @@ try:
 except ImportError:  # pragma: no cover
     _BCRYPT_AVAILABLE = False
 
+from backend.utils.auth_deps import create_access_token
 from backend.utils.data_handler import (
     find_user_by_email,
     add_user,
@@ -26,44 +28,62 @@ from backend.utils.data_handler import (
 from backend.utils.events import event_bus, Events
 from backend.utils.embeddings import update_entity_embedding
 
+logger = logging.getLogger(__name__)
+
+
 def _hash_password(plain: str) -> str:
-    """Return a bcrypt hash when available, otherwise a clearly-marked plaintext fallback."""
-    if _BCRYPT_AVAILABLE:
-        return bcrypt.hashpw(plain.encode(), bcrypt.gensalt()).decode()
-    # bcrypt not installed — store plaintext with a clear marker so it can be
-    # detected and re-hashed once bcrypt is available.
-    return f"__PLAINTEXT__{plain}__HASH_BEFORE_PRODUCTION__"
+    """Return a bcrypt hash. Raises if bcrypt is not installed."""
+    if not _BCRYPT_AVAILABLE:
+        raise RuntimeError(
+            "bcrypt is required for password hashing. Install it: pip install bcrypt"
+        )
+    return bcrypt.hashpw(plain.encode(), bcrypt.gensalt()).decode()
 
 
 def _verify_password(plain: str, stored: str) -> bool:
-    """Verify a password against either a bcrypt hash or a legacy plaintext value."""
+    """Verify a password against a bcrypt hash. Rejects legacy plaintext."""
     if stored.startswith("$2b$") or stored.startswith("$2a$"):
         if not _BCRYPT_AVAILABLE:
             return False
         return bcrypt.checkpw(plain.encode(), stored.encode())
-    # Legacy plaintext fallback — used only when bcrypt was not available at signup time
-    if stored.startswith("__PLAINTEXT__"):
-        extracted = stored.replace("__PLAINTEXT__", "").replace("__HASH_BEFORE_PRODUCTION__", "")
-        return extracted == plain
-    return stored == plain
+    # Reject any non-bcrypt hash — legacy plaintext passwords must be re-hashed
+    logger.warning("Rejected login attempt with non-bcrypt password hash")
+    return False
 
 
 
 class LoginRequest(BaseModel):
-    email: str
-    password: str
-    role: str
+    email: str = Field(..., min_length=3, max_length=255)
+    password: str = Field(..., min_length=1)
+    role: str = Field(..., pattern=r"^(client|company|supplier|admin)$")
 
 
 class SignupRequest(BaseModel):
-    name: str
-    email: str
-    password: str
-    role: str
+    name: str = Field(..., min_length=2, max_length=200)
+    email: str = Field(..., min_length=3, max_length=255)
+    password: str = Field(..., min_length=8, max_length=128)
+    role: str = Field(..., pattern=r"^(client|company|supplier|admin)$")
     phone: str = ""
 
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v: str) -> str:
+        v = v.strip().lower()
+        if "@" not in v or "." not in v.split("@")[-1]:
+            raise ValueError("Invalid email format")
+        return v
 
-class UserResponse(BaseModel):
+    @field_validator("password")
+    @classmethod
+    def validate_password_strength(cls, v: str) -> str:
+        if not any(c.isupper() for c in v):
+            raise ValueError("Password must contain at least one uppercase letter")
+        if not any(c.isdigit() for c in v):
+            raise ValueError("Password must contain at least one digit")
+        return v
+
+
+class LoginResponse(BaseModel):
     user_id: str
     display_name: str
     email: str
@@ -72,10 +92,12 @@ class UserResponse(BaseModel):
     phone: str | None = None
     company_slug: str | None = None
     supplier_slug: str | None = None
+    access_token: str
+    token_type: str = "bearer"
 
 
-def _user_to_response(user: dict) -> UserResponse:
-    return UserResponse(
+def _user_to_login_response(user: dict, token: str) -> LoginResponse:
+    return LoginResponse(
         user_id=user.get("user_id", user.get("id", "")),
         display_name=user.get("display_name", user.get("name", "")),
         email=user.get("email", ""),
@@ -84,13 +106,14 @@ def _user_to_response(user: dict) -> UserResponse:
         phone=user.get("phone"),
         company_slug=user.get("company_slug", user.get("companyFile")),
         supplier_slug=user.get("supplier_slug", user.get("supplierFile")),
+        access_token=token,
     )
 
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
-@router.post("/login", response_model=UserResponse)
+@router.post("/login", response_model=LoginResponse)
 def login(req: LoginRequest):
     user = find_user_by_email(req.email)
     if not user:
@@ -103,10 +126,12 @@ def login(req: LoginRequest):
     if user.get("role") != req.role:
         raise HTTPException(status_code=401, detail="Role mismatch")
 
-    return _user_to_response(user)
+    token = create_access_token({"sub": user["email"], "role": user["role"]})
+    logger.info("User logged in: %s (%s)", user["email"], user["role"])
+    return _user_to_login_response(user, token)
 
 
-@router.post("/signup", response_model=UserResponse)
+@router.post("/signup", response_model=LoginResponse)
 def signup(req: SignupRequest):
     existing = find_user_by_email(req.email)
     if existing:
@@ -198,7 +223,9 @@ def signup(req: SignupRequest):
         update_entity_embedding(user_id, "supplier")
         event_bus.publish_sync(Events.SUPPLIER_REGISTERED, {"slug": slug, "name": req.name}, actor=req.email)
 
-    return _user_to_response(new_user)
+    token = create_access_token({"sub": new_user["email"], "role": new_user["role"]})
+    logger.info("New user signed up: %s (%s)", req.email, req.role)
+    return _user_to_login_response(new_user, token)
 
 
 # ── Profile management ────────────────────────────────────────────────────────

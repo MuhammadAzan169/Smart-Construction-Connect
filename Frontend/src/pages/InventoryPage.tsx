@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 import { GlassCard } from "@/components/shared/GlassCard";
-import { StaggerList, StaggerItem } from "@/components/shared/AnimationPrimitives";
+import { StaggerList, StaggerItem, ConfirmModal } from "@/components/shared/AnimationPrimitives";
 import { StatCard } from "@/components/shared/StatCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -130,6 +130,8 @@ export default function InventoryPage() {
     setMaterials((prev) => prev.filter((_, i) => i !== idx));
     setDirty(true);
   };
+
+  const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
 
   const addMaterial = () => {
     if (!addForm.name.trim() || !addForm.category.trim()) return;
@@ -279,7 +281,7 @@ export default function InventoryPage() {
                     <Button type="button" variant="secondary" size="sm" onClick={() => startEdit(idx)}>
                       <Edit2 className="h-3.5 w-3.5" /> Edit
                     </Button>
-                    <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => removeMaterial(idx)}>
+                    <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => setDeleteIdx(idx)}>
                       <Trash2 className="h-3.5 w-3.5" /> Remove
                     </Button>
                   </div>
@@ -408,6 +410,16 @@ export default function InventoryPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmModal
+        open={deleteIdx !== null}
+        onOpenChange={(open) => { if (!open) setDeleteIdx(null); }}
+        title="Remove material?"
+        description="This material will be removed from your inventory. Save to persist the change."
+        confirmText="Remove"
+        variant="destructive"
+        onConfirm={() => { if (deleteIdx !== null) { removeMaterial(deleteIdx); setDeleteIdx(null); } }}
+      />
     </motion.div>
   );
 }

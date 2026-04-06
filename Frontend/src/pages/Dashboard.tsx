@@ -7,7 +7,7 @@ import { StatCard } from "@/components/shared/StatCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StaggerList, StaggerItem, SectionReveal } from "@/components/shared/AnimationPrimitives";
+import { StaggerList, StaggerItem, SectionReveal, SkeletonCard } from "@/components/shared/AnimationPrimitives";
 import { TiltCard } from "@/components/shared/TiltCard";
 import { api } from "@/lib/api";
 import type { QuoteRequest } from "@/lib/api";
@@ -38,7 +38,7 @@ function ClientDashboard() {
 
   useEffect(() => {
     Promise.all([
-      api.companies.list().then(setCompanies).catch(() => {}),
+      api.companies.list().then((res) => setCompanies(res.items)).catch(() => {}),
       api.requests.stats().then((s) => setRequestStats(s as typeof requestStats)).catch(() => {}),
       api.requests.list().then((r) => setRecentRequests(r.slice(0, 5))).catch(() => {}),
     ]).finally(() => setLoading(false));
@@ -168,7 +168,7 @@ function ClientDashboard() {
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {loading ? (
-                <p className="col-span-2 py-8 text-center text-sm text-muted-foreground">Loading companies…</p>
+                <>{[0,1].map(i => <SkeletonCard key={i} className="rounded-2xl" />)}</>
               ) : topPicks.length === 0 ? (
                 <p className="col-span-2 py-8 text-center text-sm text-muted-foreground">No companies found.</p>
               ) : topPicks.map((c, i) => (
@@ -237,7 +237,7 @@ function ClientDashboard() {
 
           <div className="mt-4 flex-1">
             {loading ? (
-              <p className="py-8 text-center text-sm text-muted-foreground">Loading…</p>
+              <div className="space-y-3">{[0,1,2].map(i => <SkeletonCard key={i} className="rounded-xl" />)}</div>
             ) : recentRequests.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border p-6 text-center">
                 <FileText className="h-8 w-8 text-muted-foreground/40" />
@@ -600,7 +600,7 @@ function AdminDashboard() {
     Promise.all([
       api.admin.getStats().then(setStats).catch(() => {}),
       api.admin.getActivity().then(setActivity).catch(() => {}),
-      api.admin.getUsers().then((users) => setPendingUsers(users.filter((u) => u.status?.toLowerCase() === "pending").slice(0, 5) as typeof pendingUsers)).catch(() => {}),
+      api.admin.getUsers().then((res) => setPendingUsers((res.items ?? []).filter((u: { status?: string }) => u.status?.toLowerCase() === "pending").slice(0, 5) as typeof pendingUsers)).catch(() => {}),
     ]).finally(() => setLoading(false));
   }, []);
 

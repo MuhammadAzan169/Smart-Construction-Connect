@@ -50,6 +50,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const raw = await api.auth.login(email, password, role);
       const user = { ...raw, id: raw.user_id, name: raw.display_name, companyFile: raw.company_slug, supplierFile: raw.supplier_slug };
+      // Save JWT token separately for the API client
+      if (raw.access_token) {
+        localStorage.setItem('scc_token', raw.access_token);
+      }
       localStorage.setItem('scc_user', JSON.stringify(user));
       set({ user, isAuthenticated: true, loading: false });
     } catch (err) {
@@ -63,6 +67,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const raw = await api.auth.signup(name, email, password, role, phone);
       const user = { ...raw, id: raw.user_id, name: raw.display_name, companyFile: raw.company_slug, supplierFile: raw.supplier_slug };
+      if (raw.access_token) {
+        localStorage.setItem('scc_token', raw.access_token);
+      }
       localStorage.setItem('scc_user', JSON.stringify(user));
       set({ user, isAuthenticated: true, loading: false });
     } catch (err) {
@@ -73,6 +80,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   logout: () => {
     localStorage.removeItem('scc_user');
+    localStorage.removeItem('scc_token');
     set({ user: null, isAuthenticated: false });
   },
   clearError: () => set({ error: null }),

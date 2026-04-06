@@ -10,6 +10,7 @@ Frontend (SPA) is served from Frontend/dist/ for every other route.
 
 from __future__ import annotations
 
+import logging
 import sys, subprocess, time
 from pathlib import Path
 
@@ -17,6 +18,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+from backend.config import CORS_ORIGINS, setup_logging
+
+# Initialise structured logging before anything else
+setup_logging()
+logger = logging.getLogger(__name__)
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -38,14 +45,18 @@ app = FastAPI(
     description="Unified API + frontend for the Smart Construction Connect platform",
 )
 
+# ── Global exception handler ──
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error("Unhandled error on %s %s: %s", request.method, request.url.path, exc, exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"},
+    )
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -73,8 +84,10 @@ def health():
 @app.on_event("startup")
 def on_startup():
     from backend.utils.embeddings import initialize_embeddings
+    from backend.utils.rag_engine import rebuild_index
     count = initialize_embeddings()
-    print(f"[app] Embeddings initialized: {count} entities indexed")
+    rebuild_index()
+    logger.info("Embeddings initialized: %d entities indexed", count)
 
 
 @app.get("/")

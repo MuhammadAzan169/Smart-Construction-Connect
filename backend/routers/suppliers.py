@@ -1,7 +1,8 @@
 """Supplier CRUD routes — backed by Database/suppliers/catalog.json."""
 
 from __future__ import annotations
-from fastapi import APIRouter, Depends, HTTPException
+import logging
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from typing import Any
 
@@ -12,6 +13,8 @@ from backend.utils.data_handler import (
     suppliers_dataset_path,
     add_activity_log,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/suppliers", tags=["suppliers"])
 
@@ -34,9 +37,29 @@ def _find_supplier(suppliers: list[dict], *, supplier_id: str | None = None, slu
 
 
 @router.get("/")
-def list_suppliers():
-    """Return all suppliers."""
-    return _load_suppliers()
+def list_suppliers(
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(0, ge=0, le=500, description="Items per page (0 = all)"),
+    city: str = Query("", description="Filter by city"),
+    verified: bool | None = Query(None, description="Filter by verified status"),
+):
+    """Return suppliers with optional pagination and filtering."""
+    items = _load_suppliers()
+
+    if city:
+        city_lower = city.lower()
+        items = [s for s in items if city_lower in (s.get("city") or "").lower()]
+    if verified is not None:
+        target = "verified" if verified else "pending"
+        items = [s for s in items if s.get("verification_status") == target]
+
+    total = len(items)
+
+    if limit > 0:
+        start = (page - 1) * limit
+        items = items[start:start + limit]
+
+    return {"items": items, "total": total, "page": page, "limit": limit}
 
 
 @router.get("/profile/{slug}")

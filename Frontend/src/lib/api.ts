@@ -4,6 +4,11 @@ const REQUEST_TIMEOUT_MS = 15_000;
 
 function _authHeaders(): Record<string, string> {
   try {
+    const token = localStorage.getItem("scc_token");
+    if (token) {
+      return { Authorization: `Bearer ${token}` };
+    }
+    // Legacy fallback — will be removed in a future release
     const stored = localStorage.getItem("scc_user");
     if (stored) {
       const user = JSON.parse(stored) as { email?: string; role?: string };
@@ -54,6 +59,8 @@ export interface UserResponse {
   phone?: string | null;
   company_slug?: string | null;
   supplier_slug?: string | null;
+  access_token?: string;
+  token_type?: string;
 }
 
 export interface AdminUser {
@@ -149,7 +156,15 @@ export const api = {
   },
 
   companies: {
-    list: () => request<Record<string, unknown>[]>("/companies/"),
+    list: (params?: { page?: number; limit?: number; city?: string; verified?: boolean }) => {
+      const qs = new URLSearchParams();
+      if (params?.page) qs.set("page", String(params.page));
+      if (params?.limit) qs.set("limit", String(params.limit));
+      if (params?.city) qs.set("city", params.city);
+      if (params?.verified !== undefined) qs.set("verified", String(params.verified));
+      const suffix = qs.toString() ? `?${qs.toString()}` : "";
+      return request<{ items: Record<string, unknown>[]; total: number; page: number; limit: number }>(`/companies/${suffix}`);
+    },
     get: (id: string) => request<Record<string, unknown>>(`/companies/${encodeURIComponent(id)}`),
     getProfile: (slug: string) =>
       request<Record<string, unknown>>(`/companies/profile/${encodeURIComponent(slug)}`),
@@ -171,7 +186,15 @@ export const api = {
   },
 
   suppliers: {
-    list: () => request<Record<string, unknown>[]>("/suppliers/"),
+    list: (params?: { page?: number; limit?: number; city?: string; verified?: boolean }) => {
+      const qs = new URLSearchParams();
+      if (params?.page) qs.set("page", String(params.page));
+      if (params?.limit) qs.set("limit", String(params.limit));
+      if (params?.city) qs.set("city", params.city);
+      if (params?.verified !== undefined) qs.set("verified", String(params.verified));
+      const suffix = qs.toString() ? `?${qs.toString()}` : "";
+      return request<{ items: Record<string, unknown>[]; total: number; page: number; limit: number }>(`/suppliers/${suffix}`);
+    },
     get: (id: string) => request<Record<string, unknown>>(`/suppliers/${encodeURIComponent(id)}`),
     getProfile: (slug: string) =>
       request<Record<string, unknown>>(`/suppliers/profile/${encodeURIComponent(slug)}`),
@@ -188,7 +211,15 @@ export const api = {
   },
 
   admin: {
-    getUsers: () => request<AdminUser[]>("/admin/users"),
+    getUsers: (params?: { page?: number; limit?: number; role?: string; status?: string }) => {
+      const qs = new URLSearchParams();
+      if (params?.page) qs.set("page", String(params.page));
+      if (params?.limit) qs.set("limit", String(params.limit));
+      if (params?.role) qs.set("role", params.role);
+      if (params?.status) qs.set("status", params.status);
+      const suffix = qs.toString() ? `?${qs.toString()}` : "";
+      return request<{ items: AdminUser[]; total: number; page: number; limit: number }>(`/admin/users${suffix}`);
+    },
     getActivity: () => request<ActivityEntry[]>("/admin/activity"),
     updateUserStatus: (userId: string, status: string) =>
       request<{ status: string }>("/admin/users/status", {

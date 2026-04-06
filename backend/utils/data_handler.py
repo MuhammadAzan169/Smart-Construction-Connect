@@ -14,12 +14,24 @@ New layout (Database/ folder):
     │   ├── users.json
     │   ├── settings.json
     │   └── activity_log.json
+
+Improvements over the original:
+- Atomic writes (write-to-temp + os.replace) prevent data corruption on crash
+- asyncio file locks prevent race conditions on concurrent writes
+- All JSON I/O is centralised here for easy future PostgreSQL migration
 """
 
+import asyncio
 import json
+import logging
+import os
 import re
+import tempfile
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 # ── Root directories ──
 DB_DIR = Path(__file__).resolve().parent.parent.parent / "Database"
@@ -46,22 +58,51 @@ def _ensure_dirs():
 _ensure_dirs()
 
 
-# ── Generic JSON I/O ──
+# ── File-level locking ──
+
+_file_locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
+
+
+def _get_lock(filepath: Path) -> asyncio.Lock:
+    """Return a per-file asyncio lock for safe concurrent access."""
+    return _file_locks[str(filepath)]
+
+
+# ── Generic JSON I/O with atomic writes ──
 
 def read_json(filepath: Path) -> Any:
     if not filepath.exists():
         return []
-    with open(filepath, "r", encoding="utf-8") as f:
-        text = f.read().strip()
-        if not text:
-            return []
-        return json.loads(text)
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            text = f.read().strip()
+            if not text:
+                return []
+            return json.loads(text)
+    except (json.JSONDecodeError, OSError) as e:
+        logger.error("Failed to read JSON from %s: %s", filepath, e)
+        return []
 
 
 def write_json(filepath: Path, data: Any):
+    """Write JSON atomically: write to temp file, then os.replace to target."""
     filepath.parent.mkdir(parents=True, exist_ok=True)
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    fd, tmp_path = tempfile.mkstemp(
+        dir=str(filepath.parent),
+        suffix=".tmp",
+        prefix=".scc_",
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        os.replace(tmp_path, str(filepath))
+    except Exception:
+        # Clean up temp file on failure
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
 
 
 # ── Path helpers ──

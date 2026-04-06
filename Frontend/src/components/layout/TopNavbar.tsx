@@ -1,7 +1,7 @@
 import { useAuthStore } from "@/stores/authStore";
 import { useThemeStore } from "@/stores/themeStore";
-import { Bell, Moon, Sun, LogOut, Search, ArrowLeft } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { Bell, Moon, Sun, LogOut, Search, ArrowLeft, Building2, Package } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { api } from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,8 +25,39 @@ export function TopNavbar() {
   const [showNotif, setShowNotif] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Record<string, unknown>[]>([]);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Close search dropdown on click outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setShowSearch(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Debounced search
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!searchQuery.trim()) { setSearchResults([]); setShowSearch(false); return; }
+    debounceRef.current = setTimeout(async () => {
+      setSearchLoading(true);
+      try {
+        const results = await api.search(searchQuery.trim(), undefined, 8);
+        setSearchResults(results);
+        setShowSearch(true);
+      } catch { setSearchResults([]); }
+      finally { setSearchLoading(false); }
+    }, 300);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [searchQuery]);
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
@@ -73,9 +104,54 @@ export function TopNavbar() {
             </motion.div>
           )}
 
-          <div className="relative hidden max-w-md flex-1 sm:block">
+          <div ref={searchRef} className="relative hidden max-w-md flex-1 sm:block">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search..." className="h-9 bg-background/40 pl-9 transition-all focus:bg-background/60 focus:ring-1 focus:ring-primary/30" />
+            <Input
+              placeholder="Search companies & suppliers..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => { if (searchResults.length) setShowSearch(true); }}
+              className="h-9 bg-background/40 pl-9 transition-all focus:bg-background/60 focus:ring-1 focus:ring-primary/30"
+            />
+            <AnimatePresence>
+              {showSearch && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-0 top-11 z-50 w-full"
+                >
+                  <GlassCard interactive={false} className="max-h-80 overflow-y-auto p-2">
+                    {searchLoading && <p className="px-3 py-2 text-xs text-muted-foreground">Searching...</p>}
+                    {!searchLoading && searchResults.length === 0 && (
+                      <p className="px-3 py-2 text-xs text-muted-foreground">No results found</p>
+                    )}
+                    {searchResults.map((r, i) => (
+                      <motion.button
+                        key={String(r.slug ?? r.id ?? i)}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.03 }}
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-accent"
+                        onClick={() => {
+                          const route = r.type === "supplier" ? `/suppliers/${r.slug ?? r.id}` : `/companies/${r.slug ?? r.id}`;
+                          navigate(route);
+                          setShowSearch(false);
+                          setSearchQuery("");
+                        }}
+                      >
+                        {r.type === "supplier" ? <Package className="h-4 w-4 shrink-0 text-orange-500" /> : <Building2 className="h-4 w-4 shrink-0 text-primary" />}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate font-medium text-foreground">{String(r.name ?? "")}</p>
+                          <p className="truncate text-xs text-muted-foreground">{String(r.location ?? r.city ?? "")} {r.score != null ? `· ${Math.round(Number(r.score) * 100)}% match` : ""}</p>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </GlassCard>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 

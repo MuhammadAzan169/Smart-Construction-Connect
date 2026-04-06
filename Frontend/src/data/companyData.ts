@@ -372,7 +372,9 @@ export async function fetchCompanyDirectory(): Promise<CompanyDirectoryItem[]> {
   try {
     const res = await fetch(COMPANY_API);
     if (!res.ok) throw new Error("Failed to fetch companies");
-    const data = (await res.json()) as CompanyDatasetCompany[];
+    const json = await res.json();
+    // Support both paginated {items: [...]} and legacy array responses
+    const data = (Array.isArray(json) ? json : json.items ?? []) as CompanyDatasetCompany[];
     const dir = data
       .filter((c) => c && typeof c.company_id === "string" && typeof c.company_name === "string")
       .map(_buildDirectoryItem);

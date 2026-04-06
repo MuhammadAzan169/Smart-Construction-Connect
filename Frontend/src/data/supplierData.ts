@@ -63,7 +63,9 @@ export async function fetchSuppliers(): Promise<SupplierDatasetItem[]> {
   try {
     const res = await fetch(SUPPLIER_API);
     if (!res.ok) throw new Error("Failed to fetch suppliers");
-    const data = await res.json();
+    const json = await res.json();
+    // Support both paginated {items: [...]} and legacy array responses
+    const data = Array.isArray(json) ? json : json.items ?? [];
     _cachedSuppliers = data;
     return data;
   } catch {

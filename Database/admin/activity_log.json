@@ -1,5 +1,11 @@
 [
   {
+    "timestamp": "2026-04-06T18:46:46.883532+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat: hi"
+  },
+  {
     "timestamp": "2026-04-06T17:49:39.154662+00:00",
     "action": "ai_chat",
     "target": "test@example.com",
