@@ -1,37 +1,64 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-import { GlassCard } from "@/components/shared/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { api, type Conversation, type Message } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 import {
   ArrowLeft,
-  Circle,
+  CheckCheck,
   MessageSquare,
   Search,
   Send,
-  User,
+  Smile,
 } from "lucide-react";
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60_000);
   if (mins < 1) return "Just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 60) return `${mins}m`;
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
+  if (hrs < 24) return `${hrs}h`;
   const days = Math.floor(hrs / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString();
+  if (days < 7) return `${days}d`;
+  return new Date(iso).toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function getInitials(name: string): string {
+  return name.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
+}
+
+const AVATAR_COLORS = [
+  "from-amber-500 to-orange-500",
+  "from-violet-500 to-purple-600",
+  "from-cyan-500 to-blue-600",
+  "from-emerald-500 to-teal-600",
+  "from-rose-500 to-pink-600",
+  "from-indigo-500 to-blue-500",
+];
+
+function avatarColor(str: string): string {
+  let hash = 0;
+  for (const c of str) hash = (hash * 31 + c.charCodeAt(0)) & 0xffff;
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+}
+
+function ChatAvatar({ name, size = "md" }: { name: string; size?: "sm" | "md" | "lg" }) {
+  const initials = getInitials(name) || "?";
+  const color = avatarColor(name);
+  const cls = size === "sm" ? "h-8 w-8 text-xs" : size === "lg" ? "h-12 w-12 text-base" : "h-10 w-10 text-sm";
+  return (
+    <div className={cn("shrink-0 rounded-full bg-gradient-to-br flex items-center justify-center font-bold text-white shadow-sm", cls, color)}>
+      {initials}
+    </div>
+  );
 }
 
 export default function MessagesPage() {
@@ -125,100 +152,127 @@ export default function MessagesPage() {
     ? conversations.filter((c) => getOtherName(c).toLowerCase().includes(search.toLowerCase()))
     : conversations;
 
+  const totalUnread = conversations.reduce((sum, c) => sum + (c.unread[email] ?? 0), 0);
+
   if (!user) return null;
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] gap-0 overflow-hidden rounded-2xl border border-border bg-card">
-      {/* Conversation list */}
+    <div className="flex h-[calc(100vh-5rem)] overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
+
+      {/* ── Conversation Sidebar ── */}
       <div
         className={cn(
           "flex w-full flex-col border-r border-border md:w-80 lg:w-96",
           activeConvo && "hidden md:flex",
         )}
       >
-        <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-          <MessageSquare className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-bold text-foreground">Messages</h2>
-          {conversations.some((c) => (c.unread[email] ?? 0) > 0) && (
-            <Badge variant="destructive" className="ml-auto rounded-full px-2 text-xs">
-              {conversations.reduce((sum, c) => sum + (c.unread[email] ?? 0), 0)}
+        {/* Sidebar header */}
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-bg shadow-sm">
+            <MessageSquare className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-base font-bold text-foreground leading-tight">Messages</h2>
+            <p className="text-[11px] text-muted-foreground leading-tight">
+              {conversations.length} conversation{conversations.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+          {totalUnread > 0 && (
+            <Badge className="rounded-full px-2 py-0.5 text-[11px] font-bold bg-primary text-primary-foreground shadow-sm">
+              {totalUnread}
             </Badge>
           )}
         </div>
 
-        <div className="px-3 py-2">
+        {/* Search */}
+        <div className="px-4 py-3 border-b border-border/60">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search conversations..."
-              className="bg-background/40 pl-9 h-9"
+              className="w-full rounded-xl border border-transparent bg-secondary/50 pl-9 pr-3 h-9 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/30 transition-colors"
             />
           </div>
         </div>
 
+        {/* Conversation list */}
         <div className="flex-1 overflow-y-auto">
           {loading ? (
-            <div className="space-y-2 p-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-16 animate-pulse rounded-xl bg-muted/30" />
+            <div className="space-y-1 p-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center gap-3 rounded-xl p-3">
+                  <div className="h-10 w-10 rounded-full animate-pulse bg-muted/50" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 w-2/3 rounded animate-pulse bg-muted/50" />
+                    <div className="h-2.5 w-4/5 rounded animate-pulse bg-muted/30" />
+                  </div>
+                </div>
               ))}
             </div>
           ) : filteredConvos.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 p-8 text-center">
-              <MessageSquare className="h-10 w-10 text-muted-foreground/30" />
-              <p className="text-sm text-muted-foreground">
-                {search ? "No conversations found." : "No conversations yet."}
+            <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/30">
+                <MessageSquare className="h-7 w-7 text-muted-foreground/40" />
+              </div>
+              <p className="text-sm font-medium text-foreground">
+                {search ? "No results" : "No conversations yet"}
               </p>
-              <p className="text-xs text-muted-foreground">
-                Start a conversation from a company or supplier profile.
+              <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px]">
+                {search ? "Try a different search term." : "Start a conversation from a company or supplier profile."}
               </p>
             </div>
           ) : (
-            <div className="space-y-1 p-2">
+            <div className="p-2 space-y-0.5">
               {filteredConvos.map((convo) => {
                 const unread = convo.unread[email] ?? 0;
                 const isActive = activeConvo === convo.id;
+                const otherName = getOtherName(convo);
                 return (
-                  <button
+                  <motion.button
                     key={convo.id}
                     onClick={() => openConversation(convo.id)}
+                    whileHover={{ x: 2 }}
+                    transition={{ duration: 0.15 }}
                     className={cn(
-                      "flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors",
+                      "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors",
                       isActive
                         ? "bg-primary/10 border border-primary/20"
-                        : "hover:bg-muted/40",
+                        : "hover:bg-secondary/50",
                     )}
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                      <User className="h-5 w-5" />
+                    <div className="relative">
+                      <ChatAvatar name={otherName} size="md" />
+                      {unread > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-primary border-2 border-card" />
+                      )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className={cn("truncate text-sm", unread > 0 ? "font-bold text-foreground" : "font-medium text-foreground")}>
-                          {getOtherName(convo)}
+                      <div className="flex items-center justify-between gap-2 mb-0.5">
+                        <p className={cn("truncate text-sm leading-tight", unread > 0 ? "font-bold text-foreground" : "font-medium text-foreground")}>
+                          {otherName}
                         </p>
                         {convo.last_message && (
-                          <span className="shrink-0 text-[10px] text-muted-foreground">
+                          <span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
                             {timeAgo(convo.last_message.timestamp)}
                           </span>
                         )}
                       </div>
                       <div className="flex items-center justify-between gap-2">
-                        <p className={cn("truncate text-xs", unread > 0 ? "text-foreground" : "text-muted-foreground")}>
+                        <p className={cn("truncate text-xs leading-tight", unread > 0 ? "text-foreground/80" : "text-muted-foreground")}>
                           {convo.last_message
                             ? `${convo.last_message.sender === email ? "You: " : ""}${convo.last_message.content}`
                             : "No messages yet"}
                         </p>
                         {unread > 0 && (
-                          <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+                          <span className="flex shrink-0 items-center justify-center rounded-full bg-primary min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-primary-foreground leading-none">
                             {unread}
                           </span>
                         )}
                       </div>
                     </div>
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
@@ -226,136 +280,170 @@ export default function MessagesPage() {
         </div>
       </div>
 
-      {/* Chat area */}
+      {/* ── Chat Area ── */}
       <div
         className={cn(
-          "flex flex-1 flex-col",
+          "flex flex-1 flex-col min-w-0",
           !activeConvo && "hidden md:flex",
         )}
       >
         {activeConvo && activeConvoData ? (
           <>
             {/* Chat header */}
-            <div className="flex items-center gap-3 border-b border-border px-4 py-3">
+            <div className="flex items-center gap-3 border-b border-border px-5 py-3">
               <Button
                 variant="ghost"
-                size="sm"
-                className="md:hidden"
+                size="icon"
+                className="md:hidden h-8 w-8 rounded-lg"
                 onClick={() => setActiveConvo(null)}
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <User className="h-4 w-4" />
+              <ChatAvatar name={getOtherName(activeConvoData)} size="md" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground truncate leading-tight">
+                  {getOtherName(activeConvoData)}
+                </p>
+                <p className="text-[11px] text-muted-foreground truncate leading-tight">
+                  {getOtherEmail(activeConvoData)}
+                </p>
               </div>
-              <div>
-                <p className="text-sm font-semibold text-foreground">{getOtherName(activeConvoData)}</p>
-                <p className="text-xs text-muted-foreground">{getOtherEmail(activeConvoData)}</p>
+              <div className="flex items-center gap-1.5 text-xs text-emerald-500">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="hidden sm:inline font-medium">Active</span>
               </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div className="flex-1 overflow-y-auto px-5 py-5 space-y-1">
               {messages.length === 0 ? (
-                <div className="flex h-full items-center justify-center">
-                  <p className="text-sm text-muted-foreground">Start the conversation by sending a message.</p>
+                <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+                    <Smile className="h-7 w-7 text-primary/60" />
+                  </div>
+                  <p className="text-sm font-medium text-foreground">Say hello!</p>
+                  <p className="text-xs text-muted-foreground">Send the first message to start the conversation.</p>
                 </div>
               ) : (
                 <>
-                  {messages.map((msg, idx) => {
-                    const isMine = msg.sender === email;
-                    const showDate =
-                      idx === 0 ||
-                      new Date(msg.timestamp).toDateString() !==
-                        new Date(messages[idx - 1].timestamp).toDateString();
-                    return (
-                      <div key={msg.id}>
-                        {showDate && (
-                          <div className="flex justify-center py-2">
-                            <span className="rounded-full bg-muted/50 px-3 py-1 text-[10px] text-muted-foreground">
-                              {new Date(msg.timestamp).toLocaleDateString(undefined, {
-                                weekday: "short",
-                                month: "short",
-                                day: "numeric",
-                              })}
-                            </span>
-                          </div>
-                        )}
-                        <motion.div
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className={cn("flex", isMine ? "justify-end" : "justify-start")}
-                        >
-                          <div
+                  <AnimatePresence initial={false}>
+                    {messages.map((msg, idx) => {
+                      const isMine = msg.sender === email;
+                      const showDate =
+                        idx === 0 ||
+                        new Date(msg.timestamp).toDateString() !==
+                          new Date(messages[idx - 1].timestamp).toDateString();
+                      const prevSame = idx > 0 && messages[idx - 1].sender === msg.sender;
+                      const nextSame = idx < messages.length - 1 && messages[idx + 1].sender === msg.sender;
+
+                      return (
+                        <div key={msg.id}>
+                          {showDate && (
+                            <div className="flex justify-center py-4">
+                              <span className="rounded-full bg-secondary/60 px-3 py-1 text-[10px] font-medium text-muted-foreground">
+                                {new Date(msg.timestamp).toLocaleDateString(undefined, {
+                                  weekday: "short",
+                                  month: "short",
+                                  day: "numeric",
+                                })}
+                              </span>
+                            </div>
+                          )}
+                          <motion.div
+                            initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 0.18 }}
                             className={cn(
-                              "max-w-[75%] rounded-2xl px-4 py-2.5",
-                              isMine
-                                ? "bg-primary text-primary-foreground rounded-br-md"
-                                : "bg-muted text-foreground rounded-bl-md",
+                              "flex items-end gap-2",
+                              isMine ? "justify-end" : "justify-start",
+                              prevSame ? "mt-0.5" : "mt-3",
                             )}
                           >
-                            {!isMine && (
-                              <p className="mb-0.5 text-[10px] font-semibold opacity-70">
-                                {msg.sender_name}
-                              </p>
-                            )}
-                            <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
-                            <div className={cn("mt-1 flex items-center gap-1", isMine ? "justify-end" : "justify-start")}>
-                              <span className={cn("text-[10px]", isMine ? "text-primary-foreground/60" : "text-muted-foreground")}>
-                                {formatTime(msg.timestamp)}
-                              </span>
-                              {isMine && msg.read && (
-                                <Circle className="h-2 w-2 fill-primary-foreground/60 text-primary-foreground/60" />
+                            {!isMine && !nextSame && <ChatAvatar name={getOtherName(activeConvoData)} size="sm" />}
+                            {!isMine && nextSame && <div className="w-8 shrink-0" />}
+
+                            <div
+                              className={cn(
+                                "max-w-[72%] px-4 py-2.5 text-sm leading-relaxed shadow-sm",
+                                isMine
+                                  ? "gradient-bg text-primary-foreground rounded-2xl rounded-br-md"
+                                  : "bg-secondary text-foreground rounded-2xl rounded-bl-md",
                               )}
+                            >
+                              {!isMine && !prevSame && (
+                                <p className="mb-1 text-[10px] font-semibold opacity-60">
+                                  {msg.sender_name}
+                                </p>
+                              )}
+                              <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                              <div className={cn("mt-1 flex items-center gap-1", isMine ? "justify-end" : "justify-start")}>
+                                <span className={cn("text-[10px] tabular-nums", isMine ? "text-primary-foreground/60" : "text-muted-foreground")}>
+                                  {formatTime(msg.timestamp)}
+                                </span>
+                                {isMine && (
+                                  <CheckCheck className={cn("h-3 w-3", msg.read ? "text-primary-foreground/80" : "text-primary-foreground/40")} />
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      </div>
-                    );
-                  })}
+                          </motion.div>
+                        </div>
+                      );
+                    })}
+                  </AnimatePresence>
                   <div ref={messagesEndRef} />
                 </>
               )}
             </div>
 
-            {/* Input */}
-            <div className="border-t border-border p-3">
+            {/* Input bar */}
+            <div className="border-t border-border px-4 py-3">
               <div className="flex items-center gap-2">
-                <Input
-                  ref={inputRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      sendMessage();
-                    }
-                  }}
-                  placeholder="Type a message..."
-                  className="flex-1 bg-background/40"
-                  disabled={sending}
-                />
-                <Button
+                <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-primary/40 transition-colors">
+                  <input
+                    ref={inputRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                      }
+                    }}
+                    placeholder="Type a message..."
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-1.5"
+                    disabled={sending}
+                  />
+                </div>
+                <motion.button
                   onClick={sendMessage}
                   disabled={!input.trim() || sending}
-                  size="sm"
-                  className="shrink-0"
+                  whileHover={{ scale: 1.06 }}
+                  whileTap={{ scale: 0.94 }}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl gradient-bg text-primary-foreground shadow-sm disabled:opacity-40 transition-opacity"
+                  aria-label="Send"
                 >
                   <Send className="h-4 w-4" />
-                </Button>
+                </motion.button>
               </div>
+              <p className="mt-1.5 text-center text-[10px] text-muted-foreground/50">
+                Enter to send · Shift+Enter for new line
+              </p>
             </div>
           </>
         ) : (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <MessageSquare className="h-8 w-8 text-primary/50" />
+          /* Empty state – no convo selected */
+          <div className="flex flex-1 flex-col items-center justify-center gap-5 p-8 text-center">
+            <div className="relative">
+              <div className="flex h-20 w-20 items-center justify-center rounded-3xl gradient-bg shadow-lg">
+                <MessageSquare className="h-10 w-10 text-primary-foreground" />
+              </div>
             </div>
-            <h3 className="text-lg font-semibold text-foreground">Your Messages</h3>
-            <p className="max-w-sm text-center text-sm text-muted-foreground">
-              Select a conversation to view messages, or start a new one from a company or supplier profile.
-            </p>
+            <div>
+              <h3 className="text-lg font-bold text-foreground">Your Messages</h3>
+              <p className="mt-2 max-w-xs text-sm text-muted-foreground leading-relaxed">
+                Select a conversation from the sidebar, or start a new one from a company or supplier profile.
+              </p>
+            </div>
           </div>
         )}
       </div>

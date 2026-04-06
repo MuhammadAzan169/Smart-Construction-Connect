@@ -1,10 +1,9 @@
 import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Bot, User, Send, Star, MapPin, ArrowRight, Building2, Package } from "lucide-react";
+import { ArrowLeft, Bot, User, Send, Star, MapPin, Building2, Package, Wrench, DollarSign, Layers } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
@@ -107,76 +106,108 @@ export default function AIChatPage() {
     [handleSend],
   );
 
+  const SUGGESTED = [
+    "I need a construction company in Lahore for a 5 marla house, budget 80 lacs",
+    "Find me a reliable supplier for steel and cement in Karachi",
+    "Looking for residential builders in Islamabad under 1 crore budget",
+  ];
+
   return (
     <motion.div
-      className="flex h-[calc(100svh-11rem)] gap-6"
+      className="flex h-[calc(100vh-5rem)] gap-5"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.35 }}
     >
-      {/* Chat panel */}
-      <GlassCard interactive={false} className="flex flex-1 flex-col p-0 card-shadow">
+      {/* ── Chat Panel ── */}
+      <GlassCard interactive={false} className="flex flex-1 flex-col p-0 overflow-hidden card-shadow">
+
         {/* Header */}
-        <div className="flex items-center gap-3 border-b border-border px-6 py-4">
+        <div className="relative flex items-center gap-3 border-b border-border px-5 py-4 overflow-hidden">
+          {/* Subtle glow behind bot icon */}
+          <div className="absolute left-0 top-0 h-full w-32 bg-gradient-to-r from-primary/8 to-transparent pointer-events-none" />
           <button
             type="button"
             onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-1 rounded-lg p-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="relative flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             aria-label="Back to dashboard"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Back
           </button>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-bg">
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl gradient-bg shadow-md">
             <Bot className="h-5 w-5 text-primary-foreground" />
+            <div className="absolute inset-0 rounded-xl ring-2 ring-primary/20" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-foreground">AI Construction Assistant</h2>
-            <p className="text-xs text-muted-foreground">Powered by Smart Matching</p>
+            <h2 className="text-sm font-bold text-foreground leading-tight">AI Construction Assistant</h2>
+            <p className="text-[11px] text-muted-foreground leading-tight">Smart matching powered by AI</p>
           </div>
-          <span className="ml-auto flex items-center gap-1.5 text-xs text-success">
-            <span className="h-2 w-2 rounded-full bg-success animate-pulse-ring" />
-            Online
-          </span>
+          <div className="ml-auto flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-medium text-emerald-500">Online</span>
+          </div>
         </div>
 
         {/* Messages */}
         <div
           ref={messagesContainerRef}
-          className="flex-1 space-y-4 overflow-y-auto p-6"
+          className="flex-1 overflow-y-auto px-5 py-5 space-y-3"
           role="log"
           aria-live="polite"
           aria-relevant="additions"
           aria-label="Chat messages"
         >
-          <AnimatePresence>
+          {/* Suggested prompts shown when only the greeting exists */}
+          {messages.length === 1 && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-wrap gap-2 pb-1"
+            >
+              {SUGGESTED.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => { setInput(s); }}
+                  className="rounded-xl border border-border bg-secondary/50 px-3 py-1.5 text-xs text-muted-foreground hover:border-primary/30 hover:bg-secondary hover:text-foreground transition-colors text-left"
+                >
+                  {s}
+                </button>
+              ))}
+            </motion.div>
+          )}
+
+          <AnimatePresence initial={false}>
             {messages.map((msg) => (
               <motion.div
                 key={msg.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
+                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.2 }}
+                className={`flex items-end gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
               >
+                {/* Avatar */}
                 <div
-                  className={
-                    `flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ` +
-                    (msg.role === "ai" ? "gradient-bg" : "bg-secondary")
-                  }
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl shadow-sm ${
+                    msg.role === "ai" ? "gradient-bg" : "bg-secondary border border-border"
+                  }`}
                 >
                   {msg.role === "ai" ? (
                     <Bot className="h-4 w-4 text-primary-foreground" />
                   ) : (
-                    <User className="h-4 w-4 text-secondary-foreground" />
+                    <User className="h-4 w-4 text-muted-foreground" />
                   )}
                 </div>
 
+                {/* Bubble */}
                 <div
-                  className={
-                    `max-w-[75%] rounded-2xl px-4 py-3 text-sm ` +
-                    (msg.role === "ai"
-                      ? "bg-secondary text-secondary-foreground"
-                      : "gradient-bg text-primary-foreground")
-                  }
+                  className={`max-w-[76%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
+                    msg.role === "ai"
+                      ? "bg-secondary text-foreground rounded-bl-md"
+                      : "gradient-bg text-primary-foreground rounded-br-md"
+                  }`}
                 >
                   {msg.text}
                 </div>
@@ -184,25 +215,27 @@ export default function AIChatPage() {
             ))}
           </AnimatePresence>
 
+          {/* Typing indicator */}
           {isTyping && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex gap-3"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex items-end gap-2.5"
               role="status"
               aria-label="Assistant is typing"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-bg">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl gradient-bg shadow-sm">
                 <Bot className="h-4 w-4 text-primary-foreground" />
               </div>
-              <div className="rounded-2xl bg-secondary px-4 py-3">
-                <div className="flex gap-1">
+              <div className="rounded-2xl rounded-bl-md bg-secondary px-4 py-3 shadow-sm">
+                <div className="flex gap-1.5 items-center">
                   {[0, 1, 2].map((i) => (
                     <motion.span
                       key={i}
-                      animate={{ y: [0, -4, 0] }}
-                      transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.15 }}
-                      className="h-2 w-2 rounded-full bg-muted-foreground/40"
+                      animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
+                      transition={{ repeat: Infinity, duration: 0.7, delay: i * 0.18 }}
+                      className="h-2 w-2 rounded-full bg-muted-foreground/50"
                     />
                   ))}
                 </div>
@@ -214,90 +247,148 @@ export default function AIChatPage() {
         </div>
 
         {/* Input */}
-        <div className="border-t border-border p-4">
-          <form className="flex gap-3" onSubmit={handleSubmit}>
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Describe your construction project..."
-              className="flex-1 bg-background/40"
-              aria-label="Message"
-              disabled={isTyping}
-            />
+        <div className="border-t border-border px-5 py-4">
+          <form className="flex items-center gap-2" onSubmit={handleSubmit}>
+            <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-primary/40 transition-colors">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Describe your project — location, budget, type..."
+                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-2"
+                aria-label="Message"
+                disabled={isTyping}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+              />
+            </div>
             <motion.button
               type="submit"
               disabled={!input.trim() || isTyping}
-              className="inline-flex items-center justify-center rounded-xl h-9 w-9 gradient-bg text-primary-foreground disabled:opacity-50"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl gradient-bg text-primary-foreground shadow-sm disabled:opacity-40 transition-opacity"
               aria-label="Send message"
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.94 }}
             >
               <Send className="h-4 w-4" />
             </motion.button>
           </form>
+          <p className="mt-1.5 text-center text-[10px] text-muted-foreground/50">
+            Enter to send · AI may make mistakes — verify important details
+          </p>
         </div>
       </GlassCard>
 
-      {/* Recommendations panel */}
-      <div className="hidden w-96 flex-col gap-4 lg:flex">
-        <h3 className="text-sm font-semibold text-foreground">Top Recommendations</h3>
-        <div className="space-y-3 overflow-y-auto">
-          {recommendations.length === 0 ? (
-            <GlassCard interactive={false} className="p-4 text-center">
-              <Bot className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
-              <p className="text-xs text-muted-foreground">
-                Describe your project and I'll find the best matches for you
+      {/* ── Recommendations Panel ── */}
+      <div className="hidden lg:flex w-88 flex-col gap-0 overflow-hidden">
+        <GlassCard interactive={false} className="flex flex-1 flex-col p-0 overflow-hidden card-shadow">
+          {/* Panel header */}
+          <div className="flex items-center gap-2.5 border-b border-border px-5 py-4">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+              <Layers className="h-4 w-4 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-bold text-foreground leading-tight">Top Matches</h3>
+              <p className="text-[11px] text-muted-foreground leading-tight">
+                {recommendations.length > 0 ? `${recommendations.length} results` : "AI-powered results"}
               </p>
-            </GlassCard>
-          ) : (
-            recommendations.map((rec, i) => (
-              <motion.div
-                key={rec.id}
-                initial={{ opacity: 0, x: 12 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ x: 4 }}
-              >
-                <GlassCard className="p-4">
-                  <div className="flex items-start gap-3">
-                    <MatchScoreRing score={rec.score} size={48} />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1.5">
-                        {rec.type === "company" ? (
-                          <Building2 className="h-3.5 w-3.5 text-primary" />
-                        ) : (
-                          <Package className="h-3.5 w-3.5 text-highlight" />
-                        )}
-                        <span className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
-                          {rec.type === "company" ? "Construction" : "Supplier"}
-                        </span>
-                      </div>
-                      <h4 className="mt-0.5 text-sm font-semibold text-foreground">{rec.name}</h4>
-                      <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin className="h-3 w-3" />
-                        {rec.location}
-                      </div>
-                      <div className="mt-1 flex items-center gap-1 text-xs">
-                        <Star className="h-3 w-3 fill-warning text-warning" />
-                        <span className="font-medium text-foreground">{rec.rating}</span>
-                        <span className="text-muted-foreground">({rec.reviews} reviews)</span>
-                      </div>
-                      {rec.price_range && (
-                        <p className="mt-1 text-xs text-muted-foreground">💰 {rec.price_range}</p>
-                      )}
-                      {rec.specializations && rec.specializations.length > 0 && (
-                        <p className="mt-1 text-xs text-muted-foreground">🔧 {rec.specializations.join(", ")}</p>
-                      )}
-                      {rec.categories && rec.categories.length > 0 && (
-                        <p className="mt-1 text-xs text-muted-foreground">📦 {rec.categories.join(", ")}</p>
-                      )}
-                    </div>
+            </div>
+            {recommendations.length > 0 && (
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                {recommendations.length}
+              </span>
+            )}
+          </div>
+
+          {/* Recommendation list */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-2.5">
+            {recommendations.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-4 py-12 px-4 text-center">
+                <div className="relative">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary">
+                    <Bot className="h-8 w-8 text-muted-foreground/40" />
                   </div>
-                  <div className="mt-3 flex gap-2">
+                  <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-xs">✦</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">No matches yet</p>
+                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                    Describe your project in the chat and I'll find the best contractors and suppliers for you.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              recommendations.map((rec, i) => (
+                <motion.div
+                  key={rec.id}
+                  initial={{ opacity: 0, x: 16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.08, duration: 0.3 }}
+                >
+                  <div className="rounded-xl border border-border bg-card/60 p-3.5 hover:border-primary/20 hover:bg-card transition-all duration-200">
+                    {/* Top row: score + name */}
+                    <div className="flex items-start gap-3">
+                      <MatchScoreRing score={rec.score} size={44} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          {rec.type === "company" ? (
+                            <Building2 className="h-3 w-3 text-primary shrink-0" />
+                          ) : (
+                            <Package className="h-3 w-3 text-orange-500 shrink-0" />
+                          )}
+                          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                            {rec.type === "company" ? "Construction" : "Supplier"}
+                          </span>
+                        </div>
+                        <h4 className="text-sm font-bold text-foreground truncate leading-tight">{rec.name}</h4>
+                        <div className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+                          <MapPin className="h-3 w-3 shrink-0" />
+                          <span className="truncate">{rec.location}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rating */}
+                    <div className="mt-2.5 flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: 5 }).map((_, k) => (
+                          <Star key={k} className={`h-3 w-3 ${ k < Math.round(rec.rating) ? "fill-amber-400 text-amber-400" : "text-muted-foreground/20"}`} />
+                        ))}
+                        <span className="ml-1 text-xs font-semibold text-foreground">{rec.rating}</span>
+                        <span className="text-[10px] text-muted-foreground">({rec.reviews})</span>
+                      </div>
+                    </div>
+
+                    {/* Tags */}
+                    {rec.price_range && (
+                      <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                        <DollarSign className="h-3 w-3 text-emerald-500 shrink-0" />
+                        <span>{rec.price_range}</span>
+                      </div>
+                    )}
+                    {rec.specializations && rec.specializations.length > 0 && (
+                      <div className="mt-1.5 flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                        <Wrench className="h-3 w-3 text-primary/70 shrink-0 mt-0.5" />
+                        <span className="line-clamp-2">{rec.specializations.join(", ")}</span>
+                      </div>
+                    )}
+                    {rec.categories && rec.categories.length > 0 && (
+                      <div className="mt-1.5 flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                        <Package className="h-3 w-3 text-orange-400 shrink-0 mt-0.5" />
+                        <span className="line-clamp-2">{rec.categories.join(", ")}</span>
+                      </div>
+                    )}
+
+                    {/* CTA */}
                     <Button
                       variant="secondary"
                       size="sm"
-                      className="flex-1"
+                      className="mt-3 w-full h-8 text-xs font-semibold"
                       onClick={() =>
                         navigate(
                           rec.type === "company"
@@ -306,18 +397,15 @@ export default function AIChatPage() {
                         )
                       }
                     >
-                      View profile
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex items-center gap-1">
-                      Details <ArrowRight className="h-3 w-3" />
+                      View Profile
                     </Button>
                   </div>
-                </GlassCard>
-              </motion.div>
-            ))
-          )}
-        </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+        </GlassCard>
       </div>
-      </motion.div>
-   );
+    </motion.div>
+  );
 }
