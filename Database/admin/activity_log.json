@@ -1,5 +1,17 @@
 [
   {
+    "timestamp": "2026-04-06T17:49:39.154662+00:00",
+    "action": "ai_chat",
+    "target": "test@example.com",
+    "details": "AI chat: I need construction companies in Lahore with budget under 50 lakhs"
+  },
+  {
+    "timestamp": "2026-04-06T17:47:52.628794+00:00",
+    "action": "ai_chat",
+    "target": "test@example.com",
+    "details": "AI chat: I need construction companies in Lahore with budget under 50 lakhs"
+  },
+  {
     "timestamp": "2026-04-06T17:44:41.517175+00:00",
     "action": "ai_chat",
     "target": "ahmed@example.com",
