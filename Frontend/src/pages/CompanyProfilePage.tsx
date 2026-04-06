@@ -489,59 +489,6 @@ export default function CompanyProfilePage() {
                 </div>
               )}
 
-              {/* ===== PROJECT PORTFOLIO ===== */}
-              {company.raw.projects && company.raw.projects.length > 0 && (
-                <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-                  <SectionHeader icon={<HardHat className="h-4 w-4" />} title="Project Portfolio" subtitle={`${company.raw.projects.length} projects`} />
-                  <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {company.raw.projects.map((proj, idx) => (
-                      <motion.div
-                        key={proj.id || idx}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: Math.min(idx * 0.05, 0.3), duration: 0.3 }}
-                      >
-                        <button
-                          type="button"
-                          className="group w-full text-left rounded-xl border border-border overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/30"
-                          onClick={() => { setSelectedProject(proj); setProjectGalleryIdx(0); }}
-                        >
-                          {proj.image_urls?.[0] ? (
-                            <div className="relative h-36 overflow-hidden">
-                              <img src={proj.image_urls[0]} alt={proj.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                              {proj.image_urls.length > 1 && (
-                                <span className="absolute bottom-2 right-2 rounded-md bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
-                                  +{proj.image_urls.length - 1}
-                                </span>
-                              )}
-                              <Badge variant={proj.status === "completed" ? "secondary" : "default"} className="absolute top-2 left-2 text-[10px]">
-                                {proj.status || "completed"}
-                              </Badge>
-                            </div>
-                          ) : (
-                            <div className="flex h-28 items-center justify-center bg-secondary/10">
-                              <HardHat className="h-8 w-8 text-muted-foreground/30" />
-                            </div>
-                          )}
-                          <div className="p-3">
-                            <p className="truncate text-sm font-semibold text-foreground">{proj.title}</p>
-                            <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                              <MapPin className="h-3 w-3" />
-                              <span>{proj.city}</span>
-                              <span>·</span>
-                              <span>{proj.year}</span>
-                            </div>
-                            {proj.plot_size && (
-                              <p className="mt-1 text-xs text-muted-foreground">{proj.type} · {proj.plot_size}</p>
-                            )}
-                          </div>
-                        </button>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* ===== RIGHT SIDEBAR ===== */}
@@ -664,6 +611,62 @@ export default function CompanyProfilePage() {
                   </motion.div>
                 );
               })()}
+
+              {/* ===== PROJECT PORTFOLIO ===== */}
+              {company.raw.projects && company.raw.projects.length > 0 && (
+                <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35, duration: 0.35 }}>
+                  <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                    <SectionHeader icon={<HardHat className="h-4 w-4" />} title="Project Portfolio" subtitle={`${company.raw.projects.length} projects`} />
+                    <div className="mt-4 grid grid-cols-2 gap-3">
+                      {company.raw.projects.map((proj, idx) => (
+                        <motion.div
+                          key={proj.id || idx}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: Math.min(idx * 0.04, 0.25), duration: 0.3 }}
+                        >
+                          <button
+                            type="button"
+                            className="group w-full text-left rounded-xl border border-border overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/30"
+                            onClick={() => { setSelectedProject(proj); setProjectGalleryIdx(0); }}
+                          >
+                            {proj.image_urls?.[0] ? (
+                              <div className="relative h-28 overflow-hidden">
+                                <img src={proj.image_urls[0]} alt={proj.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                                {proj.image_urls.length > 1 && (
+                                  <span className="absolute bottom-1.5 right-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+                                    +{proj.image_urls.length - 1}
+                                  </span>
+                                )}
+                                <Badge variant={proj.status === "completed" ? "secondary" : "default"} className="absolute top-1.5 left-1.5 text-[10px]">
+                                  {proj.status || "completed"}
+                                </Badge>
+                              </div>
+                            ) : (
+                              <div className="flex h-20 items-center justify-center bg-secondary/10">
+                                <HardHat className="h-7 w-7 text-muted-foreground/30" />
+                              </div>
+                            )}
+                            <div className="p-2.5">
+                              <p className="truncate text-xs font-semibold text-foreground">{proj.title}</p>
+                              <div className="mt-0.5 flex items-center gap-1 text-[10px] text-muted-foreground">
+                                <MapPin className="h-2.5 w-2.5" />
+                                <span className="truncate">{proj.city}</span>
+                                <span>·</span>
+                                <span>{proj.year}</span>
+                              </div>
+                              {proj.plot_size && (
+                                <p className="mt-0.5 text-[10px] text-muted-foreground truncate">{proj.type} · {proj.plot_size}</p>
+                              )}
+                            </div>
+                          </button>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </div>
           </div>
         </SectionReveal>
