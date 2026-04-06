@@ -1,14 +1,124 @@
-"""RAG-style recommendation engine that matches clients to companies/suppliers."""
+"""RAG-style recommendation engine — matches clients to companies/suppliers
+and uses OpenRouter LLM for natural language responses."""
 
 from __future__ import annotations
+
+import json
+import logging
+import os
 import re
+import threading
 from typing import Any
+
+import httpx
+from dotenv import load_dotenv
 
 from backend.utils.data_handler import (
     read_json,
     companies_dataset_path,
     suppliers_dataset_path,
 )
+
+load_dotenv()
+
+logger = logging.getLogger(__name__)
+
+# ── OpenRouter configuration ──────────────────────────────────────────────────
+
+def _load_api_keys() -> list[str]:
+    keys: list[str] = []
+    i = 1
+    while True:
+        k = os.getenv(f"OPENROUTER_API_KEY{i}", "").strip()
+        if not k:
+            break
+        keys.append(k)
+        i += 1
+    return keys
+
+def _load_models() -> list[str]:
+    models: list[str] = []
+    i = 1
+    while True:
+        m = os.getenv(f"OPENROUTER_MODEL_{i}", "").strip()
+        if not m:
+            break
+        models.append(m)
+        i += 1
+    # Sensible fallback if env not yet loaded
+    return models or [
+        "openai/gpt-oss-20b:free",
+        "nvidia/nemotron-3-super-120b-a12b:free",
+        "stepfun/step-3.5-flash:free",
+        "minimax/minimax-m2.5:free",
+    ]
+
+_OPENROUTER_BASE  = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+_API_KEYS         = _load_api_keys()
+_MODELS           = _load_models()
+
+# Thread-safe key rotation
+_key_lock  = threading.Lock()
+_key_index = 0
+
+def _next_key() -> str | None:
+    global _key_index
+    if not _API_KEYS:
+        return None
+    with _key_lock:
+        key = _API_KEYS[_key_index % len(_API_KEYS)]
+        _key_index = (_key_index + 1) % len(_API_KEYS)
+    return key
+
+# ── Role-based system prompts ─────────────────────────────────────────────────
+
+_SYSTEM_PROMPTS: dict[str, str] = {
+    "client": (
+        "You are an advanced AI Construction Assistant for clients on the Smart Construction Connect platform.\n"
+        "Core responsibilities:\n"
+        "- Extract structured construction requirements (plot size, location, floors, basement, construction type, budget, timeline, features).\n"
+        "- Recommend the best construction companies and material suppliers from the database based on rating, price competitiveness, availability, and relevance.\n"
+        "- Provide estimated cost breakdowns and construction workflow suggestions.\n"
+        "- Educate users on construction processes and materials when asked.\n"
+        "Rules:\n"
+        "- Only reference companies and suppliers that appear in the RECOMMENDED MATCHES section below. Never hallucinate company or supplier details.\n"
+        "- If the user has uploaded a file (floor plan, BOQ, contract, etc.), analyze its content and incorporate it into your recommendations.\n"
+        "- Ask follow-up questions when data is incomplete.\n"
+        "- Keep answers professional, concise, and structured with bullet points.\n"
+        "- Respond in the same language the user writes in."
+    ),
+    "company": (
+        "You are an AI assistant for construction companies on the Smart Construction Connect platform.\n"
+        "Help companies:\n"
+        "- Optimize pricing and project quotes.\n"
+        "- Suggest material usage and alternatives.\n"
+        "- Improve project planning and timelines.\n"
+        "- Analyze competitors and market positioning.\n"
+        "- If a file is uploaded (project plan, BOQ, schedule), analyze it and provide actionable insights.\n"
+        "Keep answers data-driven and professional."
+    ),
+    "supplier": (
+        "You are an AI assistant for material suppliers on the Smart Construction Connect platform.\n"
+        "Help suppliers:\n"
+        "- Recommend pricing strategies based on market data.\n"
+        "- Identify demand trends and seasonal patterns.\n"
+        "- Suggest stock improvements and new product opportunities.\n"
+        "- If a file is uploaded (inventory list, price sheet), analyze it and provide suggestions.\n"
+        "Keep answers data-driven and professional."
+    ),
+    "admin": (
+        "You are an AI assistant for platform administrators of Smart Construction Connect.\n"
+        "Help admins:\n"
+        "- Monitor platform activity and user engagement.\n"
+        "- Detect top-performing companies and suppliers.\n"
+        "- Analyze supply-demand gaps across cities.\n"
+        "- If a file is uploaded (report, export), analyze it and summarize key metrics.\n"
+        "Keep answers data-driven and professional."
+    ),
+}
+
+DEFAULT_SYSTEM_PROMPT = _SYSTEM_PROMPTS["client"]
+
 
 
 def _parse_budget(text: str) -> tuple[float | None, float | None]:
@@ -299,51 +409,154 @@ def _build_response_text(recommendations: list[dict], intent: dict) -> str:
     return "\n".join(parts)
 
 
-def generate_ai_response(messages: list[dict]) -> dict:
-    """Generate a conversational AI response with optional recommendations."""
+# ── OpenRouter LLM call ───────────────────────────────────────────────────────
+
+def _call_openrouter(system_prompt: str, messages: list[dict]) -> str:
+    """Call OpenRouter with key + model rotation. Raises RuntimeError if all fail."""
+    if not _API_KEYS:
+        raise RuntimeError("No OpenRouter API keys configured in .env")
+
+    payload_messages = [{"role": "system", "content": system_prompt}] + messages
+
+    tried_keys: set[int] = set()
+    attempts_total = len(_API_KEYS) * len(_MODELS)
+
+    for _ in range(attempts_total):
+        key = _next_key()
+        if not key:
+            break
+
+        for model in _MODELS:
+            payload = {
+                "model": model,
+                "messages": payload_messages,
+                "max_tokens": 1024,
+                "temperature": 0.7,
+            }
+            try:
+                with httpx.Client(timeout=60.0) as client:
+                    resp = client.post(
+                        f"{_OPENROUTER_BASE}/chat/completions",
+                        headers={
+                            "Authorization": f"Bearer {key}",
+                            "Content-Type": "application/json",
+                            "HTTP-Referer": "https://smartconstructionconnect.com",
+                            "X-Title": "Smart Construction Connect",
+                        },
+                        json=payload,
+                    )
+
+                if resp.status_code == 200:
+                    data = resp.json()
+                    content = (
+                        data.get("choices", [{}])[0]
+                        .get("message", {})
+                        .get("content", "")
+                        .strip()
+                    )
+                    if content:
+                        logger.info("OpenRouter success with model=%s", model)
+                        return content
+
+                elif resp.status_code in (401, 403):
+                    # Bad key — skip to next key, don't retry this model
+                    logger.warning("OpenRouter auth error (key rotated): %s", resp.status_code)
+                    break
+
+                elif resp.status_code == 429:
+                    # Rate limited on this key — skip to next key
+                    logger.warning("OpenRouter rate limited (key rotated): %s", model)
+                    break
+
+                else:
+                    logger.warning("OpenRouter error %s for model=%s", resp.status_code, model)
+
+            except httpx.TimeoutException:
+                logger.warning("OpenRouter timeout for model=%s", model)
+            except Exception as e:
+                logger.warning("OpenRouter request failed for model=%s: %s", model, e)
+
+    raise RuntimeError("All OpenRouter API keys and models exhausted without a successful response.")
+
+
+def _build_rag_context(recommendations: list[dict]) -> str:
+    """Format top recommendations as context to inject into the system prompt."""
+    if not recommendations:
+        return ""
+
+    lines = ["\n\n--- RECOMMENDED MATCHES FROM DATABASE ---"]
+    for i, rec in enumerate(recommendations, 1):
+        if rec["type"] == "company":
+            lines.append(
+                f"{i}. {rec['name']} (Construction Company) | "
+                f"Location: {rec['location']} | Rating: {rec['rating']}/5 ({rec['reviews']} reviews) | "
+                f"Price: {rec['price_range']} | Completed: {rec['completed_projects']} projects | "
+                f"Specializations: {', '.join(rec.get('specializations', []))} | "
+                f"Match Score: {rec['score']}%"
+            )
+        else:
+            lines.append(
+                f"{i}. {rec['name']} (Material Supplier) | "
+                f"Location: {rec['location']} | Rating: {rec['rating']}/5 ({rec['reviews']} reviews) | "
+                f"Categories: {', '.join(rec.get('categories', []))} | "
+                f"Materials: {rec.get('materials_count', 0)} items | "
+                f"Match Score: {rec['score']}%"
+            )
+    lines.append("--- END OF DATABASE CONTEXT ---")
+    lines.append("Use ONLY the above data when recommending companies or suppliers. Do not invent others.")
+    return "\n".join(lines)
+
+
+def generate_ai_response(messages: list[dict], *, user_role: str = "client") -> dict:
+    """Generate an LLM-powered conversational response with RAG context injected.
+
+    Flow:
+    1. Run the scoring/retrieval pipeline to get top recommendations.
+    2. Inject those matches into the system prompt as grounding context.
+    3. Call OpenRouter LLM with the full conversation history.
+    4. Return the LLM response text plus the structured recommendations.
+    """
+    base_system = _SYSTEM_PROMPTS.get(user_role, DEFAULT_SYSTEM_PROMPT)
+
     if not messages:
         return {
-            "response": "Hello! I'm your Smart Construction Connect AI assistant. I can help you find the perfect construction company or material supplier in Pakistan. Tell me about your project — what are you looking to build, your budget range, and preferred city?",
+            "response": (
+                "Hello! I'm your Smart Construction Connect AI assistant. "
+                "I can help you find the perfect construction company or material supplier in Pakistan. "
+                "You can also upload files (floor plans, BOQs, contracts) for me to analyze. "
+                "Tell me about your project — what are you looking to build, your budget range, and preferred city?"
+            ),
             "recommendations": [],
         }
 
-    last_msg = messages[-1].get("content", "").lower() if messages else ""
+    # --- RAG retrieval --------------------------------------------------------
+    top_matches: list[dict] = []
+    try:
+        recs_data = get_recommendations(messages)
+        top_matches = recs_data.get("recommendations", [])
+    except Exception as e:
+        logger.warning("RAG retrieval failed: %s", e)
 
-    # Check if we have enough info to make recommendations
-    combined = " ".join(m.get("content", "") for m in messages if m.get("role") == "user").lower()
+    # Build grounded system prompt
+    rag_context = _build_rag_context(top_matches)
+    system_prompt = base_system + rag_context
 
-    has_project = any(w in combined for w in ["build", "house", "construct", "material", "supply", "cement", "steel", "marla", "kanal"])
-    has_budget = any(w in combined for w in ["budget", "pkr", "million", "lakh", "lac", "crore", "m ", "k "])
-    has_city = any(w in combined for w in [
-        "karachi", "lahore", "islamabad", "rawalpindi", "faisalabad",
-        "multan", "peshawar", "quetta", "hyderabad",
-    ])
-
-    # If greeting or very short
-    if len(last_msg.split()) <= 3 and any(w in last_msg for w in ["hi", "hello", "hey", "help", "start"]):
-        return {
-            "response": "Welcome! I'd love to help you find the right construction partner. To give you the best recommendations, could you tell me:\n\n1. **What type of project?** (e.g., building a house, buying materials, renovation)\n2. **Your budget range?** (e.g., 8-12 million PKR)\n3. **Preferred city or area?** (e.g., Lahore, DHA Islamabad)",
-            "recommendations": [],
-        }
-
-    # If we have enough info, generate recommendations
-    if has_project and (has_budget or has_city):
-        return get_recommendations(messages)
-
-    # Ask for missing info
-    missing = []
-    if not has_project:
-        missing.append("What type of project are you planning? (house construction, material purchase, renovation)")
-    if not has_budget:
-        missing.append("What's your approximate budget range?")
-    if not has_city:
-        missing.append("Which city or area are you looking in?")
-
-    response = "Thanks for the details! To find the best matches for you, I still need a bit more info:\n\n"
-    for i, m in enumerate(missing, 1):
-        response += f"{i}. {m}\n"
+    # --- LLM call -------------------------------------------------------------
+    try:
+        response_text = _call_openrouter(system_prompt, messages)
+    except RuntimeError as e:
+        logger.error("LLM call failed: %s", e)
+        # Graceful degradation: return the rule-based response
+        if top_matches:
+            response_text = _build_response_text(top_matches, _extract_intent(messages))
+        else:
+            response_text = (
+                "I'm having trouble connecting to the AI service right now. "
+                "Please try again in a moment, or describe your project and I'll do my best to help!"
+            )
 
     return {
-        "response": response,
-        "recommendations": [],
+        "response": response_text,
+        "recommendations": top_matches,
     }
+

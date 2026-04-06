@@ -121,6 +121,8 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
     setSearchParams({ tab: t }, { replace: true });
   };
   const [search, setSearch] = useState("");
+  const [aiSearchResults, setAiSearchResults] = useState<string[] | null>(null);
+  const [aiSearching, setAiSearching] = useState(false);
   const [onlyVerified, setOnlyVerified] = useState(false);
   const [locations, setLocations] = useState<string[]>([]);
   const [specializations, setSpecializations] = useState<string[]>([]);
@@ -147,6 +149,22 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
     fetchSupplierDirectory().then(setSupplierData);
   }, []);
 
+  const handleAiSearch = async () => {
+    const q = search.trim();
+    if (!q || q.length < 3) return;
+    setAiSearching(true);
+    try {
+      const entityType = tab === "companies" ? "company" : "supplier";
+      const results = await api.search(q, entityType, 20);
+      setAiSearchResults((results as { entity_id: string }[]).map((r) => r.entity_id));
+    } catch {
+      setAiSearchResults(null);
+    }
+    setAiSearching(false);
+  };
+
+  const clearAiSearch = () => setAiSearchResults(null);
+
   const locationOptions = useMemo(() => {
     const allCities = companyData.flatMap((c) => (c.cities.length ? c.cities : [c.location]));
     return Array.from(new Set(allCities.filter((x) => x && x !== " - "))).sort();
@@ -158,7 +176,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const base = companyData.filter((c) => {
+    let base = companyData.filter((c) => {
       const cities = c.cities.length ? c.cities : [c.location];
       const matchesQuery =
         !q ||
@@ -173,17 +191,28 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
       return matchesQuery && matchesVerified && matchesLocation && matchesSpecs;
     });
 
-    return [...base].sort((a, b) => {
-      if (sortCompanies === "rating") return b.rating - a.rating;
-      if (sortCompanies === "projects") return (b.completedProjects ?? 0) - (a.completedProjects ?? 0);
-      if (sortCompanies === "price_asc" || sortCompanies === "price_desc") {
-        const aMin = a.raw.flattened_operational_areas?.map(x => x.price_per_sqft).filter(Boolean)[0] ?? 0;
-        const bMin = b.raw.flattened_operational_areas?.map(x => x.price_per_sqft).filter(Boolean)[0] ?? 0;
-        return sortCompanies === "price_asc" ? aMin - bMin : bMin - aMin;
-      }
-      return b.matchScore - a.matchScore;
-    });
-  }, [search, onlyVerified, locations, specializations, companyData, sortCompanies]);
+    // If AI search results are active, prioritize those
+    if (aiSearchResults) {
+      const aiSet = new Set(aiSearchResults);
+      const aiMatches = base.filter((c) => aiSet.has(c.slug));
+      const rest = base.filter((c) => !aiSet.has(c.slug));
+      base = [...aiMatches, ...rest];
+    }
+
+    if (!aiSearchResults) {
+      return [...base].sort((a, b) => {
+        if (sortCompanies === "rating") return b.rating - a.rating;
+        if (sortCompanies === "projects") return (b.completedProjects ?? 0) - (a.completedProjects ?? 0);
+        if (sortCompanies === "price_asc" || sortCompanies === "price_desc") {
+          const aMin = a.raw.flattened_operational_areas?.map(x => x.price_per_sqft).filter(Boolean)[0] ?? 0;
+          const bMin = b.raw.flattened_operational_areas?.map(x => x.price_per_sqft).filter(Boolean)[0] ?? 0;
+          return sortCompanies === "price_asc" ? aMin - bMin : bMin - aMin;
+        }
+        return b.matchScore - a.matchScore;
+      });
+    }
+    return base;
+  }, [search, onlyVerified, locations, specializations, companyData, sortCompanies, aiSearchResults]);
 
   const materialCategoryOptions = useMemo(() => {
     return Array.from(new Set(supplierData.flatMap((s) => s.categories))).sort();
@@ -430,7 +459,8 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); if (aiSearchResults) clearAiSearch(); }}
+            onKeyDown={(e) => { if (e.key === "Enter") handleAiSearch(); }}
             placeholder={
               tab === "companies"
                 ? "Search by company, city, area, or specialization..."
@@ -439,6 +469,17 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
             className="bg-background/60 pl-9 backdrop-blur-sm"
           />
         </div>
+
+        <Button
+          variant={aiSearchResults ? "default" : "outline"}
+          size="sm"
+          onClick={aiSearchResults ? clearAiSearch : handleAiSearch}
+          disabled={aiSearching || (!aiSearchResults && search.trim().length < 3)}
+          className="gap-1.5 shrink-0"
+        >
+          <Zap className={`h-3.5 w-3.5 ${aiSearching ? "animate-pulse" : ""}`} />
+          {aiSearching ? "Searching..." : aiSearchResults ? "Clear AI Search" : "AI Search"}
+        </Button>
 
         <div className="flex items-center gap-2 shrink-0">
           {/* Sort */}

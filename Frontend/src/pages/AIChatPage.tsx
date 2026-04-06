@@ -3,7 +3,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Bot, User, Send, Star, MapPin, Building2, Package, Wrench, DollarSign, Layers } from "lucide-react";
+import { ArrowLeft, Bot, User, Send, Star, MapPin, Building2, Package, Wrench, DollarSign, Layers, Paperclip, X, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
@@ -36,6 +36,8 @@ export default function AIChatPage() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
 
@@ -67,26 +69,36 @@ export default function AIChatPage() {
 
   const handleSend = useCallback(async () => {
     const text = input.trim();
-    if (!text || isTyping) return;
+    if ((!text && !attachedFile) || isTyping) return;
 
-    const userMsg: Message = { id: getNextId(), role: "user", text };
+    const displayText = attachedFile ? `${text || ""}${text ? "\n" : ""}📎 ${attachedFile.name}` : text;
+    const userMsg: Message = { id: getNextId(), role: "user", text: displayText };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
+    const currentFile = attachedFile;
+    setAttachedFile(null);
     setIsTyping(true);
 
     try {
-      const chatHistory = [...messages, userMsg].map((m) => ({
+      const chatHistory = [...messages, { ...userMsg, text: text || `Please analyse the attached file: ${currentFile?.name}` }].map((m) => ({
         role: m.role === "ai" ? "assistant" : "user",
         content: m.text,
       }));
 
-      const result = await api.ai.chat(chatHistory, user?.email || "");
+      const userRole = user?.role || "client";
+
+      let result: { response: string; recommendations?: unknown[] };
+      if (currentFile) {
+        result = await api.ai.chatWithFile(currentFile, chatHistory, user?.email || "", userRole);
+      } else {
+        result = await api.ai.chat(chatHistory, user?.email || "", userRole);
+      }
 
       const aiMsg: Message = { id: getNextId(), role: "ai", text: result.response };
       setMessages((prev) => [...prev, aiMsg]);
 
       if (result.recommendations && result.recommendations.length > 0) {
-        setRecommendations(result.recommendations);
+        setRecommendations(result.recommendations as Recommendation[]);
       }
     } catch {
       setMessages((prev) => [
@@ -96,7 +108,7 @@ export default function AIChatPage() {
     } finally {
       setIsTyping(false);
     }
-  }, [getNextId, input, isTyping, messages, user?.email]);
+  }, [getNextId, input, isTyping, messages, user?.email, user?.role, attachedFile]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -248,12 +260,58 @@ export default function AIChatPage() {
 
         {/* Input */}
         <div className="border-t border-border px-5 py-4">
+          {/* Attached file preview */}
+          {attachedFile && (
+            <div className="mb-2 flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
+              <FileText className="h-4 w-4 text-primary shrink-0" />
+              <span className="flex-1 truncate text-xs text-foreground">{attachedFile.name}</span>
+              <span className="text-[10px] text-muted-foreground">{(attachedFile.size / 1024).toFixed(0)} KB</span>
+              <button
+                type="button"
+                onClick={() => setAttachedFile(null)}
+                className="flex h-5 w-5 items-center justify-center rounded-full hover:bg-secondary transition-colors"
+                aria-label="Remove file"
+              >
+                <X className="h-3 w-3 text-muted-foreground" />
+              </button>
+            </div>
+          )}
           <form className="flex items-center gap-2" onSubmit={handleSubmit}>
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.json,.txt,.md,.png,.jpg,.jpeg,.webp,.tiff,.bmp"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) {
+                  if (f.size > 5 * 1024 * 1024) {
+                    alert("File must be under 5 MB");
+                  } else {
+                    setAttachedFile(f);
+                  }
+                }
+                e.target.value = "";
+              }}
+            />
+            {/* Attach button */}
+            <motion.button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isTyping}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-40"
+              aria-label="Attach file"
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.94 }}
+            >
+              <Paperclip className="h-4 w-4" />
+            </motion.button>
             <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-primary/40 transition-colors">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Describe your project — location, budget, type..."
+                placeholder={attachedFile ? "Add a message about the file..." : "Describe your project — location, budget, type..."}
                 className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-2"
                 aria-label="Message"
                 disabled={isTyping}
@@ -267,7 +325,7 @@ export default function AIChatPage() {
             </div>
             <motion.button
               type="submit"
-              disabled={!input.trim() || isTyping}
+              disabled={(!input.trim() && !attachedFile) || isTyping}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl gradient-bg text-primary-foreground shadow-sm disabled:opacity-40 transition-opacity"
               aria-label="Send message"
               whileHover={{ scale: 1.06 }}
@@ -277,7 +335,7 @@ export default function AIChatPage() {
             </motion.button>
           </form>
           <p className="mt-1.5 text-center text-[10px] text-muted-foreground/50">
-            Enter to send · AI may make mistakes — verify important details
+            Enter to send · 📎 Attach files (PDF, images, Excel, etc.) · AI may make mistakes
           </p>
         </div>
       </GlassCard>

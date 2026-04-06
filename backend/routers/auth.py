@@ -23,6 +23,8 @@ from backend.utils.data_handler import (
     add_activity_log,
     _ROLE_DIRS,
 )
+from backend.utils.events import event_bus, Events
+from backend.utils.embeddings import update_entity_embedding
 
 def _hash_password(plain: str) -> str:
     """Return a bcrypt hash when available, otherwise a clearly-marked plaintext fallback."""
@@ -186,6 +188,15 @@ def signup(req: SignupRequest):
 
     add_user(new_user)
     add_activity_log("user_signup", req.email, f"New {req.role} signup: {req.name}")
+
+    # Emit events + build embeddings for new entities
+    event_bus.publish_sync(Events.USER_SIGNUP, {"role": req.role, "name": req.name}, actor=req.email)
+    if req.role == "company":
+        update_entity_embedding(user_id, "company")
+        event_bus.publish_sync(Events.COMPANY_REGISTERED, {"slug": slug, "name": req.name}, actor=req.email)
+    elif req.role == "supplier":
+        update_entity_embedding(user_id, "supplier")
+        event_bus.publish_sync(Events.SUPPLIER_REGISTERED, {"slug": slug, "name": req.name}, actor=req.email)
 
     return _user_to_response(new_user)
 

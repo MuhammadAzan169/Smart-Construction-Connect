@@ -639,6 +639,9 @@ function AdminDashboard() {
             <Link to="/approvals">Approvals</Link>
           </Button>
           <Button asChild variant="outline">
+            <Link to="/analytics">Analytics</Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link to="/activity">Activity Log</Link>
           </Button>
         </div>

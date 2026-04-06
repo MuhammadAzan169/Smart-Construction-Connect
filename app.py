@@ -23,7 +23,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 
-from backend.routers import admin, ai_chat, auth, companies, messages, requests, suppliers, upload
+from backend.routers import admin, ai_chat, auth, companies, messages, requests, suppliers, upload, events
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FastAPI app
@@ -61,11 +61,20 @@ app.include_router(ai_chat.router)
 app.include_router(upload.router)
 app.include_router(messages.router)
 app.include_router(requests.router)
+app.include_router(events.router)
 
 
 @app.get("/api/health")
 def health():
     return {"status": "ok", "version": "1.0.0"}
+
+
+# ── Startup: initialize embeddings index ──
+@app.on_event("startup")
+def on_startup():
+    from backend.utils.embeddings import initialize_embeddings
+    count = initialize_embeddings()
+    print(f"[app] Embeddings initialized: {count} entities indexed")
 
 
 @app.get("/")

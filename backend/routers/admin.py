@@ -16,6 +16,7 @@ from backend.utils.data_handler import (
     suppliers_dataset_path,
     add_activity_log,
 )
+from backend.utils.events import event_bus, Events
 
 router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 
@@ -68,6 +69,7 @@ def update_user_status(body: StatusUpdate):
                     u.get("email", ""),
                     f"Admin set {u.get('display_name', u.get('name', ''))} status to {body.status}",
                 )
+                event_bus.publish_sync(Events.USER_STATUS_CHANGED, {"user_id": body.user_id, "status": body.status}, actor=u.get("email", ""))
                 return {"status": "ok"}
 
     raise HTTPException(status_code=404, detail="User not found")
@@ -132,6 +134,10 @@ def update_verification_status(body: VerificationUpdate):
         body.slug,
         f"Admin set {body.doc_type} to {body.status} for {body.entity_type} {body.slug}",
     )
+    event_bus.publish_sync(Events.VERIFICATION_UPDATED, {
+        "slug": body.slug, "entity_type": body.entity_type,
+        "doc_type": body.doc_type, "status": body.status,
+    })
     return {"status": "ok", "verification_status": entity["verification_status"]}
 
 

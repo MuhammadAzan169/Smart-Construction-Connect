@@ -225,11 +225,46 @@ export const api = {
   },
 
   ai: {
-    chat: (messages: { role: string; content: string }[], userEmail = "") =>
+    chat: (messages: { role: string; content: string }[], userEmail = "", userRole = "client") =>
       request<{ response: string; recommendations?: unknown[] }>("/ai/chat", {
         method: "POST",
-        body: JSON.stringify({ messages, user_email: userEmail }),
+        body: JSON.stringify({ messages, user_email: userEmail, user_role: userRole }),
       }),
+    chatWithFile: async (
+      file: File,
+      messages: { role: string; content: string }[],
+      userEmail = "",
+      userRole = "client",
+    ): Promise<{ response: string; recommendations?: unknown[] }> => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("messages", JSON.stringify(messages));
+      formData.append("user_email", userEmail);
+      formData.append("user_role", userRole);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30_000);
+      try {
+        const res = await fetch(`${API_BASE}/ai/chat-with-file`, {
+          method: "POST",
+          signal: controller.signal,
+          headers: _authHeaders(),
+          body: formData,
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({})) as { detail?: string };
+          throw new Error(body.detail ?? `Request failed: ${res.status}`);
+        }
+        return res.json();
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          throw new Error("Request timed out. Please try again.");
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    },
   },
 
   requests: {
@@ -349,5 +384,31 @@ export const api = {
         clearTimeout(timeoutId);
       }
     },
+  },
+
+  // ── Analytics (admin) ──
+  analytics: {
+    overview: () => request<Record<string, unknown>>("/analytics/overview"),
+    topCompanies: () => request<Record<string, unknown>[]>("/analytics/top-companies"),
+    supplyDemand: () => request<Record<string, unknown>[]>("/analytics/supply-demand"),
+  },
+
+  // ── Embeddings (admin) ──
+  embeddings: {
+    stats: () => request<Record<string, unknown>>("/embeddings/stats"),
+    rebuild: () => request<{ status: string; entities_indexed: number }>("/embeddings/rebuild", { method: "POST" }),
+  },
+
+  // ── Event log (admin) ──
+  events: {
+    log: () => request<Record<string, unknown>[]>("/events/log"),
+  },
+
+  // ── Semantic search ──
+  search: (q: string, type?: string, limit?: number) => {
+    const params = new URLSearchParams({ q });
+    if (type) params.set("type", type);
+    if (limit) params.set("limit", String(limit));
+    return request<Record<string, unknown>[]>(`/search?${params.toString()}`);
   },
 };

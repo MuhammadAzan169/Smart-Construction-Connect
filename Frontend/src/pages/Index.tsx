@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { TiltCard } from "@/components/shared/TiltCard";
 import { AnimatedBackground } from "@/components/shared/AnimatedBackground";
+import { FloatingAIAssistant } from "@/components/shared/FloatingAIAssistant";
 
 import {
   SectionReveal, StaggerList, StaggerItem,
@@ -686,6 +687,9 @@ export default function Index() {
           </div>
         </div>
       </footer>
+
+      {/* Floating AI Assistant */}
+      <FloatingAIAssistant />
     </div>
   );
 }

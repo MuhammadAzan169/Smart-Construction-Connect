@@ -12,6 +12,8 @@ from backend.utils.data_handler import (
     companies_dataset_path,
     add_activity_log,
 )
+from backend.utils.events import event_bus, Events
+from backend.utils.embeddings import update_entity_embedding
 
 router = APIRouter(prefix="/api/companies", tags=["companies"])
 
@@ -108,6 +110,9 @@ def update_company_profile(
 
     _save_companies(companies)
     add_activity_log("company_profile_updated", slug, f"Company {slug} updated their profile")
+    # Update embeddings + emit event
+    update_entity_embedding(company.get("company_id", slug), "company")
+    event_bus.publish_sync(Events.COMPANY_UPDATED, {"slug": slug, "fields": list(body.data.keys())}, actor=user.get("email", ""))
     return {"status": "ok"}
 
 
@@ -141,6 +146,8 @@ def update_packages(
     company["estimated_cost_range"] = body.estimated_cost_range
     _save_companies(companies)
     add_activity_log("packages_updated", slug, f"Company {slug} updated packages & pricing")
+    update_entity_embedding(company.get("company_id", slug), "company")
+    event_bus.publish_sync(Events.PACKAGE_UPDATED, {"slug": slug}, actor=user.get("email", ""))
     return {"status": "ok"}
 
 
@@ -166,4 +173,6 @@ def update_projects(
     company["projects"] = body.projects
     _save_companies(companies)
     add_activity_log("projects_updated", slug, f"Company {slug} updated projects")
+    update_entity_embedding(company.get("company_id", slug), "company")
+    event_bus.publish_sync(Events.COMPANY_UPDATED, {"slug": slug, "action": "projects_updated"}, actor=user.get("email", ""))
     return {"status": "ok"}
