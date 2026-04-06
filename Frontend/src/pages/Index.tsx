@@ -438,8 +438,8 @@ export default function Index() {
         <SectionReveal className="w-full max-w-5xl py-8">
           <div className="relative overflow-hidden rounded-3xl border border-border/40">
             <img
-              src="https://images.unsplash.com/photo-1590577976322-3d2d6e2130d5?auto=format&fit=crop&w=1200&q=80"
-              alt="Modern building construction"
+              src="https://images.unsplash.com/photo-1587582423116-ec07293f0395?auto=format&fit=crop&w=1200&q=80"
+              alt="Construction worker building residential frame"
               className="h-64 w-full object-cover sm:h-80"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
@@ -639,8 +639,8 @@ export default function Index() {
         <SectionReveal className="w-full max-w-5xl pb-20">
           <div className="relative overflow-hidden rounded-3xl border border-border/40">
             <img
-              src="https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=1200&q=80"
-              alt="Modern building"
+              src="https://images.unsplash.com/photo-1551711974-faf378be34b2?auto=format&fit=crop&w=1200&q=80"
+              alt="Construction crane at sunset"
               className="h-72 w-full object-cover sm:h-80"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/30" />
