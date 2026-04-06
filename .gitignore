@@ -1,4 +1,8 @@
-# Logs
+# ══════════════════════════════════════════════════════════════
+# Smart Construction Connect .gitignore
+# ══════════════════════════════════════════════════════════════
+
+# ── Logs ─────────────────────────────────────────────────────
 logs
 *.log
 npm-debug.log*
@@ -6,59 +10,326 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+*.log.*
 
-# Dependencies
-node_modules
+# ── Dependencies ─────────────────────────────────────────────
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
-# Build output
-dist
-dist-ssr
-Frontend/dist
+# ── Build Output ─────────────────────────────────────────────
+dist/
+dist-ssr/
+build/
+Frontend/dist/
+backend/dist/
+*.tsbuildinfo
 
-# Environment / secrets
-*.local
+# ── Environment & Secrets ────────────────────────────────────
 .env
 .env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
 !.env.example
+!.env.template
 
-# Editor directories and files
+# ── Python ───────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Python virtual environments
+.venv
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Python tools
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# ── Node.js / JavaScript ─────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+.next/
+.nuxt/
+.output/
+.vercel/
+.netlify/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output/
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# ── Database & User Data ─────────────────────────────────────
+# User-generated content (NEVER commit)
+Database/clients/
+Database/construction/
+Database/suppliers/
+Database/messages/
+Database/admin/event_log.json
+Database/admin/activity_log.json
+
+# Keep demo data structure but not actual user data
+!Database/admin/
+!Database/admin/.gitkeep
+
+# Company data uploads
+company_data/
+!company_data/.gitkeep
+
+# ── IDE & Editors ────────────────────────────────────────────
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
-.idea
-.DS_Store
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Visual Studio
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ── OS Files ─────────────────────────────────────────────────
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# Python
-__pycache__
-*.py[cod]
-*$py.class
-*.egg-info
-.eggs
-*.egg
-.venv
-venv
-env
-.mypy_cache
-.pytest_cache
-.ruff_cache
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
 
-# Uploaded files (user data)
-company_data/
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
 
-# Database messages (runtime data)
-Database/messages/
+# ── Temporary Files ──────────────────────────────────────────
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*.swp
+*.swo
 
-# OS files
-.DS_Store
-desktop.ini
+# ── Package Managers ─────────────────────────────────────────
+# Yarn
+.yarn/cache
+.yarn/install-state.gz
 
-# Test coverage
-coverage
-*.lcov
-.nyc_output
+# pnpm
+.pnpm-debug.log*
+
+# ── Testing ──────────────────────────────────────────────────
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# ── CI/CD ────────────────────────────────────────────────────
+.github/workflows/*.log
+.gitlab-ci.yml
+.circleci/
+
+# ── Documentation ────────────────────────────────────────────
+docs/_build/
+*.pdf
+*.docx
+
+# ── Miscellaneous ────────────────────────────────────────────
+# Local Netlify folder
+.netlify
+
+# Vercel
+.vercel
+
+# Sentry Config File
+.sentryclirc
+
+# ── Project Specific ─────────────────────────────────────────
+# Uploaded files during development
+uploads/
+temp/
+cache/
+
+# API keys and secrets (double-check)
+secrets.json
+config.local.json
+
+# Development databases
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Keep These Empty Directories ─────────────────────────────
+!.gitkeep
+!.gitignore
