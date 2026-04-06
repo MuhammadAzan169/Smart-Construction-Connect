@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+﻿import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, X, Send, Sparkles, ArrowRight, Building2, Users, Package, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -11,10 +11,10 @@ interface Message {
 }
 
 const QUICK_ACTIONS = [
-  { icon: Building2, label: "Why should I register my construction company?" },
-  { icon: Users, label: "How does this platform help homeowners?" },
-  { icon: Package, label: "Benefits for material suppliers?" },
-  { icon: Sparkles, label: "How does AI matching work?" },
+  { icon: Building2, label: "Why register my company?", key: "company_benefits" },
+  { icon: Users, label: "Benefits for clients", key: "client_benefits" },
+  { icon: Package, label: "Platform features", key: "features" },
+  { icon: Sparkles, label: "How does AI matching work?", key: "ai_matching" },
 ];
 
 const AI_API =
@@ -22,90 +22,35 @@ const AI_API =
     ? "http://localhost:8000/api/ai/chat"
     : "/api/ai/chat";
 
-async function fetchLandingResponse(history: { role: string; content: string }[]): Promise<string> {
+async function fetchAIResponse(conversationHistory: { role: string; content: string }[]): Promise<string> {
   const res = await fetch(AI_API, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: history, user_email: "", user_role: "landing" }),
+    body: JSON.stringify({
+      messages: conversationHistory,
+      user_email: "",
+      user_role: "client",
+    }),
   });
   if (!res.ok) throw new Error(`API error ${res.status}`);
   const data = await res.json();
   return data.response || "I didn't get a response. Please try again.";
 }
 
-/* ── Inline markdown → React nodes ── */
-function renderMd(text: string) {
-  const lines = text.split("\n");
-  const out: React.ReactNode[] = [];
-  let listBuf: string[] = [];
-
-  const fmt = (s: string): React.ReactNode => {
-    const parts: React.ReactNode[] = [];
-    let last = 0;
-    const rx = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
-    let m: RegExpExecArray | null;
-    while ((m = rx.exec(s)) !== null) {
-      if (m.index > last) parts.push(s.slice(last, m.index));
-      if (m[2]) parts.push(<strong key={m.index}>{m[2]}</strong>);
-      else if (m[3]) parts.push(<em key={m.index}>{m[3]}</em>);
-      else if (m[4]) parts.push(<code key={m.index} className="rounded bg-muted px-1 text-[10px]">{m[4]}</code>);
-      last = m.index + m[0].length;
-    }
-    if (last < s.length) parts.push(s.slice(last));
-    return parts.length === 1 ? parts[0] : <>{parts}</>;
-  };
-
-  const flush = () => {
-    if (listBuf.length) {
-      out.push(
-        <ul key={`ul-${out.length}`} className="ml-3 list-disc space-y-0.5">
-          {listBuf.map((l, i) => <li key={i} className="text-xs leading-relaxed">{fmt(l)}</li>)}
-        </ul>
-      );
-      listBuf = [];
-    }
-  };
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const bullet = line.match(/^\s*[-•*]\s+(.*)/);
-    if (bullet) { listBuf.push(bullet[1]); continue; }
-    const num = line.match(/^\s*\d+[.)]\s+(.*)/);
-    if (num) { listBuf.push(num[1]); continue; }
-    flush();
-    if (!line.trim()) { out.push(<div key={i} className="h-1.5" />); continue; }
-    const h = line.match(/^#{1,3}\s+(.*)/);
-    if (h) { out.push(<p key={i} className="text-xs font-bold mt-1">{fmt(h[1])}</p>); continue; }
-    out.push(<p key={i} className="text-xs leading-relaxed">{fmt(line)}</p>);
-  }
-  flush();
-  return <div className="space-y-0.5">{out}</div>;
-}
-
 export function FloatingAIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      role: "ai",
+      text: "Hi! ðŸ‘‹ I'm the Smart Construction Connect AI. Ask me about finding construction companies, material suppliers, or how the platform works.",
+    },
+  ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const nextId = useRef(1);
+  const nextId = useRef(2);
   const bottomRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const greetingLoaded = useRef(false);
-
-  // Load greeting from backend when opened
-  useEffect(() => {
-    if (!isOpen || greetingLoaded.current) return;
-    greetingLoaded.current = true;
-    fetchLandingResponse([]).then((res) => {
-      setMessages([{ id: nextId.current++, role: "ai", text: res }]);
-    }).catch(() => {
-      setMessages([{
-        id: nextId.current++,
-        role: "ai",
-        text: "👋 Welcome to **Smart Construction Connect**!\n\nI can tell you everything about our platform — how we help homeowners find builders, why companies should register, and more.\n\nWhat would you like to know?",
-      }]);
-    });
-  }, [isOpen]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -122,22 +67,37 @@ export function FloatingAIAssistant() {
       setIsTyping(true);
 
       try {
-        const history = [...messages, userMsg].map((m) => ({
-          role: m.role === "ai" ? "assistant" : "user",
-          content: m.text,
-        }));
-        const response = await fetchLandingResponse(history);
+        // Build conversation history for the API (exclude the initial greeting)
+        const history = [...messages, userMsg]
+          .filter((m) => !(m.id === 1 && m.role === "ai"))
+          .map((m) => ({
+            role: m.role === "ai" ? "assistant" : "user",
+            content: m.text,
+          }));
+
+        const response = await fetchAIResponse(history);
         setMessages((prev) => [...prev, { id: nextId.current++, role: "ai", text: response }]);
       } catch {
         setMessages((prev) => [
           ...prev,
-          { id: nextId.current++, role: "ai", text: "Sorry, I'm having trouble connecting. Sign up to use the full AI assistant! 🚀" },
+          {
+            id: nextId.current++,
+            role: "ai",
+            text: "Sorry, I'm having trouble connecting right now. Please try again or sign up to use the full AI assistant.",
+          },
         ]);
       } finally {
         setIsTyping(false);
       }
     },
     [input, isTyping, messages],
+  );
+
+  const handleQuickAction = useCallback(
+    (label: string) => {
+      handleSend(label);
+    },
+    [handleSend],
   );
 
   return (
@@ -163,7 +123,7 @@ export function FloatingAIAssistant() {
         )}
       </AnimatePresence>
 
-      {/* Chat panel */}
+      {/* Chat modal */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -179,8 +139,8 @@ export function FloatingAIAssistant() {
                 <Bot className="h-4.5 w-4.5 text-primary-foreground" />
               </div>
               <div className="flex-1">
-                <h3 className="text-sm font-bold text-foreground leading-tight">Smart Construction AI</h3>
-                <p className="text-[10px] text-muted-foreground leading-tight">Ask anything about the platform</p>
+                <h3 className="text-sm font-bold text-foreground leading-tight">AI Assistant</h3>
+                <p className="text-[10px] text-muted-foreground leading-tight">Powered by real company data</p>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
@@ -196,7 +156,10 @@ export function FloatingAIAssistant() {
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={cn("flex gap-2", msg.role === "user" ? "flex-row-reverse" : "")}
+                  className={cn(
+                    "flex gap-2",
+                    msg.role === "user" ? "flex-row-reverse" : "",
+                  )}
                 >
                   {msg.role === "ai" && (
                     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-sm">
@@ -205,18 +168,22 @@ export function FloatingAIAssistant() {
                   )}
                   <div
                     className={cn(
-                      "max-w-[82%] rounded-2xl px-3 py-2",
+                      "max-w-[80%] rounded-2xl px-3 py-2 text-xs leading-relaxed",
                       msg.role === "ai"
                         ? "bg-secondary text-foreground rounded-bl-md"
                         : "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-br-md",
                     )}
-                    dir="auto"
                   >
-                    {msg.role === "ai" ? renderMd(msg.text) : <span className="text-xs">{msg.text}</span>}
+                    <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{
+                      __html: msg.text
+                        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                        .replace(/\n/g, "<br />"),
+                    }} />
                   </div>
                 </div>
               ))}
 
+              {/* Typing indicator */}
               {isTyping && (
                 <div className="flex gap-2">
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-sm">
@@ -224,22 +191,22 @@ export function FloatingAIAssistant() {
                   </div>
                   <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md bg-secondary px-3 py-2">
                     <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">Thinking…</span>
+                    <span className="text-xs text-muted-foreground">Thinkingâ€¦</span>
                   </div>
                 </div>
               )}
 
-              {/* Quick actions */}
-              {messages.length <= 1 && !isTyping && messages.length > 0 && (
+              {/* Quick actions (shown at start) */}
+              {messages.length <= 1 && !isTyping && (
                 <div className="flex flex-wrap gap-1.5 pt-1">
-                  {QUICK_ACTIONS.map((a) => (
+                  {QUICK_ACTIONS.map((action) => (
                     <button
-                      key={a.label}
-                      onClick={() => handleSend(a.label)}
+                      key={action.key}
+                      onClick={() => handleQuickAction(action.label)}
                       className="flex items-center gap-1.5 rounded-xl border border-border bg-secondary/50 px-2.5 py-1.5 text-[11px] text-muted-foreground hover:border-primary/30 hover:text-foreground transition-colors"
                     >
-                      <a.icon className="h-3 w-3" />
-                      {a.label}
+                      <action.icon className="h-3 w-3" />
+                      {action.label}
                     </button>
                   ))}
                 </div>
@@ -248,7 +215,7 @@ export function FloatingAIAssistant() {
               <div ref={bottomRef} />
             </div>
 
-            {/* CTA */}
+            {/* CTA Banner */}
             <div className="border-t border-border bg-primary/5 px-4 py-2">
               <button
                 onClick={() => navigate("/signup")}
@@ -263,15 +230,23 @@ export function FloatingAIAssistant() {
             <div className="border-t border-border px-3 py-2.5">
               <form
                 className="flex items-center gap-2"
-                onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSend();
+                }}
               >
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask about the platform… (English/Urdu)"
+                  placeholder="Ask about the platform..."
                   disabled={isTyping}
                   className="flex-1 rounded-xl border border-border bg-secondary/40 px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/40 transition-colors disabled:opacity-60"
-                  dir="auto"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSend();
+                    }
+                  }}
                 />
                 <button
                   type="submit"

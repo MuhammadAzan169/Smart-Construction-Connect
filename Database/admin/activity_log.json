@@ -1,5 +1,29 @@
 [
   {
+    "timestamp": "2026-04-06T23:29:08.799321+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat: 5 marla house with 1 ground floor and 1st floor then roof and a basement budget is 1 crore pkr"
+  },
+  {
+    "timestamp": "2026-04-06T23:28:51.080359+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat: 5 marla house with 1 ground floor and 1st floor then roof and a basement budget is 1 crore pkr"
+  },
+  {
+    "timestamp": "2026-04-06T23:27:25.863506+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat: I have to build a house in dha lahore"
+  },
+  {
+    "timestamp": "2026-04-06T23:26:51.647429+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat: Assalam u allaikum"
+  },
+  {
     "timestamp": "2026-04-06T18:46:46.883532+00:00",
     "action": "ai_chat",
     "target": "ahmed@example.com",

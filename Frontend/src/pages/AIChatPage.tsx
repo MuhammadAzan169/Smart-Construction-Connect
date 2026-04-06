@@ -1,12 +1,84 @@
 import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Button } from "@/components/ui/button";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Bot, User, Send, Star, MapPin, Building2, Package, Wrench, DollarSign, Layers, Paperclip, X, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
+
+/* ── Simple Markdown renderer (bold, italic, bullets, headings, line breaks) ── */
+function renderMarkdown(text: string) {
+  const lines = text.split("\n");
+  const elements: React.ReactNode[] = [];
+  let listItems: string[] = [];
+
+  const flushList = () => {
+    if (listItems.length) {
+      elements.push(
+        <ul key={`ul-${elements.length}`} className="my-1.5 ml-4 list-disc space-y-0.5">
+          {listItems.map((li, i) => (
+            <li key={i} className="text-sm leading-relaxed">{inlineFormat(li)}</li>
+          ))}
+        </ul>
+      );
+      listItems = [];
+    }
+  };
+
+  const inlineFormat = (s: string): React.ReactNode => {
+    // Bold **text**, *italic*, `code`
+    const parts: React.ReactNode[] = [];
+    let last = 0;
+    const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
+    let m;
+    while ((m = regex.exec(s)) !== null) {
+      if (m.index > last) parts.push(s.slice(last, m.index));
+      if (m[2]) parts.push(<strong key={m.index} className="font-semibold">{m[2]}</strong>);
+      else if (m[3]) parts.push(<em key={m.index}>{m[3]}</em>);
+      else if (m[4]) parts.push(<code key={m.index} className="rounded bg-muted px-1 py-0.5 text-xs font-mono">{m[4]}</code>);
+      last = m.index + m[0].length;
+    }
+    if (last < s.length) parts.push(s.slice(last));
+    return parts.length === 1 ? parts[0] : <>{parts}</>;
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Bullet points (-, •, *)
+    const bulletMatch = line.match(/^\s*[-•*]\s+(.*)/);
+    if (bulletMatch) {
+      listItems.push(bulletMatch[1]);
+      continue;
+    }
+    // Numbered list
+    const numMatch = line.match(/^\s*\d+[.)]\s+(.*)/);
+    if (numMatch) {
+      listItems.push(numMatch[1]);
+      continue;
+    }
+
+    flushList();
+
+    // Headings
+    const h3 = line.match(/^###\s+(.*)/);
+    if (h3) { elements.push(<h4 key={i} className="mt-3 mb-1 text-sm font-bold text-foreground">{inlineFormat(h3[1])}</h4>); continue; }
+    const h2 = line.match(/^##\s+(.*)/);
+    if (h2) { elements.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground">{inlineFormat(h2[1])}</h3>); continue; }
+    const h1 = line.match(/^#\s+(.*)/);
+    if (h1) { elements.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground">{inlineFormat(h1[1])}</h3>); continue; }
+
+    // Empty line → spacer
+    if (!line.trim()) { elements.push(<div key={i} className="h-2" />); continue; }
+
+    // Normal paragraph
+    elements.push(<p key={i} className="text-sm leading-relaxed">{inlineFormat(line)}</p>);
+  }
+  flushList();
+  return <div className="space-y-0.5">{elements}</div>;
+}
 
 interface Message {
   id: number;
@@ -30,19 +102,60 @@ interface Recommendation {
 }
 
 export default function AIChatPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 1, role: "ai", text: "Hello! 👋 I'm your AI Construction Assistant. Tell me about your project — budget, location, type — and I'll find the perfect match for you." },
-  ]);
+  const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  const userRole = user?.role || "client";
+
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
-  const user = useAuthStore((s) => s.user);
 
-  const nextIdRef = useRef(2);
+  const nextIdRef = useRef(1);
   const getNextId = useCallback(() => nextIdRef.current++, []);
+
+  // Load greeting from backend on mount
+  useEffect(() => {
+    api.ai.chat([], user?.email || "", userRole).then((res) => {
+      setMessages([{ id: getNextId(), role: "ai", text: res.response }]);
+    }).catch(() => {
+      setMessages([{ id: getNextId(), role: "ai", text: "Hello! 👋 I'm your AI Construction Assistant. Tell me about your project!" }]);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Role-specific suggested prompts
+  const SUGGESTED = useMemo(() => {
+    const prompts: Record<string, string[]> = {
+      client: [
+        "I want to build a 5 marla house in Lahore DHA, budget 80 lacs",
+        "مجھے اسلام آباد میں 10 مرلہ مکان بنوانا ہے",
+        "Find cement and steel suppliers in Karachi",
+        "What's the current construction cost per sqft in Lahore?",
+      ],
+      company: [
+        "Find best steel and cement suppliers in Lahore",
+        "What are current market prices for construction materials?",
+        "Suggest material alternatives to reduce cost",
+        "Help me estimate cost for a 10 marla house grey structure",
+      ],
+      supplier: [
+        "What are current cement prices across Pakistan?",
+        "Am I pricing competitively for steel in Lahore?",
+        "Which materials are most in demand right now?",
+        "Help me analyze my pricing strategy",
+      ],
+      admin: [
+        "Show me platform user summary",
+        "Which are the top performing companies?",
+        "List unapproved companies and suppliers",
+        "What are the current market material prices?",
+      ],
+    };
+    return prompts[userRole] || prompts.client;
+  }, [userRole]);
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const shouldAutoScrollRef = useRef(true);
@@ -85,8 +198,6 @@ export default function AIChatPage() {
         content: m.text,
       }));
 
-      const userRole = user?.role || "client";
-
       let result: { response: string; recommendations?: unknown[] };
       if (currentFile) {
         result = await api.ai.chatWithFile(currentFile, chatHistory, user?.email || "", userRole);
@@ -108,7 +219,7 @@ export default function AIChatPage() {
     } finally {
       setIsTyping(false);
     }
-  }, [getNextId, input, isTyping, messages, user?.email, user?.role, attachedFile]);
+  }, [getNextId, input, isTyping, messages, user?.email, userRole, attachedFile]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -118,11 +229,26 @@ export default function AIChatPage() {
     [handleSend],
   );
 
-  const SUGGESTED = [
-    "I need a construction company in Lahore for a 5 marla house, budget 80 lacs",
-    "Find me a reliable supplier for steel and cement in Karachi",
-    "Looking for residential builders in Islamabad under 1 crore budget",
-  ];
+  // Role-specific header title
+  const headerTitle = useMemo(() => {
+    const titles: Record<string, string> = {
+      client: "AI Construction Consultant",
+      company: "AI Business Advisor",
+      supplier: "AI Market Analyst",
+      admin: "AI Analytics Assistant",
+    };
+    return titles[userRole] || titles.client;
+  }, [userRole]);
+
+  const headerSubtitle = useMemo(() => {
+    const subs: Record<string, string> = {
+      client: "Find the perfect builder & supplier for your project",
+      company: "Material sourcing & market intelligence",
+      supplier: "Pricing strategy & demand insights",
+      admin: "Platform analytics & insights",
+    };
+    return subs[userRole] || subs.client;
+  }, [userRole]);
 
   return (
     <motion.div
@@ -152,8 +278,8 @@ export default function AIChatPage() {
             <div className="absolute inset-0 rounded-xl ring-2 ring-primary/20" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-foreground leading-tight">AI Construction Assistant</h2>
-            <p className="text-[11px] text-muted-foreground leading-tight">Smart matching powered by AI</p>
+            <h2 className="text-sm font-bold text-foreground leading-tight">{headerTitle}</h2>
+            <p className="text-[11px] text-muted-foreground leading-tight">{headerSubtitle}</p>
           </div>
           <div className="ml-auto flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -220,8 +346,9 @@ export default function AIChatPage() {
                       ? "bg-secondary text-foreground rounded-bl-md"
                       : "gradient-bg text-primary-foreground rounded-br-md"
                   }`}
+                  dir="auto"
                 >
-                  {msg.text}
+                  {msg.role === "ai" ? renderMarkdown(msg.text) : msg.text}
                 </div>
               </motion.div>
             ))}
