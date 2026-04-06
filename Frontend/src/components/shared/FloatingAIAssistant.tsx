@@ -33,11 +33,13 @@ async function fetchLandingResponse(history: { role: string; content: string }[]
   return data.response || "I didn't get a response. Please try again.";
 }
 
-/* ── Inline markdown → React nodes ── */
+/* ── Inline markdown → React nodes (bold, italic, code, bullets, tables) ── */
 function renderMd(text: string) {
   const lines = text.split("\n");
   const out: React.ReactNode[] = [];
   let listBuf: string[] = [];
+  let tableHeader: string[] | null = null;
+  let tableRows: string[][] = [];
 
   const fmt = (s: string): React.ReactNode => {
     const parts: React.ReactNode[] = [];
@@ -55,30 +57,69 @@ function renderMd(text: string) {
     return parts.length === 1 ? parts[0] : <>{parts}</>;
   };
 
-  const flush = () => {
-    if (listBuf.length) {
-      out.push(
-        <ul key={`ul-${out.length}`} className="ml-3 list-disc space-y-0.5">
-          {listBuf.map((l, i) => <li key={i} className="text-xs leading-relaxed">{fmt(l)}</li>)}
-        </ul>
-      );
-      listBuf = [];
-    }
+  const flushList = () => {
+    if (!listBuf.length) return;
+    out.push(
+      <ul key={`ul-${out.length}`} className="ml-3 list-disc space-y-0.5">
+        {listBuf.map((l, i) => <li key={i} className="text-xs leading-relaxed">{fmt(l)}</li>)}
+      </ul>
+    );
+    listBuf = [];
+  };
+
+  const flushTable = () => {
+    if (!tableHeader && !tableRows.length) return;
+    out.push(
+      <div key={`tbl-${out.length}`} className="my-1.5 overflow-x-auto rounded border border-border text-[10px]">
+        <table className="w-full">
+          {tableHeader && (
+            <thead>
+              <tr className="bg-muted/60">
+                {tableHeader.map((h, i) => (
+                  <th key={i} className="px-2 py-1 text-left font-semibold text-foreground">{fmt(h.trim())}</th>
+                ))}
+              </tr>
+            </thead>
+          )}
+          <tbody>
+            {tableRows.map((row, ri) => (
+              <tr key={ri} className={ri % 2 ? "bg-muted/20" : ""}>
+                {row.map((cell, ci) => (
+                  <td key={ci} className="px-2 py-1 text-muted-foreground border-t border-border/40">{fmt(cell.trim())}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+    tableHeader = null;
+    tableRows = [];
   };
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    if (line.trim().startsWith("|")) {
+      const cells = line.split("|").slice(1, -1);
+      const isSep = cells.every(c => /^[-: ]+$/.test(c));
+      if (isSep) continue;
+      if (tableHeader === null) { flushList(); tableHeader = cells; }
+      else tableRows.push(cells);
+      continue;
+    }
+    flushTable();
     const bullet = line.match(/^\s*[-•*]\s+(.*)/);
     if (bullet) { listBuf.push(bullet[1]); continue; }
     const num = line.match(/^\s*\d+[.)]\s+(.*)/);
     if (num) { listBuf.push(num[1]); continue; }
-    flush();
+    flushList();
     if (!line.trim()) { out.push(<div key={i} className="h-1.5" />); continue; }
     const h = line.match(/^#{1,3}\s+(.*)/);
     if (h) { out.push(<p key={i} className="text-xs font-bold mt-1">{fmt(h[1])}</p>); continue; }
     out.push(<p key={i} className="text-xs leading-relaxed">{fmt(line)}</p>);
   }
-  flush();
+  flushList();
+  flushTable();
   return <div className="space-y-0.5">{out}</div>;
 }
 

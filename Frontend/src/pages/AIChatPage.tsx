@@ -8,27 +8,15 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
 
-/* ── Simple Markdown renderer (bold, italic, bullets, headings, line breaks) ── */
+/* ── Rich Markdown renderer: bold, italic, code, bullets, headings, tables ── */
 function renderMarkdown(text: string) {
   const lines = text.split("\n");
   const elements: React.ReactNode[] = [];
-  let listItems: string[] = [];
-
-  const flushList = () => {
-    if (listItems.length) {
-      elements.push(
-        <ul key={`ul-${elements.length}`} className="my-1.5 ml-4 list-disc space-y-0.5">
-          {listItems.map((li, i) => (
-            <li key={i} className="text-sm leading-relaxed">{inlineFormat(li)}</li>
-          ))}
-        </ul>
-      );
-      listItems = [];
-    }
-  };
+  let listItems: { ordered: boolean; text: string }[] = [];
+  let tableRows: string[][] = [];
+  let tableHeader: string[] | null = null;
 
   const inlineFormat = (s: string): React.ReactNode => {
-    // Bold **text**, *italic*, `code`
     const parts: React.ReactNode[] = [];
     let last = 0;
     const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
@@ -44,39 +32,101 @@ function renderMarkdown(text: string) {
     return parts.length === 1 ? parts[0] : <>{parts}</>;
   };
 
+  const flushList = () => {
+    if (!listItems.length) return;
+    const ordered = listItems[0].ordered;
+    const Tag = ordered ? "ol" : "ul";
+    elements.push(
+      <Tag key={`list-${elements.length}`} className={`my-1.5 ml-4 space-y-0.5 ${ordered ? "list-decimal" : "list-disc"}`}>
+        {listItems.map((li, i) => (
+          <li key={i} className="text-sm leading-relaxed">{inlineFormat(li.text)}</li>
+        ))}
+      </Tag>
+    );
+    listItems = [];
+  };
+
+  const flushTable = () => {
+    if (!tableHeader && !tableRows.length) return;
+    const headers = tableHeader || [];
+    elements.push(
+      <div key={`tbl-${elements.length}`} className="my-2 overflow-x-auto rounded-lg border border-border">
+        <table className="w-full text-xs">
+          {headers.length > 0 && (
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                {headers.map((h, i) => (
+                  <th key={i} className="px-3 py-2 text-left font-semibold text-foreground">{inlineFormat(h.trim())}</th>
+                ))}
+              </tr>
+            </thead>
+          )}
+          <tbody>
+            {tableRows.map((row, ri) => (
+              <tr key={ri} className={ri % 2 === 0 ? "" : "bg-muted/20"}>
+                {row.map((cell, ci) => (
+                  <td key={ci} className="px-3 py-2 text-muted-foreground border-t border-border/50">{inlineFormat(cell.trim())}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+    tableHeader = null;
+    tableRows = [];
+  };
+
+  const parseTableRow = (line: string): string[] | null => {
+    if (!line.trim().startsWith("|")) return null;
+    return line.split("|").slice(1, -1);
+  };
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // Bullet points (-, •, *)
-    const bulletMatch = line.match(/^\s*[-•*]\s+(.*)/);
-    if (bulletMatch) {
-      listItems.push(bulletMatch[1]);
+    // Table row detection
+    const tRow = parseTableRow(line);
+    if (tRow !== null) {
+      const isSeparator = tRow.every(c => /^[-: ]+$/.test(c));
+      if (isSeparator) continue; // skip the |---|---| line
+      if (tableHeader === null) {
+        flushList();
+        tableHeader = tRow;
+      } else {
+        tableRows.push(tRow);
+      }
       continue;
     }
+    flushTable();
+
+    // Bullet points
+    const bulletMatch = line.match(/^\s*[-•*]\s+(.*)/);
+    if (bulletMatch) { listItems.push({ ordered: false, text: bulletMatch[1] }); continue; }
     // Numbered list
     const numMatch = line.match(/^\s*\d+[.)]\s+(.*)/);
-    if (numMatch) {
-      listItems.push(numMatch[1]);
-      continue;
-    }
-
+    if (numMatch) { listItems.push({ ordered: true, text: numMatch[1] }); continue; }
     flushList();
 
     // Headings
     const h3 = line.match(/^###\s+(.*)/);
-    if (h3) { elements.push(<h4 key={i} className="mt-3 mb-1 text-sm font-bold text-foreground">{inlineFormat(h3[1])}</h4>); continue; }
+    if (h3) { elements.push(<h4 key={i} className="mt-3 mb-1 text-sm font-bold text-foreground border-l-2 border-primary pl-2">{inlineFormat(h3[1])}</h4>); continue; }
     const h2 = line.match(/^##\s+(.*)/);
     if (h2) { elements.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground">{inlineFormat(h2[1])}</h3>); continue; }
     const h1 = line.match(/^#\s+(.*)/);
     if (h1) { elements.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground">{inlineFormat(h1[1])}</h3>); continue; }
 
-    // Empty line → spacer
+    // Horizontal rule
+    if (/^[-*_]{3,}$/.test(line.trim())) { elements.push(<hr key={i} className="my-2 border-border" />); continue; }
+
+    // Empty line
     if (!line.trim()) { elements.push(<div key={i} className="h-2" />); continue; }
 
     // Normal paragraph
     elements.push(<p key={i} className="text-sm leading-relaxed">{inlineFormat(line)}</p>);
   }
   flushList();
+  flushTable();
   return <div className="space-y-0.5">{elements}</div>;
 }
 
@@ -501,10 +551,18 @@ export default function AIChatPage() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">No matches yet</p>
+                  <p className="text-sm font-medium text-foreground">Gathering your requirements</p>
                   <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                    Describe your project in the chat and I'll find the best contractors and suppliers for you.
+                    Tell me your <strong className="text-foreground">city</strong>, <strong className="text-foreground">budget</strong>, and plot size — then I'll find your top 3 matches.
                   </p>
+                  <div className="mt-3 space-y-1.5">
+                    {["City / Area", "Budget (PKR)", "Plot size (marla/kanal)", "Construction type"].map((req) => (
+                      <div key={req} className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                        <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30" />
+                        {req}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -515,19 +573,30 @@ export default function AIChatPage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.08, duration: 0.3 }}
                 >
-                  <div className="rounded-xl border border-border bg-card/60 p-3.5 hover:border-primary/20 hover:bg-card transition-all duration-200">
+                  <div className="rounded-xl border border-border bg-card/60 p-3.5 hover:border-primary/20 hover:bg-card transition-all duration-200 relative overflow-hidden">
+                    {/* Rank badge */}
+                    <div className={`absolute top-0 right-0 rounded-bl-xl px-2 py-0.5 text-[9px] font-bold ${
+                      i === 0 ? "bg-amber-500/15 text-amber-600" :
+                      i === 1 ? "bg-slate-500/15 text-slate-500" :
+                      "bg-orange-500/15 text-orange-600"
+                    }`}>
+                      #{i + 1} {i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}
+                    </div>
+
                     {/* Top row: score + name */}
                     <div className="flex items-start gap-3">
                       <MatchScoreRing score={rec.score} size={44} />
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0 pr-8">
                         <div className="flex items-center gap-1.5 mb-0.5">
                           {rec.type === "company" ? (
                             <Building2 className="h-3 w-3 text-primary shrink-0" />
                           ) : (
                             <Package className="h-3 w-3 text-orange-500 shrink-0" />
                           )}
-                          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                            {rec.type === "company" ? "Construction" : "Supplier"}
+                          <span className={`text-[10px] font-semibold uppercase tracking-wider ${
+                            rec.type === "company" ? "text-primary/70" : "text-orange-500/80"
+                          }`}>
+                            {rec.type === "company" ? "Construction Co." : "Supplier"}
                           </span>
                         </div>
                         <h4 className="text-sm font-bold text-foreground truncate leading-tight">{rec.name}</h4>
@@ -539,33 +608,51 @@ export default function AIChatPage() {
                     </div>
 
                     {/* Rating */}
-                    <div className="mt-2.5 flex items-center justify-between">
-                      <div className="flex items-center gap-1">
+                    <div className="mt-2.5 flex items-center gap-2">
+                      <div className="flex items-center gap-0.5">
                         {Array.from({ length: 5 }).map((_, k) => (
                           <Star key={k} className={`h-3 w-3 ${ k < Math.round(rec.rating) ? "fill-amber-400 text-amber-400" : "text-muted-foreground/20"}`} />
                         ))}
-                        <span className="ml-1 text-xs font-semibold text-foreground">{rec.rating}</span>
-                        <span className="text-[10px] text-muted-foreground">({rec.reviews})</span>
                       </div>
+                      <span className="text-xs font-semibold text-foreground">{rec.rating}</span>
+                      <span className="text-[10px] text-muted-foreground">({rec.reviews} reviews)</span>
                     </div>
 
-                    {/* Tags */}
+                    {/* Price range */}
                     {rec.price_range && (
-                      <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <div className="mt-2 flex items-center gap-1.5">
                         <DollarSign className="h-3 w-3 text-emerald-500 shrink-0" />
-                        <span>{rec.price_range}</span>
+                        <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">{rec.price_range}</span>
                       </div>
                     )}
+
+                    {/* Completed projects */}
+                    {rec.completed_projects != null && rec.completed_projects > 0 && (
+                      <div className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                        <Building2 className="h-3 w-3 shrink-0" />
+                        <span>{rec.completed_projects} projects completed</span>
+                      </div>
+                    )}
+
+                    {/* Specialization pills */}
                     {rec.specializations && rec.specializations.length > 0 && (
-                      <div className="mt-1.5 flex items-start gap-1.5 text-[11px] text-muted-foreground">
-                        <Wrench className="h-3 w-3 text-primary/70 shrink-0 mt-0.5" />
-                        <span className="line-clamp-2">{rec.specializations.join(", ")}</span>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {rec.specializations.map((sp) => (
+                          <span key={sp} className="inline-flex items-center gap-0.5 rounded-full bg-primary/8 px-2 py-0.5 text-[10px] font-medium text-primary/80">
+                            <Wrench className="h-2.5 w-2.5" />{sp}
+                          </span>
+                        ))}
                       </div>
                     )}
+
+                    {/* Category pills */}
                     {rec.categories && rec.categories.length > 0 && (
-                      <div className="mt-1.5 flex items-start gap-1.5 text-[11px] text-muted-foreground">
-                        <Package className="h-3 w-3 text-orange-400 shrink-0 mt-0.5" />
-                        <span className="line-clamp-2">{rec.categories.join(", ")}</span>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {rec.categories.map((cat) => (
+                          <span key={cat} className="inline-flex items-center gap-0.5 rounded-full bg-orange-500/8 px-2 py-0.5 text-[10px] font-medium text-orange-600 dark:text-orange-400">
+                            <Package className="h-2.5 w-2.5" />{cat}
+                          </span>
+                        ))}
                       </div>
                     )}
 
@@ -582,7 +669,7 @@ export default function AIChatPage() {
                         )
                       }
                     >
-                      View Profile
+                      View Profile →
                     </Button>
                   </div>
                 </motion.div>

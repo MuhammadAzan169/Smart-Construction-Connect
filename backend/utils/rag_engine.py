@@ -123,29 +123,26 @@ _SYSTEM_PROMPTS: dict[str, str] = {
     # ── Client (homeowner) ────────────────────────────────────────────────────
     "client": (
         "You are an expert AI Construction Consultant for homeowners on Smart Construction Connect.\n\n"
-        "Your workflow:\n"
-        "1. GATHER requirements through conversation:\n"
-        "   - City & society/area\n"
+        "WORKFLOW — follow this strictly:\n"
+        "STEP 1 — GATHER requirements first (do NOT recommend yet):\n"
+        "   Ask conversationally, one or two questions at a time:\n"
+        "   - City & area/society (e.g. Lahore DHA, Islamabad G-13)\n"
         "   - Plot size (marla/kanal)\n"
-        "   - Number of floors, basement needed?\n"
         "   - Construction type (grey structure / full finish / renovation)\n"
-        "   - Budget range (PKR)\n"
-        "   - Timeline preference\n"
-        "   - Special features (smart home, solar, pool, etc.)\n"
-        "2. Once you have enough info, recommend the TOP 3 best-matching construction "
-        "companies AND/OR material suppliers from the RECOMMENDED MATCHES section.\n"
-        "3. Provide estimated cost breakdowns using market prices.\n"
-        "4. If user asks about ONLY materials/suppliers, recommend suppliers only.\n"
-        "   If user asks about ONLY construction companies, recommend companies only.\n"
-        "   If user says 'both' or 'everything', recommend both.\n\n"
-        "Rules:\n"
-        "• ONLY recommend companies/suppliers that appear in the RECOMMENDED MATCHES below. "
-        "NEVER invent or hallucinate company names, prices, or details.\n"
-        "• Ask clarifying questions if requirements are incomplete.\n"
-        "• Provide price estimates backed by the MARKET PRICES data.\n"
-        "• Use structured format: bullet points, bold headings, cost tables.\n"
-        "• Respond in the SAME language the user writes in (English or Urdu/Roman Urdu).\n"
-        "• If a file is uploaded (floor plan, BOQ, contract), analyze it and incorporate findings."
+        "   - Budget range in PKR\n"
+        "   - Number of floors\n"
+        "   - Timeline and any special features (solar, smart home, pool)\n"
+        "STEP 2 — ONLY after you have AT LEAST city + budget (minimum 2 key facts), "
+        "present the TOP 3 matches from RECOMMENDED MATCHES below.\n"
+        "STEP 3 — Provide cost breakdown using MARKET PRICES data.\n\n"
+        "CRITICAL RULES:\n"
+        "• NEVER recommend companies or suppliers before gathering minimum requirements.\n"
+        "• NEVER invent or hallucinate company names, prices, or contact details.\n"
+        "• ONLY recommend entries that appear in RECOMMENDED MATCHES.\n"
+        "• If user only needs materials, recommend suppliers only.\n"
+        "• Use markdown: bold headings (**text**), bullet lists, cost tables with | pipes |.\n"
+        "• Respond in the SAME language the user is writing in (see LANGUAGE DIRECTIVE below).\n"
+        "• If a file is uploaded (floor plan, BOQ, contract), analyze it thoroughly."
     ),
 
     # ── Construction company ──────────────────────────────────────────────────
@@ -428,17 +425,88 @@ def _parse_budget(text: str) -> tuple[float | None, float | None]:
     return None, None
 
 
+# Comprehensive Roman Urdu word set — Urdu written in Latin script
+_ROMAN_URDU_MARKERS: frozenset[str] = frozenset([
+    # Pronouns & basic
+    "main", "mein", "hum", "aap", "tum", "wo", "woh", "yeh", "ye",
+    # Verbs / conjugations
+    "hai", "hain", "tha", "the", "thi", "ho", "hoga", "hogi", "houn",
+    "karo", "karna", "karte", "karta", "karti", "kar", "kia", "kiya",
+    "dena", "dedo", "lena", "lo", "batao", "batayen", "btao", "bata",
+    "chahiye", "chahie", "chahta", "chahti", "chahye",
+    # Question words
+    "kya", "kia", "kab", "kahan", "kyun", "kaisa", "kesa", "kitna",
+    "kitne", "kitni", "kaun", "konsa",
+    # Common connectors
+    "aur", "lekin", "magar", "agar", "phir", "toh", "to", "ya",
+    "ke", "ka", "ki", "ko", "se", "mein", "pe", "par", "tak",
+    # Responses
+    "nahi", "nahin", "nhi", "na", "haan", "han", "ji", "bilkul",
+    "achha", "acha", "accha", "theek", "thek", "sahi",
+    # Greetings / politeness
+    "bhai", "dost", "sahib",
+    "shukriya", "shukria", "meherbani", "shukar", "shukran",
+    "zaroorat", "zarurat", "zaroor", "madad", "madat",
+    # Construction / house
+    "ghar", "makan", "makaan", "gher", "banwana", "banana", "bana",
+    "marla", "kanal", "manzil", "kamra", "tameer", "taameer", "nirman",
+    # Numbers / money
+    "paise", "rupay", "lakh", "crore",
+    # Degree words
+    "kam", "zyada", "bara", "chota", "chhota", "pura", "sara", "sab",
+    "dono", "pehle", "baad", "jaldi", "abhi",
+])
+
+
 def _detect_language(text: str) -> str:
-    """Detect if user is writing in Urdu/Roman Urdu or English."""
-    urdu_markers = [
-        "kya", "hai", "mein", "hain", "aur", "ka", "ki", "ko", "se",
-        "ye", "wo", "mujhe", "chahiye", "kitna", "kahan", "kaise",
-        "ghar", "makaan", "company", "banwana", "lagega", "batao",
-        "bhai", "ji", "shukriya", "meherbani", "madad", "zaroorat",
-    ]
-    words = text.lower().split()
-    urdu_count = sum(1 for w in words if w in urdu_markers)
-    return "urdu" if urdu_count >= 2 or any(ord(c) > 1536 and ord(c) < 1792 for c in text) else "english"
+    """Detect language: 'urdu' (script), 'roman_urdu', or 'english'."""
+    # Urdu / Arabic script characters
+    if any(0x0600 <= ord(c) <= 0x06FF for c in text):
+        return "urdu"
+    # Roman Urdu — Urdu words written in Latin letters
+    words = set(re.findall(r"[a-z]+", text.lower()))
+    roman_hits = len(words & _ROMAN_URDU_MARKERS)
+    if roman_hits >= 2:
+        return "roman_urdu"
+    return "english"
+
+
+def _get_language_directive(lang: str) -> str:
+    """Return a system-prompt injection enforcing correct reply language."""
+    if lang == "urdu":
+        return (
+            "\n\nLANGUAGE DIRECTIVE: The user is writing in Urdu script (اردو). "
+            "You MUST reply entirely in Urdu script. "
+            "Use proper Urdu grammar. Avoid switching to English except for "
+            "technical terms (company names, prices, materials)."
+        )
+    if lang == "roman_urdu":
+        return (
+            "\n\nLANGUAGE DIRECTIVE: The user is writing in Roman Urdu "
+            "(Urdu words spelled in English letters). "
+            "You MUST reply in Roman Urdu — write Urdu words using the Latin alphabet. "
+            "Reply style example: 'Han bilkul! Aap Lahore mein ghar banana chahte hain? "
+            "Budget aur plot size bata dein, main aap ke liye best companies "
+            "dhundh lunga.' "
+            "Do NOT reply in English. Do NOT use Urdu script. "
+            "Keep it natural and conversational like a friend talking in Roman Urdu."
+        )
+    return (
+        "\n\nLANGUAGE DIRECTIVE: The user is writing in English. Reply in English."
+    )
+
+
+def _has_enough_requirements(intent: dict, user_msg_count: int) -> bool:
+    """True when we have enough info to surface company/supplier recommendations."""
+    if user_msg_count < 2:
+        return False  # Always ask at least once before recommending
+    filled = sum([
+        bool(intent.get("city")),
+        bool(intent.get("budget_min")),
+        bool(intent.get("plot_size")),
+        bool(intent.get("project_type")),
+    ])
+    return filled >= 2
 
 
 def _extract_plot_size(text: str) -> str | None:
@@ -929,6 +997,11 @@ def generate_ai_response(messages: list[dict], *, user_role: str = "client") -> 
             "recommendations": [],
         }
 
+    # ── Language detection ────────────────────────────────────────────────────
+    combined_user = " ".join(m.get("content", "") for m in messages if m.get("role") == "user")
+    lang = _detect_language(combined_user)
+    lang_directive = _get_language_directive(lang)
+
     # ── RAG retrieval ────────────────────────────────────────────────────────
     top_matches: list[dict] = []
     intent: dict = {}
@@ -940,28 +1013,46 @@ def generate_ai_response(messages: list[dict], *, user_role: str = "client") -> 
         except Exception as e:
             logger.warning("RAG retrieval failed: %s", e)
 
+    # ── Decide which recommendations to surface ───────────────────────────────
+    user_msg_count = sum(1 for m in messages if m.get("role") == "user")
+    if user_role == "client":
+        # Only show recs after enough requirements gathered
+        recs_to_return = top_matches if _has_enough_requirements(intent, user_msg_count) else []
+    elif user_role == "company":
+        recs_to_return = top_matches  # company users get supplier recs immediately
+    else:
+        recs_to_return = []
+
     # ── Build system prompt with context ─────────────────────────────────────
     if user_role == "admin":
         context = _build_admin_context()
     else:
         context = _build_rag_context(top_matches, user_role)
 
-    system_prompt = base_system + context
+    system_prompt = base_system + lang_directive + context
 
     # ── LLM call ─────────────────────────────────────────────────────────────
     try:
         response_text = _call_openrouter(system_prompt, messages)
     except RuntimeError as e:
         logger.error("LLM failed: %s", e)
-        if top_matches:
+        if top_matches and recs_to_return:
             response_text = _build_fallback(top_matches, intent)
         else:
-            response_text = (
-                "I'm having trouble connecting right now. Please try again in a moment! "
-                "ابھی بات نہیں ہو پا رہی، براہ کرم دوبارہ کوشش کریں۔"
-            )
+            # Fallback in all three languages
+            if lang == "roman_urdu":
+                response_text = (
+                    "Abhi connection mein masla hai. Thodi der baad dobara try karein! "
+                    "Aap ki madad karne ke liye hum yahan hain. 🙏"
+                )
+            elif lang == "urdu":
+                response_text = "ابھی کنکشن میں مسئلہ ہے۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔ 🙏"
+            else:
+                response_text = (
+                    "I'm having trouble connecting right now. Please try again in a moment! 🙏"
+                )
 
     return {
         "response": response_text,
-        "recommendations": top_matches,
+        "recommendations": recs_to_return,
     }
