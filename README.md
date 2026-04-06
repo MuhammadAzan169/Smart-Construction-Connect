@@ -54,6 +54,8 @@ The platform features an AI chat assistant that takes plain-language project des
 | **FastAPI** | latest | REST API framework |
 | **Uvicorn** | standard | ASGI server |
 | **Pydantic** | v2 | Data validation & serialization |
+| **httpx** | latest | Async HTTP client for LLM API calls |
+| **python-dotenv** | latest | Environment variable management |
 | **bcrypt** | latest | Password hashing |
 | **python-multipart** | latest | File upload handling |
 
@@ -211,16 +213,54 @@ Smart-Construction-Connect/
 git clone <repo-url>
 cd Smart-Construction-Connect
 
-# 2. Install Python dependencies
+# 2. Set up environment variables
+cp .env.example .env  # Copy the example file
+# Edit .env and add your OpenRouter API keys (see Configuration section below)
+
+# 3. Install Python dependencies
 pip install -r backend/requirements.txt
 
-# 3. Install frontend dependencies
+# 4. Install frontend dependencies
 cd Frontend
 npm install
 cd ..
 ```
 
-### Running in Production Mode
+---
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file in the project root with the following variables:
+
+```env
+# OpenRouter API Configuration (Required for AI Chat)
+OPENROUTER_API_KEY_1=sk-or-v1-xxxxxxxxxxxxx
+OPENROUTER_API_KEY_2=sk-or-v1-xxxxxxxxxxxxx
+# Add up to 28 API keys for load balancing and rate limit handling
+OPENROUTER_API_KEY_3=sk-or-v1-xxxxxxxxxxxxx
+# ... up to OPENROUTER_API_KEY_28
+
+# Available models (optional, defaults provided)
+OPENROUTER_MODEL_1=microsoft/wizardlm-2-8x22b
+OPENROUTER_MODEL_2=meta-llama/llama-3.1-8b-instruct
+# Add up to 5 models for rotation
+OPENROUTER_MODEL_3=anthropic/claude-3-haiku
+# ... up to OPENROUTER_MODEL_5
+```
+
+**Getting OpenRouter API Keys:**
+1. Sign up at [OpenRouter.ai](https://openrouter.ai)
+2. Generate API keys from your dashboard
+3. Add credits to your account (free tier available)
+4. Copy keys to your `.env` file
+
+**Note:** The AI assistant uses multiple API keys and models for redundancy and load balancing. At minimum, you need `OPENROUTER_API_KEY_1`.
+
+---
+
+## Getting Started
 
 ```bash
 # Build the frontend first
