@@ -25,6 +25,7 @@ import ActivityPage from "./pages/ActivityPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import SettingsPage from "./pages/SettingsPage";
 import MessagesPage from "./pages/MessagesPage";
+import AdminMessagesPage from "./pages/AdminMessagesPage";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 
@@ -61,6 +62,7 @@ const App = () => (
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/messages" element={<MessagesPage />} />
+            <Route path="/admin-messages" element={<AdminMessagesPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

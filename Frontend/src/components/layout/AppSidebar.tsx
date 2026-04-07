@@ -63,6 +63,7 @@ const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path
     { label: "Dashboard",               icon: LayoutDashboard, path: "/dashboard" },
     { label: "AI Assistant",            icon: Bot,             path: "/admin-ai" },
     { label: "Users",                   icon: Users,           path: "/users" },
+    { label: "Chat Oversight",          icon: MessageSquare,   path: "/admin-messages" },
     { label: "Companies",               icon: Building2,       path: "/companies?tab=companies" },
     { label: "Materials & Suppliers",   icon: Package,         path: "/companies?tab=materials" },
     { label: "Approvals",               icon: ShieldCheck,     path: "/approvals" },

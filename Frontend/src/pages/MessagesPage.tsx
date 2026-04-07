@@ -8,11 +8,14 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 import {
   ArrowLeft,
+  Check,
   CheckCheck,
   MessageSquare,
   Search,
   Send,
   Smile,
+  Trash2,
+  X,
 } from "lucide-react";
 
 function timeAgo(iso: string): string {
@@ -71,10 +74,14 @@ export default function MessagesPage() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: "conversation"; id: string } | { type: "message"; convoId: string; msgId: string } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const email = user?.email ?? "";
+  const token = useAuthStore((s) => s.token);
 
   const loadConversations = useCallback(async () => {
     try {
@@ -91,7 +98,79 @@ export default function MessagesPage() {
     loadConversations();
   }, [loadConversations]);
 
-  // Poll for new messages every 10s
+  // ── WebSocket connection ──
+  useEffect(() => {
+    if (!email || !token) return;
+
+    let alive = true;
+
+    function connect() {
+      if (!alive) return;
+      const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const host = window.location.host;
+      const ws = new WebSocket(`${proto}//${host}/api/messages/ws/${encodeURIComponent(email)}`);
+      wsRef.current = ws;
+
+      ws.onmessage = (evt) => {
+        try {
+          const data = JSON.parse(evt.data);
+          if (data.type === "new_message") {
+            // Refresh sidebar
+            loadConversations();
+            // If we're viewing this conversation, append the message
+            if (data.conversation_id) {
+              setActiveConvo((current) => {
+                if (current === data.conversation_id) {
+                  // Refresh the active conversation messages
+                  api.messages.getMessages(data.conversation_id).then((res) => {
+                    setMessages(res.messages);
+                    setActiveConvoData(res.conversation);
+                  }).catch(() => {});
+                  setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+                }
+                return current;
+              });
+            }
+          } else if (data.type === "messages_read") {
+            // Update read status for messages in active convo
+            if (data.conversation_id) {
+              setActiveConvo((current) => {
+                if (current === data.conversation_id) {
+                  setMessages((prev) => prev.map((m) => m.sender === email ? { ...m, status: "read" as const, read: true } : m));
+                }
+                return current;
+              });
+              loadConversations();
+            }
+          }
+        } catch {
+          // ignore malformed messages
+        }
+      };
+
+      ws.onclose = () => {
+        wsRef.current = null;
+        if (alive) {
+          reconnectTimer.current = setTimeout(connect, 3000);
+        }
+      };
+
+      ws.onerror = () => {
+        ws.close();
+      };
+    }
+
+    connect();
+
+    return () => {
+      alive = false;
+      clearTimeout(reconnectTimer.current);
+      wsRef.current?.close();
+      wsRef.current = null;
+    };
+  }, [email, token, loadConversations]);
+
+  // Fallback polling every 30s (WS handles real-time)
   useEffect(() => {
     const interval = setInterval(() => {
       loadConversations();
@@ -101,7 +180,7 @@ export default function MessagesPage() {
           setActiveConvoData(res.conversation);
         }).catch(() => {});
       }
-    }, 10_000);
+    }, 30_000);
     return () => clearInterval(interval);
   }, [activeConvo, loadConversations]);
 
@@ -111,7 +190,6 @@ export default function MessagesPage() {
       const res = await api.messages.getMessages(id);
       setMessages(res.messages);
       setActiveConvoData(res.conversation);
-      // Refresh conversations to clear unread
       loadConversations();
     } catch {
       // ignore
@@ -138,6 +216,31 @@ export default function MessagesPage() {
     }
   };
 
+  const handleDeleteConversation = async (id: string) => {
+    try {
+      await api.messages.deleteConversation(id);
+      setConversations((prev) => prev.filter((c) => c.id !== id));
+      if (activeConvo === id) {
+        setActiveConvo(null);
+        setMessages([]);
+        setActiveConvoData(null);
+      }
+    } catch {
+      // ignore
+    }
+    setDeleteTarget(null);
+  };
+
+  const handleDeleteMessage = async (convoId: string, msgId: string) => {
+    try {
+      await api.messages.deleteMessage(convoId, msgId);
+      setMessages((prev) => prev.filter((m) => m.id !== msgId));
+    } catch {
+      // ignore
+    }
+    setDeleteTarget(null);
+  };
+
   const getOtherName = (convo: Conversation) => {
     const idx = convo.participants.indexOf(email);
     const otherIdx = idx === 0 ? 1 : 0;
@@ -154,10 +257,85 @@ export default function MessagesPage() {
 
   const totalUnread = conversations.reduce((sum, c) => sum + (c.unread[email] ?? 0), 0);
 
+  const renderStatusIcon = (msg: Message, isMine: boolean) => {
+    if (!isMine) return null;
+    const status = msg.status ?? (msg.read ? "read" : "sent");
+    if (status === "read") {
+      return <CheckCheck className="h-3 w-3 text-primary-foreground/80" />;
+    }
+    if (status === "delivered") {
+      return <CheckCheck className="h-3 w-3 text-primary-foreground/40" />;
+    }
+    return <Check className="h-3 w-3 text-primary-foreground/40" />;
+  };
+
   if (!user) return null;
 
   return (
     <div className="flex h-[calc(100vh-5rem)] overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
+
+      {/* ── Delete Confirmation Modal ── */}
+      <AnimatePresence>
+        {deleteTarget && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={() => setDeleteTarget(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.15 }}
+              className="mx-4 w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10">
+                  <Trash2 className="h-5 w-5 text-destructive" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">
+                    Delete {deleteTarget.type === "conversation" ? "Conversation" : "Message"}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">This action cannot be undone.</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mb-5">
+                {deleteTarget.type === "conversation"
+                  ? "Are you sure you want to delete this entire conversation? It will be removed from your view."
+                  : "Are you sure you want to delete this message? It will be removed from your view."}
+              </p>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setDeleteTarget(null)}
+                  className="rounded-xl"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    if (deleteTarget.type === "conversation") {
+                      handleDeleteConversation(deleteTarget.id);
+                    } else {
+                      handleDeleteMessage(deleteTarget.convoId, deleteTarget.msgId);
+                    }
+                  }}
+                  className="rounded-xl"
+                >
+                  Delete
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Conversation Sidebar ── */}
       <div
@@ -230,17 +408,17 @@ export default function MessagesPage() {
                 const isActive = activeConvo === convo.id;
                 const otherName = getOtherName(convo);
                 return (
-                  <motion.button
+                  <motion.div
                     key={convo.id}
-                    onClick={() => openConversation(convo.id)}
                     whileHover={{ x: 2 }}
                     transition={{ duration: 0.15 }}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors",
+                      "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors cursor-pointer",
                       isActive
                         ? "bg-primary/10 border border-primary/20"
                         : "hover:bg-secondary/50",
                     )}
+                    onClick={() => openConversation(convo.id)}
                   >
                     <div className="relative">
                       <ChatAvatar name={otherName} size="md" />
@@ -272,7 +450,17 @@ export default function MessagesPage() {
                         )}
                       </div>
                     </div>
-                  </motion.button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteTarget({ type: "conversation", id: convo.id });
+                      }}
+                      className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg hover:bg-destructive/10"
+                      title="Delete conversation"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
+                    </button>
+                  </motion.div>
                 );
               })}
             </div>
@@ -308,9 +496,20 @@ export default function MessagesPage() {
                   {getOtherEmail(activeConvoData)}
                 </p>
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-emerald-500">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="hidden sm:inline font-medium">Active</span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-lg hover:bg-destructive/10"
+                  onClick={() => setDeleteTarget({ type: "conversation", id: activeConvo })}
+                  title="Delete conversation"
+                >
+                  <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                </Button>
+                <div className="flex items-center gap-1.5 text-xs text-emerald-500">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="hidden sm:inline font-medium">Active</span>
+                </div>
               </div>
             </div>
 
@@ -354,7 +553,7 @@ export default function MessagesPage() {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             transition={{ duration: 0.18 }}
                             className={cn(
-                              "flex items-end gap-2",
+                              "group/msg flex items-end gap-2",
                               isMine ? "justify-end" : "justify-start",
                               prevSame ? "mt-0.5" : "mt-3",
                             )}
@@ -362,28 +561,39 @@ export default function MessagesPage() {
                             {!isMine && !nextSame && <ChatAvatar name={getOtherName(activeConvoData)} size="sm" />}
                             {!isMine && nextSame && <div className="w-8 shrink-0" />}
 
-                            <div
-                              className={cn(
-                                "max-w-[72%] px-4 py-2.5 text-sm leading-relaxed shadow-sm",
-                                isMine
-                                  ? "gradient-bg text-primary-foreground rounded-2xl rounded-br-md"
-                                  : "bg-secondary text-foreground rounded-2xl rounded-bl-md",
-                              )}
-                            >
-                              {!isMine && !prevSame && (
-                                <p className="mb-1 text-[10px] font-semibold opacity-60">
-                                  {msg.sender_name}
-                                </p>
-                              )}
-                              <p className="whitespace-pre-wrap break-words">{msg.content}</p>
-                              <div className={cn("mt-1 flex items-center gap-1", isMine ? "justify-end" : "justify-start")}>
-                                <span className={cn("text-[10px] tabular-nums", isMine ? "text-primary-foreground/60" : "text-muted-foreground")}>
-                                  {formatTime(msg.timestamp)}
-                                </span>
-                                {isMine && (
-                                  <CheckCheck className={cn("h-3 w-3", msg.read ? "text-primary-foreground/80" : "text-primary-foreground/40")} />
+                            <div className="relative">
+                              <div
+                                className={cn(
+                                  "max-w-[72%] px-4 py-2.5 text-sm leading-relaxed shadow-sm",
+                                  isMine
+                                    ? "gradient-bg text-primary-foreground rounded-2xl rounded-br-md"
+                                    : "bg-secondary text-foreground rounded-2xl rounded-bl-md",
                                 )}
+                              >
+                                {!isMine && !prevSame && (
+                                  <p className="mb-1 text-[10px] font-semibold opacity-60">
+                                    {msg.sender_name}
+                                  </p>
+                                )}
+                                <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                                <div className={cn("mt-1 flex items-center gap-1", isMine ? "justify-end" : "justify-start")}>
+                                  <span className={cn("text-[10px] tabular-nums", isMine ? "text-primary-foreground/60" : "text-muted-foreground")}>
+                                    {formatTime(msg.timestamp)}
+                                  </span>
+                                  {renderStatusIcon(msg, isMine)}
+                                </div>
                               </div>
+                              {/* Per-message delete button */}
+                              <button
+                                onClick={() => setDeleteTarget({ type: "message", convoId: activeConvo, msgId: msg.id })}
+                                className={cn(
+                                  "absolute top-1 opacity-0 group-hover/msg:opacity-100 transition-opacity p-1 rounded-md hover:bg-destructive/10",
+                                  isMine ? "-left-7" : "-right-7",
+                                )}
+                                title="Delete message"
+                              >
+                                <X className="h-3 w-3 text-muted-foreground hover:text-destructive" />
+                              </button>
                             </div>
                           </motion.div>
                         </div>

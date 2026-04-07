@@ -91,6 +91,8 @@ export interface Message {
   content: string;
   timestamp: string;
   read: boolean;
+  status?: "sent" | "delivered" | "read";
+  deleted_by?: string[];
 }
 
 export interface Conversation {
@@ -101,6 +103,7 @@ export interface Conversation {
   updated_at: string;
   last_message: { content: string; sender: string; timestamp: string } | null;
   unread: Record<string, number>;
+  deleted_by?: string[];
 }
 
 export interface QuoteRequest {
@@ -253,6 +256,23 @@ export const api = {
       }),
     getUnreadCount: () =>
       request<{ unread: number }>("/messages/unread"),
+    deleteConversation: (conversationId: string) =>
+      request<{ status: string }>(`/messages/conversations/${encodeURIComponent(conversationId)}`, {
+        method: "DELETE",
+      }),
+    deleteMessage: (conversationId: string, messageId: string) =>
+      request<{ status: string }>(`/messages/conversations/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(messageId)}`, {
+        method: "DELETE",
+      }),
+    // Admin endpoints
+    adminListConversations: (userEmail?: string) => {
+      const qs = userEmail ? `?user_email=${encodeURIComponent(userEmail)}` : "";
+      return request<(Conversation & { message_count: number })[]>(`/messages/admin/conversations${qs}`);
+    },
+    adminGetMessages: (conversationId: string) =>
+      request<{ conversation: Conversation; messages: Message[] }>(`/messages/admin/conversations/${encodeURIComponent(conversationId)}`),
+    adminSummarize: (conversationId: string) =>
+      request<{ summary: string; message_count: number; window_size: number }>(`/messages/admin/summary/${encodeURIComponent(conversationId)}`),
   },
 
   ai: {
