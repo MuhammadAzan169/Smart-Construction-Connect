@@ -92,11 +92,11 @@ export function AppSidebar() {
                 <Link to="/dashboard" className="flex items-center gap-2">
                   <img
                     src="/Logo.png"
-                    alt="Smart Connect"
+                    alt="Smart Construction Connect"
                     className="h-10 w-10 shrink-0 rounded-xl object-contain group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8"
                   />
                   <div className="flex min-w-0 flex-col">
-                    <span className="truncate text-sm font-semibold">Smart Connect</span>
+                    <span className="truncate text-sm font-semibold">Smart Construction Connect</span>
                     <span className="truncate text-xs text-muted-foreground">Construction SaaS</span>
                   </div>
                 </Link>

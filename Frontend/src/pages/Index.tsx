@@ -168,7 +168,7 @@ export default function Index() {
       >
         <div className="flex items-center gap-2.5">
           <img src="/Logo.png" alt="SCC Logo" className="h-9 w-9 rounded-xl object-contain" />
-          <span className="text-lg font-bold text-foreground tracking-tight">Smart Connect</span>
+          <span className="text-lg font-bold text-foreground tracking-tight">Smart Construction Connect</span>
         </div>
         <div className="flex items-center gap-3">
           <Button onClick={toggleTheme} variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
@@ -349,7 +349,7 @@ export default function Index() {
               Built for Every Role
             </div>
             <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              Who is Smart Connect <span className="gradient-text">For?</span>
+              Who is Smart Construction Connect <span className="gradient-text">For?</span>
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
               Whether you're building a home, running a construction company, or supplying materials — we have a solution for you.
@@ -683,7 +683,7 @@ export default function Index() {
           </div>
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
             <span>Pakistan's #1 construction platform</span>
-            <span>&copy; {new Date().getFullYear()} Smart Connect. All rights reserved.</span>
+            <span>&copy; {new Date().getFullYear()} Smart Construction Connect. All rights reserved.</span>
           </div>
         </div>
       </footer>

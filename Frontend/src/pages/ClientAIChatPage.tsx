@@ -16,6 +16,7 @@ import {
   ArrowLeft, Bot, User, Send, Paperclip, FileText, X,
   Home, Clock, CheckCircle2, XCircle, FileCheck,
   Building2, ArrowRight, Plus, Layers, AlertCircle,
+  Mic, MicOff,
 } from "lucide-react";
 
 import { GlassCard } from "@/components/shared/GlassCard";
@@ -154,7 +155,10 @@ export default function ClientAIChatPage() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   const nextIdRef = useRef(1);
   const getNextId = useCallback(() => nextIdRef.current++, []);
 
@@ -232,6 +236,50 @@ export default function ClientAIChatPage() {
       setIsTyping(false);
     }
   }, [getNextId, input, isTyping, messages, user?.email, attachedFile]);
+
+  /* ── Voice recording ── */
+  const startRecording = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      audioChunksRef.current = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      recorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        const audioFile = new File([audioBlob], `voice-note-${Date.now()}.wav`, { type: 'audio/wav' });
+        setAttachedFile(audioFile);
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      recorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      alert('Could not access microphone. Please check permissions.');
+    }
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  }, [isRecording]);
+
+  const toggleRecording = useCallback(() => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  }, [isRecording, startRecording, stopRecording]);
 
   /* ── Derived stats ── */
   const recentRequests = useMemo(() => requests.slice(0, 4), [requests]);
@@ -394,13 +442,22 @@ export default function ClientAIChatPage() {
               whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Attach file">
               <Paperclip className="h-4 w-4" />
             </motion.button>
+            <motion.button type="button" onClick={toggleRecording} disabled={isTyping}
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-colors disabled:opacity-40 ${
+                isRecording
+                  ? "border-red-500/40 bg-red-500/10 text-red-500 animate-pulse"
+                  : "border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-sky-500/30"
+              }`}
+              whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Record voice note">
+              {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            </motion.button>
             <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-sky-500/40 transition-colors">
               <input
                 id="client-chat-input"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Describe your project — location, budget, plot size..."
-                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-2"
+                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none focus:outline-none min-w-0 py-2"
                 disabled={isTyping}
                 onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
               />
@@ -412,7 +469,7 @@ export default function ClientAIChatPage() {
             </motion.button>
           </form>
           <p className="mt-1.5 text-center text-[10px] text-muted-foreground/50">
-            Enter to send · 📎 Attach files (PDF, images, Excel, etc.) · AI may make mistakes
+            Enter to send · 📎 Attach files · 🎤 Record voice note · AI may make mistakes
           </p>
         </div>
       </GlassCard>

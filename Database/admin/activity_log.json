@@ -1,5 +1,17 @@
 [
   {
+    "timestamp": "2026-04-07T14:06:44.061961+00:00",
+    "action": "chat_deleted",
+    "target": "ahmed@example.com",
+    "details": "ahmed@example.com soft-deleted conversation 95c4eee2-771b-46b2-ab89-42e86f254a7d"
+  },
+  {
+    "timestamp": "2026-04-07T14:06:40.822264+00:00",
+    "action": "chat_deleted",
+    "target": "ahmed@example.com",
+    "details": "ahmed@example.com soft-deleted conversation c9847f30-ab89-4559-8637-51d0df212b58"
+  },
+  {
     "timestamp": "2026-04-06T23:42:24.163712+00:00",
     "action": "ai_chat",
     "target": "info@001builders.com",

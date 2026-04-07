@@ -11,7 +11,7 @@ Frontend (SPA) is served from Frontend/dist/ for every other route.
 from __future__ import annotations
 
 import logging
-import sys, subprocess, time, uuid
+import sys, subprocess, time, uuid, threading, webbrowser
 from pathlib import Path
 
 # ── Ensure repo root is on sys.path so `backend.*` imports work ──
@@ -266,6 +266,19 @@ def _run_dev():
             vite.wait(timeout=5)
 
 
+def _wait_and_open_browser(url: str, health_url: str, timeout: int = 30):
+    """Poll the health endpoint then open the browser once the server is ready."""
+    import urllib.request
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        try:
+            with urllib.request.urlopen(health_url, timeout=1):
+                break
+        except Exception:
+            time.sleep(0.3)
+    webbrowser.open(url)
+
+
 def _run_prod():
     """Serve API + built frontend together on one port."""
     _build_frontend()
@@ -277,15 +290,27 @@ def _run_prod():
 
     import uvicorn
 
+    port = 8000
+    url = f"http://localhost:{port}"
+
     print()
     print("  ╔══════════════════════════════════════════════════════╗")
     print("  ║  Smart Construction Connect                          ║")
-    print("  ║  http://localhost:8000                               ║")
-    print("  ║  API docs: http://localhost:8000/docs                ║")
+    print(f"  ║  {url:<52}║")
+    print(f"  ║  API docs: {url}/docs{' ' * 29}║")
+    print("  ║  Opening browser when server is ready…               ║")
     print("  ╚══════════════════════════════════════════════════════╝")
     print()
 
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+    # Open browser automatically once server is accepting connections
+    t = threading.Thread(
+        target=_wait_and_open_browser,
+        args=(url, f"{url}/api/health"),
+        daemon=True,
+    )
+    t.start()
+
+    uvicorn.run("app:app", host="127.0.0.1", port=port, reload=False)
 
 if __name__ == "__main__":
     if "--dev" in sys.argv:

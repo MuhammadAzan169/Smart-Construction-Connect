@@ -7,7 +7,6 @@ reads ``os.getenv`` directly.
 from __future__ import annotations
 
 import logging
-import logging.handlers
 import os
 import sys
 from pathlib import Path
@@ -52,29 +51,17 @@ MAX_DOC_SIZE: int = int(os.getenv("MAX_DOC_SIZE", str(10 * 1024 * 1024)))
 LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 
 
-LOG_FILE: str = os.getenv("LOG_FILE", str(_REPO_ROOT / "logs" / "app.log"))
-
-
 def setup_logging() -> None:
     """Configure structured logging for the application."""
     log_fmt = "%(asctime)s | %(levelname)-7s | %(name)s | %(message)s"
     date_fmt = "%Y-%m-%d %H:%M:%S"
-
-    # Ensure logs/ directory exists
-    Path(LOG_FILE).parent.mkdir(parents=True, exist_ok=True)
-
-    # Rotating file handler — 5 MB per file, keep 5 backups
-    file_handler = logging.handlers.RotatingFileHandler(
-        LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=5, encoding="utf-8"
-    )
-    file_handler.setFormatter(logging.Formatter(log_fmt, datefmt=date_fmt))
 
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(logging.Formatter(log_fmt, datefmt=date_fmt))
 
     logging.basicConfig(
         level=LOG_LEVEL,
-        handlers=[console_handler, file_handler],
+        handlers=[console_handler],
         force=True,
     )
     # Silence noisy third-party loggers
