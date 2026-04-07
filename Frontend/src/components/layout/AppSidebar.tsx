@@ -57,6 +57,7 @@ const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path
     { label: "AI Analyst",   icon: Bot,              path: "/supplier-ai" },
     { label: "Messages",     icon: MessageSquare,    path: "/messages" },
     { label: "Requests",     icon: FileText,         path: "/requests" },
+    { label: "Plans & Pricing", icon: CreditCard,    path: "/plans" },
     { label: "Settings",     icon: Settings,         path: "/settings" },
   ],
   admin: [
