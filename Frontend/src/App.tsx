@@ -9,6 +9,10 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import Dashboard from "./pages/Dashboard";
 import AIChatPage from "./pages/AIChatPage";
+import SupplierAIChatPage from "./pages/SupplierAIChatPage";
+import AdminAIChatPage from "./pages/AdminAIChatPage";
+import ClientAIChatPage from "./pages/ClientAIChatPage";
+import CompanyAIChatPage from "./pages/CompanyAIChatPage";
 import PricingPage from "./pages/PricingPage";
 import CompaniesPage from "./pages/CompaniesPage";
 import CompanyProfilePage from "./pages/CompanyProfilePage";
@@ -45,6 +49,10 @@ const App = () => (
             <Route path="/suppliers/:id" element={<SupplierProfilePage />} />
             <Route path="/requests" element={<RequestsPage />} />
             <Route path="/ai-chat" element={<AIChatPage />} />
+            <Route path="/supplier-ai" element={<SupplierAIChatPage />} />
+            <Route path="/admin-ai" element={<AdminAIChatPage />} />
+            <Route path="/client-ai" element={<ClientAIChatPage />} />
+            <Route path="/company-ai" element={<CompanyAIChatPage />} />
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/products" element={<InventoryPage />} />
             <Route path="/users" element={<UsersPage />} />
