@@ -13,13 +13,28 @@ import { ParticleBackground } from "@/components/shared/ParticleBackground";
 import {
   ArrowLeft,
   Building2,
+  CheckCircle2,
   Eye,
   EyeOff,
   HardHat,
+  Lock,
+  Mail,
   Package,
   ShieldCheck,
+  Sparkles,
+  TrendingUp,
   UserRound,
+  Zap,
 } from "lucide-react";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+const itemVariants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+};
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -28,227 +43,368 @@ export default function LoginPage() {
   const [showPw, setShowPw] = useState(false);
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate();
 
-  const roles: { value: UserRole; label: string; desc: string; icon: ElementType }[] = [
-    { value: "client", label: "Client", desc: "Browse & compare companies", icon: UserRound },
-    { value: "company", label: "Company", desc: "Manage leads & projects", icon: Building2 },
-    { value: "supplier", label: "Supplier", desc: "Inventory & pricing", icon: Package },
-    { value: "admin", label: "Admin", desc: "Approvals & oversight", icon: ShieldCheck },
+  const roles: { value: UserRole; label: string; desc: string; icon: ElementType; gradient: string }[] = [
+    { value: "client", label: "Client", desc: "Browse & compare", icon: UserRound, gradient: "from-blue-500/20 to-cyan-500/10" },
+    { value: "company", label: "Company", desc: "Manage leads & projects", icon: Building2, gradient: "from-amber-500/20 to-orange-500/10" },
+    { value: "supplier", label: "Supplier", desc: "Inventory & pricing", icon: Package, gradient: "from-emerald-500/20 to-green-500/10" },
+    { value: "admin", label: "Admin", desc: "Approvals & oversight", icon: ShieldCheck, gradient: "from-purple-500/20 to-violet-500/10" },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
     try {
       await login(email, password, role);
       navigate("/dashboard");
     } catch (err: any) {
       setError(err.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
+
+  const stats = [
+    { icon: Building2, value: "500+", label: "Verified Companies" },
+    { icon: TrendingUp, value: "12K+", label: "Projects Completed" },
+    { icon: UserRound, value: "8K+", label: "Active Clients" },
+  ];
+
+  const features = [
+    { icon: ShieldCheck, title: "Verified ecosystem", desc: "Partners screened for quality and reliability." },
+    { icon: Zap, title: "Real-time requests", desc: "Track, accept, reject with clear status flows." },
+    { icon: Package, title: "Supplier inventory", desc: "Material catalogs with live pricing & stock." },
+  ];
 
   return (
     <div className="relative min-h-screen bg-background overflow-hidden">
       <ParticleBackground />
       <AnimatedBackground />
+
       <div className="relative z-10 mx-auto grid min-h-screen max-w-6xl grid-cols-1 items-stretch gap-8 p-4 sm:p-6 lg:grid-cols-2 lg:gap-10 lg:p-10">
-        {/* Left: Brand + trust */}
+        {/* ── Left panel ── */}
         <motion.section
-          initial={{ opacity: 0, x: -16 }}
+          initial={{ opacity: 0, x: -24 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.45 }}
-          className="relative hidden overflow-hidden rounded-3xl border border-border bg-card p-10 lg:flex"
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="relative hidden overflow-hidden rounded-3xl border border-border/60 bg-card p-10 lg:flex"
         >
-          <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-          <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-highlight/10 blur-3xl" />
+          {/* Decorative blobs */}
+          <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-highlight/10 blur-3xl" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-premium/5 blur-2xl" />
+
           <div className="relative flex h-full w-full flex-col justify-between">
+            {/* Brand */}
             <div>
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-                  <HardHat className="h-6 w-6" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-highlight shadow-lg shadow-primary/30">
+                  <HardHat className="h-6 w-6 text-primary-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold tracking-wide text-foreground">Smart Construction Connect</p>
-                  <p className="text-xs text-muted-foreground">Industrial-grade matching • Requests • Supply</p>
+                  <p className="text-sm font-bold tracking-wide text-foreground">Smart Construction Connect</p>
+                  <p className="text-xs text-muted-foreground">Industrial-grade matching • Supply • Requests</p>
                 </div>
               </div>
 
-              <h1 className="mt-10 text-3xl font-extrabold leading-tight text-foreground">
-                Built for serious construction teams.
+              <h1 className="mt-10 text-4xl font-extrabold leading-tight">
+                <span className="text-foreground">Built for serious</span>
+                <br />
+                <span className="bg-gradient-to-r from-primary via-amber-400 to-highlight bg-clip-text text-transparent">
+                  construction teams.
+                </span>
               </h1>
-              <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
-                A trusted workspace to evaluate verified partners, manage incoming requests, and keep your projects and materials on track.
+              <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
+                Evaluate verified partners, manage incoming requests, and keep your projects and materials on track — all in one workspace.
               </p>
 
-              <div className="mt-8 grid gap-3">
-                {[
-                  { icon: ShieldCheck, title: "Verified ecosystem", desc: "Partners screened for quality and reliability." },
-                  { icon: Building2, title: "Request management", desc: "Track, accept, reject — with clear status flows." },
-                  { icon: Package, title: "Supplier inventory", desc: "Material catalogs with pricing and stock visibility." },
-                ].map((item) => (
-                  <div key={item.title} className="flex items-start gap-3 rounded-2xl border border-border bg-secondary/40 p-4">
-                    <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                      <item.icon className="h-5 w-5" />
+              {/* Stats row */}
+              <div className="mt-8 grid grid-cols-3 gap-3">
+                {stats.map((s) => (
+                  <div key={s.label} className="rounded-2xl border border-border/60 bg-secondary/30 p-3 text-center backdrop-blur-sm">
+                    <s.icon className="mx-auto mb-1 h-4 w-4 text-primary" />
+                    <p className="text-base font-extrabold text-foreground">{s.value}</p>
+                    <p className="text-[10px] leading-tight text-muted-foreground">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Feature list */}
+              <div className="mt-6 grid gap-3">
+                {features.map((item, i) => (
+                  <motion.div
+                    key={item.title}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.35 + i * 0.1, duration: 0.4 }}
+                    className="flex items-start gap-3 rounded-2xl border border-border/50 bg-secondary/30 p-4 backdrop-blur-sm"
+                  >
+                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+                      <item.icon className="h-4.5 w-4.5" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-foreground">{item.title}</p>
                       <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{item.desc}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Security-first • Audit-friendly</span>
-              <span className="text-premium">Premium industrial UI</span>
+            {/* Footer trust line */}
+            <div className="flex items-center justify-between rounded-xl border border-border/40 bg-secondary/20 px-4 py-2.5 text-xs text-muted-foreground backdrop-blur-sm">
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-green-500" />
+                <span>Security-first • JWT-secured • Audit-ready</span>
+              </div>
+              <span className="font-semibold text-premium">Premium</span>
             </div>
           </div>
         </motion.section>
 
-        {/* Right: Form */}
+        {/* ── Right: Form ── */}
         <motion.section
-          initial={{ opacity: 0, x: 16 }}
+          initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.45 }}
-          className="flex items-center justify-center"
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="flex items-center justify-center py-4"
         >
-          <GlassCard interactive={false} className="w-full max-w-md p-7 sm:p-8">
-            <div className="mb-5 flex items-center">
+          <div className="w-full max-w-md">
+            {/* Back button */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="gap-1.5 rounded-xl text-muted-foreground hover:text-foreground"
+                className="mb-4 gap-1.5 rounded-xl text-muted-foreground hover:text-foreground"
                 onClick={() => navigate("/")}
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back
+                Back to home
               </Button>
-            </div>
-            <div className="mb-6">
-              <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-                  <HardHat className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Sign in</p>
-                  <p className="text-xs text-muted-foreground">Access your workspace</p>
-                </div>
-              </div>
-            </div>
+            </motion.div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Role selector */}
-              <div>
-                <p className="mb-2 text-sm font-medium text-foreground">Select role</p>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {roles.map((r) => {
-                    const selected = role === r.value;
-                    const Icon = r.icon;
-                    return (
-                      <button
-                        key={r.value}
-                        type="button"
-                        onClick={() => setRole(r.value)}
-                        className={cn(
-                          "group flex items-start gap-3 rounded-2xl border p-3 text-left transition-all",
-                          selected
-                            ? "border-primary/60 bg-primary/10"
-                            : "border-border bg-background/30 hover:border-primary/30 hover:bg-background/40",
-                        )}
-                      >
-                        <div
-                          className={cn(
-                            "flex h-9 w-9 items-center justify-center rounded-xl",
-                            selected ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground",
-                          )}
-                        >
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className={cn("text-sm font-semibold", selected ? "text-primary" : "text-foreground")}>{r.label}</p>
-                          <p className="mt-0.5 truncate text-xs text-muted-foreground">{r.desc}</p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+            <GlassCard interactive={false} className="w-full overflow-hidden p-0">
+              {/* Card top accent bar */}
+              <div className="h-1 w-full bg-gradient-to-r from-primary via-amber-400 to-highlight" />
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@company.com"
-                  required
-                  className="bg-background/40"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPw ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    className="bg-background/40 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPw(!showPw)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                    aria-label={showPw ? "Hide password" : "Show password"}
-                  >
-                    {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Checkbox checked={remember} onCheckedChange={(v) => setRemember(Boolean(v))} />
-                  Remember me
-                </label>
-                <Button type="button" variant="link" className="h-auto p-0 text-sm">
-                  Forgot password?
-                </Button>
-              </div>
-
-              {error && (
+              <div className="p-7 sm:p-8">
+                {/* Header */}
                 <motion.div
-                  initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="mb-7"
                 >
-                  {error}
+                  <motion.div variants={itemVariants} className="mb-5 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-highlight shadow-lg shadow-primary/20">
+                      <HardHat className="h-5 w-5 text-primary-foreground" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-extrabold text-foreground">Welcome back</h2>
+                      <p className="text-xs text-muted-foreground">Sign in to your workspace</p>
+                    </div>
+                  </motion.div>
+
+                  {/* Role selector */}
+                  <motion.div variants={itemVariants}>
+                    <p className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                      Select your role
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {roles.map((r) => {
+                        const selected = role === r.value;
+                        const Icon = r.icon;
+                        return (
+                          <motion.button
+                            key={r.value}
+                            type="button"
+                            onClick={() => setRole(r.value)}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.97 }}
+                            className={cn(
+                              "relative flex items-start gap-2.5 overflow-hidden rounded-2xl border p-3 text-left transition-all duration-200",
+                              selected
+                                ? "border-primary/70 bg-primary/10 shadow-sm shadow-primary/20"
+                                : "border-border/60 bg-background/20 hover:border-primary/30 hover:bg-background/40",
+                            )}
+                          >
+                            {selected && (
+                              <div className={cn("absolute inset-0 bg-gradient-to-br opacity-30", r.gradient)} />
+                            )}
+                            <div className={cn(
+                              "relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-all",
+                              selected
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "bg-secondary text-muted-foreground",
+                            )}>
+                              <Icon className="h-3.5 w-3.5" />
+                            </div>
+                            <div className="relative min-w-0">
+                              <p className={cn("text-sm font-semibold leading-tight", selected ? "text-primary" : "text-foreground")}>
+                                {r.label}
+                              </p>
+                              <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{r.desc}</p>
+                            </div>
+                            {selected && (
+                              <CheckCircle2 className="absolute right-2 top-2 h-3.5 w-3.5 text-primary" />
+                            )}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
                 </motion.div>
-              )
-              }
 
-              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                <Button type="submit" className="w-full">
-                  Sign In
-                </Button>
-              </motion.div>
-            </form>
+                <form onSubmit={handleSubmit}>
+                  <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="space-y-4"
+                  >
+                    {/* Email */}
+                    <motion.div variants={itemVariants} className="space-y-1.5">
+                      <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        Email address
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                        <Input
+                          id="email"
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="you@company.com"
+                          required
+                          className="bg-background/30 pl-9 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
+                        />
+                      </div>
+                    </motion.div>
 
-            <p className="mt-6 text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{" "}
-              <Link to="/signup" className="font-medium text-primary hover:underline">
-                Create one
-              </Link>
-            </p>
-          </GlassCard>
+                    {/* Password */}
+                    <motion.div variants={itemVariants} className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          Password
+                        </Label>
+                        <Button type="button" variant="link" className="h-auto p-0 text-xs text-muted-foreground hover:text-primary">
+                          Forgot password?
+                        </Button>
+                      </div>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                        <Input
+                          id="password"
+                          type={showPw ? "text" : "password"}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="••••••••"
+                          required
+                          className="bg-background/30 pl-9 pr-10 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPw(!showPw)}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted-foreground/60 transition-colors hover:bg-accent hover:text-foreground"
+                          aria-label={showPw ? "Hide password" : "Show password"}
+                        >
+                          {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </motion.div>
+
+                    {/* Remember me */}
+                    <motion.div variants={itemVariants}>
+                      <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground select-none">
+                        <Checkbox
+                          checked={remember}
+                          onCheckedChange={(v) => setRemember(Boolean(v))}
+                          className="rounded-md"
+                        />
+                        <span>Stay signed in on this device</span>
+                      </label>
+                    </motion.div>
+
+                    {/* Error */}
+                    <AnimatePresence>
+                      {error && (
+                        <motion.div
+                          key="error"
+                          initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.97 }}
+                          className="flex items-start gap-2 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive"
+                        >
+                          <span className="mt-0.5 text-destructive">⚠</span>
+                          {error}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Submit */}
+                    <motion.div variants={itemVariants}>
+                      <motion.button
+                        type="submit"
+                        disabled={loading}
+                        whileHover={{ scale: loading ? 1 : 1.015 }}
+                        whileTap={{ scale: loading ? 1 : 0.985 }}
+                        className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-primary to-highlight px-4 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-all disabled:cursor-not-allowed disabled:opacity-60 hover:shadow-primary/40"
+                      >
+                        <AnimatePresence mode="wait">
+                          {loading ? (
+                            <motion.span
+                              key="loading"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="flex items-center justify-center gap-2"
+                            >
+                              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                              </svg>
+                              Signing in…
+                            </motion.span>
+                          ) : (
+                            <motion.span
+                              key="idle"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="flex items-center justify-center gap-2"
+                            >
+                              <Sparkles className="h-4 w-4" />
+                              Sign In
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                        {/* Shimmer overlay */}
+                        {!loading && (
+                          <motion.div
+                            className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                            animate={{ translateX: ["−100%", "200%"] }}
+                            transition={{ duration: 2.5, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
+                          />
+                        )}
+                      </motion.button>
+                    </motion.div>
+                  </motion.div>
+                </form>
+
+                <p className="mt-6 text-center text-sm text-muted-foreground">
+                  Don&apos;t have an account?{" "}
+                  <Link to="/signup" className="font-semibold text-primary transition-colors hover:text-highlight hover:underline">
+                    Create one free
+                  </Link>
+                </p>
+              </div>
+            </GlassCard>
+          </div>
         </motion.section>
       </div>
     </div>
