@@ -78,18 +78,10 @@ _OPENROUTER_BASE = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v
 _API_KEYS = _load_api_keys()
 _MODELS = _load_models()
 
-_key_lock = threading.Lock()
-_key_index = 0
-
-
-def _next_key() -> str | None:
-    global _key_index
-    if not _API_KEYS:
-        return None
-    with _key_lock:
-        key = _API_KEYS[_key_index % len(_API_KEYS)]
-        _key_index = (_key_index + 1) % len(_API_KEYS)
-    return key
+# Retryable HTTP status codes — move to the next key on these
+_RETRYABLE_STATUSES = {429, 500, 502, 503, 504}
+# Fatal key-level errors — key is bad, skip it entirely
+_BAD_KEY_STATUSES = {401, 403}
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -860,16 +852,27 @@ def _build_admin_context() -> str:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def _call_openrouter(system_prompt: str, messages: list[dict]) -> str:
+    """Call OpenRouter with model-first, key-exhaustion strategy.
+
+    For every model in order:
+        Try every API key in order.
+        On success → return immediately.
+        On retryable error (429, 5xx, timeout) → next key.
+        On bad-key error (401, 403) → skip that key for this model, try next key.
+    If all keys fail for the current model → move to the next model.
+    If all models exhausted → raise RuntimeError.
+    """
     if not _API_KEYS:
         raise RuntimeError("No OpenRouter API keys configured in .env")
+    if not _MODELS:
+        raise RuntimeError("No OpenRouter models configured in .env")
 
     payload_messages = [{"role": "system", "content": system_prompt}] + messages
 
-    for _ in range(len(_API_KEYS) * len(_MODELS)):
-        key = _next_key()
-        if not key:
-            break
-        for model in _MODELS:
+    for model_idx, model in enumerate(_MODELS, 1):
+        logger.info("LLM: trying model %d/%d — %s", model_idx, len(_MODELS), model)
+        for key_idx, key in enumerate(_API_KEYS, 1):
+            logger.debug("LLM: model=%s key=%d/%d", model, key_idx, len(_API_KEYS))
             try:
                 with httpx.Client(timeout=60.0) as client:
                     resp = client.post(
@@ -887,25 +890,73 @@ def _call_openrouter(system_prompt: str, messages: list[dict]) -> str:
                             "temperature": 0.7,
                         },
                     )
-                if resp.status_code == 200:
-                    content = resp.json().get("choices", [{}])[0].get("message", {}).get("content", "").strip()
-                    if content:
-                        logger.info("LLM success: model=%s", model)
-                        return content
-                elif resp.status_code in (401, 403):
-                    logger.warning("Auth error, rotating key")
-                    break
-                elif resp.status_code == 429:
-                    logger.warning("Rate limited, rotating key")
-                    break
-                else:
-                    logger.warning("LLM error %s model=%s", resp.status_code, model)
-            except httpx.TimeoutException:
-                logger.warning("LLM timeout model=%s", model)
-            except Exception as e:
-                logger.warning("LLM error model=%s: %s", model, e)
 
-    raise RuntimeError("All OpenRouter keys/models exhausted")
+                if resp.status_code == 200:
+                    content = (
+                        resp.json()
+                        .get("choices", [{}])[0]
+                        .get("message", {})
+                        .get("content", "")
+                        .strip()
+                    )
+                    if content:
+                        logger.info(
+                            "LLM success: model=%s key=%d/%d",
+                            model, key_idx, len(_API_KEYS),
+                        )
+                        return content
+                    # Empty response — treat as soft failure, try next key
+                    logger.warning(
+                        "LLM empty response: model=%s key=%d/%d",
+                        model, key_idx, len(_API_KEYS),
+                    )
+
+                elif resp.status_code in _BAD_KEY_STATUSES:
+                    logger.warning(
+                        "LLM bad key (HTTP %d): model=%s key=%d/%d — skipping key",
+                        resp.status_code, model, key_idx, len(_API_KEYS),
+                    )
+                    # Key is invalid; no point retrying it on the same model
+                    continue
+
+                elif resp.status_code in _RETRYABLE_STATUSES:
+                    logger.warning(
+                        "LLM retryable error (HTTP %d): model=%s key=%d/%d — next key",
+                        resp.status_code, model, key_idx, len(_API_KEYS),
+                    )
+                    continue
+
+                elif resp.status_code == 404:
+                    # Model not found on this endpoint — no point trying other keys
+                    logger.warning(
+                        "LLM model not found (HTTP 404): model=%s — skipping model",
+                        model,
+                    )
+                    break  # Break inner (key) loop → try next model
+
+                else:
+                    logger.warning(
+                        "LLM unexpected HTTP %d: model=%s key=%d/%d — next key",
+                        resp.status_code, model, key_idx, len(_API_KEYS),
+                    )
+
+            except httpx.TimeoutException:
+                logger.warning(
+                    "LLM timeout: model=%s key=%d/%d — next key",
+                    model, key_idx, len(_API_KEYS),
+                )
+            except Exception as exc:
+                logger.warning(
+                    "LLM exception: model=%s key=%d/%d — %s",
+                    model, key_idx, len(_API_KEYS), exc,
+                )
+
+        else:
+            # All keys exhausted for this model
+            logger.warning("LLM: all keys exhausted for model=%s — trying next model", model)
+            continue
+
+    raise RuntimeError("All OpenRouter models and keys exhausted")
 
 
 def _build_fallback(recommendations: list[dict], intent: dict) -> str:

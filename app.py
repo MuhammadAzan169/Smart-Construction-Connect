@@ -11,7 +11,7 @@ Frontend (SPA) is served from Frontend/dist/ for every other route.
 from __future__ import annotations
 
 import logging
-import sys, subprocess, time
+import sys, subprocess, time, uuid
 from pathlib import Path
 
 # ── Ensure repo root is on sys.path so `backend.*` imports work ──
@@ -29,6 +29,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.types import ASGIApp
 
 from backend.routers import admin, ai_chat, auth, companies, messages, requests, suppliers, upload, events
 
@@ -38,6 +40,89 @@ from backend.routers import admin, ai_chat, auth, companies, messages, requests,
 
 DIST = ROOT / "Frontend" / "dist"
 INDEX_HTML = DIST / "index.html"
+
+# ── Request logging middleware ──
+class RequestLoggingMiddleware(BaseHTTPMiddleware):
+    """Log every request: method, path, query, client IP, status, and duration."""
+
+    async def dispatch(self, request: Request, call_next):
+        req_id = uuid.uuid4().hex[:8]
+        start = time.perf_counter()
+
+        client_ip = (
+            request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+            or (request.client.host if request.client else "unknown")
+        )
+        qs = f"?{request.url.query}" if request.url.query else ""
+        path = request.url.path
+
+        # Skip logging for static assets — too noisy
+        is_static = path.startswith("/assets/") or path.startswith("/company_data/")
+
+        if not is_static:
+            logger.info(
+                "[%s] → %s %s%s  client=%s",
+                req_id, request.method, path, qs, client_ip,
+            )
+
+        try:
+            response = await call_next(request)
+        except Exception as exc:
+            duration = (time.perf_counter() - start) * 1000
+            logger.error(
+                "[%s] ✗ %s %s%s  client=%s  %.1fms  UNHANDLED: %s",
+                req_id, request.method, path, qs, client_ip, duration, exc,
+                exc_info=True,
+            )
+            raise
+
+        duration = (time.perf_counter() - start) * 1000
+        status = response.status_code
+
+        if not is_static:
+            if status >= 500:
+                log = logger.error
+            elif status >= 400:
+                log = logger.warning
+            else:
+                log = logger.info
+
+            log(
+                "[%s] ← %s %s%s  client=%s  status=%d  %.1fms",
+                req_id, request.method, path, qs, client_ip, status, duration,
+            )
+
+        return response
+
+
+# ── Cache-control middleware ──
+class CacheControlMiddleware(BaseHTTPMiddleware):
+    """Set appropriate Cache-Control headers based on the request path."""
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        path = request.url.path
+
+        # Vite hashes asset filenames → safe to cache for 1 year
+        if path.startswith("/assets/"):
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+
+        # Uploaded company images — cache for 1 hour, revalidate after
+        elif path.startswith("/company_data/"):
+            response.headers["Cache-Control"] = "public, max-age=3600, must-revalidate"
+
+        # API responses must never be cached by the browser
+        elif path.startswith("/api/"):
+            response.headers["Cache-Control"] = "no-store"
+
+        # index.html and SPA fallback — always revalidate
+        else:
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+
+        return response
+
 
 app = FastAPI(
     title="Smart Construction Connect",
@@ -54,6 +139,8 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": "Internal server error"},
     )
 
+app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(CacheControlMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,

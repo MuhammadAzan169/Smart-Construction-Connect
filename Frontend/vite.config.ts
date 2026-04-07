@@ -34,6 +34,10 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
+        // Content hashes guarantee cache-busting on every new build
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash][extname]",
         manualChunks: (id: string) => {
           if (id.includes("node_modules/react") || id.includes("node_modules/react-dom") || id.includes("node_modules/react-router")) {
             return "vendor";
