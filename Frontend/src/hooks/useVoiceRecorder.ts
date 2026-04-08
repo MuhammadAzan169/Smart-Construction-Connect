@@ -125,11 +125,15 @@ export function useVoiceRecorder() {
         } else if (language === "en") {
           langRef.current = "en-US";
         } else {
+          // Auto mode: start with English, will switch to Urdu if Urdu script detected
           langRef.current = "en-US";
         }
 
         finalTranscriptRef.current = "";
         shouldRestartRef.current = true;
+
+        // Helper: detect if text contains Urdu/Arabic script characters
+        const hasUrduScript = (text: string) => /[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/.test(text);
 
         const createRecognition = () => {
           const recognition = new SpeechRecognition();
@@ -143,7 +147,37 @@ export function useVoiceRecorder() {
             for (let i = event.resultIndex; i < event.results.length; i++) {
               const result = event.results[i];
               if (result.isFinal) {
-                finalTranscriptRef.current += result[0].transcript + " ";
+                const chunk = result[0].transcript;
+
+                // Auto-detect: if user is speaking Urdu but we're set to English, switch
+                if (language === "auto" && langRef.current === "en-US" && hasUrduScript(chunk)) {
+                  langRef.current = "ur-PK";
+                  // Restart recognition with Urdu language
+                  try {
+                    recognition.abort();
+                    // Keep what we have so far and restart with Urdu
+                    finalTranscriptRef.current += chunk + " ";
+                    setState(prev => ({ ...prev, transcript: finalTranscriptRef.current.trim(), language: "ur" }));
+                    createRecognition();
+                    recognitionRef.current?.start();
+                  } catch { /* will restart via onend */ }
+                  return;
+                }
+
+                // Auto-detect: if user is speaking English but we're set to Urdu, switch
+                if (language === "auto" && langRef.current === "ur-PK" && !hasUrduScript(chunk) && /[a-zA-Z]/.test(chunk)) {
+                  langRef.current = "en-US";
+                  try {
+                    recognition.abort();
+                    finalTranscriptRef.current += chunk + " ";
+                    setState(prev => ({ ...prev, transcript: finalTranscriptRef.current.trim(), language: "en" }));
+                    createRecognition();
+                    recognitionRef.current?.start();
+                  } catch { /* will restart via onend */ }
+                  return;
+                }
+
+                finalTranscriptRef.current += chunk + " ";
               } else {
                 interim += result[0].transcript;
               }
