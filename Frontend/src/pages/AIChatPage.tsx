@@ -1,139 +1,39 @@
+import { renderMarkdown } from "@/components/shared/MarkdownRenderer";
 import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Bot, User, Send, Star, MapPin, Building2, Package, Wrench, DollarSign, Layers, Paperclip, X, FileText } from "lucide-react";
+import {
+  ArrowLeft, Bot, User, Send, Star, MapPin, Building2, Package, Wrench,
+  DollarSign, Layers, Paperclip, X, FileText, Mic, Square,
+  Play, RotateCcw, Check, Image as ImageIcon, FileSpreadsheet,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
+import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 
-/* ── Rich Markdown renderer: bold, italic, code, bullets, headings, tables ── */
-function renderMarkdown(text: string) {
-  const lines = text.split("\n");
-  const elements: React.ReactNode[] = [];
-  let listItems: { ordered: boolean; text: string }[] = [];
-  let tableRows: string[][] = [];
-  let tableHeader: string[] | null = null;
+/* ── Utility helpers ── */
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
-  const inlineFormat = (s: string): React.ReactNode => {
-    const parts: React.ReactNode[] = [];
-    let last = 0;
-    const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
-    let m;
-    while ((m = regex.exec(s)) !== null) {
-      if (m.index > last) parts.push(s.slice(last, m.index));
-      if (m[2]) parts.push(<strong key={m.index} className="font-semibold">{m[2]}</strong>);
-      else if (m[3]) parts.push(<em key={m.index}>{m[3]}</em>);
-      else if (m[4]) parts.push(<code key={m.index} className="rounded bg-muted px-1 py-0.5 text-xs font-mono">{m[4]}</code>);
-      last = m.index + m[0].length;
-    }
-    if (last < s.length) parts.push(s.slice(last));
-    return parts.length === 1 ? parts[0] : <>{parts}</>;
-  };
-
-  const flushList = () => {
-    if (!listItems.length) return;
-    const ordered = listItems[0].ordered;
-    const Tag = ordered ? "ol" : "ul";
-    elements.push(
-      <Tag key={`list-${elements.length}`} className={`my-1.5 ml-4 space-y-0.5 ${ordered ? "list-decimal" : "list-disc"}`}>
-        {listItems.map((li, i) => (
-          <li key={i} className="text-sm leading-relaxed">{inlineFormat(li.text)}</li>
-        ))}
-      </Tag>
-    );
-    listItems = [];
-  };
-
-  const flushTable = () => {
-    if (!tableHeader && !tableRows.length) return;
-    const headers = tableHeader || [];
-    elements.push(
-      <div key={`tbl-${elements.length}`} className="my-2 overflow-x-auto rounded-lg border border-border">
-        <table className="w-full text-xs">
-          {headers.length > 0 && (
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                {headers.map((h, i) => (
-                  <th key={i} className="px-3 py-2 text-left font-semibold text-foreground">{inlineFormat(h.trim())}</th>
-                ))}
-              </tr>
-            </thead>
-          )}
-          <tbody>
-            {tableRows.map((row, ri) => (
-              <tr key={ri} className={ri % 2 === 0 ? "" : "bg-muted/20"}>
-                {row.map((cell, ci) => (
-                  <td key={ci} className="px-3 py-2 text-muted-foreground border-t border-border/50">{inlineFormat(cell.trim())}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-    tableHeader = null;
-    tableRows = [];
-  };
-
-  const parseTableRow = (line: string): string[] | null => {
-    if (!line.trim().startsWith("|")) return null;
-    return line.split("|").slice(1, -1);
-  };
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
-    // Table row detection
-    const tRow = parseTableRow(line);
-    if (tRow !== null) {
-      const isSeparator = tRow.every(c => /^[-: ]+$/.test(c));
-      if (isSeparator) continue; // skip the |---|---| line
-      if (tableHeader === null) {
-        flushList();
-        tableHeader = tRow;
-      } else {
-        tableRows.push(tRow);
-      }
-      continue;
-    }
-    flushTable();
-
-    // Bullet points
-    const bulletMatch = line.match(/^\s*[-•*]\s+(.*)/);
-    if (bulletMatch) { listItems.push({ ordered: false, text: bulletMatch[1] }); continue; }
-    // Numbered list
-    const numMatch = line.match(/^\s*\d+[.)]\s+(.*)/);
-    if (numMatch) { listItems.push({ ordered: true, text: numMatch[1] }); continue; }
-    flushList();
-
-    // Headings
-    const h3 = line.match(/^###\s+(.*)/);
-    if (h3) { elements.push(<h4 key={i} className="mt-3 mb-1 text-sm font-bold text-foreground border-l-2 border-primary pl-2">{inlineFormat(h3[1])}</h4>); continue; }
-    const h2 = line.match(/^##\s+(.*)/);
-    if (h2) { elements.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground">{inlineFormat(h2[1])}</h3>); continue; }
-    const h1 = line.match(/^#\s+(.*)/);
-    if (h1) { elements.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground">{inlineFormat(h1[1])}</h3>); continue; }
-
-    // Horizontal rule
-    if (/^[-*_]{3,}$/.test(line.trim())) { elements.push(<hr key={i} className="my-2 border-border" />); continue; }
-
-    // Empty line
-    if (!line.trim()) { elements.push(<div key={i} className="h-2" />); continue; }
-
-    // Normal paragraph
-    elements.push(<p key={i} className="text-sm leading-relaxed">{inlineFormat(line)}</p>);
-  }
-  flushList();
-  flushTable();
-  return <div className="space-y-0.5">{elements}</div>;
+function getFileIcon(name: string) {
+  const ext = name.split(".").pop()?.toLowerCase() || "";
+  if (["jpg", "jpeg", "png", "gif", "webp", "bmp", "tiff"].includes(ext)) return <ImageIcon className="h-4 w-4 text-blue-500" />;
+  if (["pdf"].includes(ext)) return <FileText className="h-4 w-4 text-red-500" />;
+  if (["xls", "xlsx", "csv"].includes(ext)) return <FileSpreadsheet className="h-4 w-4 text-green-500" />;
+  return <FileText className="h-4 w-4 text-primary" />;
 }
 
 interface Message {
   id: number;
   role: "user" | "ai";
   text: string;
+  isStreaming?: boolean;
 }
 
 interface Recommendation {
@@ -161,18 +61,30 @@ export default function AIChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
+  const [sessionFiles, setSessionFiles] = useState<{ id: string; filename: string; summary: string }[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const nextIdRef = useRef(1);
   const getNextId = useCallback(() => nextIdRef.current++, []);
 
-  // Load greeting from backend on mount
+  // Voice recorder
+  const voice = useVoiceRecorder();
+  const audioPreviewRef = useRef<HTMLAudioElement>(null);
+
+  // Load greeting and session files on mount
   useEffect(() => {
     api.ai.chat([], user?.email || "", userRole).then((res) => {
       setMessages([{ id: getNextId(), role: "ai", text: res.response }]);
     }).catch(() => {
       setMessages([{ id: getNextId(), role: "ai", text: "Hello! 👋 I'm your AI Construction Assistant. Tell me about your project!" }]);
     });
+
+    // Load session files
+    if (user?.email) {
+      api.ai.getSessionFiles(user.email).then((res) => {
+        setSessionFiles(res.files);
+      }).catch(() => {});
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -248,18 +160,55 @@ export default function AIChatPage() {
         content: m.text,
       }));
 
-      let result: { response: string; recommendations?: unknown[] };
       if (currentFile) {
-        result = await api.ai.chatWithFile(currentFile, chatHistory, user?.email || "", userRole);
+        // Non-streaming for file uploads
+        const result = await api.ai.chatWithFile(currentFile, chatHistory, user?.email || "", userRole);
+        setMessages((prev) => [...prev, { id: getNextId(), role: "ai", text: result.response }]);
+        if (result.recommendations && result.recommendations.length > 0) {
+          setRecommendations(result.recommendations as Recommendation[]);
+        }
+        // Refresh session files
+        if (user?.email) {
+          api.ai.getSessionFiles(user.email).then((res) => setSessionFiles(res.files)).catch(() => {});
+        }
       } else {
-        result = await api.ai.chat(chatHistory, user?.email || "", userRole);
-      }
+        // Streaming response
+        const streamMsgId = getNextId();
+        setMessages((prev) => [...prev, { id: streamMsgId, role: "ai", text: "", isStreaming: true }]);
 
-      const aiMsg: Message = { id: getNextId(), role: "ai", text: result.response };
-      setMessages((prev) => [...prev, aiMsg]);
+        let fullText = "";
+        for await (const chunk of api.ai.chatStream(chatHistory, user?.email || "", userRole)) {
+          if (chunk.type === "token" && chunk.content) {
+            fullText += chunk.content;
+            setMessages((prev) =>
+              prev.map((m) => m.id === streamMsgId ? { ...m, text: fullText } : m)
+            );
+          } else if (chunk.type === "recommendations" && chunk.recommendations) {
+            if (chunk.recommendations.length > 0) {
+              setRecommendations(chunk.recommendations as Recommendation[]);
+            }
+          } else if (chunk.type === "error" && chunk.content) {
+            fullText = chunk.content;
+            setMessages((prev) =>
+              prev.map((m) => m.id === streamMsgId ? { ...m, text: fullText, isStreaming: false } : m)
+            );
+          } else if (chunk.type === "done") {
+            setMessages((prev) =>
+              prev.map((m) => m.id === streamMsgId ? { ...m, isStreaming: false } : m)
+            );
+          }
+        }
 
-      if (result.recommendations && result.recommendations.length > 0) {
-        setRecommendations(result.recommendations as Recommendation[]);
+        // Finalize
+        if (!fullText) {
+          setMessages((prev) =>
+            prev.map((m) => m.id === streamMsgId ? { ...m, text: "I'm having trouble connecting right now. Please try again.", isStreaming: false } : m)
+          );
+        } else {
+          setMessages((prev) =>
+            prev.map((m) => m.id === streamMsgId ? { ...m, isStreaming: false } : m)
+          );
+        }
       }
     } catch {
       setMessages((prev) => [
@@ -278,6 +227,14 @@ export default function AIChatPage() {
     },
     [handleSend],
   );
+
+  // ── Voice handling ──
+  const handleVoiceAccept = useCallback(() => {
+    const text = voice.acceptTranscript();
+    if (text.trim()) {
+      setInput(text);
+    }
+  }, [voice]);
 
   // Role-specific header title
   const headerTitle = useMemo(() => {
@@ -331,9 +288,18 @@ export default function AIChatPage() {
             <h2 className="text-sm font-bold text-foreground leading-tight">{headerTitle}</h2>
             <p className="text-[11px] text-muted-foreground leading-tight">{headerSubtitle}</p>
           </div>
-          <div className="ml-auto flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-medium text-emerald-500">Online</span>
+          <div className="ml-auto flex items-center gap-3">
+            {/* Session files indicator */}
+            {sessionFiles.length > 0 && (
+              <div className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5">
+                <FileText className="h-3 w-3 text-primary" />
+                <span className="text-[10px] font-medium text-primary">{sessionFiles.length} file{sessionFiles.length !== 1 ? "s" : ""} in context</span>
+              </div>
+            )}
+            <div className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-medium text-emerald-500">Online</span>
+            </div>
           </div>
         </div>
 
@@ -398,14 +364,21 @@ export default function AIChatPage() {
                   }`}
                   dir="auto"
                 >
-                  {msg.role === "ai" ? renderMarkdown(msg.text) : msg.text}
+                  {msg.role === "ai" ? (
+                    <>
+                      {renderMarkdown(msg.text)}
+                      {msg.isStreaming && (
+                        <span className="inline-block w-1.5 h-4 ml-0.5 bg-primary/60 animate-pulse rounded-sm" />
+                      )}
+                    </>
+                  ) : msg.text}
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
 
-          {/* Typing indicator */}
-          {isTyping && (
+          {/* Typing indicator (shown only when not streaming) */}
+          {isTyping && !messages.some(m => m.isStreaming) && (
             <motion.div
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -437,12 +410,12 @@ export default function AIChatPage() {
 
         {/* Input */}
         <div className="border-t border-border px-5 py-4">
-          {/* Attached file preview */}
-          {attachedFile && (
+          {/* Attached file preview — hidden during voice states */}
+          {attachedFile && !voice.isRecording && !voice.isPreviewing && (
             <div className="mb-2 flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
-              <FileText className="h-4 w-4 text-primary shrink-0" />
+              {getFileIcon(attachedFile.name)}
               <span className="flex-1 truncate text-xs text-foreground">{attachedFile.name}</span>
-              <span className="text-[10px] text-muted-foreground">{(attachedFile.size / 1024).toFixed(0)} KB</span>
+              <span className="text-[10px] text-muted-foreground">{formatFileSize(attachedFile.size)}</span>
               <button
                 type="button"
                 onClick={() => setAttachedFile(null)}
@@ -463,8 +436,8 @@ export default function AIChatPage() {
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 if (f) {
-                  if (f.size > 5 * 1024 * 1024) {
-                    alert("File must be under 5 MB");
+                  if (f.size > 10 * 1024 * 1024) {
+                    alert("File must be under 10 MB");
                   } else {
                     setAttachedFile(f);
                   }
@@ -472,47 +445,164 @@ export default function AIChatPage() {
                 e.target.value = "";
               }}
             />
-            {/* Attach button */}
-            <motion.button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isTyping}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-40"
-              aria-label="Attach file"
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.94 }}
-            >
-              <Paperclip className="h-4 w-4" />
-            </motion.button>
-            <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-primary/40 transition-colors">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={attachedFile ? "Add a message about the file..." : "Describe your project — location, budget, type..."}
-                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-2"
-                aria-label="Message"
-                disabled={isTyping}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-              />
-            </div>
-            <motion.button
-              type="submit"
-              disabled={(!input.trim() && !attachedFile) || isTyping}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl gradient-bg text-primary-foreground shadow-sm disabled:opacity-40 transition-opacity"
-              aria-label="Send message"
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.94 }}
-            >
-              <Send className="h-4 w-4" />
-            </motion.button>
+
+            {/* Normal state: Attach + Mic buttons */}
+            {!voice.isRecording && !voice.isPreviewing && (
+              <>
+                <motion.button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isTyping}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-40"
+                  aria-label="Attach file"
+                  whileHover={{ scale: 1.06 }}
+                  whileTap={{ scale: 0.94 }}
+                >
+                  <Paperclip className="h-4 w-4" />
+                </motion.button>
+                {(voice.isSupported || voice.isMediaSupported) && (
+                  <motion.button
+                    type="button"
+                    onClick={() => voice.startRecording("auto")}
+                    disabled={isTyping}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-40"
+                    aria-label="Start voice input"
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.94 }}
+                  >
+                    <Mic className="h-4 w-4" />
+                  </motion.button>
+                )}
+              </>
+            )}
+
+            {/* Recording state: compact inline waveform indicator */}
+            {voice.isRecording && (
+              <>
+                <div className="flex-1 flex items-center gap-2.5 rounded-2xl border border-red-500/40 bg-red-500/5 px-3 py-2 min-w-0">
+                  <div className="flex items-end gap-[2px] shrink-0" style={{ height: 16 }}>
+                    {[0.4, 1, 0.6, 0.9, 0.5].map((_, i) => (
+                      <motion.span
+                        key={i}
+                        animate={{ scaleY: [0.35, 1, 0.35] }}
+                        transition={{ repeat: Infinity, duration: 0.55, delay: i * 0.1 }}
+                        className="block w-[3px] rounded-full bg-red-500 origin-bottom h-full"
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs font-semibold text-red-500 shrink-0 tabular-nums">{voice.duration}s</span>
+                  <span className="flex-1 text-xs text-muted-foreground truncate italic min-w-0">
+                    {voice.transcript || "Listening…"}
+                  </span>
+                </div>
+                <motion.button
+                  type="button"
+                  onClick={voice.stopRecording}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-red-500/50 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+                  aria-label="Stop recording"
+                >
+                  <Square className="h-4 w-4" />
+                </motion.button>
+                <motion.button
+                  type="button"
+                  onClick={voice.cancelRecording}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground transition-colors"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+                  aria-label="Cancel recording"
+                >
+                  <X className="h-4 w-4" />
+                </motion.button>
+              </>
+            )}
+
+            {/* Preview state: inline editable transcript */}
+            {voice.isPreviewing && (
+              <>
+                {voice.audioUrl && (
+                  <>
+                    <audio ref={audioPreviewRef} src={voice.audioUrl} className="hidden" />
+                    <motion.button
+                      type="button"
+                      onClick={() => audioPreviewRef.current?.play()}
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 transition-colors"
+                      whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+                      aria-label="Play recording"
+                    >
+                      <Play className="h-4 w-4" />
+                    </motion.button>
+                  </>
+                )}
+                <div className="flex-1 flex items-center rounded-2xl border border-primary/30 bg-primary/5 px-3 py-1 focus-within:border-primary/50 transition-colors min-w-0">
+                  <input
+                    value={voice.transcript}
+                    onChange={(e) => voice.setTranscript(e.target.value)}
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-1.5"
+                    placeholder="Edit transcript before sending…"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey && voice.transcript.trim()) {
+                        e.preventDefault();
+                        handleVoiceAccept();
+                      }
+                    }}
+                  />
+                </div>
+                <motion.button
+                  type="button"
+                  onClick={voice.cancelRecording}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground transition-colors"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+                  aria-label="Re-record"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </motion.button>
+                <motion.button
+                  type="button"
+                  onClick={handleVoiceAccept}
+                  disabled={!voice.transcript.trim()}
+                  className="flex h-10 shrink-0 items-center gap-1.5 rounded-2xl gradient-bg px-3 text-xs font-medium text-primary-foreground shadow-sm disabled:opacity-40 transition-opacity"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+                  aria-label="Use transcript"
+                >
+                  <Check className="h-3.5 w-3.5" /> Use
+                </motion.button>
+              </>
+            )}
+
+            {/* Normal state: text input + send */}
+            {!voice.isRecording && !voice.isPreviewing && (
+              <>
+                <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-primary/40 transition-colors">
+                  <input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder={attachedFile ? "Add a message about the file..." : "Describe your project — location, budget, type..."}
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-2"
+                    aria-label="Message"
+                    disabled={isTyping}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSend();
+                      }
+                    }}
+                  />
+                </div>
+                <motion.button
+                  type="submit"
+                  disabled={(!input.trim() && !attachedFile) || isTyping}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl gradient-bg text-primary-foreground shadow-sm disabled:opacity-40 transition-opacity"
+                  aria-label="Send message"
+                  whileHover={{ scale: 1.06 }}
+                  whileTap={{ scale: 0.94 }}
+                >
+                  <Send className="h-4 w-4" />
+                </motion.button>
+              </>
+            )}
           </form>
           <p className="mt-1.5 text-center text-[10px] text-muted-foreground/50">
-            Enter to send · 📎 Attach files (PDF, images, Excel, etc.) · AI may make mistakes
+            Enter to send · 📎 Attach files · 🎤 Voice input (English/Urdu) · AI may make mistakes
           </p>
         </div>
       </GlassCard>

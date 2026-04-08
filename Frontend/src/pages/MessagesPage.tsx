@@ -6,16 +6,11 @@ import { Button } from "@/components/ui/button";
 import { api, type Conversation, type Message } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
+import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import {
-  ArrowLeft,
-  Check,
-  CheckCheck,
-  MessageSquare,
-  Search,
-  Send,
-  Smile,
-  Trash2,
-  X,
+  ArrowLeft, Check, CheckCheck, MessageSquare, Search, Send, Smile, Trash2, X,
+  Paperclip, FileText, Mic, Image, Volume2, Download, Play,
+  Square, RotateCcw,
 } from "lucide-react";
 
 function timeAgo(iso: string): string {
@@ -74,11 +69,15 @@ export default function MessagesPage() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ type: "conversation"; id: string } | { type: "message"; convoId: string; msgId: string } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const audioPreviewRef = useRef<HTMLAudioElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimer = useRef<ReturnType<typeof setTimeout>>();
+  const voice = useVoiceRecorder();
 
   const email = user?.email ?? "";
   const token = useAuthStore((s) => s.token);
@@ -201,12 +200,31 @@ export default function MessagesPage() {
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || !activeConvo || sending) return;
+    if ((!input.trim() && !attachedFile) || !activeConvo || sending) return;
     setSending(true);
     try {
-      const msg = await api.messages.sendMessage(activeConvo, input.trim());
+      let attachment: { url: string; filename: string; size: number; type: string; content_type: string } | undefined;
+
+      if (attachedFile) {
+        const fileType = attachedFile.type.startsWith("image/") ? "image"
+          : attachedFile.type.startsWith("video/") ? "video"
+          : attachedFile.type.startsWith("audio/") ? "voice"
+          : "file";
+        const uploaded = await api.upload.messageFile(attachedFile, email, activeConvo, fileType as "file" | "voice" | "image" | "video");
+        attachment = {
+          url: uploaded.url,
+          filename: uploaded.filename,
+          size: uploaded.size,
+          type: uploaded.file_type || fileType,
+          content_type: uploaded.content_type,
+        };
+      }
+
+      const content = input.trim() || (attachedFile ? `📎 ${attachedFile.name}` : "");
+      const msg = await api.messages.sendMessage(activeConvo, content, attachment);
       setMessages((prev) => [...prev, msg]);
       setInput("");
+      setAttachedFile(null);
       loadConversations();
       setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
     } catch {
@@ -215,6 +233,37 @@ export default function MessagesPage() {
       setSending(false);
     }
   };
+
+  const handleVoiceAccept = useCallback(() => {
+    const text = voice.acceptTranscript();
+    if (text.trim()) setInput(text);
+  }, [voice]);
+
+  const sendVoiceNote = useCallback(async () => {
+    if (!voice.audioBlob || !activeConvo || sending) return;
+    const blob = voice.audioBlob;
+    voice.cancelRecording();
+    setSending(true);
+    try {
+      const audioFile = new File([blob], `voice-${Date.now()}.webm`, { type: "audio/webm" });
+      const uploaded = await api.upload.messageFile(audioFile, email, activeConvo, "voice");
+      const attachment = {
+        url: uploaded.url,
+        filename: uploaded.filename,
+        size: uploaded.size,
+        type: "voice",
+        content_type: uploaded.content_type,
+      };
+      const msg = await api.messages.sendMessage(activeConvo, "🎤 Voice message", attachment);
+      setMessages((prev) => [...prev, msg]);
+      loadConversations();
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+    } catch {
+      // ignore
+    } finally {
+      setSending(false);
+    }
+  }, [voice, activeConvo, sending, email, loadConversations]);
 
   const handleDeleteConversation = async (id: string) => {
     try {
@@ -576,6 +625,46 @@ export default function MessagesPage() {
                                   </p>
                                 )}
                                 <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                                {msg.attachment && (
+                                  <div className="mt-2">
+                                    {msg.attachment.type === "image" || msg.attachment.content_type?.startsWith("image/") ? (
+                                      <a href={msg.attachment.url} target="_blank" rel="noopener noreferrer" className="block">
+                                        <img
+                                          src={msg.attachment.url}
+                                          alt={msg.attachment.filename}
+                                          className="max-w-[240px] rounded-xl border border-border/30 cursor-pointer hover:opacity-90 transition-opacity"
+                                          loading="lazy"
+                                        />
+                                      </a>
+                                    ) : msg.attachment.type === "voice" || msg.attachment.content_type?.startsWith("audio/") ? (
+                                      <div className="flex items-center gap-2 rounded-xl bg-background/30 p-2">
+                                        <Volume2 className="h-4 w-4 shrink-0 opacity-60" />
+                                        <audio src={msg.attachment.url} controls className="h-8 flex-1 [&::-webkit-media-controls-panel]:bg-transparent" />
+                                      </div>
+                                    ) : msg.attachment.type === "video" || msg.attachment.content_type?.startsWith("video/") ? (
+                                      <video
+                                        src={msg.attachment.url}
+                                        controls
+                                        className="max-w-[280px] rounded-xl border border-border/30"
+                                        preload="metadata"
+                                      />
+                                    ) : (
+                                      <a
+                                        href={msg.attachment.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 rounded-xl bg-background/20 p-2.5 hover:bg-background/40 transition-colors"
+                                      >
+                                        <FileText className="h-4 w-4 shrink-0 opacity-60" />
+                                        <div className="flex-1 min-w-0">
+                                          <p className="text-xs font-medium truncate">{msg.attachment.filename}</p>
+                                          <p className="text-[10px] opacity-60">{(msg.attachment.size / 1024).toFixed(0)} KB</p>
+                                        </div>
+                                        <Download className="h-3.5 w-3.5 shrink-0 opacity-40" />
+                                      </a>
+                                    )}
+                                  </div>
+                                )}
                                 <div className={cn("mt-1 flex items-center gap-1", isMine ? "justify-end" : "justify-start")}>
                                   <span className={cn("text-[10px] tabular-nums", isMine ? "text-primary-foreground/60" : "text-muted-foreground")}>
                                     {formatTime(msg.timestamp)}
@@ -607,7 +696,133 @@ export default function MessagesPage() {
 
             {/* Input bar */}
             <div className="border-t border-border px-4 py-3">
+              {/* Voice Recording Panel */}
+              <AnimatePresence>
+                {(voice.isRecording || voice.isPreviewing) && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                    className="mb-3 overflow-hidden rounded-2xl border border-primary/30 bg-primary/5 p-4"
+                  >
+                    {voice.isRecording ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="h-3 w-3 rounded-full bg-red-500 shrink-0" />
+                          <span className="text-sm font-medium text-foreground">Recording… {voice.duration}s</span>
+                          <div className="flex-1" />
+                          <motion.button type="button" onClick={voice.stopRecording}
+                            className="flex h-8 w-8 items-center justify-center rounded-xl bg-red-500 text-white"
+                            whileTap={{ scale: 0.9 }} title="Stop recording">
+                            <Square className="h-3.5 w-3.5" />
+                          </motion.button>
+                          <motion.button type="button" onClick={voice.cancelRecording}
+                            className="flex h-8 w-8 items-center justify-center rounded-xl border border-border text-muted-foreground hover:text-foreground"
+                            whileTap={{ scale: 0.9 }} title="Cancel">
+                            <X className="h-3.5 w-3.5" />
+                          </motion.button>
+                        </div>
+                        {voice.transcript && (
+                          <p className="text-xs text-muted-foreground italic truncate px-1">
+                            "{voice.transcript}"
+                          </p>
+                        )}
+                      </div>
+                    ) : voice.isPreviewing ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <motion.button type="button"
+                            onClick={() => { if (audioPreviewRef.current) { audioPreviewRef.current.currentTime = 0; audioPreviewRef.current.play(); } }}
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary"
+                            whileTap={{ scale: 0.9 }} title="Play back">
+                            <Play className="h-3.5 w-3.5" />
+                          </motion.button>
+                          {voice.audioUrl && <audio ref={audioPreviewRef} src={voice.audioUrl} />}
+                          <span className="text-xs text-muted-foreground shrink-0">{voice.duration}s</span>
+                          <div className="flex-1" />
+                          <motion.button type="button" onClick={voice.cancelRecording}
+                            className="flex h-8 w-8 items-center justify-center rounded-xl border border-border text-muted-foreground hover:text-foreground"
+                            whileTap={{ scale: 0.9 }} title="Re-record">
+                            <RotateCcw className="h-3.5 w-3.5" />
+                          </motion.button>
+                          <motion.button type="button" onClick={handleVoiceAccept}
+                            className="flex h-8 items-center gap-1.5 rounded-xl border border-border bg-secondary px-3 text-xs font-medium text-foreground hover:bg-secondary/80"
+                            whileTap={{ scale: 0.9 }}>
+                            <Check className="h-3.5 w-3.5" /> Use Text
+                          </motion.button>
+                          <motion.button type="button" onClick={sendVoiceNote} disabled={sending}
+                            className="flex h-8 items-center gap-1.5 rounded-xl gradient-bg px-3 text-xs font-medium text-primary-foreground disabled:opacity-50"
+                            whileTap={{ scale: 0.9 }}>
+                            <Volume2 className="h-3.5 w-3.5" /> Send Audio
+                          </motion.button>
+                        </div>
+                        <textarea
+                          value={voice.transcript}
+                          onChange={(e) => voice.setTranscript(e.target.value)}
+                          className="w-full rounded-xl border border-border bg-background/60 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 resize-none"
+                          rows={2}
+                          placeholder="Transcript will appear here… (edit before using)"
+                        />
+                      </div>
+                    ) : null}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {attachedFile && (
+                <div className="mb-2 flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
+                  {attachedFile.type.startsWith("image/") ? (
+                    <Image className="h-4 w-4 text-primary shrink-0" />
+                  ) : attachedFile.type.startsWith("audio/") ? (
+                    <Volume2 className="h-4 w-4 text-primary shrink-0" />
+                  ) : (
+                    <FileText className="h-4 w-4 text-primary shrink-0" />
+                  )}
+                  <span className="flex-1 truncate text-xs text-foreground">{attachedFile.name}</span>
+                  <span className="text-[10px] text-muted-foreground">{(attachedFile.size / 1024).toFixed(0)} KB</span>
+                  <button type="button" onClick={() => setAttachedFile(null)} className="flex h-5 w-5 items-center justify-center rounded-full hover:bg-secondary">
+                    <X className="h-3 w-3 text-muted-foreground" />
+                  </button>
+                </div>
+              )}
+
               <div className="flex items-center gap-2">
+                <input
+                  ref={fileInputRef} type="file" className="hidden"
+                  accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.zip,.rar"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) {
+                      if (f.size > 25 * 1024 * 1024) alert("File must be under 25 MB");
+                      else setAttachedFile(f);
+                    }
+                    e.target.value = "";
+                  }}
+                />
+                <motion.button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={sending}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-40"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+                >
+                  <Paperclip className="h-4 w-4" />
+                </motion.button>
+                {voice.isSupported && (
+                  <motion.button
+                    type="button"
+                    onClick={voice.isRecording ? voice.stopRecording : voice.startRecording}
+                    disabled={sending || voice.isPreviewing}
+                    className={cn(
+                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-colors disabled:opacity-40",
+                      voice.isRecording
+                        ? "border-red-500/40 bg-red-500/10 text-red-500 animate-pulse"
+                        : "border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30",
+                    )}
+                    whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+                    aria-label="Record voice"
+                  >
+                    {voice.isRecording ? <Square className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                  </motion.button>
+                )}
                 <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-primary/40 transition-colors">
                   <input
                     ref={inputRef}
@@ -619,14 +834,14 @@ export default function MessagesPage() {
                         sendMessage();
                       }
                     }}
-                    placeholder="Type a message..."
+                    placeholder={attachedFile ? "Add a caption…" : "Type a message..."}
                     className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-1.5"
                     disabled={sending}
                   />
                 </div>
                 <motion.button
                   onClick={sendMessage}
-                  disabled={!input.trim() || sending}
+                  disabled={(!input.trim() && !attachedFile) || sending}
                   whileHover={{ scale: 1.06 }}
                   whileTap={{ scale: 0.94 }}
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl gradient-bg text-primary-foreground shadow-sm disabled:opacity-40 transition-opacity"
@@ -636,7 +851,7 @@ export default function MessagesPage() {
                 </motion.button>
               </div>
               <p className="mt-1.5 text-center text-[10px] text-muted-foreground/50">
-                Enter to send · Shift+Enter for new line
+                Enter to send · 📎 Files up to 25 MB · 🎤 Voice messages
               </p>
             </div>
           </>

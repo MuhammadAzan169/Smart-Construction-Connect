@@ -17,6 +17,7 @@ Architecture
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
 import math
 import os
@@ -986,7 +987,7 @@ def _build_fallback(recommendations: list[dict], intent: dict) -> str:
 #  Main entry point
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def generate_ai_response(messages: list[dict], *, user_role: str = "client") -> dict:
+def generate_ai_response(messages: list[dict], *, user_role: str = "client", extra_context: str = "") -> dict:
     """Generate a RAG-grounded LLM response.
 
     Roles: landing | client | company | supplier | admin
@@ -1080,7 +1081,7 @@ def generate_ai_response(messages: list[dict], *, user_role: str = "client") -> 
     else:
         context = _build_rag_context(top_matches, user_role)
 
-    system_prompt = base_system + lang_directive + context
+    system_prompt = base_system + lang_directive + context + extra_context
 
     # ── LLM call ─────────────────────────────────────────────────────────────
     try:
@@ -1107,3 +1108,143 @@ def generate_ai_response(messages: list[dict], *, user_role: str = "client") -> 
         "response": response_text,
         "recommendations": recs_to_return,
     }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Streaming response generator
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def generate_ai_response_stream(messages: list[dict], *, user_role: str = "client", extra_context: str = ""):
+    """Async generator that yields streaming tokens for SSE.
+
+    Yields dicts: {type: "recommendations", ...}, {type: "token", content: "..."}, {type: "done"}
+    Falls back to non-streaming if streaming isn't supported.
+    """
+    import asyncio
+
+    base_system = _SYSTEM_PROMPTS.get(user_role, _SYSTEM_PROMPTS["client"])
+
+    if not messages:
+        greetings = {
+            "landing": "👋 Welcome to **Smart Construction Connect**!\n\nI can tell you everything about our platform.",
+            "client": "Hello! 👋 I'm your AI Construction Consultant.\n\nTell me about your dream house — city, budget, plot size!",
+            "company": "Hello! 👋 I'm your AI Business Advisor.\n\nI can help with suppliers, pricing, and project costing.",
+            "supplier": "Hello! 👋 I'm your AI Market Analyst.\n\nI can help with market prices and demand trends.",
+            "admin": "Hello Admin! 👋\n\nI have access to all platform data. What would you like to know?",
+        }
+        yield {"type": "token", "content": greetings.get(user_role, greetings["client"])}
+        yield {"type": "recommendations", "recommendations": []}
+        yield {"type": "done"}
+        return
+
+    # Language detection
+    combined_user = " ".join(m.get("content", "") for m in messages if m.get("role") == "user")
+    lang = _detect_language(combined_user)
+    lang_directive = _get_language_directive(lang)
+
+    # RAG retrieval
+    top_matches: list[dict] = []
+    intent: dict = {}
+    if user_role in ("client", "company"):
+        try:
+            data = get_recommendations(messages, user_role)
+            top_matches = data.get("recommendations", [])
+            intent = data.get("intent", {})
+        except Exception as e:
+            logger.warning("RAG retrieval failed: %s", e)
+
+    user_msg_count = sum(1 for m in messages if m.get("role") == "user")
+    if user_role == "client":
+        recs_to_return = top_matches if _has_enough_requirements(intent, user_msg_count) else []
+    elif user_role == "company":
+        recs_to_return = top_matches
+    else:
+        recs_to_return = []
+
+    # Send recommendations first
+    yield {"type": "recommendations", "recommendations": recs_to_return}
+
+    # Build system prompt with context
+    if user_role == "admin":
+        context = _build_admin_context()
+    else:
+        context = _build_rag_context(top_matches, user_role)
+
+    system_prompt = base_system + lang_directive + context + extra_context
+
+    # Try streaming from OpenRouter
+    if not _API_KEYS or not _MODELS:
+        yield {"type": "error", "content": "No API keys configured."}
+        yield {"type": "done"}
+        return
+
+    payload_messages = [{"role": "system", "content": system_prompt}] + messages
+    streamed = False
+
+    for model in _MODELS:
+        if streamed:
+            break
+        for key in _API_KEYS:
+            try:
+                async with httpx.AsyncClient(timeout=60.0) as client:
+                    async with client.stream(
+                        "POST",
+                        f"{_OPENROUTER_BASE}/chat/completions",
+                        headers={
+                            "Authorization": f"Bearer {key}",
+                            "Content-Type": "application/json",
+                            "HTTP-Referer": "https://smartconstructionconnect.com",
+                            "X-Title": "Smart Construction Connect",
+                        },
+                        json={
+                            "model": model,
+                            "messages": payload_messages,
+                            "max_tokens": 1500,
+                            "temperature": 0.7,
+                            "stream": True,
+                        },
+                    ) as resp:
+                        if resp.status_code != 200:
+                            if resp.status_code in _BAD_KEY_STATUSES:
+                                continue
+                            if resp.status_code in _RETRYABLE_STATUSES:
+                                continue
+                            if resp.status_code == 404:
+                                break  # skip model
+                            continue
+
+                        async for line in resp.aiter_lines():
+                            if not line.startswith("data: "):
+                                continue
+                            data_str = line[6:].strip()
+                            if data_str == "[DONE]":
+                                break
+                            try:
+                                data = json.loads(data_str)
+                                delta = data.get("choices", [{}])[0].get("delta", {})
+                                content = delta.get("content", "")
+                                if content:
+                                    yield {"type": "token", "content": content}
+                                    streamed = True
+                            except json.JSONDecodeError:
+                                continue
+
+                        if streamed:
+                            break
+            except httpx.TimeoutException:
+                logger.warning("Stream timeout: model=%s", model)
+            except Exception as exc:
+                logger.warning("Stream error: model=%s — %s", model, exc)
+
+    if not streamed:
+        # Fallback to non-streaming
+        try:
+            response_text = _call_openrouter(system_prompt, messages)
+            yield {"type": "token", "content": response_text}
+        except RuntimeError:
+            if top_matches and recs_to_return:
+                yield {"type": "token", "content": _build_fallback(top_matches, intent)}
+            else:
+                yield {"type": "error", "content": "I'm having trouble connecting right now. Please try again! 🙏"}
+
+    yield {"type": "done"}

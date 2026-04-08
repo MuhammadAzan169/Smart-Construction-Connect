@@ -1,5 +1,11 @@
 [
   {
+    "timestamp": "2026-04-07T23:59:49.528523+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): hello kya haal hai kya yah pipeline perfectly kaam kar rahi hai ya nahin Hua yah to bahut perfectly "
+  },
+  {
     "timestamp": "2026-04-07T14:06:44.061961+00:00",
     "action": "chat_deleted",
     "target": "ahmed@example.com",

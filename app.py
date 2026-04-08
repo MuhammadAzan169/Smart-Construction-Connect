@@ -57,7 +57,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         path = request.url.path
 
         # Skip logging for static assets — too noisy
-        is_static = path.startswith("/assets/") or path.startswith("/company_data/")
+        is_static = path.startswith("/assets/") or path.startswith("/company_data/") or path.startswith("/uploads/")
 
         if not is_static:
             logger.info(
@@ -108,7 +108,7 @@ class CacheControlMiddleware(BaseHTTPMiddleware):
             response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
 
         # Uploaded company images — cache for 1 hour, revalidate after
-        elif path.startswith("/company_data/"):
+        elif path.startswith("/company_data/") or path.startswith("/uploads/"):
             response.headers["Cache-Control"] = "public, max-age=3600, must-revalidate"
 
         # API responses must never be cached by the browser
@@ -195,6 +195,11 @@ COMPANY_DATA_DIR.mkdir(exist_ok=True)
 for _sub in ("construction_company", "client", "material_supplier"):
     (COMPANY_DATA_DIR / _sub).mkdir(exist_ok=True)
 app.mount("/company_data", StaticFiles(directory=str(COMPANY_DATA_DIR)), name="static-company-data")
+
+# ── Message attachments (file sharing, voice notes) ──
+UPLOADS_DIR = ROOT / "uploads"
+UPLOADS_DIR.mkdir(exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="static-uploads")
 
 
 # ── SPA catch-all: must be LAST so API routes take priority ──

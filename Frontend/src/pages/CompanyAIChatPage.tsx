@@ -17,112 +17,18 @@ import {
   ArrowLeft, Bot, User, Send, Paperclip, FileText, X,
   Briefcase, Building2, Package, MapPin, Clock, CheckCircle2,
   XCircle, FileCheck, ShieldCheck, ArrowRight, Layers, CreditCard,
-  Mic, MicOff,
+  Mic, Square, Play, RotateCcw, Check,
 } from "lucide-react";
 
+import { renderMarkdown } from "@/components/shared/MarkdownRenderer";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Button } from "@/components/ui/button";
 import { api, QuoteRequest } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-
-/* ── Markdown renderer ───────────────────────────────────────────── */
-function renderMd(text: string) {
-  const lines = text.split("\n");
-  const els: React.ReactNode[] = [];
-  let listItems: { ordered: boolean; text: string }[] = [];
-  let tableRows: string[][] = [];
-  let tableHeader: string[] | null = null;
-
-  const fmt = (s: string): React.ReactNode => {
-    const p: React.ReactNode[] = [];
-    let last = 0;
-    const rx = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
-    let m;
-    while ((m = rx.exec(s)) !== null) {
-      if (m.index > last) p.push(s.slice(last, m.index));
-      if (m[2]) p.push(<strong key={m.index} className="font-semibold">{m[2]}</strong>);
-      else if (m[3]) p.push(<em key={m.index}>{m[3]}</em>);
-      else if (m[4]) p.push(<code key={m.index} className="rounded bg-muted px-1 py-0.5 text-xs font-mono">{m[4]}</code>);
-      last = m.index + m[0].length;
-    }
-    if (last < s.length) p.push(s.slice(last));
-    return p.length === 1 ? p[0] : <>{p}</>;
-  };
-
-  const flushList = () => {
-    if (!listItems.length) return;
-    const ordered = listItems[0].ordered;
-    const Tag = ordered ? "ol" : "ul";
-    els.push(
-      <Tag key={`l-${els.length}`} className={`my-1.5 ml-4 space-y-0.5 ${ordered ? "list-decimal" : "list-disc"}`}>
-        {listItems.map((li, i) => <li key={i} className="text-sm leading-relaxed">{fmt(li.text)}</li>)}
-      </Tag>
-    );
-    listItems = [];
-  };
-
-  const flushTable = () => {
-    if (!tableHeader && !tableRows.length) return;
-    const headers = tableHeader || [];
-    els.push(
-      <div key={`t-${els.length}`} className="my-2 overflow-x-auto rounded-lg border border-border">
-        <table className="w-full text-xs">
-          {headers.length > 0 && (
-            <thead><tr className="border-b border-border bg-muted/50">
-              {headers.map((h, i) => <th key={i} className="px-3 py-2 text-left font-semibold text-foreground">{fmt(h.trim())}</th>)}
-            </tr></thead>
-          )}
-          <tbody>
-            {tableRows.map((row, ri) => (
-              <tr key={ri} className={ri % 2 === 0 ? "" : "bg-muted/20"}>
-                {row.map((cell, ci) => <td key={ci} className="px-3 py-2 text-muted-foreground border-t border-border/50">{fmt(cell.trim())}</td>)}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-    tableHeader = null;
-    tableRows = [];
-  };
-
-  const parseRow = (line: string) => {
-    if (!line.trim().startsWith("|")) return null;
-    return line.split("|").slice(1, -1);
-  };
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const tRow = parseRow(line);
-    if (tRow !== null) {
-      if (tRow.every(c => /^[-: ]+$/.test(c))) continue;
-      if (tableHeader === null) { flushList(); tableHeader = tRow; }
-      else tableRows.push(tRow);
-      continue;
-    }
-    flushTable();
-    const bm = line.match(/^\s*[-•*]\s+(.*)/);
-    if (bm) { listItems.push({ ordered: false, text: bm[1] }); continue; }
-    const nm = line.match(/^\s*\d+[.)]\s+(.*)/);
-    if (nm) { listItems.push({ ordered: true, text: nm[1] }); continue; }
-    flushList();
-    const h3 = line.match(/^###\s+(.*)/);
-    if (h3) { els.push(<h4 key={i} className="mt-3 mb-1 text-sm font-bold text-foreground border-l-2 border-emerald-500 pl-2">{fmt(h3[1])}</h4>); continue; }
-    const h2 = line.match(/^##\s+(.*)/);
-    if (h2) { els.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground">{fmt(h2[1])}</h3>); continue; }
-    const h1 = line.match(/^#\s+(.*)/);
-    if (h1) { els.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground">{fmt(h1[1])}</h3>); continue; }
-    if (/^[-*_]{3,}$/.test(line.trim())) { els.push(<hr key={i} className="my-2 border-border" />); continue; }
-    if (!line.trim()) { els.push(<div key={i} className="h-2" />); continue; }
-    els.push(<p key={i} className="text-sm leading-relaxed">{fmt(line)}</p>);
-  }
-  flushList();
-  flushTable();
-  return <div className="space-y-0.5">{els}</div>;
-}
+import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 
 /* ── Types ──────────────────────────────────────────────────────── */
-interface Message { id: number; role: "user" | "ai"; text: string; }
+interface Message { id: number; role: "user" | "ai"; text: string; isStreaming?: boolean; }
 
 /* ── Suggested prompts ──────────────────────────────────────────── */
 const COMPANY_PROMPTS = [
@@ -156,12 +62,13 @@ export default function CompanyAIChatPage() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
   const nextIdRef = useRef(1);
   const getNextId = useCallback(() => nextIdRef.current++, []);
+
+  // Voice recorder
+  const voice = useVoiceRecorder();
+  const audioPreviewRef = useRef<HTMLAudioElement>(null);
 
   /* ── Business Intel sidebar state ── */
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
@@ -213,7 +120,7 @@ export default function CompanyAIChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  /* ── Send message ── */
+  /* ── Send message (streaming) ── */
   const handleSend = useCallback(async () => {
     const text = input.trim();
     if ((!text && !attachedFile) || isTyping) return;
@@ -230,13 +137,29 @@ export default function CompanyAIChatPage() {
       const history = [...messages, { ...userMsg, text: text || `Analyse attached file: ${currentFile?.name}` }]
         .map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text }));
 
-      let result: { response: string };
       if (currentFile) {
-        result = await api.ai.chatWithFile(currentFile, history, user?.email || "", "company");
+        const result = await api.ai.chatWithFile(currentFile, history, user?.email || "", "company");
+        setMessages((prev) => [...prev, { id: getNextId(), role: "ai", text: result.response }]);
       } else {
-        result = await api.ai.chat(history, user?.email || "", "company");
+        const streamMsgId = getNextId();
+        setMessages((prev) => [...prev, { id: streamMsgId, role: "ai", text: "", isStreaming: true }]);
+        let fullText = "";
+        for await (const chunk of api.ai.chatStream(history, user?.email || "", "company")) {
+          if (chunk.type === "token" && chunk.content) {
+            fullText += chunk.content;
+            setMessages((prev) => prev.map((m) => m.id === streamMsgId ? { ...m, text: fullText } : m));
+          } else if (chunk.type === "error" && chunk.content) {
+            fullText = chunk.content;
+          } else if (chunk.type === "done") {
+            setMessages((prev) => prev.map((m) => m.id === streamMsgId ? { ...m, isStreaming: false } : m));
+          }
+        }
+        if (!fullText) {
+          setMessages((prev) => prev.map((m) => m.id === streamMsgId ? { ...m, text: "Connection issue. Please try again.", isStreaming: false } : m));
+        } else {
+          setMessages((prev) => prev.map((m) => m.id === streamMsgId ? { ...m, isStreaming: false } : m));
+        }
       }
-      setMessages((prev) => [...prev, { id: getNextId(), role: "ai", text: result.response }]);
     } catch {
       setMessages((prev) => [...prev, { id: getNextId(), role: "ai", text: "Connection issue. Please try again." }]);
     } finally {
@@ -244,49 +167,11 @@ export default function CompanyAIChatPage() {
     }
   }, [getNextId, input, isTyping, messages, user?.email, attachedFile]);
 
-  /* ── Voice recording ── */
-  const startRecording = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = recorder;
-      audioChunksRef.current = [];
-
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      recorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-        const audioFile = new File([audioBlob], `voice-note-${Date.now()}.wav`, { type: 'audio/wav' });
-        setAttachedFile(audioFile);
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      recorder.start();
-      setIsRecording(true);
-    } catch (error) {
-      console.error('Error starting recording:', error);
-      alert('Could not access microphone. Please check permissions.');
-    }
-  }, []);
-
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  }, [isRecording]);
-
-  const toggleRecording = useCallback(() => {
-    if (isRecording) {
-      stopRecording();
-    } else {
-      startRecording();
-    }
-  }, [isRecording, startRecording, stopRecording]);
+  /* ── Voice handling ── */
+  const handleVoiceAccept = useCallback(() => {
+    const text = voice.acceptTranscript();
+    if (text.trim()) setInput(text);
+  }, [voice]);
 
   /* ── Derived business intel ── */
   const bizStats = useMemo(() => {
@@ -402,14 +287,19 @@ export default function CompanyAIChatPage() {
                   }`}
                   dir="auto"
                 >
-                  {msg.role === "ai" ? renderMd(msg.text) : msg.text}
+                  {msg.role === "ai" ? (
+                    <>
+                      {renderMarkdown(msg.text)}
+                      {msg.isStreaming && <span className="inline-block w-1.5 h-4 ml-0.5 bg-emerald-500/60 animate-pulse rounded-sm" />}
+                    </>
+                  ) : msg.text}
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
 
           {/* Typing indicator */}
-          {isTyping && (
+          {isTyping && !messages.some(m => m.isStreaming) && (
             <motion.div
               initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="flex items-end gap-2.5"
@@ -436,7 +326,7 @@ export default function CompanyAIChatPage() {
 
         {/* Input */}
         <div className="border-t border-border px-5 py-4">
-          {attachedFile && (
+          {attachedFile && !voice.isRecording && !voice.isPreviewing && (
             <div className="mb-2 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
               <FileText className="h-4 w-4 text-emerald-500 shrink-0" />
               <span className="flex-1 truncate text-xs text-foreground">{attachedFile.name}</span>
@@ -448,46 +338,115 @@ export default function CompanyAIChatPage() {
           )}
           <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
             <input ref={fileInputRef} type="file" className="hidden"
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.json,.txt,.md,.png,.jpg,.jpeg,.webp"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.json,.txt,.md,.png,.jpg,.jpeg,.webp,.tiff,.bmp"
               onChange={(e) => {
                 const f = e.target.files?.[0];
-                if (f) { if (f.size > 5 * 1024 * 1024) { alert("File must be under 5 MB"); } else { setAttachedFile(f); } }
+                if (f) { if (f.size > 10 * 1024 * 1024) { alert("File must be under 10 MB"); } else { setAttachedFile(f); } }
                 e.target.value = "";
               }}
             />
-            <motion.button type="button" onClick={() => fileInputRef.current?.click()} disabled={isTyping}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-emerald-500/30 transition-colors disabled:opacity-40"
-              whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Attach file">
-              <Paperclip className="h-4 w-4" />
-            </motion.button>
-            <motion.button type="button" onClick={toggleRecording} disabled={isTyping}
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-colors disabled:opacity-40 ${
-                isRecording
-                  ? "border-red-500/40 bg-red-500/10 text-red-500 animate-pulse"
-                  : "border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-emerald-500/30"
-              }`}
-              whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Record voice note">
-              {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-            </motion.button>
-            <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-emerald-500/40 transition-colors">
-              <input
-                id="company-chat-input"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about material prices, suppliers, cost estimates..."
-                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none focus:outline-none min-w-0 py-2"
-                disabled={isTyping}
-                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-              />
-            </div>
-            <motion.button type="submit" disabled={(!input.trim() && !attachedFile) || isTyping}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-sm disabled:opacity-40 transition-opacity"
-              whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Send message">
-              <Send className="h-4 w-4" />
-            </motion.button>
+
+            {/* Normal state: Attach + Mic buttons */}
+            {!voice.isRecording && !voice.isPreviewing && (
+              <>
+                <motion.button type="button" onClick={() => fileInputRef.current?.click()} disabled={isTyping}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-emerald-500/30 transition-colors disabled:opacity-40"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Attach file">
+                  <Paperclip className="h-4 w-4" />
+                </motion.button>
+                {(voice.isSupported || voice.isMediaSupported) && (
+                  <motion.button type="button" onClick={() => voice.startRecording("auto")} disabled={isTyping}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-emerald-500/30 transition-colors disabled:opacity-40"
+                    whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Start voice input">
+                    <Mic className="h-4 w-4" />
+                  </motion.button>
+                )}
+              </>
+            )}
+
+            {/* Recording state: compact inline waveform */}
+            {voice.isRecording && (
+              <>
+                <div className="flex-1 flex items-center gap-2.5 rounded-2xl border border-red-500/40 bg-red-500/5 px-3 py-2 min-w-0">
+                  <div className="flex items-end gap-[2px] shrink-0" style={{ height: 16 }}>
+                    {[0.4, 1, 0.6, 0.9, 0.5].map((_, i) => (
+                      <motion.span key={i} animate={{ scaleY: [0.35, 1, 0.35] }} transition={{ repeat: Infinity, duration: 0.55, delay: i * 0.1 }}
+                        className="block w-[3px] rounded-full bg-red-500 origin-bottom h-full" />
+                    ))}
+                  </div>
+                  <span className="text-xs font-semibold text-red-500 shrink-0 tabular-nums">{voice.duration}s</span>
+                  <span className="flex-1 text-xs text-muted-foreground truncate italic min-w-0">{voice.transcript || "Listening…"}</span>
+                </div>
+                <motion.button type="button" onClick={voice.stopRecording}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-red-500/50 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Stop recording">
+                  <Square className="h-4 w-4" />
+                </motion.button>
+                <motion.button type="button" onClick={voice.cancelRecording}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground transition-colors"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Cancel recording">
+                  <X className="h-4 w-4" />
+                </motion.button>
+              </>
+            )}
+
+            {/* Preview state: inline editable transcript */}
+            {voice.isPreviewing && (
+              <>
+                {voice.audioUrl && (
+                  <>
+                    <audio ref={audioPreviewRef} src={voice.audioUrl} className="hidden" />
+                    <motion.button type="button" onClick={() => audioPreviewRef.current?.play()}
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-500 hover:bg-emerald-500/10 transition-colors"
+                      whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Play recording">
+                      <Play className="h-4 w-4" />
+                    </motion.button>
+                  </>
+                )}
+                <div className="flex-1 flex items-center rounded-2xl border border-emerald-500/30 bg-emerald-500/5 px-3 py-1 focus-within:border-emerald-500/50 transition-colors min-w-0">
+                  <input value={voice.transcript} onChange={(e) => voice.setTranscript(e.target.value)}
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-1.5"
+                    placeholder="Edit transcript before sending…"
+                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && voice.transcript.trim()) { e.preventDefault(); handleVoiceAccept(); } }}
+                  />
+                </div>
+                <motion.button type="button" onClick={voice.cancelRecording}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground transition-colors"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Re-record">
+                  <RotateCcw className="h-4 w-4" />
+                </motion.button>
+                <motion.button type="button" onClick={handleVoiceAccept} disabled={!voice.transcript.trim()}
+                  className="flex h-10 shrink-0 items-center gap-1.5 rounded-2xl bg-emerald-500 px-3 text-xs font-medium text-white shadow-sm disabled:opacity-40 transition-opacity"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Use transcript">
+                  <Check className="h-3.5 w-3.5" /> Use
+                </motion.button>
+              </>
+            )}
+
+            {/* Normal state: text input + send */}
+            {!voice.isRecording && !voice.isPreviewing && (
+              <>
+                <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-emerald-500/40 transition-colors">
+                  <input
+                    id="company-chat-input"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Ask about material prices, suppliers, cost estimates..."
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none focus:outline-none min-w-0 py-2"
+                    disabled={isTyping}
+                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+                  />
+                </div>
+                <motion.button type="submit" disabled={(!input.trim() && !attachedFile) || isTyping}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-sm disabled:opacity-40 transition-opacity"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Send message">
+                  <Send className="h-4 w-4" />
+                </motion.button>
+              </>
+            )}
           </form>
           <p className="mt-1.5 text-center text-[10px] text-muted-foreground/50">
-            Enter to send · 📎 Attach files · 🎤 Record voice note · AI may make mistakes
+            Enter to send · 📎 Attach files · 🎤 Voice input (English/Urdu) · AI may make mistakes
           </p>
         </div>
       </GlassCard>

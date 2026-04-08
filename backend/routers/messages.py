@@ -120,10 +120,22 @@ class StartConversationRequest(BaseModel):
     recipient_email: str
     recipient_name: str = ""
     message: str
+    # File attachment fields (optional)
+    attachment_url: str = ""
+    attachment_filename: str = ""
+    attachment_size: int = 0
+    attachment_type: str = ""  # "image", "video", "voice", "document", "audio"
+    attachment_content_type: str = ""
 
 
 class SendMessageRequest(BaseModel):
     content: str
+    # File attachment fields (optional)
+    attachment_url: str = ""
+    attachment_filename: str = ""
+    attachment_size: int = 0
+    attachment_type: str = ""  # "image", "video", "voice", "document", "audio"
+    attachment_content_type: str = ""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -201,15 +213,26 @@ async def start_conversation(body: StartConversationRequest, user: dict = Depend
         "deleted_by": [],
     }
 
+    # Add attachment if provided
+    if body.attachment_url:
+        msg["attachment"] = {
+            "url": body.attachment_url,
+            "filename": body.attachment_filename,
+            "size": body.attachment_size,
+            "type": body.attachment_type,
+            "content_type": body.attachment_content_type,
+        }
+
     messages = read_json(_messages_path(convo["id"]))
     messages.append(msg)
     write_json(_messages_path(convo["id"]), messages)
 
     # Update conversation metadata
+    preview = body.message[:100] if body.message else f"📎 {body.attachment_filename}" if body.attachment_url else ""
     for c in convos:
         if c["id"] == convo["id"]:
             c["updated_at"] = now
-            c["last_message"] = {"content": body.message[:100], "sender": sender_email, "timestamp": now}
+            c["last_message"] = {"content": preview, "sender": sender_email, "timestamp": now}
             c["unread"] = c.get("unread", {})
             c["unread"][body.recipient_email] = c["unread"].get(body.recipient_email, 0) + 1
             # Restore recipient view if they had soft-deleted
@@ -289,17 +312,28 @@ async def send_message(conversation_id: str, body: SendMessageRequest, user: dic
         "deleted_by": [],
     }
 
+    # Add attachment if provided
+    if body.attachment_url:
+        msg["attachment"] = {
+            "url": body.attachment_url,
+            "filename": body.attachment_filename,
+            "size": body.attachment_size,
+            "type": body.attachment_type,
+            "content_type": body.attachment_content_type,
+        }
+
     # Save to DB first (ensures no data loss before UI update)
     messages = read_json(_messages_path(conversation_id))
     messages.append(msg)
     write_json(_messages_path(conversation_id), messages)
 
     # Update conversation metadata
+    preview = body.content[:100] if body.content else f"📎 {body.attachment_filename}" if body.attachment_url else ""
     recipient = next((p for p in convo.get("participants", []) if p != email), "")
     for c in convos:
         if c["id"] == conversation_id:
             c["updated_at"] = now
-            c["last_message"] = {"content": body.content[:100], "sender": email, "timestamp": now}
+            c["last_message"] = {"content": preview, "sender": email, "timestamp": now}
             c["unread"] = c.get("unread", {})
             c["unread"][recipient] = c["unread"].get(recipient, 0) + 1
             # Restore recipient's view if they had soft-deleted

@@ -93,6 +93,13 @@ export interface Message {
   read: boolean;
   status?: "sent" | "delivered" | "read";
   deleted_by?: string[];
+  attachment?: {
+    url: string;
+    filename: string;
+    size: number;
+    type: string;  // "image" | "video" | "voice" | "document" | "audio"
+    content_type: string;
+  };
 }
 
 export interface Conversation {
@@ -242,17 +249,37 @@ export const api = {
   messages: {
     getConversations: () =>
       request<Conversation[]>("/messages/conversations"),
-    startConversation: (recipientEmail: string, recipientName: string, message: string) =>
+    startConversation: (recipientEmail: string, recipientName: string, message: string, attachment?: { url: string; filename: string; size: number; type: string; content_type: string }) =>
       request<{ conversation_id: string; message: Message }>("/messages/conversations", {
         method: "POST",
-        body: JSON.stringify({ recipient_email: recipientEmail, recipient_name: recipientName, message }),
+        body: JSON.stringify({
+          recipient_email: recipientEmail,
+          recipient_name: recipientName,
+          message,
+          ...(attachment ? {
+            attachment_url: attachment.url,
+            attachment_filename: attachment.filename,
+            attachment_size: attachment.size,
+            attachment_type: attachment.type,
+            attachment_content_type: attachment.content_type,
+          } : {}),
+        }),
       }),
     getMessages: (conversationId: string) =>
       request<{ conversation: Conversation; messages: Message[] }>(`/messages/conversations/${encodeURIComponent(conversationId)}`),
-    sendMessage: (conversationId: string, content: string) =>
+    sendMessage: (conversationId: string, content: string, attachment?: { url: string; filename: string; size: number; type: string; content_type: string }) =>
       request<Message>(`/messages/conversations/${encodeURIComponent(conversationId)}`, {
         method: "POST",
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({
+          content,
+          ...(attachment ? {
+            attachment_url: attachment.url,
+            attachment_filename: attachment.filename,
+            attachment_size: attachment.size,
+            attachment_type: attachment.type,
+            attachment_content_type: attachment.content_type,
+          } : {}),
+        }),
       }),
     getUnreadCount: () =>
       request<{ unread: number }>("/messages/unread"),
@@ -281,6 +308,53 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ messages, user_email: userEmail, user_role: userRole }),
       }),
+    chatStream: async function* (
+      messages: { role: string; content: string }[],
+      userEmail = "",
+      userRole = "client",
+    ): AsyncGenerator<{ type: string; content?: string; recommendations?: unknown[] }> {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120_000);
+      try {
+        const res = await fetch(`${API_BASE}/ai/chat/stream`, {
+          method: "POST",
+          signal: controller.signal,
+          headers: { "Content-Type": "application/json", ..._authHeaders() },
+          body: JSON.stringify({ messages, user_email: userEmail, user_role: userRole }),
+        });
+        if (!res.ok || !res.body) {
+          yield { type: "error", content: "Failed to connect to AI." };
+          return;
+        }
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = line.slice(6).trim();
+              if (data === "[DONE]") return;
+              try {
+                yield JSON.parse(data);
+              } catch { /* skip malformed */ }
+            }
+          }
+        }
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          yield { type: "error", content: "Request timed out." };
+        } else {
+          yield { type: "error", content: "Stream connection failed." };
+        }
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    },
     chatWithFile: async (
       file: File,
       messages: { role: string; content: string }[],
@@ -316,6 +390,12 @@ export const api = {
         clearTimeout(timeoutId);
       }
     },
+    clearSession: (email: string) =>
+      request<{ status: string }>(`/ai/session/${encodeURIComponent(email)}`, { method: "DELETE" }),
+    getSessionFiles: (email: string) =>
+      request<{ files: { id: string; filename: string; summary: string; keywords: string[] }[] }>(
+        `/ai/session/${encodeURIComponent(email)}`
+      ),
   },
 
   requests: {
@@ -344,6 +424,17 @@ export const api = {
         body: JSON.stringify({ notes }),
       }),
     stats: () => request<RequestStats>("/requests/stats/summary"),
+    aiSuggest: (data: {
+      location?: string;
+      plot_size?: string;
+      construction_type?: string;
+      budget?: string;
+      description?: string;
+    }) =>
+      request<{ suggestion: string; status: string }>("/requests/ai-suggest", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
   },
 
   upload: {
@@ -426,6 +517,40 @@ export const api = {
         }
         const data = await res.json() as { url: string };
         return data.url;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          throw new Error("Upload timed out. Please try again.");
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    },
+    messageFile: async (
+      file: File,
+      senderEmail: string,
+      conversationId: string,
+      fileType: "file" | "voice" | "image" | "video" = "file",
+    ): Promise<{ url: string; filename: string; size: number; content_type: string; category: string; file_type: string }> => {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("sender_email", senderEmail);
+      form.append("conversation_id", conversationId);
+      form.append("file_type", fileType);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60_000);
+      try {
+        const res = await fetch(`${API_BASE}/upload/message-file`, {
+          method: "POST",
+          body: form,
+          signal: controller.signal,
+          headers: _authHeaders(),
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({})) as { detail?: string };
+          throw new Error(body.detail ?? `Upload failed: ${res.status}`);
+        }
+        return res.json();
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
           throw new Error("Upload timed out. Please try again.");
