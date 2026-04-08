@@ -479,8 +479,8 @@ export default function AIChatPage() {
             {/* Recording state: compact inline waveform indicator */}
             {voice.isRecording && (
               <>
-                <div className="flex-1 flex items-center gap-2.5 rounded-2xl border border-red-500/40 bg-red-500/5 px-3 py-2 min-w-0">
-                  <div className="flex items-end gap-[2px] shrink-0" style={{ height: 16 }}>
+                <div className="flex-1 flex items-start gap-2.5 rounded-2xl border border-red-500/40 bg-red-500/5 px-3 py-2 min-w-0 max-h-24 overflow-y-auto">
+                  <div className="flex items-end gap-[2px] shrink-0 mt-0.5" style={{ height: 16 }}>
                     {[0.4, 1, 0.6, 0.9, 0.5].map((_, i) => (
                       <motion.span
                         key={i}
@@ -490,8 +490,8 @@ export default function AIChatPage() {
                       />
                     ))}
                   </div>
-                  <span className="text-xs font-semibold text-red-500 shrink-0 tabular-nums">{voice.duration}s</span>
-                  <span className="flex-1 text-xs text-muted-foreground truncate italic min-w-0">
+                  <span className="text-xs font-semibold text-red-500 shrink-0 tabular-nums mt-0.5">{voice.duration}s</span>
+                  <span className="flex-1 text-xs text-muted-foreground italic min-w-0 break-words">
                     {voice.transcript || "Listening…"}
                   </span>
                 </div>
@@ -533,12 +533,14 @@ export default function AIChatPage() {
                     </motion.button>
                   </>
                 )}
-                <div className="flex-1 flex items-center rounded-2xl border border-primary/30 bg-primary/5 px-3 py-1 focus-within:border-primary/50 transition-colors min-w-0">
-                  <input
+                <div className="flex-1 flex items-start rounded-2xl border border-primary/30 bg-primary/5 px-3 py-1 focus-within:border-primary/50 transition-colors min-w-0">
+                  <textarea
                     value={voice.transcript}
                     onChange={(e) => voice.setTranscript(e.target.value)}
-                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-1.5"
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-1.5 resize-none max-h-20 overflow-y-auto"
                     placeholder="Edit transcript before sending…"
+                    rows={1}
+                    onInput={(e) => { const t = e.currentTarget; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 80) + 'px'; }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey && voice.transcript.trim()) {
                         e.preventDefault();

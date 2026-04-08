@@ -370,15 +370,15 @@ export default function SupplierAIChatPage() {
             {/* Recording state: compact inline waveform */}
             {voice.isRecording && (
               <>
-                <div className="flex-1 flex items-center gap-2.5 rounded-2xl border border-red-500/40 bg-red-500/5 px-3 py-2 min-w-0">
-                  <div className="flex items-end gap-[2px] shrink-0" style={{ height: 16 }}>
+                <div className="flex-1 flex items-start gap-2.5 rounded-2xl border border-red-500/40 bg-red-500/5 px-3 py-2 min-w-0 max-h-24 overflow-y-auto">
+                  <div className="flex items-end gap-[2px] shrink-0 mt-0.5" style={{ height: 16 }}>
                     {[0.4, 1, 0.6, 0.9, 0.5].map((_, i) => (
                       <motion.span key={i} animate={{ scaleY: [0.35, 1, 0.35] }} transition={{ repeat: Infinity, duration: 0.55, delay: i * 0.1 }}
                         className="block w-[3px] rounded-full bg-red-500 origin-bottom h-full" />
                     ))}
                   </div>
-                  <span className="text-xs font-semibold text-red-500 shrink-0 tabular-nums">{voice.duration}s</span>
-                  <span className="flex-1 text-xs text-muted-foreground truncate italic min-w-0">{voice.transcript || "Listening…"}</span>
+                  <span className="text-xs font-semibold text-red-500 shrink-0 tabular-nums mt-0.5">{voice.duration}s</span>
+                  <span className="flex-1 text-xs text-muted-foreground italic min-w-0 break-words">{voice.transcript || "Listening…"}</span>
                 </div>
                 <motion.button type="button" onClick={voice.stopRecording}
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-red-500/50 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
@@ -406,10 +406,12 @@ export default function SupplierAIChatPage() {
                     </motion.button>
                   </>
                 )}
-                <div className="flex-1 flex items-center rounded-2xl border border-orange-500/30 bg-orange-500/5 px-3 py-1 focus-within:border-orange-500/50 transition-colors min-w-0">
-                  <input value={voice.transcript} onChange={(e) => voice.setTranscript(e.target.value)}
-                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-1.5"
+                <div className="flex-1 flex items-start rounded-2xl border border-orange-500/30 bg-orange-500/5 px-3 py-1 focus-within:border-orange-500/50 transition-colors min-w-0">
+                  <textarea value={voice.transcript} onChange={(e) => voice.setTranscript(e.target.value)}
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-1.5 resize-none max-h-20 overflow-y-auto"
                     placeholder="Edit transcript before sending…"
+                    rows={1}
+                    onInput={(e) => { const t = e.currentTarget; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 80) + 'px'; }}
                     onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && voice.transcript.trim()) { e.preventDefault(); handleVoiceAccept(); } }}
                   />
                 </div>
