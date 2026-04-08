@@ -153,10 +153,15 @@ export function useVoiceRecorder() {
           };
 
           recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-            if (event.error === "no-speech" || event.error === "aborted") return;
-            // On network error, try to restart
+            if (event.error === "aborted") return;
+            if (event.error === "no-speech") {
+              // Silently continue — user may start speaking later
+              return;
+            }
+            // On network error, show feedback but keep recording audio
             if (event.error === "network") {
               shouldRestartRef.current = false;
+              setState(prev => ({ ...prev, error: "Speech recognition unavailable (network issue). Audio is still recording." }));
               return;
             }
             setState(prev => ({ ...prev, error: `Speech recognition: ${event.error}` }));
@@ -198,6 +203,9 @@ export function useVoiceRecorder() {
     try { recognitionRef.current?.stop(); } catch { /* */ }
     recognitionRef.current = null;
 
+    // Ensure transcript state has the latest final transcript from the ref
+    const latestTranscript = finalTranscriptRef.current.trim();
+
     // Stop media recorder
     const recorder = mediaRecorderRef.current;
     if (recorder && recorder.state !== "inactive") {
@@ -214,13 +222,16 @@ export function useVoiceRecorder() {
           isPreviewing: true,
           audioBlob: blob,
           audioUrl: url,
+          // Ensure transcript is set even if onresult didn't fire a final setState
+          transcript: prev.transcript || latestTranscript,
         }));
       };
     } else {
       setState(prev => ({
         ...prev,
         isRecording: false,
-        isPreviewing: !!prev.transcript,
+        isPreviewing: !!(prev.transcript || latestTranscript),
+        transcript: prev.transcript || latestTranscript,
       }));
     }
   }, []);
@@ -254,10 +265,12 @@ export function useVoiceRecorder() {
   }, []);
 
   const acceptTranscript = useCallback((): string => {
-    // Use state.transcript which includes both final + interim; fallback to ref
+    // Prefer the ref (accumulated finals) combined with current state for any trailing interim
     const text = state.transcript || finalTranscriptRef.current.trim();
+    // Capture before cancel clears refs
+    const captured = text;
     cancelRecording();
-    return text;
+    return captured;
   }, [state.transcript, cancelRecording]);
 
   return {

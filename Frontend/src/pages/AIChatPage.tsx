@@ -142,8 +142,8 @@ export default function AIChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const handleSend = useCallback(async () => {
-    const text = input.trim();
+  const handleSend = useCallback(async (overrideText?: string) => {
+    const text = (overrideText ?? input).trim();
     if ((!text && !attachedFile) || isTyping) return;
 
     const displayText = attachedFile ? `${text || ""}${text ? "\n" : ""}📎 ${attachedFile.name}` : text;
@@ -233,8 +233,9 @@ export default function AIChatPage() {
     const text = voice.acceptTranscript();
     if (text.trim()) {
       setInput(text);
+      handleSend(text);
     }
-  }, [voice]);
+  }, [voice, handleSend]);
 
   // Role-specific header title
   const headerTitle = useMemo(() => {
@@ -492,7 +493,7 @@ export default function AIChatPage() {
                   </div>
                   <span className="text-xs font-semibold text-red-500 shrink-0 tabular-nums mt-0.5">{voice.duration}s</span>
                   <span className="flex-1 text-xs text-muted-foreground italic min-w-0 break-words">
-                    {voice.transcript || "Listening…"}
+                    {voice.error ? <span className="text-amber-500 not-italic">{voice.error}</span> : voice.transcript || "Listening…"}
                   </span>
                 </div>
                 <motion.button

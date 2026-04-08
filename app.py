@@ -302,7 +302,7 @@ def _run_prod():
     print("  ╔══════════════════════════════════════════════════════╗")
     print("  ║  Smart Construction Connect                          ║")
     print(f"  ║  {url:<52}║")
-    print(f"  ║  API docs: {url}/docs{' ' * 29}║")
+    print(f"  ║  API docs: {url}/docs{' ' * 29}║")       
     print("  ║  Opening browser when server is ready…               ║")
     print("  ╚══════════════════════════════════════════════════════╝")
     print()

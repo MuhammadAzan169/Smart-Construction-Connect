@@ -97,8 +97,8 @@ export default function AdminAIChatPage() {
   }, [messages, isTyping]);
 
   /* ── Send (streaming) ── */
-  const handleSend = useCallback(async () => {
-    const text = input.trim();
+  const handleSend = useCallback(async (overrideText?: string) => {
+    const text = (overrideText ?? input).trim();
     if ((!text && !attachedFile) || isTyping) return;
 
     const displayText = attachedFile ? `${text || ""}${text ? "\n" : ""}📎 ${attachedFile.name}` : text;
@@ -146,8 +146,11 @@ export default function AdminAIChatPage() {
   /* ── Voice handling ── */
   const handleVoiceAccept = useCallback(() => {
     const text = voice.acceptTranscript();
-    if (text.trim()) setInput(text);
-  }, [voice]);
+    if (text.trim()) {
+      setInput(text);
+      handleSend(text);
+    }
+  }, [voice, handleSend]);
 
   /* ── Pending approvals count ── */
   const pendingTotal = overview ? (overview.companies.pending + overview.suppliers.pending) : 0;
@@ -359,7 +362,7 @@ export default function AdminAIChatPage() {
                     ))}
                   </div>
                   <span className="text-xs font-semibold text-red-500 shrink-0 tabular-nums mt-0.5">{voice.duration}s</span>
-                  <span className="flex-1 text-xs text-muted-foreground italic min-w-0 break-words">{voice.transcript || "Listening…"}</span>
+                  <span className="flex-1 text-xs text-muted-foreground italic min-w-0 break-words">{voice.error ? <span className="text-amber-500 not-italic">{voice.error}</span> : voice.transcript || "Listening\u2026"}</span>
                 </div>
                 <motion.button type="button" onClick={voice.stopRecording}
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-red-500/50 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
