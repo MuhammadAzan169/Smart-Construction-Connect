@@ -1,6 +1,7 @@
-﻿import { useEffect, useState, type ElementType } from "react";
+import { useEffect, useState, type ElementType } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +15,7 @@ import {
   UserCheck, UserX, MessageSquare, Zap, ArrowRight, Trophy,
 } from "lucide-react";
 
-// â”€â”€ types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── types ──────────────────────────────────────────────────────────────────
 type Analytics = {
   users: { total: number; by_role: Record<string, number>; active: number; pending: number; banned: number; recent_signups: number };
   companies: { total: number; verified: number; pending: number; avg_rating: number; top_cities: { name: string; count: number }[]; total_reviews: number };
@@ -27,7 +28,7 @@ type TopCompany = { company_id: string; company_name: string; slug: string; city
 type SupplyDemand = { city: string; companies: number; suppliers: number; ratio: number; status: string };
 type EmbeddingStats = { initialized: boolean; total_entities: number; vocab_size: number; companies: number; suppliers: number };
 
-// â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── helpers ─────────────────────────────────────────────────────────────────
 function Bar({ pct, color = "bg-primary" }: { pct: number; color?: string }) {
   return (
     <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
@@ -64,8 +65,9 @@ function BigStat({ icon: Icon, label, value, sub, color = "text-primary", bg = "
   );
 }
 
-// â”€â”€ main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── main ─────────────────────────────────────────────────────────────────────
 export default function AnalyticsPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
@@ -112,14 +114,14 @@ export default function AnalyticsPage() {
   return (
     <motion.div className="space-y-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35 }}>
 
-      {/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <Button variant="ghost" size="sm" className="mb-2 gap-1.5 rounded-xl text-muted-foreground hover:text-foreground" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="h-4 w-4" /> Dashboard
           </Button>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <BarChart3 className="h-6 w-6 text-primary" /> Platform Analytics
+            <BarChart3 className="h-6 w-6 text-primary" /> {t("analytics.title")}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">Live data across users, companies, suppliers & AI.</p>
         </div>
@@ -138,17 +140,17 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* â”€â”€ Loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Loading ─────────────────────────────────────────────────────────── */}
       <AnimatePresence>
         {loading && !a && (
           <motion.div className="flex flex-col items-center justify-center py-24 gap-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">Loading platform dataâ€¦</p>
+            <p className="text-sm text-muted-foreground">Loading platform data…</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* â”€â”€ Error state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Error state ──────────────────────────────────────────────────────── */}
       {!loading && !a && (
         <GlassCard interactive={false} className="p-8 text-center">
           <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto mb-3" />
@@ -158,10 +160,10 @@ export default function AnalyticsPage() {
         </GlassCard>
       )}
 
-      {/* â”€â”€ Data loaded â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Data loaded ──────────────────────────────────────────────────────── */}
       {a && (
         <>
-          {/* â”€â”€ Hero KPI row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── Hero KPI row ─────────────────────────────────────────────────── */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             <BigStat icon={Users}           label="Total Users"        value={a.users.total}               sub={`+${a.users.recent_signups} this week`}           color="text-blue-500"    bg="bg-blue-500/10" />
             <BigStat icon={Building2}       label="Companies"          value={a.companies.total}           sub={`${a.companies.verified} verified`}               color="text-primary"     bg="bg-primary/10" />
@@ -171,7 +173,7 @@ export default function AnalyticsPage() {
             <BigStat icon={Activity}        label="Activity (7d)"      value={a.activity.recent_week}      sub={`${a.activity.total_entries} total`}              color="text-emerald-500" bg="bg-emerald-500/10" />
           </div>
 
-          {/* â”€â”€ Alert banner: pending approvals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── Alert banner: pending approvals ─────────────────────────────── */}
           {(a.companies.pending + a.suppliers.pending) > 0 && (
             <motion.div
               initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
@@ -183,16 +185,16 @@ export default function AnalyticsPage() {
                   {a.companies.pending + a.suppliers.pending} pending approvals waiting
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {a.companies.pending} companies Â· {a.suppliers.pending} suppliers need review
+                  {a.companies.pending} companies · {a.suppliers.pending} suppliers need review
                 </p>
               </div>
               <Button variant="outline" size="sm" className="shrink-0 border-amber-500/30 text-amber-600 hover:bg-amber-500/10" onClick={() => navigate("/approvals")}>
-                Review <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                Review <ArrowRight className="h-3.5 w-3.5 ms-1" />
               </Button>
             </motion.div>
           )}
 
-          {/* â”€â”€ Tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── Tabs ─────────────────────────────────────────────────────────── */}
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList className="h-9 gap-1 rounded-xl p-1">
               <TabsTrigger value="overview"  className="rounded-lg text-xs px-3">Overview</TabsTrigger>
@@ -203,7 +205,7 @@ export default function AnalyticsPage() {
               <TabsTrigger value="system"    className="rounded-lg text-xs px-3">System</TabsTrigger>
             </TabsList>
 
-            {/* â•â• OVERVIEW tab â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+            {/* ══ OVERVIEW tab ════════════════════════════════════════════════ */}
             <TabsContent value="overview" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-3">
 
@@ -423,7 +425,7 @@ export default function AnalyticsPage() {
               </div>
             </TabsContent>
 
-            {/* â•â• COMPANIES tab â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+            {/* ══ COMPANIES tab ════════════════════════════════════════════════ */}
             <TabsContent value="companies" className="space-y-4">
               <GlassCard interactive={false} className="p-5">
                 <div className="flex items-center justify-between mb-5">
@@ -431,7 +433,7 @@ export default function AnalyticsPage() {
                     <Trophy className="h-4 w-4 text-amber-500" /> Top Performing Companies
                   </h3>
                   <Button variant="outline" size="sm" className="text-xs h-7 rounded-lg" onClick={() => navigate("/companies")}>
-                    View All <ArrowRight className="h-3 w-3 ml-1" />
+                    View All <ArrowRight className="h-3 w-3 ms-1" />
                   </Button>
                 </div>
 
@@ -441,7 +443,7 @@ export default function AnalyticsPage() {
                   <div className="space-y-3">
                     {topCompanies.map((c, i) => {
                       const maxScore = topCompanies[0]?.composite_score || 1;
-                      const medals = ["ðŸ¥‡", "ðŸ¥ˆ", "ðŸ¥‰"];
+                      const medals = ["🥇", "🥈", "🥉"];
                       return (
                         <motion.div
                           key={c.company_id}
@@ -452,7 +454,7 @@ export default function AnalyticsPage() {
                           onClick={() => c.slug && navigate(`/companies/${c.slug}`)}
                         >
                           {/* Top-right score */}
-                          <div className="absolute top-3 right-3 text-right">
+                          <div className="absolute top-3 end-3 text-end">
                             <p className="text-base font-bold text-primary">{c.composite_score}</p>
                             <p className="text-[10px] text-muted-foreground">score</p>
                           </div>
@@ -468,7 +470,7 @@ export default function AnalyticsPage() {
                               {i < 3 ? medals[i] : `#${i + 1}`}
                             </div>
 
-                            <div className="flex-1 min-w-0 pr-14">
+                            <div className="flex-1 min-w-0 pe-14">
                               <div className="flex items-center gap-2">
                                 <p className="text-sm font-semibold text-foreground truncate">{c.company_name}</p>
                                 {c.verification_status === "verified"
@@ -476,7 +478,7 @@ export default function AnalyticsPage() {
                                   : <Clock className="h-3.5 w-3.5 text-amber-500 shrink-0" />}
                               </div>
                               <div className="flex items-center gap-3 mt-0.5 text-[11px] text-muted-foreground">
-                                <span className="flex items-center gap-0.5"><MapPin className="h-3 w-3" /> {c.city || "â€”"}</span>
+                                <span className="flex items-center gap-0.5"><MapPin className="h-3 w-3" /> {c.city || "—"}</span>
                                 <span className="flex items-center gap-0.5"><Star className="h-3 w-3 text-amber-400" /> {c.rating}/5 ({c.review_count})</span>
                               </div>
 
@@ -505,7 +507,7 @@ export default function AnalyticsPage() {
               </GlassCard>
             </TabsContent>
 
-            {/* â•â• SUPPLIERS tab â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+            {/* ══ SUPPLIERS tab ════════════════════════════════════════════════ */}
             <TabsContent value="suppliers" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-3">
                 <GlassCard interactive={false} className="p-5 flex flex-col gap-4">
@@ -567,7 +569,7 @@ export default function AnalyticsPage() {
               </div>
             </TabsContent>
 
-            {/* â•â• SUPPLY & DEMAND tab â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+            {/* ══ SUPPLY & DEMAND tab ══════════════════════════════════════════ */}
             <TabsContent value="supply-demand" className="space-y-4">
               <GlassCard interactive={false} className="p-5">
                 <div className="flex items-center justify-between mb-4">
@@ -617,21 +619,21 @@ export default function AnalyticsPage() {
                               <div className="flex-1">
                                 <Bar pct={(sd.companies / maxTotal) * 100} color="bg-primary" />
                               </div>
-                              <span className="text-xs font-bold text-foreground w-6 text-right">{sd.companies}</span>
+                              <span className="text-xs font-bold text-foreground w-6 text-end">{sd.companies}</span>
                             </div>
                             <div className="flex items-center gap-3">
                               <span className="w-20 text-[11px] text-muted-foreground shrink-0">Suppliers</span>
                               <div className="flex-1">
                                 <Bar pct={(sd.suppliers / maxTotal) * 100} color="bg-orange-400" />
                               </div>
-                              <span className="text-xs font-bold text-foreground w-6 text-right">{sd.suppliers}</span>
+                              <span className="text-xs font-bold text-foreground w-6 text-end">{sd.suppliers}</span>
                             </div>
                           </div>
 
                           <p className="mt-2 text-[11px] text-muted-foreground">
                             Ratio: <strong className="text-foreground">{sd.ratio}</strong>
-                            {sd.ratio > 2 ? " â€” More companies than suppliers, recruit more suppliers" : ""}
-                            {sd.ratio < 0.5 ? " â€” More suppliers than companies, recruit more builders" : ""}
+                            {sd.ratio > 2 ? " — More companies than suppliers, recruit more suppliers" : ""}
+                            {sd.ratio < 0.5 ? " — More suppliers than companies, recruit more builders" : ""}
                           </p>
                         </motion.div>
                       );
@@ -641,7 +643,7 @@ export default function AnalyticsPage() {
               </GlassCard>
             </TabsContent>
 
-            {/* â•â• ACTIVITY tab â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+            {/* ══ ACTIVITY tab ════════════════════════════════════════════════ */}
             <TabsContent value="activity" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 {/* Activity by action */}
@@ -696,7 +698,7 @@ export default function AnalyticsPage() {
               </div>
             </TabsContent>
 
-            {/* â•â• SYSTEM tab â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+            {/* ══ SYSTEM tab ══════════════════════════════════════════════════ */}
             <TabsContent value="system" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <GlassCard interactive={false} className="p-5 space-y-4">
@@ -706,7 +708,7 @@ export default function AnalyticsPage() {
 
                   {!embeddingStats ? (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
-                      <Loader2 className="h-4 w-4 animate-spin" /> Loadingâ€¦
+                      <Loader2 className="h-4 w-4 animate-spin" /> Loading…
                     </div>
                   ) : (
                     <>
@@ -741,7 +743,7 @@ export default function AnalyticsPage() {
                         {rebuilding
                           ? <Loader2 className="h-4 w-4 animate-spin" />
                           : <RefreshCw className="h-4 w-4" />}
-                        {rebuilding ? "Rebuildingâ€¦" : "Rebuild Index"}
+                        {rebuilding ? "Rebuilding…" : "Rebuild Index"}
                       </Button>
                       <p className="text-[11px] text-muted-foreground">
                         Rebuild when new companies or suppliers are added to ensure accurate AI recommendations.
@@ -765,7 +767,7 @@ export default function AnalyticsPage() {
                     <button
                       key={path}
                       onClick={() => navigate(path)}
-                      className="flex w-full items-center gap-3 rounded-xl border border-border p-3 hover:border-primary/20 hover:bg-secondary/50 transition-all text-left"
+                      className="flex w-full items-center gap-3 rounded-xl border border-border p-3 hover:border-primary/20 hover:bg-secondary/50 transition-all text-start"
                     >
                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${color.split(" ")[1]}`}>
                         <Icon className={`h-4 w-4 ${color.split(" ")[0]}`} />

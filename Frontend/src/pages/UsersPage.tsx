@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -46,13 +47,14 @@ const ROLE_ICON: Record<string, React.ReactNode> = {
 };
 
 const STATUS_ROW_COLORS: Record<string, string> = {
-  pending: "border-l-amber-400",
-  banned:  "border-l-destructive",
-  active:  "border-l-transparent",
+  pending: "border-s-amber-400",
+  banned:  "border-s-destructive",
+  active:  "border-s-transparent",
 };
 
 /* ================================================================== */
 export default function UsersPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserRow[]>([]);
@@ -129,8 +131,8 @@ export default function UsersPage() {
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Button>
-        <h1 className="text-2xl font-bold text-foreground">User Management</h1>
-        <p className="mt-1 text-sm text-muted-foreground">View, search, and manage all platform accounts.</p>
+        <h1 className="text-2xl font-bold text-foreground">{t("users.title")}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{t("users.subtitle")}</p>
       </motion.div>
 
       {/* ===== SUMMARY CARDS ===== */}
@@ -169,12 +171,12 @@ export default function UsersPage() {
       {/* ===== FILTERS BAR ===== */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-52">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search by name or email…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="ps-9"
           />
         </div>
 
@@ -251,7 +253,7 @@ export default function UsersPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: Math.min(idx * 0.04, 0.3), duration: 0.25 }}
-                    className={`flex flex-wrap items-center gap-4 border-l-4 px-5 py-4 transition-colors hover:bg-secondary/30 ${STATUS_ROW_COLORS[u.status] ?? "border-l-transparent"}`}
+                    className={`flex flex-wrap items-center gap-4 border-s-4 px-5 py-4 transition-colors hover:bg-secondary/30 ${STATUS_ROW_COLORS[u.status] ?? "border-s-transparent"}`}
                   >
                     {/* Avatar */}
                     <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${ROLE_COLORS[u.role] ?? "bg-secondary text-secondary-foreground"}`}>
@@ -368,7 +370,7 @@ function SummaryCard({
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm text-left transition-colors hover:bg-secondary/40 w-full"
+      className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm text-start transition-colors hover:bg-secondary/40 w-full"
     >
       <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${colors[color]}`}>
         {icon}

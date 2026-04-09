@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
@@ -83,6 +84,7 @@ function QuickStat({ icon, label, value }: { icon: React.ReactNode; label: strin
 /* ================================================================== */
 
 export default function CompanyProfilePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
   const user = useAuthStore((s) => s.user);
@@ -114,7 +116,7 @@ export default function CompanyProfilePage() {
   if (!company) {
     return (
       <GlassCard interactive={false} className="p-8">
-        <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
+        <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-start">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-destructive/10">
             <Building2 className="h-6 w-6 text-destructive" />
           </div>
@@ -461,7 +463,7 @@ export default function CompanyProfilePage() {
                                     <TableHead>City</TableHead>
                                     <TableHead>Area</TableHead>
                                     <TableHead>Society</TableHead>
-                                    <TableHead className="w-40 text-right">Price</TableHead>
+                                    <TableHead className="w-40 text-end">Price</TableHead>
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -470,7 +472,7 @@ export default function CompanyProfilePage() {
                                       <TableCell className="text-sm whitespace-nowrap">{x.city || "—"}</TableCell>
                                       <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{x.area || "—"}</TableCell>
                                       <TableCell className="text-sm whitespace-nowrap">{x.subarea || "—"}</TableCell>
-                                      <TableCell className="text-right text-sm font-medium">{formatSqFt(x.price_per_sqft)}</TableCell>
+                                      <TableCell className="text-end text-sm font-medium">{formatSqFt(x.price_per_sqft)}</TableCell>
                                     </TableRow>
                                   ))}
                                   {samples.length === 0 && (
@@ -627,7 +629,7 @@ export default function CompanyProfilePage() {
                         >
                           <button
                             type="button"
-                            className="group w-full text-left rounded-xl border border-border overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/30"
+                            className="group w-full text-start rounded-xl border border-border overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/30"
                             onClick={() => { setSelectedProject(proj); setProjectGalleryIdx(0); }}
                           >
                             {proj.image_urls?.[0] ? (
@@ -635,11 +637,11 @@ export default function CompanyProfilePage() {
                                 <img src={proj.image_urls[0]} alt={proj.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                                 {proj.image_urls.length > 1 && (
-                                  <span className="absolute bottom-1.5 right-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+                                  <span className="absolute bottom-1.5 end-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
                                     +{proj.image_urls.length - 1}
                                   </span>
                                 )}
-                                <Badge variant={proj.status === "completed" ? "secondary" : "default"} className="absolute top-1.5 left-1.5 text-[10px]">
+                                <Badge variant={proj.status === "completed" ? "secondary" : "default"} className="absolute top-1.5 start-1.5 text-[10px]">
                                   {proj.status || "completed"}
                                 </Badge>
                               </div>
@@ -694,19 +696,19 @@ export default function CompanyProfilePage() {
                     <>
                       <button
                         type="button"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors backdrop-blur-sm"
+                        className="absolute start-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors backdrop-blur-sm"
                         onClick={() => setProjectGalleryIdx((prev) => (prev - 1 + selectedProject.image_urls.length) % selectedProject.image_urls.length)}
                       >
                         <ChevronLeft className="h-4 w-4" />
                       </button>
                       <button
                         type="button"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors backdrop-blur-sm"
+                        className="absolute end-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors backdrop-blur-sm"
                         onClick={() => setProjectGalleryIdx((prev) => (prev + 1) % selectedProject.image_urls.length)}
                       >
                         <ChevronRight className="h-4 w-4" />
                       </button>
-                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                      <div className="absolute bottom-3 start-1/2 -translate-x-1/2 flex items-center gap-2">
                         {selectedProject.image_urls.map((_, i) => (
                           <button
                             key={i}
@@ -718,7 +720,7 @@ export default function CompanyProfilePage() {
                       </div>
                     </>
                   )}
-                  <div className="absolute top-3 right-3 rounded-md bg-black/50 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                  <div className="absolute top-3 end-3 rounded-md bg-black/50 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
                     {projectGalleryIdx + 1} / {selectedProject.image_urls.length}
                   </div>
                 </div>

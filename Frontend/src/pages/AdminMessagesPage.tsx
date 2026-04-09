@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -66,6 +67,7 @@ function ChatAvatar({ name, size = "md" }: { name: string; size?: "sm" | "md" })
 type ConvoWithCount = Conversation & { message_count: number };
 
 export default function AdminMessagesPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const [conversations, setConversations] = useState<ConvoWithCount[]>([]);
   const [activeConvo, setActiveConvo] = useState<string | null>(null);
@@ -140,7 +142,7 @@ export default function AdminMessagesPage() {
       {/* ── Sidebar: All Conversations ── */}
       <div
         className={cn(
-          "flex w-full flex-col border-r border-border md:w-80 lg:w-96",
+          "flex w-full flex-col border-e border-border md:w-80 lg:w-96",
           activeConvo && "hidden md:flex",
         )}
       >
@@ -149,7 +151,7 @@ export default function AdminMessagesPage() {
             <ShieldCheck className="h-4 w-4 text-white" />
           </div>
           <div className="flex-1">
-            <h2 className="text-base font-bold text-foreground leading-tight">All Conversations</h2>
+            <h2 className="text-base font-bold text-foreground leading-tight">{t("adminMessages.title")}</h2>
             <p className="text-[11px] text-muted-foreground leading-tight">
               {conversations.length} total · Master log
             </p>
@@ -158,12 +160,12 @@ export default function AdminMessagesPage() {
 
         <div className="px-4 py-3 border-b border-border/60">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <Search className="absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name or email..."
-              className="w-full rounded-xl border border-transparent bg-secondary/50 pl-9 pr-3 h-9 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/30 transition-colors"
+              className="w-full rounded-xl border border-transparent bg-secondary/50 ps-9 pe-3 h-9 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/30 transition-colors"
             />
           </div>
         </div>
@@ -199,7 +201,7 @@ export default function AdminMessagesPage() {
                     whileHover={{ x: 2 }}
                     transition={{ duration: 0.15 }}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors",
+                      "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition-colors",
                       isActive ? "bg-violet-500/10 border border-violet-500/20" : "hover:bg-secondary/50",
                     )}
                   >
@@ -218,7 +220,7 @@ export default function AdminMessagesPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="shrink-0 text-right">
+                    <div className="shrink-0 text-end">
                       <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                         {convo.message_count} msg{convo.message_count !== 1 ? "s" : ""}
                       </Badge>
@@ -379,7 +381,7 @@ export default function AdminMessagesPage() {
             {/* Admin footer */}
             <div className="border-t border-border px-5 py-3 bg-muted/20">
               <p className="text-center text-[11px] text-muted-foreground">
-                <ShieldCheck className="inline h-3 w-3 mr-1 align-[-2px]" />
+                <ShieldCheck className="inline h-3 w-3 me-1 align-[-2px]" />
                 Admin view · Read-only master log · Soft-deleted messages are visible
               </p>
             </div>

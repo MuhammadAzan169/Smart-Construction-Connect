@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore, UserRole } from "@/stores/authStore";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   Sidebar,
   SidebarContent,
@@ -33,44 +34,44 @@ import {
 } from "lucide-react";
 import { ConfirmModal } from "@/components/shared/AnimationPrimitives";
 
-const roleMenus: Record<UserRole, { label: string; icon: React.ElementType; path: string }[]> = {
+const roleMenus: Record<UserRole, { labelKey: string; icon: React.ElementType; path: string }[]> = {
   client: [
-    { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-    { label: "AI Consultant", icon: Bot, path: "/client-ai" },
-    { label: "Browse Companies", icon: Building2, path: "/companies" },
-    { label: "Messages", icon: MessageSquare, path: "/messages" },
-    { label: "Requests", icon: FileText, path: "/requests" },
-    { label: "Settings", icon: Settings, path: "/settings" },
+    { labelKey: "sidebar.dashboard", icon: LayoutDashboard, path: "/dashboard" },
+    { labelKey: "sidebar.aiConsultant", icon: Bot, path: "/client-ai" },
+    { labelKey: "sidebar.browseCompanies", icon: Building2, path: "/companies" },
+    { labelKey: "sidebar.messages", icon: MessageSquare, path: "/messages" },
+    { labelKey: "sidebar.requests", icon: FileText, path: "/requests" },
+    { labelKey: "sidebar.settings", icon: Settings, path: "/settings" },
   ],
   company: [
-    { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-    { label: "AI Advisor", icon: Bot, path: "/company-ai" },
-    { label: "Browse Suppliers", icon: Package, path: "/companies" },
-    { label: "Messages", icon: MessageSquare, path: "/messages" },
-    { label: "Requests", icon: FileText, path: "/requests" },
-    { label: "Packages & Pricing", icon: CreditCard, path: "/pricing" },
-    { label: "Settings", icon: Settings, path: "/settings" },
+    { labelKey: "sidebar.dashboard", icon: LayoutDashboard, path: "/dashboard" },
+    { labelKey: "sidebar.aiAdvisor", icon: Bot, path: "/company-ai" },
+    { labelKey: "sidebar.browseSuppliers", icon: Package, path: "/companies" },
+    { labelKey: "sidebar.messages", icon: MessageSquare, path: "/messages" },
+    { labelKey: "sidebar.requests", icon: FileText, path: "/requests" },
+    { labelKey: "sidebar.packagesAndPricing", icon: CreditCard, path: "/pricing" },
+    { labelKey: "sidebar.settings", icon: Settings, path: "/settings" },
   ],
   supplier: [
-    { label: "Dashboard",    icon: LayoutDashboard, path: "/dashboard" },
-    { label: "Inventory",    icon: Package,          path: "/products" },
-    { label: "AI Analyst",   icon: Bot,              path: "/supplier-ai" },
-    { label: "Messages",     icon: MessageSquare,    path: "/messages" },
-    { label: "Requests",     icon: FileText,         path: "/requests" },
-    { label: "Plans & Pricing", icon: CreditCard,    path: "/plans" },
-    { label: "Settings",     icon: Settings,         path: "/settings" },
+    { labelKey: "sidebar.dashboard",    icon: LayoutDashboard, path: "/dashboard" },
+    { labelKey: "sidebar.inventory",    icon: Package,          path: "/products" },
+    { labelKey: "sidebar.aiAnalyst",   icon: Bot,              path: "/supplier-ai" },
+    { labelKey: "sidebar.messages",     icon: MessageSquare,    path: "/messages" },
+    { labelKey: "sidebar.requests",     icon: FileText,         path: "/requests" },
+    { labelKey: "sidebar.plansAndPricing", icon: CreditCard,    path: "/plans" },
+    { labelKey: "sidebar.settings",     icon: Settings,         path: "/settings" },
   ],
   admin: [
-    { label: "Dashboard",               icon: LayoutDashboard, path: "/dashboard" },
-    { label: "AI Assistant",            icon: Bot,             path: "/admin-ai" },
-    { label: "Users",                   icon: Users,           path: "/users" },
-    { label: "Chat Oversight",          icon: MessageSquare,   path: "/admin-messages" },
-    { label: "Companies",               icon: Building2,       path: "/companies?tab=companies" },
-    { label: "Materials & Suppliers",   icon: Package,         path: "/companies?tab=materials" },
-    { label: "Approvals",               icon: ShieldCheck,     path: "/approvals" },
-    { label: "Activity",                icon: Activity,        path: "/activity" },
-    { label: "Analytics",               icon: BarChart3,       path: "/analytics" },
-    { label: "Settings",                icon: Settings,        path: "/settings" },
+    { labelKey: "sidebar.dashboard",               icon: LayoutDashboard, path: "/dashboard" },
+    { labelKey: "sidebar.aiAssistant",            icon: Bot,             path: "/admin-ai" },
+    { labelKey: "sidebar.users",                   icon: Users,           path: "/users" },
+    { labelKey: "sidebar.chatOversight",          icon: MessageSquare,   path: "/admin-messages" },
+    { labelKey: "sidebar.companies",               icon: Building2,       path: "/companies?tab=companies" },
+    { labelKey: "sidebar.materialsAndSuppliers",   icon: Package,         path: "/companies?tab=materials" },
+    { labelKey: "sidebar.approvals",               icon: ShieldCheck,     path: "/approvals" },
+    { labelKey: "sidebar.activity",                icon: Activity,        path: "/activity" },
+    { labelKey: "sidebar.analytics",               icon: BarChart3,       path: "/analytics" },
+    { labelKey: "sidebar.settings",                icon: Settings,        path: "/settings" },
   ],
 };
 
@@ -79,26 +80,27 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showLogout, setShowLogout] = useState(false);
+  const { t } = useTranslation();
 
   if (!user) return null;
   const items = roleMenus[user.role];
 
   return (
     <>
-      <Sidebar variant="sidebar" collapsible="icon" className="border-r-0">
+      <Sidebar variant="sidebar" collapsible="icon" className="border-e-0">
         <SidebarHeader className="p-3">
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Smart Construction Connect" className="h-14">
+              <SidebarMenuButton asChild tooltip={t("common.appName")} className="h-14">
                 <Link to="/dashboard" className="flex items-center gap-2">
                   <img
                     src="/Logo.png"
-                    alt="Smart Construction Connect"
+                    alt={t("common.appName")}
                     className="h-10 w-10 shrink-0 rounded-xl object-contain group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8"
                   />
                   <div className="flex min-w-0 flex-col">
-                    <span className="truncate text-sm font-semibold">Smart Construction Connect</span>
-                    <span className="truncate text-xs text-muted-foreground">Construction SaaS</span>
+                    <span className="truncate text-sm font-semibold">{t("common.appName")}</span>
+                    <span className="truncate text-xs text-muted-foreground">{t("common.tagline")}</span>
                   </div>
                 </Link>
               </SidebarMenuButton>
@@ -110,7 +112,7 @@ export function AppSidebar() {
 
         <SidebarContent className="px-2">
           <SidebarGroup>
-            <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+            <SidebarGroupLabel>{t("nav.workspace")}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item, i) => {
@@ -126,10 +128,10 @@ export function AppSidebar() {
                       transition={{ delay: i * 0.05, duration: 0.25 }}
                     >
                       <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
+                        <SidebarMenuButton asChild isActive={active} tooltip={t(item.labelKey)}>
                           <Link to={item.path}>
                             <item.icon />
-                            <span>{item.label}</span>
+                            <span>{t(item.labelKey)}</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -150,9 +152,9 @@ export function AppSidebar() {
               </div>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Sign out" onClick={() => setShowLogout(true)}>
+              <SidebarMenuButton tooltip={t("common.signOut")} onClick={() => setShowLogout(true)}>
                 <LogOut />
-                <span>Sign out</span>
+                <span>{t("common.signOut")}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -164,9 +166,9 @@ export function AppSidebar() {
       <ConfirmModal
         open={showLogout}
         onOpenChange={setShowLogout}
-        title="Sign out?"
-        description="You'll need to sign in again to access your workspace."
-        confirmText="Sign out"
+        title={t("auth.signOutConfirm")}
+        description={t("auth.signOutDesc")}
+        confirmText={t("common.signOut")}
         variant="destructive"
         onConfirm={() => { logout(); navigate("/login"); }}
       />

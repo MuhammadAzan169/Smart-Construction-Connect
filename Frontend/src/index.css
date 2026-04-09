@@ -458,3 +458,29 @@ select:focus-visible {
   outline: 2px solid rgb(var(--ring));
   outline-offset: 2px;
 }
+
+/* ─── RTL (Urdu) support ─────────────────────────────────────── */
+/* Ensure text-left still works in LTR within RTL context (for code, data, etc.) */
+[dir="rtl"] .force-ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Flip space-x gap direction for RTL */
+[dir="rtl"] .space-x-1 > :not([hidden]) ~ :not([hidden]),
+[dir="rtl"] .space-x-2 > :not([hidden]) ~ :not([hidden]),
+[dir="rtl"] .space-x-3 > :not([hidden]) ~ :not([hidden]),
+[dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+/* Urdu font stack for RTL */
+[dir="rtl"] {
+  font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", "Noto Sans Arabic", "Segoe UI", system-ui, sans-serif;
+}
+
+/* Sidebar border should flip in RTL */
+[dir="rtl"] [data-sidebar="sidebar"] {
+  border-right: none;
+  border-left: 1px solid rgb(var(--sidebar-border));
+}

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -29,17 +30,17 @@ import {
   XCircle,
 } from "lucide-react";
 
-function passwordStrength(pw: string): { score: number; label: string; color: string; textColor: string } {
+function passwordStrength(pw: string): { score: number; labelKey: string; color: string; textColor: string } {
   let score = 0;
   if (pw.length >= 8) score++;
   if (pw.length >= 12) score++;
   if (/[A-Z]/.test(pw)) score++;
   if (/[0-9]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
-  if (score <= 1) return { score, label: "Weak", color: "bg-destructive", textColor: "text-destructive" };
-  if (score <= 2) return { score, label: "Fair", color: "bg-yellow-500", textColor: "text-yellow-500" };
-  if (score <= 3) return { score, label: "Good", color: "bg-primary", textColor: "text-primary" };
-  return { score, label: "Strong", color: "bg-green-500", textColor: "text-green-500" };
+  if (score <= 1) return { score, labelKey: "auth.weak", color: "bg-destructive", textColor: "text-destructive" };
+  if (score <= 2) return { score, labelKey: "auth.fair", color: "bg-yellow-500", textColor: "text-yellow-500" };
+  if (score <= 3) return { score, labelKey: "auth.good", color: "bg-primary", textColor: "text-primary" };
+  return { score, labelKey: "auth.strong", color: "bg-green-500", textColor: "text-green-500" };
 }
 
 const containerVariants = {
@@ -65,12 +66,13 @@ export default function SignupPage() {
   const [submitting, setSubmitting] = useState(false);
   const signup = useAuthStore((s) => s.signup);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const roles: { value: UserRole; label: string; desc: string; icon: ElementType; gradient: string; badge?: string }[] = [
-    { value: "client", label: "Client", desc: "Find & hire builders", icon: UserRound, gradient: "from-blue-500/20 to-cyan-500/10" },
-    { value: "company", label: "Company", desc: "Receive quote requests", icon: Building2, gradient: "from-amber-500/20 to-orange-500/10", badge: "Approval needed" },
-    { value: "supplier", label: "Supplier", desc: "Sell materials & stock", icon: Package, gradient: "from-emerald-500/20 to-green-500/10", badge: "Approval needed" },
-    { value: "admin", label: "Admin", desc: "Platform controls", icon: ShieldCheck, gradient: "from-purple-500/20 to-violet-500/10" },
+    { value: "client", label: t("roles.client"), desc: t("roles.clientDesc"), icon: UserRound, gradient: "from-blue-500/20 to-cyan-500/10" },
+    { value: "company", label: t("roles.company"), desc: t("roles.companyDesc"), icon: Building2, gradient: "from-amber-500/20 to-orange-500/10", badge: t("common.approvalNeeded") },
+    { value: "supplier", label: t("roles.supplier"), desc: t("roles.supplierDesc"), icon: Package, gradient: "from-emerald-500/20 to-green-500/10", badge: t("common.approvalNeeded") },
+    { value: "admin", label: t("roles.admin"), desc: t("roles.adminDesc"), icon: ShieldCheck, gradient: "from-purple-500/20 to-violet-500/10" },
   ];
 
   const strength = passwordStrength(password);
@@ -93,7 +95,7 @@ export default function SignupPage() {
       await signup(displayName, email, password, role, phone);
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Signup failed");
+      setError(err.message || t("auth.signupFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -114,7 +116,7 @@ export default function SignupPage() {
         >
           <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-highlight/10 blur-3xl" />
-          <div className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-premium/5 blur-2xl" />
+          <div className="pointer-events-none absolute start-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-premium/5 blur-2xl" />
 
           <div className="relative flex h-full w-full flex-col justify-between">
             {/* Brand */}
@@ -125,15 +127,15 @@ export default function SignupPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold tracking-wide text-foreground">Smart Construction Connect</p>
-                  <p className="text-xs text-muted-foreground">Create your workspace</p>
+                  <p className="text-xs text-muted-foreground">{t("auth.joinEcosystem")}</p>
                 </div>
               </div>
 
               <h1 className="mt-10 text-4xl font-extrabold leading-tight">
-                <span className="text-foreground">Start with a role</span>
+                <span className="text-foreground">{t("auth.chooseRole")}</span>
                 <br />
                 <span className="bg-gradient-to-r from-primary via-amber-400 to-highlight bg-clip-text text-transparent">
-                  built for you.
+                  {t("auth.joinEcosystem")}
                 </span>
               </h1>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
@@ -211,7 +213,7 @@ export default function SignupPage() {
                 onClick={() => navigate("/")}
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back to home
+                {t("common.back")}
               </Button>
             </motion.div>
 
@@ -227,15 +229,15 @@ export default function SignupPage() {
                       <HardHat className="h-5 w-5 text-primary-foreground" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-extrabold text-foreground">Create account</h2>
-                      <p className="text-xs text-muted-foreground">Join the construction ecosystem</p>
+                      <h2 className="text-xl font-extrabold text-foreground">{t("auth.createAccount")}</h2>
+                      <p className="text-xs text-muted-foreground">{t("auth.joinEcosystem")}</p>
                     </div>
                   </motion.div>
 
                   {/* Role selector */}
                   <motion.div variants={itemVariants}>
                     <p className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      Choose your role
+                      {t("auth.chooseRole")}
                     </p>
                     <div className="grid grid-cols-2 gap-2">
                       {roles.map((r) => {
@@ -249,7 +251,7 @@ export default function SignupPage() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.97 }}
                             className={cn(
-                              "relative flex items-start gap-2.5 overflow-hidden rounded-2xl border p-3 text-left transition-all duration-200",
+                              "relative flex items-start gap-2.5 overflow-hidden rounded-2xl border p-3 text-start transition-all duration-200",
                               selected
                                 ? "border-primary/70 bg-primary/10 shadow-sm shadow-primary/20"
                                 : "border-border/60 bg-background/20 hover:border-primary/30 hover:bg-background/40",
@@ -270,7 +272,7 @@ export default function SignupPage() {
                               </p>
                               <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{r.desc}</p>
                             </div>
-                            {selected && <CheckCircle2 className="absolute right-2 top-2 h-3.5 w-3.5 shrink-0 text-primary" />}
+                            {selected && <CheckCircle2 className="absolute end-2 top-2 h-3.5 w-3.5 shrink-0 text-primary" />}
                           </motion.button>
                         );
                       })}
@@ -283,10 +285,10 @@ export default function SignupPage() {
                     {/* Full name */}
                     <motion.div variants={itemVariants} className="space-y-1.5">
                       <Label htmlFor="name" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Full Name
+                        {t("auth.fullName")}
                       </Label>
                       <div className="relative">
-                        <UserRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                        <UserRound className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                         <Input
                           id="name"
                           type="text"
@@ -294,7 +296,7 @@ export default function SignupPage() {
                           onChange={(e) => setName(e.target.value)}
                           placeholder="John Doe"
                           required
-                          className="bg-background/30 pl-9 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
+                          className="bg-background/30 ps-9 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
                         />
                       </div>
                     </motion.div>
@@ -302,10 +304,10 @@ export default function SignupPage() {
                     {/* Email */}
                     <motion.div variants={itemVariants} className="space-y-1.5">
                       <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Email Address
+                        {t("auth.emailLabel")}
                       </Label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                        <Mail className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                         <Input
                           id="email"
                           type="email"
@@ -313,7 +315,7 @@ export default function SignupPage() {
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="you@company.com"
                           required
-                          className="bg-background/30 pl-9 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
+                          className="bg-background/30 ps-9 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
                         />
                       </div>
                     </motion.div>
@@ -321,10 +323,10 @@ export default function SignupPage() {
                     {/* Password */}
                     <motion.div variants={itemVariants} className="space-y-1.5">
                       <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Password
+                        {t("auth.password")}
                       </Label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                        <Lock className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                         <Input
                           id="password"
                           type={showPw ? "text" : "password"}
@@ -332,12 +334,12 @@ export default function SignupPage() {
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="••••••••"
                           required
-                          className="bg-background/30 pl-9 pr-10 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
+                          className="bg-background/30 ps-9 pe-10 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPw(!showPw)}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted-foreground/60 transition-colors hover:bg-accent hover:text-foreground"
+                          className="absolute end-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted-foreground/60 transition-colors hover:bg-accent hover:text-foreground"
                           aria-label={showPw ? "Hide password" : "Show password"}
                         >
                           {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -366,8 +368,8 @@ export default function SignupPage() {
                               ))}
                             </div>
                             <p className="text-xs text-muted-foreground">
-                              Strength:{" "}
-                              <span className={cn("font-semibold", strength.textColor)}>{strength.label}</span>
+                              {t("auth.passwordStrength")}:{" "}
+                              <span className={cn("font-semibold", strength.textColor)}>{t(strength.labelKey)}</span>
                             </p>
                           </motion.div>
                         )}
@@ -377,10 +379,10 @@ export default function SignupPage() {
                     {/* Confirm password */}
                     <motion.div variants={itemVariants} className="space-y-1.5">
                       <Label htmlFor="confirmPassword" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Confirm Password
+                        {t("auth.confirmPassword")}
                       </Label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                        <Lock className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                         <Input
                           id="confirmPassword"
                           type={showConfirmPw ? "text" : "password"}
@@ -389,7 +391,7 @@ export default function SignupPage() {
                           placeholder="••••••••"
                           required
                           className={cn(
-                            "bg-background/30 pl-9 pr-10 transition-all focus:bg-background/50 focus:ring-2",
+                            "bg-background/30 ps-9 pe-10 transition-all focus:bg-background/50 focus:ring-2",
                             passwordsMismatch
                               ? "border-destructive focus:ring-destructive/30"
                               : passwordsMatch
@@ -400,7 +402,7 @@ export default function SignupPage() {
                         <button
                           type="button"
                           onClick={() => setShowConfirmPw(!showConfirmPw)}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted-foreground/60 transition-colors hover:bg-accent hover:text-foreground"
+                          className="absolute end-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted-foreground/60 transition-colors hover:bg-accent hover:text-foreground"
                           aria-label={showConfirmPw ? "Hide password" : "Show password"}
                         >
                           {passwordsMatch ? (
@@ -422,7 +424,7 @@ export default function SignupPage() {
                             exit={{ opacity: 0, y: -4 }}
                             className="text-xs text-destructive"
                           >
-                            Passwords do not match
+                            {t("auth.passwordsMismatch")}
                           </motion.p>
                         )}
                       </AnimatePresence>
@@ -439,34 +441,34 @@ export default function SignupPage() {
                         >
                           <div className="space-y-1.5">
                             <Label htmlFor="companyName" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                              {role === "company" ? "Company Name" : "Business Name"}
+                              {role === "company" ? t("auth.companyName") : t("auth.businessName")}
                             </Label>
                             <div className="relative">
-                              <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                              <Building2 className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                               <Input
                                 id="companyName"
                                 type="text"
                                 value={companyName}
                                 onChange={(e) => setCompanyName(e.target.value)}
                                 placeholder={role === "company" ? "ABC Construction Pvt Ltd" : "Your Store / Business Name"}
-                                className="bg-background/30 pl-9 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
+                                className="bg-background/30 ps-9 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
                               />
                             </div>
                           </div>
 
                           <div className="space-y-1.5">
                             <Label htmlFor="phone" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                              Phone Number
+                              {t("auth.phoneLabel")}
                             </Label>
                             <div className="relative">
-                              <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                              <Phone className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                               <Input
                                 id="phone"
                                 type="tel"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 placeholder="+92-XXX-XXXXXXX"
-                                className="bg-background/30 pl-9 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
+                                className="bg-background/30 ps-9 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
                               />
                             </div>
                           </div>
@@ -474,8 +476,8 @@ export default function SignupPage() {
                           <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/10 p-3.5">
                             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
                             <p className="text-xs leading-relaxed text-amber-300/90">
-                              <span className="font-semibold">Approval required.</span>{" "}
-                              {role === "company" ? "Company" : "Supplier"} accounts are reviewed by admins before full platform access is granted.
+                              <span className="font-semibold">{t("common.approvalNeeded")}.</span>{" "}
+                              {t("auth.pendingApprovalDesc", { role })}
                             </p>
                           </div>
                         </motion.div>
@@ -520,7 +522,7 @@ export default function SignupPage() {
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                               </svg>
-                              Creating Account…
+                              {t("auth.creatingAccount")}
                             </motion.span>
                           ) : (
                             <motion.span
@@ -531,7 +533,7 @@ export default function SignupPage() {
                               className="flex items-center justify-center gap-2"
                             >
                               <Sparkles className="h-4 w-4" />
-                              Create Account
+                              {t("auth.createAccount")}
                             </motion.span>
                           )}
                         </AnimatePresence>
@@ -548,9 +550,9 @@ export default function SignupPage() {
                 </form>
 
                 <p className="mt-6 text-center text-sm text-muted-foreground">
-                  Already have an account?{" "}
+                  {t("auth.alreadyHaveAccount")}{" "}
                   <Link to="/login" className="font-semibold text-primary transition-colors hover:text-highlight hover:underline">
-                    Sign in
+                    {t("common.signIn")}
                   </Link>
                 </p>
               </div>

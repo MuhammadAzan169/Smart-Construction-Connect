@@ -10,6 +10,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Bot, User, Send, Paperclip, FileText, X,
@@ -57,6 +58,7 @@ const formatPKR = (n: number) =>
    Main Page
 ══════════════════════════════════════════════════════════════════════ */
 export default function SupplierAIChatPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const supplierSlug = user?.supplierFile;
@@ -222,7 +224,7 @@ export default function SupplierAIChatPage() {
 
         {/* Header */}
         <div className="relative flex items-center gap-3 border-b border-border px-5 py-4 overflow-hidden">
-          <div className="absolute left-0 top-0 h-full w-40 bg-gradient-to-r from-orange-500/8 to-transparent pointer-events-none" />
+          <div className="absolute start-0 top-0 h-full w-40 bg-gradient-to-r from-orange-500/8 to-transparent pointer-events-none" />
           <button
             type="button"
             onClick={() => navigate("/dashboard")}
@@ -235,8 +237,8 @@ export default function SupplierAIChatPage() {
             <div className="absolute inset-0 rounded-xl ring-2 ring-orange-500/30" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-foreground leading-tight">AI Market Analyst</h2>
-            <p className="text-[11px] text-muted-foreground leading-tight">Pricing strategy · Demand insights · Competitive analysis</p>
+            <h2 className="text-sm font-bold text-foreground leading-tight">{t("aiChat.aiAnalyst")}</h2>
+            <p className="text-[11px] text-muted-foreground leading-tight">{t("aiChat.analystDesc")}</p>
           </div>
           <div className="ml-auto flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -261,7 +263,7 @@ export default function SupplierAIChatPage() {
                   key={s}
                   type="button"
                   onClick={() => injectPrompt(s)}
-                  className="rounded-xl border border-orange-500/20 bg-orange-500/5 px-3 py-1.5 text-xs text-muted-foreground hover:border-orange-500/40 hover:bg-orange-500/10 hover:text-foreground transition-colors text-left"
+                  className="rounded-xl border border-orange-500/20 bg-orange-500/5 px-3 py-1.5 text-xs text-muted-foreground hover:border-orange-500/40 hover:bg-orange-500/10 hover:text-foreground transition-colors text-start"
                 >
                   {s}
                 </button>
@@ -295,7 +297,7 @@ export default function SupplierAIChatPage() {
                     <>
                       {renderMarkdown(msg.text)}
                       {msg.isStreaming && (
-                        <span className="ml-1 inline-block h-4 w-1.5 rounded-sm bg-orange-500 animate-pulse" />
+                        <span className="ms-1 inline-block h-4 w-1.5 rounded-sm bg-orange-500 animate-pulse" />
                       )}
                     </>
                   ) : msg.text}
@@ -518,7 +520,7 @@ export default function SupplierAIChatPage() {
                       <div key={cat} className="space-y-0.5">
                         <div className="flex justify-between text-[11px]">
                           <span className="text-foreground truncate max-w-[160px]">{cat}</span>
-                          <span className="text-muted-foreground shrink-0 ml-1">{count}</span>
+                          <span className="text-muted-foreground shrink-0 ms-1">{count}</span>
                         </div>
                         <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
                           <motion.div
@@ -578,7 +580,7 @@ export default function SupplierAIChatPage() {
                     className="h-7 mt-1 w-full text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-500/10"
                     onClick={() => navigate("/products")}
                   >
-                    Manage Inventory <ChevronRight className="h-3 w-3 ml-1" />
+                    Manage Inventory <ChevronRight className="h-3 w-3 ms-1" />
                   </Button>
                 </div>
               )}
@@ -611,7 +613,7 @@ export default function SupplierAIChatPage() {
                 key={text}
                 type="button"
                 onClick={() => injectPrompt(text)}
-                className="flex w-full items-start gap-3 rounded-xl border border-border/60 bg-background/30 p-3 hover:border-orange-500/20 hover:bg-orange-500/5 transition-all text-left group"
+                className="flex w-full items-start gap-3 rounded-xl border border-border/60 bg-background/30 p-3 hover:border-orange-500/20 hover:bg-orange-500/5 transition-all text-start group"
               >
                 <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${color.split(" ")[1]}`}>
                   <Icon className={`h-3.5 w-3.5 ${color.split(" ")[0]}`} />

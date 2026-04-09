@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PdfViewerDialog } from "@/components/shared/PdfViewerDialog";
 import { SectionReveal } from "@/components/shared/AnimationPrimitives";
@@ -58,6 +59,7 @@ const formatPKR = (value: number) =>
 /* ------------------------------------------------------------------ */
 
 export default function SupplierProfilePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
   const user = useAuthStore((s) => s.user);
@@ -97,7 +99,7 @@ export default function SupplierProfilePage() {
   if (!supplier) {
     return (
       <GlassCard interactive={false} className="p-8">
-        <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
+        <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-start">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-destructive/10">
             <Package className="h-6 w-6 text-destructive" />
           </div>
@@ -287,7 +289,7 @@ export default function SupplierProfilePage() {
                       >
                         <button
                           type="button"
-                          className={`group w-full text-left rounded-xl border overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${
+                          className={`group w-full text-start rounded-xl border overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${
                             isOutOfStock
                               ? "border-destructive/30 opacity-70"
                               : isLowStock
@@ -301,16 +303,16 @@ export default function SupplierProfilePage() {
                               <img src={m.image_urls![0]} alt={m.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                               {m.image_urls!.length > 1 && (
-                                <span className="absolute bottom-2 right-2 rounded-md bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+                                <span className="absolute bottom-2 end-2 rounded-md bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
                                   +{m.image_urls!.length - 1} photos
                                 </span>
                               )}
                               {isOutOfStock && (
-                                <Badge variant="destructive" className="absolute top-2 left-2 text-[10px]">Out of Stock</Badge>
+                                <Badge variant="destructive" className="absolute top-2 start-2 text-[10px]">Out of Stock</Badge>
                               )}
                               {isLowStock && (
-                                <Badge variant="outline" className="absolute top-2 left-2 border-amber-400/60 bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400 text-[10px]">
-                                  <AlertTriangle className="mr-1 h-3 w-3" /> Low Stock
+                                <Badge variant="outline" className="absolute top-2 start-2 border-amber-400/60 bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400 text-[10px]">
+                                  <AlertTriangle className="me-1 h-3 w-3" /> Low Stock
                                 </Badge>
                               )}
                             </div>
@@ -489,19 +491,19 @@ export default function SupplierProfilePage() {
                     <>
                       <button
                         type="button"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors backdrop-blur-sm"
+                        className="absolute start-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors backdrop-blur-sm"
                         onClick={() => setGalleryIdx((prev) => (prev - 1 + selectedMaterial.image_urls!.length) % selectedMaterial.image_urls!.length)}
                       >
                         <ChevronLeft className="h-4 w-4" />
                       </button>
                       <button
                         type="button"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors backdrop-blur-sm"
+                        className="absolute end-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors backdrop-blur-sm"
                         onClick={() => setGalleryIdx((prev) => (prev + 1) % selectedMaterial.image_urls!.length)}
                       >
                         <ChevronRight className="h-4 w-4" />
                       </button>
-                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                      <div className="absolute bottom-3 start-1/2 -translate-x-1/2 flex items-center gap-2">
                         {selectedMaterial.image_urls.map((_, i) => (
                           <button
                             key={i}
@@ -513,7 +515,7 @@ export default function SupplierProfilePage() {
                       </div>
                     </>
                   )}
-                  <div className="absolute top-3 right-3 rounded-md bg-black/50 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                  <div className="absolute top-3 end-3 rounded-md bg-black/50 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
                     {galleryIdx + 1} / {selectedMaterial.image_urls.length}
                   </div>
                 </div>

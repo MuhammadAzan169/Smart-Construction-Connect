@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
@@ -13,6 +14,7 @@ import { ArrowLeft, Building2, Check, FileText, Loader2, X, Sparkles, ChevronDow
 type RequestStatus = QuoteRequest["status"];
 
 export default function RequestsPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   const [requests, setRequests] = useState<QuoteRequest[]>([]);
@@ -26,7 +28,7 @@ export default function RequestsPage() {
   const isCompany = user?.role === "company";
   const isClient = user?.role === "client";
 
-  const title = isCompany ? "Incoming requests" : "My requests";
+  const title = isCompany ? t("requests.incomingRequests") : t("requests.myRequests");
   const subtitle = isCompany
     ? "Review, accept, or reject new project inquiries."
     : "Track status and updates across your quote requests.";
@@ -158,7 +160,7 @@ export default function RequestsPage() {
               <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-primary shadow-sm">
                 <Sparkles className="h-4 w-4 text-white" />
               </div>
-              <div className="flex-1 text-left">
+              <div className="flex-1 text-start">
                 <p className="text-sm font-semibold text-foreground">AI Project Advisor</p>
                 <p className="text-xs text-muted-foreground">Get intelligent suggestions before sending a request</p>
               </div>

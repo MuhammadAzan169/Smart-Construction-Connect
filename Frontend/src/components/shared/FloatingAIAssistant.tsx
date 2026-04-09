@@ -60,7 +60,7 @@ function renderMd(text: string) {
   const flushList = () => {
     if (!listBuf.length) return;
     out.push(
-      <ul key={`ul-${out.length}`} className="ml-3 list-disc space-y-0.5">
+      <ul key={`ul-${out.length}`} className="ms-3 list-disc space-y-0.5">
         {listBuf.map((l, i) => <li key={i} className="text-xs leading-relaxed">{fmt(l)}</li>)}
       </ul>
     );
@@ -76,7 +76,7 @@ function renderMd(text: string) {
             <thead>
               <tr className="bg-muted/60">
                 {tableHeader.map((h, i) => (
-                  <th key={i} className="px-2 py-1 text-left font-semibold text-foreground">{fmt(h.trim())}</th>
+                  <th key={i} className="px-2 py-1 text-start font-semibold text-foreground">{fmt(h.trim())}</th>
                 ))}
               </tr>
             </thead>
@@ -193,7 +193,7 @@ export function FloatingAIAssistant() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 transition-shadow hover:shadow-xl hover:shadow-primary/30"
+            className="fixed bottom-6 end-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 transition-shadow hover:shadow-xl hover:shadow-primary/30"
             aria-label="Open AI Assistant"
           >
             <Bot className="h-6 w-6" />
@@ -212,7 +212,7 @@ export function FloatingAIAssistant() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-6 right-6 z-50 flex h-[520px] w-[380px] flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
+            className="fixed bottom-6 end-6 z-50 flex h-[520px] w-[380px] flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center gap-3 border-b border-border bg-gradient-to-r from-primary/5 to-transparent px-4 py-3">

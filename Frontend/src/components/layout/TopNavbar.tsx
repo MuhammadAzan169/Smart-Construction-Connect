@@ -1,6 +1,7 @@
 import { useAuthStore } from "@/stores/authStore";
 import { useThemeStore } from "@/stores/themeStore";
-import { Bell, Moon, Sun, LogOut, Search, ArrowLeft, Building2, Package } from "lucide-react";
+import { useLanguageStore } from "@/stores/languageStore";
+import { Bell, Moon, Sun, LogOut, Search, ArrowLeft, Building2, Package, Languages } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { api } from "@/lib/api";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { ConfirmModal } from "@/components/shared/AnimationPrimitives";
+import { useTranslation } from "react-i18next";
 
 interface Notification {
   id: string;
@@ -22,12 +24,15 @@ interface Notification {
 export function TopNavbar() {
   const { user, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
+  const { language, toggleLanguage } = useLanguageStore();
+  const { t } = useTranslation();
   const [showNotif, setShowNotif] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Record<string, unknown>[]>([]);
   const [showSearch, setShowSearch] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
@@ -65,7 +70,7 @@ export function TopNavbar() {
       const requests = await api.requests.list();
       const items: Notification[] = requests.slice(0, 5).map((r) => ({
         id: r.id,
-        title: r.status === "pending" ? "New Quote Request" : `Request ${r.status}`,
+        title: r.status === "pending" ? t("nav.newQuoteRequest") : t("nav.requestStatus", { status: r.status }),
         message: `${r.client_name} — ${r.project_title}`,
         time: new Date(r.updated_at || r.created_at).toLocaleDateString(),
         read: r.status !== "pending",
@@ -99,19 +104,30 @@ export function TopNavbar() {
                 className="gap-1.5 text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Back</span>
+                <span className="hidden sm:inline">{t("common.back")}</span>
               </Button>
             </motion.div>
           )}
 
+          {/* Mobile search toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 text-muted-foreground sm:hidden"
+            onClick={() => setShowMobileSearch(!showMobileSearch)}
+            aria-label="Search"
+          >
+            <Search className="h-4 w-4" />
+          </Button>
+
           <div ref={searchRef} className="relative hidden max-w-md flex-1 sm:block">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search companies & suppliers..."
+              placeholder={t("nav.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => { if (searchResults.length) setShowSearch(true); }}
-              className="h-9 bg-background/40 pl-9 transition-all focus:bg-background/60 focus:ring-1 focus:ring-primary/30"
+              className="h-9 bg-background/40 ps-9 transition-all focus:bg-background/60 focus:ring-1 focus:ring-primary/30"
             />
             <AnimatePresence>
               {showSearch && (
@@ -120,12 +136,12 @@ export function TopNavbar() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.95 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute left-0 top-11 z-50 w-full"
+                  className="absolute start-0 top-11 z-50 w-full"
                 >
                   <GlassCard interactive={false} className="max-h-80 overflow-y-auto p-2">
-                    {searchLoading && <p className="px-3 py-2 text-xs text-muted-foreground">Searching...</p>}
+                    {searchLoading && <p className="px-3 py-2 text-xs text-muted-foreground">{t("nav.searching")}</p>}
                     {!searchLoading && searchResults.length === 0 && (
-                      <p className="px-3 py-2 text-xs text-muted-foreground">No results found</p>
+                      <p className="px-3 py-2 text-xs text-muted-foreground">{t("common.noResults")}</p>
                     )}
                     {searchResults.map((r, i) => (
                       <motion.button
@@ -133,7 +149,7 @@ export function TopNavbar() {
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.03 }}
-                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-accent"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start text-sm transition-colors hover:bg-accent"
                         onClick={() => {
                           const route = r.type === "supplier" ? `/suppliers/${r.slug ?? r.id}` : `/companies/${r.slug ?? r.id}`;
                           navigate(route);
@@ -156,9 +172,9 @@ export function TopNavbar() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           <motion.div whileTap={{ scale: 0.9, rotate: 15 }}>
-            <Button onClick={toggleTheme} variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground">
+            <Button onClick={toggleTheme} variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground" aria-label={t("nav.themeToggle")}>
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={theme}
@@ -173,20 +189,42 @@ export function TopNavbar() {
             </Button>
           </motion.div>
 
+          {/* Language toggle */}
+          <motion.div whileTap={{ scale: 0.9 }}>
+            <Button onClick={toggleLanguage} variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground" aria-label={t("nav.languageToggle")}>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={language}
+                  initial={{ opacity: 0, y: -8, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-center"
+                >
+                  {language === "en" ? (
+                    <span className="text-xs font-bold leading-none">اردو</span>
+                  ) : (
+                    <Languages className="h-4 w-4" />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </Button>
+          </motion.div>
+
           {/* Notifications */}
           <div className="relative">
             <Button
               onClick={() => setShowNotif(!showNotif)}
               variant="ghost"
               size="icon"
-              className="relative h-9 w-9 text-muted-foreground"
+              className="relative h-10 w-10 text-muted-foreground"
             >
               <Bell className="h-4 w-4" />
               {unread > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive"
+                  className="absolute end-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive"
                 />
               )}
             </Button>
@@ -197,10 +235,10 @@ export function TopNavbar() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.95 }}
                   transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="absolute right-0 top-11 z-50 w-80"
+                  className="absolute end-0 top-11 z-50 w-80 max-w-[calc(100vw-2rem)]"
                 >
                   <GlassCard interactive={false} className="p-2">
-                    <div className="mb-2 px-3 py-2 text-xs font-semibold text-muted-foreground">NOTIFICATIONS</div>
+                    <div className="mb-2 px-3 py-2 text-xs font-semibold text-muted-foreground">{t("nav.notifications")}</div>
                     {notifications.map((n, i) => (
                       <motion.div
                         key={n.id}
@@ -221,7 +259,7 @@ export function TopNavbar() {
           </div>
 
           {/* User */}
-          <div className="ml-2 flex items-center gap-3 border-l border-border pl-4">
+          <div className="ms-2 flex items-center gap-3 border-s border-border ps-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
@@ -234,7 +272,7 @@ export function TopNavbar() {
                 onClick={() => setShowLogout(true)}
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                className="h-10 w-10 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
               >
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -243,12 +281,59 @@ export function TopNavbar() {
         </div>
       </motion.header>
 
+      {/* Mobile search bar */}
+      <AnimatePresence>
+        {showMobileSearch && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="sticky top-16 z-30 overflow-hidden border-b border-border bg-background/80 backdrop-blur-xl sm:hidden"
+          >
+            <div className="relative px-4 py-2">
+              <Search className="absolute start-7 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder={t("nav.searchPlaceholder")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => { if (searchResults.length) setShowSearch(true); }}
+                className="h-10 bg-background/40 ps-9 transition-all focus:bg-background/60 focus:ring-1 focus:ring-primary/30"
+                autoFocus
+              />
+              {showSearch && searchResults.length > 0 && (
+                <div className="mt-2 max-h-60 overflow-y-auto rounded-xl border border-border bg-card p-2">
+                  {searchResults.map((r: Record<string, unknown>, i: number) => (
+                    <button
+                      key={i}
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-start text-sm transition-colors hover:bg-accent"
+                      onClick={() => {
+                        navigate(r.type === "supplier" ? `/suppliers/${r.id}` : `/companies/${r.id}`);
+                        setShowSearch(false);
+                        setShowMobileSearch(false);
+                        setSearchQuery("");
+                      }}
+                    >
+                      {r.type === "supplier" ? <Package className="h-4 w-4 shrink-0 text-orange-500" /> : <Building2 className="h-4 w-4 shrink-0 text-primary" />}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium text-foreground">{String(r.name ?? "")}</p>
+                        <p className="truncate text-xs text-muted-foreground">{String(r.location ?? r.city ?? "")}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <ConfirmModal
         open={showLogout}
         onOpenChange={setShowLogout}
-        title="Sign out?"
-        description="You'll need to sign in again to access your workspace."
-        confirmText="Sign out"
+        title={t("auth.signOutConfirm")}
+        description={t("auth.signOutDesc")}
+        confirmText={t("common.signOut")}
         variant="destructive"
         onConfirm={() => { logout(); navigate("/login"); }}
       />

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ function ChatAvatar({ name, size = "md" }: { name: string; size?: "sm" | "md" | 
 }
 
 export default function MessagesPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConvo, setActiveConvo] = useState<string | null>(null);
@@ -396,7 +398,7 @@ export default function MessagesPage() {
       {/* ── Conversation Sidebar ── */}
       <div
         className={cn(
-          "flex w-full flex-col border-r border-border md:w-80 lg:w-96",
+          "flex w-full flex-col border-e border-border md:w-80 lg:w-96",
           activeConvo && "hidden md:flex",
         )}
       >
@@ -406,7 +408,7 @@ export default function MessagesPage() {
             <MessageSquare className="h-4 w-4 text-primary-foreground" />
           </div>
           <div className="flex-1">
-            <h2 className="text-base font-bold text-foreground leading-tight">Messages</h2>
+            <h2 className="text-base font-bold text-foreground leading-tight">{t("messagesPage.title")}</h2>
             <p className="text-[11px] text-muted-foreground leading-tight">
               {conversations.length} conversation{conversations.length !== 1 ? "s" : ""}
             </p>
@@ -421,12 +423,12 @@ export default function MessagesPage() {
         {/* Search */}
         <div className="px-4 py-3 border-b border-border/60">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <Search className="absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search conversations..."
-              className="w-full rounded-xl border border-transparent bg-secondary/50 pl-9 pr-3 h-9 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/30 transition-colors"
+              className="w-full rounded-xl border border-transparent bg-secondary/50 ps-9 pe-3 h-9 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/30 transition-colors"
             />
           </div>
         </div>
@@ -469,7 +471,7 @@ export default function MessagesPage() {
                     whileHover={{ x: 2 }}
                     transition={{ duration: 0.15 }}
                     className={cn(
-                      "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors cursor-pointer",
+                      "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition-colors cursor-pointer",
                       isActive
                         ? "bg-primary/10 border border-primary/20"
                         : "hover:bg-secondary/50",
@@ -511,7 +513,7 @@ export default function MessagesPage() {
                         e.stopPropagation();
                         setDeleteTarget({ type: "conversation", id: convo.id });
                       }}
-                      className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg hover:bg-destructive/10"
+                      className="shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-destructive/10"
                       title="Delete conversation"
                     >
                       <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
@@ -564,7 +566,7 @@ export default function MessagesPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-lg hover:bg-destructive/10"
+                  className="h-10 w-10 rounded-lg hover:bg-destructive/10"
                   onClick={() => setDeleteTarget({ type: "conversation", id: activeConvo })}
                   title="Delete conversation"
                 >
@@ -691,8 +693,8 @@ export default function MessagesPage() {
                               <button
                                 onClick={() => setDeleteTarget({ type: "message", convoId: activeConvo, msgId: msg.id })}
                                 className={cn(
-                                  "absolute top-1 opacity-0 group-hover/msg:opacity-100 transition-opacity p-1 rounded-md hover:bg-destructive/10",
-                                  isMine ? "-left-7" : "-right-7",
+                                  "absolute top-1 opacity-100 sm:opacity-0 sm:group-hover/msg:opacity-100 transition-opacity p-1.5 rounded-md hover:bg-destructive/10",
+                                  isMine ? "-start-7" : "-end-7",
                                 )}
                                 title="Delete message"
                               >

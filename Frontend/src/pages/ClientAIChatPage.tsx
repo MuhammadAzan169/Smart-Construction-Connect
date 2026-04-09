@@ -11,6 +11,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Bot, User, Send, Paperclip, FileText, X,
@@ -53,6 +54,7 @@ const STATUS_META = {
    Main Page
 ══════════════════════════════════════════════════════════════════ */
 export default function ClientAIChatPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
 
@@ -205,7 +207,7 @@ export default function ClientAIChatPage() {
 
         {/* Header */}
         <div className="relative flex items-center gap-3 border-b border-border px-5 py-4 overflow-hidden">
-          <div className="absolute left-0 top-0 h-full w-40 bg-gradient-to-r from-sky-500/8 to-transparent pointer-events-none" />
+          <div className="absolute start-0 top-0 h-full w-40 bg-gradient-to-r from-sky-500/8 to-transparent pointer-events-none" />
           <button
             type="button"
             onClick={() => navigate("/dashboard")}
@@ -218,8 +220,8 @@ export default function ClientAIChatPage() {
             <div className="absolute inset-0 rounded-xl ring-2 ring-sky-500/30" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-foreground leading-tight">AI Construction Consultant</h2>
-            <p className="text-[11px] text-muted-foreground leading-tight">Find builders · Get quotes · Plan your project</p>
+            <h2 className="text-sm font-bold text-foreground leading-tight">{t("aiChat.aiConsultant")}</h2>
+            <p className="text-[11px] text-muted-foreground leading-tight">{t("aiChat.consultantDesc")}</p>
           </div>
           <div className="ml-auto flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -244,7 +246,7 @@ export default function ClientAIChatPage() {
                   key={s}
                   type="button"
                   onClick={() => injectPrompt(s)}
-                  className="rounded-xl border border-sky-500/20 bg-sky-500/5 px-3 py-1.5 text-xs text-muted-foreground hover:border-sky-500/40 hover:bg-sky-500/10 hover:text-foreground transition-colors text-left"
+                  className="rounded-xl border border-sky-500/20 bg-sky-500/5 px-3 py-1.5 text-xs text-muted-foreground hover:border-sky-500/40 hover:bg-sky-500/10 hover:text-foreground transition-colors text-start"
                 >
                   {s}
                 </button>
@@ -277,7 +279,7 @@ export default function ClientAIChatPage() {
                   {msg.role === "ai" ? (
                     <>
                       {renderMarkdown(msg.text)}
-                      {msg.isStreaming && <span className="inline-block w-1.5 h-4 ml-0.5 bg-sky-500/60 animate-pulse rounded-sm" />}
+                      {msg.isStreaming && <span className="inline-block w-1.5 h-4 ms-0.5 bg-sky-500/60 animate-pulse rounded-sm" />}
                     </>
                   ) : msg.text}
                 </div>
@@ -569,7 +571,7 @@ export default function ClientAIChatPage() {
                 key={prompt}
                 type="button"
                 onClick={() => injectPrompt(prompt)}
-                className="w-full flex items-center gap-2.5 rounded-xl border border-border bg-secondary/30 px-3 py-2 text-left hover:border-sky-500/30 hover:bg-sky-500/5 transition-all group"
+                className="w-full flex items-center gap-2.5 rounded-xl border border-border bg-secondary/30 px-3 py-2 text-start hover:border-sky-500/30 hover:bg-sky-500/5 transition-all group"
               >
                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500/50 group-hover:bg-sky-500 transition-colors" />
                 <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors leading-snug line-clamp-2">{prompt}</span>

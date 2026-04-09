@@ -11,6 +11,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, User, Send, Paperclip, FileText, X,
@@ -43,6 +44,7 @@ interface Overview {
    Main Page
 ═════════════════════════════════════════════════════════════════════ */
 export default function AdminAIChatPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
 
@@ -194,7 +196,7 @@ export default function AdminAIChatPage() {
 
         {/* Header */}
         <div className="relative flex items-center gap-3 border-b border-border px-5 py-4 overflow-hidden">
-          <div className="absolute left-0 top-0 h-full w-40 bg-gradient-to-r from-violet-500/8 to-transparent pointer-events-none" />
+          <div className="absolute start-0 top-0 h-full w-40 bg-gradient-to-r from-violet-500/8 to-transparent pointer-events-none" />
           <button
             type="button"
             onClick={() => navigate("/dashboard")}
@@ -207,8 +209,8 @@ export default function AdminAIChatPage() {
             <div className="absolute inset-0 rounded-xl ring-2 ring-violet-500/30" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-foreground leading-tight">AI Analytics Assistant</h2>
-            <p className="text-[11px] text-muted-foreground leading-tight">Platform data · User insights · Market intelligence</p>
+            <h2 className="text-sm font-bold text-foreground leading-tight">{t("aiChat.aiAnalytics")}</h2>
+            <p className="text-[11px] text-muted-foreground leading-tight">{t("aiChat.analyticsDesc")}</p>
           </div>
           <div className="ml-auto flex items-center gap-2.5">
             {pendingTotal > 0 && (
@@ -242,7 +244,7 @@ export default function AdminAIChatPage() {
                   key={s}
                   type="button"
                   onClick={() => injectPrompt(s)}
-                  className="rounded-xl border border-violet-500/20 bg-violet-500/5 px-3 py-1.5 text-xs text-muted-foreground hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-foreground transition-colors text-left"
+                  className="rounded-xl border border-violet-500/20 bg-violet-500/5 px-3 py-1.5 text-xs text-muted-foreground hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-foreground transition-colors text-start"
                 >
                   {s}
                 </button>
@@ -276,7 +278,7 @@ export default function AdminAIChatPage() {
                     <>
                       {renderMarkdown(msg.text)}
                       {msg.isStreaming && (
-                        <span className="ml-1 inline-block h-4 w-1.5 rounded-sm bg-violet-500 animate-pulse" />
+                        <span className="ms-1 inline-block h-4 w-1.5 rounded-sm bg-violet-500 animate-pulse" />
                       )}
                     </>
                   ) : msg.text}
@@ -483,7 +485,7 @@ export default function AdminAIChatPage() {
                     className="h-7 shrink-0 text-xs text-amber-600 hover:bg-amber-500/10"
                     onClick={() => navigate("/approvals")}
                   >
-                    Review <ChevronRight className="h-3 w-3 ml-0.5" />
+                    Review <ChevronRight className="h-3 w-3 ms-0.5" />
                   </Button>
                 </div>
               )}
@@ -568,7 +570,7 @@ export default function AdminAIChatPage() {
                 key={text}
                 type="button"
                 onClick={() => injectPrompt(text)}
-                className="flex w-full items-start gap-3 rounded-xl border border-border/60 bg-background/30 p-3 hover:border-violet-500/20 hover:bg-violet-500/5 transition-all text-left group"
+                className="flex w-full items-start gap-3 rounded-xl border border-border/60 bg-background/30 p-3 hover:border-violet-500/20 hover:bg-violet-500/5 transition-all text-start group"
               >
                 <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${color.split(" ")[1]}`}>
                   <Icon className={`h-3.5 w-3.5 ${color.split(" ")[0]}`} />

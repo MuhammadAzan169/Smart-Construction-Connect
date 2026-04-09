@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Badge } from "@/components/ui/badge";
@@ -786,7 +787,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
             <ArrowLeft className="h-4 w-4" />
             Dashboard
           </Button>
-          <h1 className="text-2xl font-bold text-foreground">Settings</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("settings.title")}</h1>
           <p className="text-sm text-muted-foreground">Manage your company profile, legal info, contact details, and more.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -832,7 +833,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
-              <div className="absolute right-3 top-3">
+              <div className="absolute end-3 top-3">
                 <Button
                   type="button"
                   variant="secondary"
@@ -1759,7 +1760,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                 size="sm"
                 onClick={() => { setEditingProject({ ...emptyProject, id: `proj-${Date.now()}` }); setEditingProjectIdx(-1); }}
               >
-                <Plus className="mr-1.5 h-3.5 w-3.5" />
+                <Plus className="me-1.5 h-3.5 w-3.5" />
                 Add Project
               </Button>
             </div>
@@ -1976,13 +1977,13 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                       <div className="relative h-32 overflow-hidden">
                         <img src={proj.image_urls[0]} alt={proj.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         {proj.image_urls.length > 1 && (
-                          <span className="absolute bottom-2 right-2 rounded-lg bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+                          <span className="absolute bottom-2 end-2 rounded-lg bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
                             +{proj.image_urls.length - 1} photos
                           </span>
                         )}
                         <Badge
                           variant={proj.status === "completed" ? "secondary" : "default"}
-                          className="absolute top-2 left-2 text-[10px]"
+                          className="absolute top-2 start-2 text-[10px]"
                         >
                           {proj.status || "completed"}
                         </Badge>
@@ -2008,7 +2009,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                           className="h-7 px-2 text-xs"
                           onClick={() => { setEditingProject({ ...emptyProject, ...proj, image_urls: [...(proj.image_urls || [])] }); setEditingProjectIdx(idx); }}
                         >
-                          <Pencil className="mr-1 h-3 w-3" />
+                          <Pencil className="me-1 h-3 w-3" />
                           Edit
                         </Button>
                         <Button
@@ -2029,7 +2030,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                             }
                           }}
                         >
-                          <Trash2 className="mr-1 h-3 w-3" />
+                          <Trash2 className="me-1 h-3 w-3" />
                           Remove
                         </Button>
                       </div>
@@ -2066,8 +2067,8 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
               <div className="space-y-1.5">
                 <Label>Current Password</Label>
                 <div className="relative">
-                  <Input type={showCurrentPwd ? "text" : "password"} value={currentPwd} onChange={(e) => setCurrentPwd(e.target.value)} placeholder="Enter current password" className="bg-background/40 pr-10" />
-                  <button type="button" onClick={() => setShowCurrentPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <Input type={showCurrentPwd ? "text" : "password"} value={currentPwd} onChange={(e) => setCurrentPwd(e.target.value)} placeholder="Enter current password" className="bg-background/40 pe-10" />
+                  <button type="button" onClick={() => setShowCurrentPwd((v) => !v)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                     {showCurrentPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
@@ -2075,8 +2076,8 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
               <div className="space-y-1.5">
                 <Label>New Password</Label>
                 <div className="relative">
-                  <Input type={showNewPwd ? "text" : "password"} value={newPwd} onChange={(e) => setNewPwd(e.target.value)} placeholder="At least 8 characters" className="bg-background/40 pr-10" />
-                  <button type="button" onClick={() => setShowNewPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <Input type={showNewPwd ? "text" : "password"} value={newPwd} onChange={(e) => setNewPwd(e.target.value)} placeholder="At least 8 characters" className="bg-background/40 pe-10" />
+                  <button type="button" onClick={() => setShowNewPwd((v) => !v)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                     {showNewPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
@@ -2486,7 +2487,7 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
                 <img src={settings.dp_url} alt="Cover" className="h-full w-full object-cover" />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
-              <div className="absolute right-3 top-3">
+              <div className="absolute end-3 top-3">
                 <Button
                   type="button"
                   variant="secondary"
@@ -2895,7 +2896,7 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
                 size="sm"
                 onClick={() => { setEditingMaterial({ ...emptyMaterial }); setEditingMaterialIdx(-1); }}
               >
-                <Plus className="mr-1.5 h-3.5 w-3.5" />
+                <Plus className="me-1.5 h-3.5 w-3.5" />
                 Add Material
               </Button>
             </div>
@@ -3288,8 +3289,8 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
               <div className="space-y-1.5">
                 <Label>Current Password</Label>
                 <div className="relative">
-                  <Input type={showCurrentPwd ? "text" : "password"} value={currentPwd} onChange={(e) => setCurrentPwd(e.target.value)} placeholder="Enter current password" className="bg-background/40 pr-10" />
-                  <button type="button" onClick={() => setShowCurrentPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <Input type={showCurrentPwd ? "text" : "password"} value={currentPwd} onChange={(e) => setCurrentPwd(e.target.value)} placeholder="Enter current password" className="bg-background/40 pe-10" />
+                  <button type="button" onClick={() => setShowCurrentPwd((v) => !v)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                     {showCurrentPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
@@ -3297,8 +3298,8 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
               <div className="space-y-1.5">
                 <Label>New Password</Label>
                 <div className="relative">
-                  <Input type={showNewPwd ? "text" : "password"} value={newPwd} onChange={(e) => setNewPwd(e.target.value)} placeholder="At least 8 characters" className="bg-background/40 pr-10" />
-                  <button type="button" onClick={() => setShowNewPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <Input type={showNewPwd ? "text" : "password"} value={newPwd} onChange={(e) => setNewPwd(e.target.value)} placeholder="At least 8 characters" className="bg-background/40 pe-10" />
+                  <button type="button" onClick={() => setShowNewPwd((v) => !v)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                     {showNewPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
@@ -3786,12 +3787,12 @@ function ClientSettingsEditor() {
                     value={currentPwd}
                     onChange={(e) => setCurrentPwd(e.target.value)}
                     placeholder="Enter current password"
-                    className="bg-background/40 pr-10"
+                    className="bg-background/40 pe-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowCurrentPwd((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
                     {showCurrentPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -3806,12 +3807,12 @@ function ClientSettingsEditor() {
                     value={newPwd}
                     onChange={(e) => setNewPwd(e.target.value)}
                     placeholder="At least 8 characters"
-                    className="bg-background/40 pr-10"
+                    className="bg-background/40 pe-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowNewPwd((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
                     {showNewPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -3970,8 +3971,8 @@ function AdminSettingsEditor() {
               <div className="space-y-1.5">
                 <Label>Current Password</Label>
                 <div className="relative">
-                  <Input type={showCurrentPwd ? "text" : "password"} value={currentPwd} onChange={(e) => setCurrentPwd(e.target.value)} placeholder="Enter current password" className="bg-background/40 pr-10" />
-                  <button type="button" onClick={() => setShowCurrentPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <Input type={showCurrentPwd ? "text" : "password"} value={currentPwd} onChange={(e) => setCurrentPwd(e.target.value)} placeholder="Enter current password" className="bg-background/40 pe-10" />
+                  <button type="button" onClick={() => setShowCurrentPwd((v) => !v)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                     {showCurrentPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
@@ -3979,8 +3980,8 @@ function AdminSettingsEditor() {
               <div className="space-y-1.5">
                 <Label>New Password</Label>
                 <div className="relative">
-                  <Input type={showNewPwd ? "text" : "password"} value={newPwd} onChange={(e) => setNewPwd(e.target.value)} placeholder="At least 8 characters" className="bg-background/40 pr-10" />
-                  <button type="button" onClick={() => setShowNewPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <Input type={showNewPwd ? "text" : "password"} value={newPwd} onChange={(e) => setNewPwd(e.target.value)} placeholder="At least 8 characters" className="bg-background/40 pe-10" />
+                  <button type="button" onClick={() => setShowNewPwd((v) => !v)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                     {showNewPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
@@ -4007,6 +4008,7 @@ function AdminSettingsEditor() {
 // ─── Page entry point ─────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   if (!user) {
     return (

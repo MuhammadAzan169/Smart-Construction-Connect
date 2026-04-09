@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Badge } from "@/components/ui/badge";
@@ -431,8 +432,8 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Packages & Pricing</h1>
-          <p className="text-sm text-muted-foreground">Configure service areas, package tiers, materials, and cost ranges.</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("pricing.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("pricing.subtitle")}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="secondary" onClick={resetRows} disabled={saving}><RotateCcw className="h-4 w-4" /> Reset</Button>
@@ -445,9 +446,9 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
 
       <Tabs defaultValue="cities">
         <TabsList className="flex h-auto flex-wrap gap-1">
-          <TabsTrigger value="cities"><MapPin className="mr-1 h-3.5 w-3.5" />Cities / Areas</TabsTrigger>
-          <TabsTrigger value="packages"><Package className="mr-1 h-3.5 w-3.5" />Packages</TabsTrigger>
-          <TabsTrigger value="materials"><Wrench className="mr-1 h-3.5 w-3.5" />Materials</TabsTrigger>
+          <TabsTrigger value="cities"><MapPin className="me-1 h-3.5 w-3.5" />Cities / Areas</TabsTrigger>
+          <TabsTrigger value="packages"><Package className="me-1 h-3.5 w-3.5" />Packages</TabsTrigger>
+          <TabsTrigger value="materials"><Wrench className="me-1 h-3.5 w-3.5" />Materials</TabsTrigger>
           <TabsTrigger value="pricing">₨ Pricing</TabsTrigger>
         </TabsList>
 
@@ -561,7 +562,7 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
                   <TableRow>
                     <TableHead>Package name</TableHead>
                     <TableHead className="hidden sm:table-cell">Key (ID)</TableHead>
-                    <TableHead className="w-24 text-right">Action</TableHead>
+                    <TableHead className="w-24 text-end">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -574,7 +575,7 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
                         </div>
                       </TableCell>
                       <TableCell className="hidden text-muted-foreground sm:table-cell">{pkg.id}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-end">
                         <Button type="button" variant="link" className="h-auto p-0 text-xs text-destructive" onClick={(e) => { e.stopPropagation(); deletePackage(pkg.id); }} disabled={pricing.packages.length <= 1}>Delete</Button>
                       </TableCell>
                     </TableRow>
@@ -720,7 +721,7 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
                           <TableHead className="w-44">Plot size</TableHead>
                           <TableHead className="min-w-[12rem]">Min (PKR)</TableHead>
                           <TableHead className="min-w-[12rem]">Max (PKR)</TableHead>
-                          <TableHead className="w-20 text-right">Action</TableHead>
+                          <TableHead className="w-20 text-end">Action</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -737,7 +738,7 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
                                 <Input type="number" min={0} step={50000} value={cell.max ?? ""} onChange={(e) => updateCell(r.id, pkg.id, "max", parseOptionalNumber(e.target.value))} className={cn("bg-background/40", invalid && "border-destructive/60")} placeholder="Max" />
                                 {invalid && <p className="mt-1 text-xs text-destructive">Min must be ≤ Max.</p>}
                               </TableCell>
-                              <TableCell className="text-right">
+                              <TableCell className="text-end">
                                 {r.removable ? <Button type="button" variant="link" className="h-auto p-0 text-xs" onClick={() => removeRow(r.id)}>Remove</Button> : <span className="text-xs text-muted-foreground">—</span>}
                               </TableCell>
                             </TableRow>
@@ -801,6 +802,7 @@ function PlanCard({ plan }: { plan: Plan }) {
 // ─── Page Entry ───────────────────────────────────────────────────────────────
 
 export default function PricingPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
 
   if (user?.role === "company") {

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
@@ -41,6 +42,7 @@ import {
 
 function ClientDashboard() {
   const user = useAuthStore((s) => s.user);
+  const { t } = useTranslation();
   const [companies, setCompanies] = useState<Record<string, unknown>[]>([]);
   const [requestStats, setRequestStats] = useState({ total: 0, pending: 0, accepted: 0, rejected: 0, completed: 0 });
   const [recentRequests, setRecentRequests] = useState<QuoteRequest[]>([]);
@@ -108,7 +110,7 @@ function ClientDashboard() {
       {/* ── Hero Header ─────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card p-6">
         <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-10 left-1/4 h-40 w-72 rounded-full bg-blue-500/8 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-10 start-1/4 h-40 w-72 rounded-full bg-blue-500/8 blur-2xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-amber-400 shadow-lg shadow-primary/25">
@@ -116,7 +118,7 @@ function ClientDashboard() {
             </div>
             <div>
               <h1 className="text-xl font-extrabold text-foreground">
-                Welcome back, {firstName} 👋
+                {t("dashboard.welcomeBack", { name: firstName })}
               </h1>
               <p className="text-sm text-muted-foreground">
                 Find your perfect construction partner · Track your requests
@@ -126,12 +128,12 @@ function ClientDashboard() {
           <div className="flex flex-wrap gap-2">
             <Button asChild size="sm" variant="secondary">
               <Link to="/requests" className="flex items-center gap-1.5">
-                <FileText className="h-3.5 w-3.5" /> My Requests
+                <FileText className="h-3.5 w-3.5" /> {t("requests.myRequests")}
               </Link>
             </Button>
             <Button asChild size="sm">
               <Link to="/companies" className="flex items-center gap-1.5">
-                <Building2 className="h-3.5 w-3.5" /> Browse Companies
+                <Building2 className="h-3.5 w-3.5" /> {t("dashboard.browseCompanies")}
               </Link>
             </Button>
           </div>
@@ -167,7 +169,7 @@ function ClientDashboard() {
                   <Sparkles className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">AI-Matched Companies</p>
+                  <p className="text-sm font-semibold text-foreground">{t("dashboard.aiMatchedCompanies")}</p>
                   <p className="text-xs text-muted-foreground">Ranked by match score, rating & verification</p>
                 </div>
               </div>
@@ -347,6 +349,7 @@ function ClientDashboard() {
 
 function CompanyDashboard() {
   const user = useAuthStore((s) => s.user);
+  const { t } = useTranslation();
   const companySlug = user?.companyFile ?? user?.company_slug ?? "";
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const [requests, setRequests] = useState<QuoteRequest[]>([]);
@@ -406,7 +409,7 @@ function CompanyDashboard() {
       {/* ── Hero Header ─────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card p-6">
         <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-emerald-500/8 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-8 left-1/4 h-40 w-64 rounded-full bg-cyan-500/6 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-8 start-1/4 h-40 w-64 rounded-full bg-cyan-500/6 blur-2xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/20">
@@ -501,8 +504,8 @@ function CompanyDashboard() {
                 <Button asChild size="sm" variant="secondary"><Link to="/pricing">Set up packages</Link></Button>
               </div>
             ) : (
-              <div className="relative pl-4">
-                <div className="absolute left-[18px] top-2 bottom-2 w-px bg-border" />
+              <div className="relative ps-4">
+                <div className="absolute start-[18px] top-2 bottom-2 w-px bg-border" />
                 <div className="space-y-1">
                   {recentRequests.map((req, i) => {
                     const style = reqStatusStyle[req.status] ?? reqStatusStyle.pending;
@@ -614,6 +617,7 @@ function CompanyDashboard() {
 
 function SupplierDashboard() {
   const user = useAuthStore((s) => s.user);
+  const { t } = useTranslation();
   const supplierSlug = user?.supplierFile;
   const [supplier, setSupplier] = useState<Record<string, unknown> | null>(null);
   const [loadingSupplier, setLoadingSupplier] = useState(!!supplierSlug);
@@ -649,7 +653,7 @@ function SupplierDashboard() {
       {/* ── Hero Header ─────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card p-6">
         <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-amber-500/8 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-8 left-1/3 h-40 w-72 rounded-full bg-purple-500/6 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-8 start-1/3 h-40 w-72 rounded-full bg-purple-500/6 blur-2xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-500/20">
@@ -842,6 +846,7 @@ function SupplierDashboard() {
 
 function AdminDashboard() {
   const user = useAuthStore((s) => s.user);
+  const { t } = useTranslation();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activity, setActivity] = useState<{ timestamp: string; action: string; target: string; details: string }[]>([]);
@@ -903,7 +908,7 @@ function AdminDashboard() {
       {/* ── Hero header ─────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card p-6">
         <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-8 left-1/3 h-32 w-64 rounded-full bg-highlight/8 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-8 start-1/3 h-32 w-64 rounded-full bg-highlight/8 blur-2xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-highlight shadow-lg shadow-primary/25">
@@ -1070,9 +1075,9 @@ function AdminDashboard() {
                 <p className="text-sm text-muted-foreground">No recent activity.</p>
               </div>
             ) : (
-              <div className="relative pl-4">
+              <div className="relative ps-4">
                 {/* Timeline line */}
-                <div className="absolute left-[18px] top-2 bottom-2 w-px bg-border" />
+                <div className="absolute start-[18px] top-2 bottom-2 w-px bg-border" />
                 <div className="space-y-1">
                   {recentActivity.map((entry, i) => {
                     const { icon: AIcon, color, bg } = activityIcon(entry.action);

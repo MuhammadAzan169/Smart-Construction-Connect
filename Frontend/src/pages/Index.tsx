@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
+import { useTranslation } from "react-i18next";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
   HardHat, ArrowRight, Building2, Bot, Shield, Check, Sparkles,
@@ -166,6 +167,7 @@ export default function Index() {
   const { isAuthenticated } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const heroRef = useRef<HTMLDivElement>(null);
   const [annualBilling, setAnnualBilling] = useState(false);
 
@@ -198,33 +200,34 @@ export default function Index() {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.1 }}
-        className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-border/50 bg-background/40 px-6 backdrop-blur-2xl lg:px-12"
+        className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-border/50 bg-background/40 px-4 backdrop-blur-2xl sm:px-6 lg:px-12"
       >
         <div className="flex items-center gap-2.5">
           <img src="/Logo.png" alt="SCC Logo" className="h-9 w-9 rounded-xl object-contain" />
-          <span className="text-lg font-bold text-foreground tracking-tight">Smart Construction Connect</span>
+          <span className="hidden text-lg font-bold text-foreground tracking-tight sm:inline">Smart Construction Connect</span>
+          <span className="text-lg font-bold text-foreground tracking-tight sm:hidden">SCC</span>
         </div>
-        <div className="flex items-center gap-3">
-          <Button onClick={toggleTheme} variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Button onClick={toggleTheme} variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-foreground">
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
           <Button
             variant="outline"
             onClick={() => navigate("/login")}
-            className="h-9 rounded-xl px-4 border-border/60 text-foreground/80 hover:text-foreground hover:border-primary/30 hover:bg-accent/30"
+            className="h-10 rounded-xl px-3 border-border/60 text-foreground/80 hover:text-foreground hover:border-primary/30 hover:bg-accent/30 sm:px-4"
           >
             Sign In
           </Button>
           <Button
             onClick={() => navigate("/signup")}
-            className="h-9 rounded-xl px-5 gradient-bg text-primary-foreground text-sm font-semibold shadow-sm shadow-primary/20 hover:shadow-md hover:shadow-primary/30 hover:brightness-110 transition-all duration-200"
+            className="h-10 rounded-xl px-3 gradient-bg text-primary-foreground text-sm font-semibold shadow-sm shadow-primary/20 hover:shadow-md hover:shadow-primary/30 hover:brightness-110 transition-all duration-200 sm:px-5"
           >
-            Get Started
+            {t("landing.startFree")}
           </Button>
         </div>
       </motion.nav>
 
-      <main className="relative z-10 flex flex-1 flex-col items-center px-6">
+      <main className="relative z-10 flex flex-1 flex-col items-center px-4 sm:px-6">
 
         {/* ─── Hero Section — Split Layout ──────────────────── */}
         <section ref={heroRef} className="w-full max-w-6xl py-16 lg:py-24">
@@ -249,9 +252,9 @@ export default function Index() {
               </motion.div>
 
               <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                Build Smarter,{" "}
+                {t("landing.heroTitle").split(",")[0]},{" "}
                 <br />
-                <span className="animated-gradient-text">Find Better</span>
+                <span className="animated-gradient-text">{t("landing.heroTitle").split(",")[1]?.replace(" Find ", "").trim() || "Find Better"}</span>
                 <br />
                 Partners
               </h1>
@@ -262,7 +265,7 @@ export default function Index() {
                 transition={{ delay: 0.3, duration: 0.4 }}
                 className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground"
               >
-                Connect with verified construction companies across Pakistan, compare quotes instantly, and manage your entire project — all powered by AI.
+                {t("landing.heroDesc")}
               </motion.p>
 
               <motion.div
@@ -282,7 +285,7 @@ export default function Index() {
                   variant="outline"
                   className="h-13 rounded-2xl px-8 border border-border/70 bg-background/60 backdrop-blur-sm font-semibold text-base text-foreground hover:border-primary/40 hover:bg-background/80 hover:text-primary/90 transition-all duration-300"
                 >
-                  Sign In
+                  {t("common.signIn")}
                 </Button>
               </motion.div>
 
@@ -323,7 +326,7 @@ export default function Index() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
                 {/* Bottom overlay stats */}
-                <div className="absolute bottom-0 left-0 right-0 p-5">
+                <div className="absolute bottom-0 start-0 end-0 p-5">
                   <div className="grid grid-cols-3 gap-3">
                     {[
                       { value: "120+", label: "Companies" },
@@ -339,7 +342,7 @@ export default function Index() {
                 </div>
 
                 {/* Top badge */}
-                <div className="absolute right-4 top-4 flex items-center gap-2 rounded-full border border-white/10 bg-black/50 px-3 py-1.5 backdrop-blur-md">
+                <div className="absolute end-4 top-4 flex items-center gap-2 rounded-full border border-white/10 bg-black/50 px-3 py-1.5 backdrop-blur-md">
                   <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
                   <span className="text-xs font-medium text-white">Live Platform</span>
                 </div>
@@ -369,7 +372,7 @@ export default function Index() {
                     transition={{ delay: 1.2, duration: 1, ease: "easeOut" }}
                   />
                 </div>
-                <p className="mt-1 text-right text-[10px] text-primary font-semibold">87% Match</p>
+                <p className="mt-1 text-end text-[10px] text-primary font-semibold">87% Match</p>
               </motion.div>
             </motion.div>
           </motion.div>
@@ -383,10 +386,10 @@ export default function Index() {
               Built for Every Role
             </div>
             <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              Who is Smart Construction Connect <span className="gradient-text">For?</span>
+              {t("landing.whoIsFor")} <span className="gradient-text">{t("landing.whoIsFor").split(" ").pop()}</span>
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-              Whether you're building a home, running a construction company, or supplying materials — we have a solution for you.
+              {t("landing.whoIsForDesc")}
             </p>
           </div>
           <StaggerList className="grid gap-6 sm:grid-cols-3" stagger={0.12}>
@@ -435,16 +438,16 @@ export default function Index() {
         <SectionReveal className="w-full max-w-5xl py-16">
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              How It <span className="gradient-text">Works</span>
+              {t("landing.howItWorks").split(" ").slice(0, -1).join(" ")} <span className="gradient-text">{t("landing.howItWorks").split(" ").pop()}</span>
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-              From project idea to handover — streamlined in three simple steps.
+              {t("landing.howItWorksDesc")}
             </p>
           </div>
 
           <div className="relative">
             {/* Connecting line (desktop) */}
-            <div className="absolute left-1/2 top-10 hidden h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-primary/30 to-transparent sm:block" />
+            <div className="absolute start-1/2 top-10 hidden h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-primary/30 to-transparent sm:block" />
 
             <StaggerList className="grid gap-8 sm:grid-cols-3" stagger={0.15}>
               {processSteps.map((step, i) => (
@@ -480,12 +483,12 @@ export default function Index() {
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
             <div className="absolute inset-0 flex items-center px-8 sm:px-14">
               <div className="max-w-lg">
-                <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-2">Powered by AI</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-2">{t("landing.poweredByAI")}</p>
                 <h3 className="text-2xl font-bold text-white sm:text-3xl leading-tight">
-                  Smarter construction decisions, backed by data
+                  {t("landing.smarterDecisions")}
                 </h3>
                 <p className="mt-3 text-sm text-white/70">
-                  Our AI analyzes verified contractor portfolios, client reviews, and cost benchmarks to match you with the right partner every time.
+                  {t("landing.aiDesc")}
                 </p>
                 <Button
                   onClick={() => navigate("/signup")}
@@ -505,18 +508,17 @@ export default function Index() {
           <div className="mb-12 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              Platform Features
+              {t("landing.platformFeatures")}
             </div>
             <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              Everything You Need to{" "}
-              <span className="gradient-text">Build</span>
+              {t("landing.everythingYouNeed").replace("Build", "")} <span className="gradient-text">{"Build"}</span>
             </h2>
           </div>
 
           <StaggerList className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" stagger={0.08}>
             {features.map((f) => (
               <StaggerItem key={f.title}>
-                <GlassCard className="p-6 text-left h-full hover:border-primary/30 transition-colors duration-200">
+                <GlassCard className="p-6 text-start h-full hover:border-primary/30 transition-colors duration-200">
                   <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20">
                     <f.icon className="h-5 w-5 text-primary" />
                   </div>
@@ -561,13 +563,13 @@ export default function Index() {
           <div className="mb-10 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              Transparent Pricing
+              {t("landing.transparentPricing")}
             </div>
             <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              Simple, Honest <span className="gradient-text">Pricing</span>
+              {t("landing.simplePricing")} <span className="gradient-text">{t("plans.title")}</span>
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-              Choose a plan that fits your project. Upgrade or cancel anytime.
+              {t("landing.choosePlan")}
             </p>
 
             {/* Billing Toggle */}
@@ -581,7 +583,7 @@ export default function Index() {
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                Monthly
+                {t("common.monthly")}
               </button>
               <button
                 onClick={() => setAnnualBilling(true)}
@@ -592,7 +594,7 @@ export default function Index() {
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                Annual
+                {t("common.annual")}
                 <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400">
                   Save 20%
                 </span>
@@ -626,7 +628,7 @@ export default function Index() {
                         )}
                       >
                         {plan.badge && (
-                          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
+                          <div className="absolute -top-3.5 start-1/2 -translate-x-1/2 z-10">
                             <Badge
                               className={cn(
                                 "rounded-full px-3 py-0.5 text-[11px] font-semibold shadow-lg",
@@ -734,8 +736,8 @@ export default function Index() {
                             onClick={() => navigate("/signup")}
                           >
                             {plan.cta}
-                            {isPro && <ArrowRight className="ml-1.5 h-4 w-4" />}
-                            {isPremium && <Crown className="ml-1.5 h-4 w-4" />}
+                            {isPro && <ArrowRight className="ms-1.5 h-4 w-4" />}
+                            {isPremium && <Crown className="ms-1.5 h-4 w-4" />}
                           </Button>
                         </div>
                       </GlassCard>
@@ -764,10 +766,10 @@ export default function Index() {
         <SectionReveal className="w-full max-w-5xl py-16">
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              Trusted by <span className="gradient-text">Builders</span>
+              {t("landing.trustedByBuilders").replace("Builders", "")} <span className="gradient-text">{"Builders"}</span>
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-              Hear from homeowners, construction companies, and suppliers across Pakistan.
+              {t("landing.testimonialDesc")}
             </p>
           </div>
           <StaggerList className="grid gap-6 sm:grid-cols-3" stagger={0.1}>
@@ -811,10 +813,10 @@ export default function Index() {
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/30" />
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
               <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-                Ready to build your dream?
+                {t("landing.readyToBuild")}
               </h2>
               <p className="mx-auto mt-4 max-w-md text-white/70 text-lg">
-                Join thousands of clients, companies, and suppliers on Pakistan's smartest construction platform.
+                {t("landing.readyToBuildDesc")}
               </p>
               <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Button
@@ -822,7 +824,7 @@ export default function Index() {
                   className="h-13 rounded-2xl px-8 gradient-bg text-primary-foreground font-semibold gap-2 shadow-lg shadow-primary/25"
                 >
                   <Building2 className="h-4 w-4" />
-                  Browse Companies
+                  {t("landing.browseCompanies")}
                 </Button>
                 <Button
                   onClick={() => navigate("/signup")}
@@ -830,7 +832,7 @@ export default function Index() {
                   className="h-13 rounded-2xl px-8 border border-white/30 bg-white/10 backdrop-blur-sm font-semibold text-white hover:border-white/50 hover:bg-white/20 transition-all duration-300 gap-2"
                 >
                   <Bot className="h-4 w-4" />
-                  Try AI Assistant
+                  {t("landing.tryAI")}
                 </Button>
               </div>
             </div>
@@ -846,8 +848,8 @@ export default function Index() {
             <span className="text-sm font-semibold text-foreground">Smart Construction Connect</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
-            <span>Pakistan's #1 construction platform</span>
-            <span>&copy; {new Date().getFullYear()} Smart Construction Connect. All rights reserved.</span>
+            <span>{t("landing.footerTagline")}</span>
+            <span>{t("landing.footerCopyright", { year: new Date().getFullYear() })}</span>
           </div>
         </div>
       </footer>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PdfViewerDialog } from "@/components/shared/PdfViewerDialog";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +43,7 @@ const DOC_LABELS: Record<string, string> = {
 /* ================================================================== */
 
 export default function ApprovalsPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   /* Doc verification */
@@ -153,7 +155,7 @@ export default function ApprovalsPage() {
             <ArrowLeft className="h-4 w-4" />
             Dashboard
           </Button>
-          <h1 className="text-2xl font-bold text-foreground">Document Verification</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("approvals.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Review and approve company / supplier verification documents.
           </p>

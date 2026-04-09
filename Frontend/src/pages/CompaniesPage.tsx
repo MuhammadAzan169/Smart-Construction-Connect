@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
@@ -84,6 +85,7 @@ function previewList(items: string[], max: number) {
 }
 
 export default function CompaniesPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
 
   if (!user) return null;
@@ -288,7 +290,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
 
       <div className="space-y-3">
         <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Location</p>
-        <div className="space-y-2 max-h-52 overflow-y-auto scroll-styled pr-1">
+        <div className="space-y-2 max-h-52 overflow-y-auto scroll-styled pe-1">
           {locationOptions.map((loc) => {
             const checked = locations.includes(loc);
             return (
@@ -310,7 +312,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
 
       <div className="space-y-3">
         <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Specialization</p>
-        <div className="space-y-2 max-h-52 overflow-y-auto scroll-styled pr-1">
+        <div className="space-y-2 max-h-52 overflow-y-auto scroll-styled pe-1">
           {specializationOptions.map((spec) => {
             const checked = specializations.includes(spec);
             return (
@@ -344,7 +346,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
 
       <div className="space-y-3">
         <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Categories</p>
-        <div className="space-y-2 max-h-64 overflow-y-auto scroll-styled pr-1">
+        <div className="space-y-2 max-h-64 overflow-y-auto scroll-styled pe-1">
           {materialCategoryOptions.map((cat) => {
             const checked = materialCategories.includes(cat);
             return (
@@ -384,11 +386,11 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
             <Tabs value={tab} onValueChange={(v) => setTab(v === "materials" ? "materials" : "companies")}>
               <TabsList>
                 <TabsTrigger value="companies">
-                  <Building2 className="mr-1.5 h-3.5 w-3.5" />
+                  <Building2 className="me-1.5 h-3.5 w-3.5" />
                   Construction
                 </TabsTrigger>
                 <TabsTrigger value="materials">
-                  <Package className="mr-1.5 h-3.5 w-3.5" />
+                  <Package className="me-1.5 h-3.5 w-3.5" />
                   Materials
                 </TabsTrigger>
               </TabsList>
@@ -456,7 +458,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
       {/* â”€â”€ Search + sort bar â”€â”€ */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => { setSearch(e.target.value); if (aiSearchResults) clearAiSearch(); }}
@@ -466,7 +468,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                 ? "Search by company, city, area, or specialization..."
                 : "Search by supplier, city, or material type..."
             }
-            className="bg-background/60 pl-9 backdrop-blur-sm"
+            className="bg-background/60 ps-9 backdrop-blur-sm"
           />
         </div>
 
@@ -559,7 +561,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
               <button
                 type="button"
                 onClick={() => { setOnlyVerified(false); setLocations([]); setSpecializations([]); }}
-                className="text-xs text-muted-foreground hover:text-foreground underline ml-1"
+                className="text-xs text-muted-foreground hover:text-foreground underline ms-1"
               >
                 Clear all
               </button>
@@ -588,7 +590,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
               <button
                 type="button"
                 onClick={() => { setMaterialCategories([]); setOnlyVerifiedSupplier(false); }}
-                className="text-xs text-muted-foreground hover:text-foreground underline ml-1"
+                className="text-xs text-muted-foreground hover:text-foreground underline ms-1"
               >
                 Clear all
               </button>
@@ -613,7 +615,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                 <button
                   type="button"
                   onClick={() => setFiltersOpen((o) => !o)}
-                  className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-white/5"
+                  className="flex w-full items-center justify-between px-5 py-4 text-start transition-colors hover:bg-white/5"
                 >
                   <div className="flex items-center gap-2">
                     <Filter className="h-3.5 w-3.5 text-primary" />
@@ -656,7 +658,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
             </div>
 
             {/* â”€â”€ Company cards â”€â”€ */}
-            <div className="space-y-4 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scroll-styled pr-1">
+            <div className="space-y-4 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scroll-styled pe-1">
               {loading ? (
                 <div className="grid gap-4 sm:grid-cols-2">
                   {Array.from({ length: 6 }).map((_, i) => (
@@ -717,7 +719,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                 <button
                   type="button"
                   onClick={() => setCompareOpen((o) => !o)}
-                  className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-white/5"
+                  className="flex w-full items-center justify-between px-5 py-4 text-start transition-colors hover:bg-white/5"
                 >
                   <div className="flex items-center gap-2">
                     <Building2 className="h-3.5 w-3.5 text-primary" />
@@ -814,7 +816,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                 <button
                   type="button"
                   onClick={() => setFiltersOpen((o) => !o)}
-                  className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-white/5"
+                  className="flex w-full items-center justify-between px-5 py-4 text-start transition-colors hover:bg-white/5"
                 >
                   <div className="flex items-center gap-2">
                     <Filter className="h-3.5 w-3.5 text-primary" />
@@ -857,7 +859,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
             </div>
 
             {/* â”€â”€ Supplier cards â”€â”€ */}
-            <div className="space-y-4 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scroll-styled pr-1">
+            <div className="space-y-4 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scroll-styled pe-1">
               {loading ? (
                 <div className="grid gap-4 sm:grid-cols-2">
                   {Array.from({ length: 6 }).map((_, i) => (
@@ -918,7 +920,7 @@ function ClientCompaniesView({ defaultTab, hideTabs }: { defaultTab?: "companies
                 <button
                   type="button"
                   onClick={() => setCompareOpen((o) => !o)}
-                  className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-white/5"
+                  className="flex w-full items-center justify-between px-5 py-4 text-start transition-colors hover:bg-white/5"
                 >
                   <div className="flex items-center gap-2">
                     <Package className="h-3.5 w-3.5 text-primary" />
@@ -1110,11 +1112,11 @@ function CompanyCard({
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
         />
         {/* Verified badge */}
-        <div className="absolute left-3 top-3">
+        <div className="absolute start-3 top-3">
           {company.verified ? <StatusBadge status="verified" /> : null}
         </div>
         {/* Match score */}
-        <div className="absolute right-3 top-3">
+        <div className="absolute end-3 top-3">
           <MatchScoreRing score={company.matchScore} size={42} />
         </div>
         {/* Name + primary city overlay */}
@@ -1266,7 +1268,7 @@ function CompanyCard({
             className="w-full text-xs"
             onClick={(e) => { e.stopPropagation(); onMessage(); }}
           >
-            <MessageSquare className="mr-1 h-3 w-3" />
+            <MessageSquare className="me-1 h-3 w-3" />
             Message
           </Button>
           <Button
@@ -1277,7 +1279,7 @@ function CompanyCard({
             onClick={(e) => { e.stopPropagation(); onToggleCompare(); }}
             disabled={compareDisabled}
           >
-            {compareSelected ? <Check className="mr-1 h-3 w-3" /> : <Plus className="mr-1 h-3 w-3" />}
+            {compareSelected ? <Check className="me-1 h-3 w-3" /> : <Plus className="me-1 h-3 w-3" />}
             {compareSelected ? "Added" : "Compare"}
           </Button>
         </div>
@@ -1336,11 +1338,11 @@ function SupplierCard({
           <div className="h-full w-full bg-gradient-to-br from-emerald-900/40 to-teal-900/30 transition-transform duration-500 group-hover:scale-[1.05]" />
         )}
         {/* Verified */}
-        <div className="absolute left-3 top-3">
+        <div className="absolute start-3 top-3">
           {s.verified ? <StatusBadge status="verified" /> : null}
         </div>
         {/* Material count */}
-        <div className="absolute right-3 top-3">
+        <div className="absolute end-3 top-3">
           <span className="flex items-center gap-1 rounded-lg bg-background/30 backdrop-blur-sm px-2 py-1 text-[11px] font-semibold text-white">
             <Package className="h-3 w-3" />
             {s.materialCount} items
@@ -1416,7 +1418,7 @@ function SupplierCard({
             className="w-full text-xs"
             onClick={(e) => { e.stopPropagation(); onMessage(); }}
           >
-            <MessageSquare className="mr-1 h-3 w-3" />
+            <MessageSquare className="me-1 h-3 w-3" />
             Message
           </Button>
           <Button
@@ -1427,7 +1429,7 @@ function SupplierCard({
             onClick={(e) => { e.stopPropagation(); onToggleCompare(); }}
             disabled={compareDisabled}
           >
-            {compareSelected ? <Check className="mr-1 h-3 w-3" /> : <Plus className="mr-1 h-3 w-3" />}
+            {compareSelected ? <Check className="me-1 h-3 w-3" /> : <Plus className="me-1 h-3 w-3" />}
             {compareSelected ? "Added" : "Compare"}
           </Button>
         </div>
@@ -1678,11 +1680,11 @@ function AdminCompaniesView() {
         <Tabs value={tab} onValueChange={(v) => setTab(v as "companies" | "materials")}>
           <TabsList>
             <TabsTrigger value="companies">
-              <Building2 className="mr-1.5 h-3.5 w-3.5" />
+              <Building2 className="me-1.5 h-3.5 w-3.5" />
               Construction Companies
             </TabsTrigger>
             <TabsTrigger value="materials">
-              <Package className="mr-1.5 h-3.5 w-3.5" />
+              <Package className="me-1.5 h-3.5 w-3.5" />
               Materials &amp; Suppliers
             </TabsTrigger>
           </TabsList>
@@ -1693,7 +1695,7 @@ function AdminCompaniesView() {
       <GlassCard interactive={false} className="p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -1702,7 +1704,7 @@ function AdminCompaniesView() {
                   ? "Search by company name, city, or specialization..."
                   : "Search by supplier, city, or material category..."
               }
-              className="bg-background/40 pl-9"
+              className="bg-background/40 ps-9"
             />
           </div>
           <p className="shrink-0 text-sm text-muted-foreground">
@@ -1738,7 +1740,7 @@ function AdminCompaniesView() {
                 <TableHead>Rating</TableHead>
                 <TableHead>Price Range</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead className="text-end">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -1763,7 +1765,7 @@ function AdminCompaniesView() {
                       <TableCell>
                         {c.verified ? <StatusBadge status="verified" /> : <StatusBadge status="pending" />}
                       </TableCell>
-                      <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                      <TableCell className="text-end" onClick={(e) => e.stopPropagation()}>
                         <Button size="sm" variant="secondary" onClick={() => navigate(`/companies/${c.id}`)}>
                           View
                         </Button>
@@ -1789,7 +1791,7 @@ function AdminCompaniesView() {
                   <TableHead>Materials</TableHead>
                   <TableHead>Rating</TableHead>
                   <TableHead>Price Range</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  <TableHead className="text-end">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -1816,7 +1818,7 @@ function AdminCompaniesView() {
                         <TableCell className="text-foreground">{s.materialCount}</TableCell>
                         <TableCell className="text-foreground">{s.rating > 0 ? s.rating : " - "}</TableCell>
                         <TableCell className="text-muted-foreground">{priceText}</TableCell>
-                        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                        <TableCell className="text-end" onClick={(e) => e.stopPropagation()}>
                           <Button size="sm" variant="secondary" onClick={() => navigate(`/suppliers/${s.id}`)}>
                             View
                           </Button>

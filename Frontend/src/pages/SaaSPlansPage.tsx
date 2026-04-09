@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   Check, Sparkles, Zap, Crown, Building2, Package,
   ArrowRight, Shield, Star, TrendingUp, Users, Bot,
@@ -230,7 +231,7 @@ function PlanCard({ plan, annual }: { plan: PlanData; annual: boolean }) {
       >
         {/* Badge */}
         {plan.badge && (
-          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
+          <div className="absolute -top-3.5 start-1/2 -translate-x-1/2 z-10">
             <Badge
               className={cn(
                 "rounded-full px-3 py-0.5 text-[11px] font-semibold shadow-lg",
@@ -332,8 +333,8 @@ function PlanCard({ plan, annual }: { plan: PlanData; annual: boolean }) {
             disabled={isBase}
           >
             {plan.cta}
-            {isPro && <ArrowRight className="ml-1.5 h-4 w-4" />}
-            {isPremium && <Crown className="ml-1.5 h-4 w-4" />}
+            {isPro && <ArrowRight className="ms-1.5 h-4 w-4" />}
+            {isPremium && <Crown className="ms-1.5 h-4 w-4" />}
           </Button>
         </div>
       </GlassCard>
@@ -358,7 +359,7 @@ function FAQItemComponent({ item, index }: { item: FAQItem; index: number }) {
     >
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-start justify-between gap-4 rounded-2xl border border-border/50 bg-card/50 px-5 py-4 text-left transition-colors hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+        className="flex w-full items-start justify-between gap-4 rounded-2xl border border-border/50 bg-card/50 px-5 py-4 text-start transition-colors hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         aria-expanded={open}
       >
         <span className="text-sm font-medium text-foreground">{item.q}</span>
@@ -391,6 +392,7 @@ function FAQItemComponent({ item, index }: { item: FAQItem; index: number }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function SaaSPlansPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const [annual, setAnnual] = useState(false);
 
@@ -406,9 +408,9 @@ export default function SaaSPlansPage() {
   return (
     <div className="relative min-h-screen">
       {/* Background glows */}
-      <div className="pointer-events-none absolute left-1/4 top-0 h-80 w-80 rounded-full bg-primary/6 blur-[100px]" />
-      <div className="pointer-events-none absolute right-1/4 top-32 h-64 w-64 rounded-full bg-amber-500/5 blur-[80px]" />
-      <div className="pointer-events-none absolute bottom-0 left-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-[#D4AF37]/5 blur-[80px]" />
+      <div className="pointer-events-none absolute start-1/4 top-0 h-80 w-80 rounded-full bg-primary/6 blur-[100px]" />
+      <div className="pointer-events-none absolute end-1/4 top-32 h-64 w-64 rounded-full bg-amber-500/5 blur-[80px]" />
+      <div className="pointer-events-none absolute bottom-0 start-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-[#D4AF37]/5 blur-[80px]" />
 
       <div className="relative mx-auto max-w-6xl space-y-16 px-4 py-8">
 
@@ -574,7 +576,7 @@ export default function SaaSPlansPage() {
                   </div>
                 </div>
               </div>
-              <blockquote className="flex-1 border-l border-primary/30 pl-5 text-sm italic text-muted-foreground">
+              <blockquote className="flex-1 border-s border-primary/30 ps-5 text-sm italic text-muted-foreground">
                 {isSupplier
                   ? '"Upgrading to Pro tripled our inbound order requests. The AI price insights help us stay ahead of market swings — genuinely game-changing for a supplier in Pakistan."'
                   : '"Since upgrading to Pro, our conversion rate from request to project jumped from 18% to 54%. The AI Advisor alone is worth every rupee."'}
@@ -635,7 +637,7 @@ export default function SaaSPlansPage() {
                   size="lg"
                   className="h-11 rounded-xl bg-gradient-to-r from-primary to-amber-500 px-8 font-semibold text-primary-foreground shadow-lg shadow-primary/25 hover:brightness-110"
                 >
-                  <Sparkles className="mr-2 h-4 w-4" />
+                  <Sparkles className="me-2 h-4 w-4" />
                   Start 14-day free trial
                 </Button>
                 <Button
@@ -643,12 +645,12 @@ export default function SaaSPlansPage() {
                   variant="outline"
                   className="h-11 rounded-xl border-border/60 px-8 font-semibold"
                 >
-                  <HeadphonesIcon className="mr-2 h-4 w-4" />
+                  <HeadphonesIcon className="me-2 h-4 w-4" />
                   Talk to sales
                 </Button>
               </div>
               <p className="mt-3 text-xs text-muted-foreground">
-                <Shield className="mr-1 inline h-3 w-3" />
+                <Shield className="me-1 inline h-3 w-3" />
                 No credit card required · Cancel anytime · PKR billing
               </p>
             </div>

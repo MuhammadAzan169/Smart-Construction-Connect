@@ -7,10 +7,12 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Button } from "@/components/ui/button";
 import { AnimatedBackground } from "@/components/shared/AnimatedBackground";
+import { useTranslation } from "react-i18next";
 
 export function DashboardLayout() {
   const { isAuthenticated, user, logout } = useAuthStore();
   const location = useLocation();
+  const { t } = useTranslation();
 
   if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
@@ -34,12 +36,12 @@ export function DashboardLayout() {
             >
               <span className="text-3xl">⏳</span>
             </motion.div>
-            <h2 className="mb-2 text-xl font-semibold text-foreground">Pending approval</h2>
+            <h2 className="mb-2 text-xl font-semibold text-foreground">{t("auth.pendingApproval")}</h2>
             <p className="mb-6 text-sm text-muted-foreground">
-              Your {user.role} account is awaiting admin verification. You’ll be notified once access is granted.
+              {t("auth.pendingApprovalDesc", { role: user.role })}
             </p>
             <Button variant="secondary" onClick={logout}>
-              Sign out
+              {t("common.signOut")}
             </Button>
           </GlassCard>
         </motion.div>
@@ -50,7 +52,7 @@ export function DashboardLayout() {
   return (
     <SidebarProvider defaultOpen>
       <AppSidebar />
-      <SidebarInset className="relative bg-background border-l border-border">
+      <SidebarInset className="relative bg-background border-s border-border">
         <TopNavbar />
         <main className="relative flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
           <AnimatePresence mode="wait" initial={false}>

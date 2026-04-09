@@ -271,7 +271,7 @@ export default function AIChatPage() {
         {/* Header */}
         <div className="relative flex items-center gap-3 border-b border-border px-5 py-4 overflow-hidden">
           {/* Subtle glow behind bot icon */}
-          <div className="absolute left-0 top-0 h-full w-32 bg-gradient-to-r from-primary/8 to-transparent pointer-events-none" />
+          <div className="absolute start-0 top-0 h-full w-32 bg-gradient-to-r from-primary/8 to-transparent pointer-events-none" />
           <button
             type="button"
             onClick={() => navigate("/dashboard")}
@@ -326,7 +326,7 @@ export default function AIChatPage() {
                   key={s}
                   type="button"
                   onClick={() => { setInput(s); }}
-                  className="rounded-xl border border-border bg-secondary/50 px-3 py-1.5 text-xs text-muted-foreground hover:border-primary/30 hover:bg-secondary hover:text-foreground transition-colors text-left"
+                  className="rounded-xl border border-border bg-secondary/50 px-3 py-1.5 text-xs text-muted-foreground hover:border-primary/30 hover:bg-secondary hover:text-foreground transition-colors text-start"
                 >
                   {s}
                 </button>
@@ -369,7 +369,7 @@ export default function AIChatPage() {
                     <>
                       {renderMarkdown(msg.text)}
                       {msg.isStreaming && (
-                        <span className="inline-block w-1.5 h-4 ml-0.5 bg-primary/60 animate-pulse rounded-sm" />
+                        <span className="inline-block w-1.5 h-4 ms-0.5 bg-primary/60 animate-pulse rounded-sm" />
                       )}
                     </>
                   ) : msg.text}
@@ -668,7 +668,7 @@ export default function AIChatPage() {
                 >
                   <div className="rounded-xl border border-border bg-card/60 p-3.5 hover:border-primary/20 hover:bg-card transition-all duration-200 relative overflow-hidden">
                     {/* Rank badge */}
-                    <div className={`absolute top-0 right-0 rounded-bl-xl px-2 py-0.5 text-[9px] font-bold ${
+                    <div className={`absolute top-0 end-0 rounded-bl-xl px-2 py-0.5 text-[9px] font-bold ${
                       i === 0 ? "bg-amber-500/15 text-amber-600" :
                       i === 1 ? "bg-slate-500/15 text-slate-500" :
                       "bg-orange-500/15 text-orange-600"
@@ -679,7 +679,7 @@ export default function AIChatPage() {
                     {/* Top row: score + name */}
                     <div className="flex items-start gap-3">
                       <MatchScoreRing score={rec.score} size={44} />
-                      <div className="flex-1 min-w-0 pr-8">
+                      <div className="flex-1 min-w-0 pe-8">
                         <div className="flex items-center gap-1.5 mb-0.5">
                           {rec.type === "company" ? (
                             <Building2 className="h-3 w-3 text-primary shrink-0" />

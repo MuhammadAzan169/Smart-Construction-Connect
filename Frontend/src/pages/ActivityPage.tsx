@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ const actionColors: Record<string, string> = {
 };
 
 export default function ActivityPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   const [log, setLog] = useState<LogEntry[]>([]);
@@ -128,11 +130,11 @@ export default function ActivityPage() {
             <ArrowLeft className="h-4 w-4" />
             Dashboard
           </Button>
-          <h1 className="text-2xl font-bold text-foreground">Activity Log</h1>
-          <p className="text-sm text-muted-foreground">Platform-wide activity and audit trail.</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("activityPage.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("activityPage.subtitle")}</p>
         </div>
         <Button variant="outline" size="sm" onClick={fetchData} disabled={loading}>
-          <RefreshCw className={`h-4 w-4 mr-1.5 ${loading ? "animate-spin" : ""}`} />
+          <RefreshCw className={`h-4 w-4 me-1.5 ${loading ? "animate-spin" : ""}`} />
           Refresh
         </Button>
       </motion.div>
@@ -140,12 +142,12 @@ export default function ActivityPage() {
       {/* Search & Filter */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search activity..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="ps-9"
           />
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -154,7 +156,7 @@ export default function ActivityPage() {
             size="sm"
             onClick={() => setActiveFilter(null)}
           >
-            <Filter className="h-3 w-3 mr-1" /> All
+            <Filter className="h-3 w-3 me-1" /> All
           </Button>
           {actionTypes.slice(0, 6).map((type) => (
             <Button

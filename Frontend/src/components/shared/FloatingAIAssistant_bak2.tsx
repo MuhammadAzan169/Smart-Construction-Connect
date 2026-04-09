@@ -1,4 +1,4 @@
-﻿import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, X, Send, Sparkles, ArrowRight, Building2, Users, Package, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -43,7 +43,7 @@ export function FloatingAIAssistant() {
     {
       id: 1,
       role: "ai",
-      text: "Hi! ðŸ‘‹ I'm the Smart Construction Connect AI. Ask me about finding construction companies, material suppliers, or how the platform works.",
+      text: "Hi! 👋 I'm the Smart Construction Connect AI. Ask me about finding construction companies, material suppliers, or how the platform works.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -112,7 +112,7 @@ export function FloatingAIAssistant() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 transition-shadow hover:shadow-xl hover:shadow-primary/30"
+            className="fixed bottom-6 end-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 transition-shadow hover:shadow-xl hover:shadow-primary/30"
             aria-label="Open AI Assistant"
           >
             <Bot className="h-6 w-6" />
@@ -131,7 +131,7 @@ export function FloatingAIAssistant() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-6 right-6 z-50 flex h-[520px] w-[380px] flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
+            className="fixed bottom-6 end-6 z-50 flex h-[520px] w-[380px] flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center gap-3 border-b border-border bg-gradient-to-r from-primary/5 to-transparent px-4 py-3">
@@ -191,7 +191,7 @@ export function FloatingAIAssistant() {
                   </div>
                   <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md bg-secondary px-3 py-2">
                     <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">Thinkingâ€¦</span>
+                    <span className="text-xs text-muted-foreground">Thinking…</span>
                   </div>
                 </div>
               )}

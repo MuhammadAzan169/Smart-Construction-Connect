@@ -1,11 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { AnimatedBackground } from "@/components/shared/AnimatedBackground";
 import { Button } from "@/components/ui/button";
 
 const NotFound = () => {
+  const { t } = useTranslation();
   const location = useLocation();
 
   useEffect(() => {

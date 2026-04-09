@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 import { GlassCard } from "@/components/shared/GlassCard";
 import { StaggerList, StaggerItem, ConfirmModal } from "@/components/shared/AnimationPrimitives";
@@ -47,6 +48,7 @@ const unitOptions = ["bag", "ton", "kg", "cft", "sqft", "ft", "piece", "sheet", 
 const emptyMaterial: Material = { name: "", category: "", brand: "", price: 0, unit: "bag", stock: 0, description: "", image_urls: [] };
 
 export default function InventoryPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const { toast } = useToast();
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -187,8 +189,8 @@ export default function InventoryPage() {
             <ArrowLeft className="h-4 w-4" />
             Dashboard
           </Button>
-          <h1 className="text-2xl font-bold text-foreground">Inventory</h1>
-          <p className="text-sm text-muted-foreground">Material cards with pricing controls and stock visibility.</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("inventory.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("inventory.subtitle")}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
@@ -358,7 +360,7 @@ export default function InventoryPage() {
               disabled={!editingMaterial.name.trim() || !editingMaterial.category || saving}
               onClick={commitMaterial}
             >
-              {saving ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null}
+              {saving ? <Loader2 className="me-1.5 h-3.5 w-3.5 animate-spin" /> : null}
               {editingMaterialIdx >= 0 ? "Update" : "Add"} Material
             </Button>
           </div>
@@ -420,7 +422,7 @@ export default function InventoryPage() {
                       )}
                     </div>
                   </div>
-                  <div className="text-right shrink-0">
+                  <div className="text-end shrink-0">
                     <p className="text-xs font-semibold tracking-wide text-muted-foreground">PRICE</p>
                     <p className="mt-1 text-lg font-bold text-foreground">{formatPKR(m.price)}</p>
                   </div>

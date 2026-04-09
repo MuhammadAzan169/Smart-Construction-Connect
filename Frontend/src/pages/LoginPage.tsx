@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { AnimatedBackground } from "@/components/shared/AnimatedBackground";
 import { ParticleBackground } from "@/components/shared/ParticleBackground";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
   Building2,
@@ -30,11 +31,11 @@ import {
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
-};
+} as const;
 const itemVariants = {
   hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
-};
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
+} as const;
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -46,12 +47,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const roles: { value: UserRole; label: string; desc: string; icon: ElementType; gradient: string }[] = [
-    { value: "client", label: "Client", desc: "Browse & compare", icon: UserRound, gradient: "from-blue-500/20 to-cyan-500/10" },
-    { value: "company", label: "Company", desc: "Manage leads & projects", icon: Building2, gradient: "from-amber-500/20 to-orange-500/10" },
-    { value: "supplier", label: "Supplier", desc: "Inventory & pricing", icon: Package, gradient: "from-emerald-500/20 to-green-500/10" },
-    { value: "admin", label: "Admin", desc: "Approvals & oversight", icon: ShieldCheck, gradient: "from-purple-500/20 to-violet-500/10" },
+    { value: "client", label: t("roles.client"), desc: t("roles.clientDesc"), icon: UserRound, gradient: "from-blue-500/20 to-cyan-500/10" },
+    { value: "company", label: t("roles.company"), desc: t("roles.companyDesc"), icon: Building2, gradient: "from-amber-500/20 to-orange-500/10" },
+    { value: "supplier", label: t("roles.supplier"), desc: t("roles.supplierDesc"), icon: Package, gradient: "from-emerald-500/20 to-green-500/10" },
+    { value: "admin", label: t("roles.admin"), desc: t("roles.adminDesc"), icon: ShieldCheck, gradient: "from-purple-500/20 to-violet-500/10" },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,22 +64,22 @@ export default function LoginPage() {
       await login(email, password, role);
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      setError(err.message || t("auth.signInFailed"));
     } finally {
       setLoading(false);
     }
   };
 
   const stats = [
-    { icon: Building2, value: "500+", label: "Verified Companies" },
-    { icon: TrendingUp, value: "12K+", label: "Projects Completed" },
-    { icon: UserRound, value: "8K+", label: "Active Clients" },
+    { icon: Building2, value: "500+", label: t("auth.verifiedCompanies") },
+    { icon: TrendingUp, value: "12K+", label: t("auth.projectsCompleted") },
+    { icon: UserRound, value: "8K+", label: t("auth.activeClients") },
   ];
 
   const features = [
-    { icon: ShieldCheck, title: "Verified ecosystem", desc: "Partners screened for quality and reliability." },
-    { icon: Zap, title: "Real-time requests", desc: "Track, accept, reject with clear status flows." },
-    { icon: Package, title: "Supplier inventory", desc: "Material catalogs with live pricing & stock." },
+    { icon: ShieldCheck, title: t("landing.verifiedPartners"), desc: t("landing.verifiedPartnersDesc") },
+    { icon: Zap, title: t("landing.smartMatching"), desc: t("landing.smartMatchingDesc") },
+    { icon: Package, title: t("landing.marketInsights"), desc: t("landing.marketInsightsDesc") },
   ];
 
   return (
@@ -96,7 +98,7 @@ export default function LoginPage() {
           {/* Decorative blobs */}
           <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-highlight/10 blur-3xl" />
-          <div className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-premium/5 blur-2xl" />
+          <div className="pointer-events-none absolute start-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-premium/5 blur-2xl" />
 
           <div className="relative flex h-full w-full flex-col justify-between">
             {/* Brand */}
@@ -184,7 +186,7 @@ export default function LoginPage() {
                 onClick={() => navigate("/")}
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back to home
+                {t("common.back")}
               </Button>
             </motion.div>
 
@@ -205,15 +207,15 @@ export default function LoginPage() {
                       <HardHat className="h-5 w-5 text-primary-foreground" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-extrabold text-foreground">Welcome back</h2>
-                      <p className="text-xs text-muted-foreground">Sign in to your workspace</p>
+                      <h2 className="text-xl font-extrabold text-foreground">{t("auth.welcomeBack")}</h2>
+                      <p className="text-xs text-muted-foreground">{t("auth.signInWorkspace")}</p>
                     </div>
                   </motion.div>
 
                   {/* Role selector */}
                   <motion.div variants={itemVariants}>
                     <p className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      Select your role
+                      {t("auth.chooseRole")}
                     </p>
                     <div className="grid grid-cols-2 gap-2">
                       {roles.map((r) => {
@@ -227,7 +229,7 @@ export default function LoginPage() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.97 }}
                             className={cn(
-                              "relative flex items-start gap-2.5 overflow-hidden rounded-2xl border p-3 text-left transition-all duration-200",
+                              "relative flex items-start gap-2.5 overflow-hidden rounded-2xl border p-3 text-start transition-all duration-200",
                               selected
                                 ? "border-primary/70 bg-primary/10 shadow-sm shadow-primary/20"
                                 : "border-border/60 bg-background/20 hover:border-primary/30 hover:bg-background/40",
@@ -251,7 +253,7 @@ export default function LoginPage() {
                               <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{r.desc}</p>
                             </div>
                             {selected && (
-                              <CheckCircle2 className="absolute right-2 top-2 h-3.5 w-3.5 text-primary" />
+                              <CheckCircle2 className="absolute end-2 top-2 h-3.5 w-3.5 text-primary" />
                             )}
                           </motion.button>
                         );
@@ -270,10 +272,10 @@ export default function LoginPage() {
                     {/* Email */}
                     <motion.div variants={itemVariants} className="space-y-1.5">
                       <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Email address
+                        {t("auth.emailLabel")}
                       </Label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                        <Mail className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                         <Input
                           id="email"
                           type="email"
@@ -281,7 +283,7 @@ export default function LoginPage() {
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="you@company.com"
                           required
-                          className="bg-background/30 pl-9 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
+                          className="bg-background/30 ps-9 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
                         />
                       </div>
                     </motion.div>
@@ -290,14 +292,14 @@ export default function LoginPage() {
                     <motion.div variants={itemVariants} className="space-y-1.5">
                       <div className="flex items-center justify-between">
                         <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                          Password
+                          {t("auth.password")}
                         </Label>
                         <Button type="button" variant="link" className="h-auto p-0 text-xs text-muted-foreground hover:text-primary">
-                          Forgot password?
+                          {t("auth.forgotPassword")}
                         </Button>
                       </div>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                        <Lock className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                         <Input
                           id="password"
                           type={showPw ? "text" : "password"}
@@ -305,12 +307,12 @@ export default function LoginPage() {
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="••••••••"
                           required
-                          className="bg-background/30 pl-9 pr-10 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
+                          className="bg-background/30 ps-9 pe-10 transition-all focus:bg-background/50 focus:ring-2 focus:ring-primary/30"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPw(!showPw)}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted-foreground/60 transition-colors hover:bg-accent hover:text-foreground"
+                          className="absolute end-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted-foreground/60 transition-colors hover:bg-accent hover:text-foreground"
                           aria-label={showPw ? "Hide password" : "Show password"}
                         >
                           {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -326,7 +328,7 @@ export default function LoginPage() {
                           onCheckedChange={(v) => setRemember(Boolean(v))}
                           className="rounded-md"
                         />
-                        <span>Stay signed in on this device</span>
+                        <span>{t("auth.rememberMe")}</span>
                       </label>
                     </motion.div>
 
@@ -368,7 +370,7 @@ export default function LoginPage() {
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                               </svg>
-                              Signing in…
+                              {t("auth.signingIn")}
                             </motion.span>
                           ) : (
                             <motion.span
@@ -379,7 +381,7 @@ export default function LoginPage() {
                               className="flex items-center justify-center gap-2"
                             >
                               <Sparkles className="h-4 w-4" />
-                              Sign In
+                              {t("common.signIn")}
                             </motion.span>
                           )}
                         </AnimatePresence>
@@ -397,9 +399,9 @@ export default function LoginPage() {
                 </form>
 
                 <p className="mt-6 text-center text-sm text-muted-foreground">
-                  Don&apos;t have an account?{" "}
+                  {t("auth.signUpInstead")}{" "}
                   <Link to="/signup" className="font-semibold text-primary transition-colors hover:text-highlight hover:underline">
-                    Create one free
+                    {t("common.signUp")}
                   </Link>
                 </p>
               </div>

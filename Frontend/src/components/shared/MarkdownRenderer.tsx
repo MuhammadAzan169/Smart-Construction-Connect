@@ -46,7 +46,7 @@ export function renderMarkdown(text: string): React.ReactNode {
     const ordered = listItems[0].ordered;
     const Tag = ordered ? "ol" : "ul";
     elements.push(
-      <Tag key={`list-${elements.length}`} className={`my-1.5 ml-4 space-y-0.5 ${ordered ? "list-decimal" : "list-disc"}`}>
+      <Tag key={`list-${elements.length}`} className={`my-1.5 ms-4 space-y-0.5 ${ordered ? "list-decimal" : "list-disc"}`}>
         {listItems.map((li, i) => (
           <li key={i} className="text-sm leading-relaxed">{inlineFormat(li.text)}</li>
         ))}
@@ -65,7 +65,7 @@ export function renderMarkdown(text: string): React.ReactNode {
             <thead>
               <tr className="border-b border-border bg-muted/50">
                 {headers.map((h, i) => (
-                  <th key={i} className="px-3 py-2 text-left font-semibold text-foreground">{inlineFormat(h.trim())}</th>
+                  <th key={i} className="px-3 py-2 text-start font-semibold text-foreground">{inlineFormat(h.trim())}</th>
                 ))}
               </tr>
             </thead>
@@ -145,7 +145,7 @@ export function renderMarkdown(text: string): React.ReactNode {
 
     // Headings
     const h3 = line.match(/^###\s+(.*)/);
-    if (h3) { elements.push(<h4 key={i} className="mt-3 mb-1 text-sm font-bold text-foreground border-l-2 border-primary pl-2">{inlineFormat(h3[1])}</h4>); continue; }
+    if (h3) { elements.push(<h4 key={i} className="mt-3 mb-1 text-sm font-bold text-foreground border-s-2 border-primary ps-2">{inlineFormat(h3[1])}</h4>); continue; }
     const h2 = line.match(/^##\s+(.*)/);
     if (h2) { elements.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground">{inlineFormat(h2[1])}</h3>); continue; }
     const h1 = line.match(/^#\s+(.*)/);
