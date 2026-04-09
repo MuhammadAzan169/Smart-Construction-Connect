@@ -294,7 +294,8 @@ class _EmbeddingIndex:
     def _needs_refresh(self) -> bool:
         ch = _file_hash(companies_dataset_path())
         sh = _file_hash(suppliers_dataset_path())
-        return ch != self._company_hash or sh != self._supplier_hash
+        with self._lock:
+            return ch != self._company_hash or sh != self._supplier_hash
 
     def build(self, force: bool = False):
         if self._built and not force and not self._needs_refresh():
@@ -342,16 +343,16 @@ class _EmbeddingIndex:
 
     def search_companies(self, query: str, top_k: int = 10) -> list[tuple[dict, float]]:
         self._ensure()
-        qv = self._qvec(query)
         with self._lock:
+            qv = self._qvec(query)
             scored = [(c, _cosine(qv, v)) for c, v in zip(self._companies, self._company_vecs)]
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored[:top_k]
 
     def search_suppliers(self, query: str, top_k: int = 10) -> list[tuple[dict, float]]:
         self._ensure()
-        qv = self._qvec(query)
         with self._lock:
+            qv = self._qvec(query)
             scored = [(s, _cosine(qv, v)) for s, v in zip(self._suppliers, self._supplier_vecs)]
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored[:top_k]

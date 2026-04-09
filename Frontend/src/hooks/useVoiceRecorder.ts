@@ -80,6 +80,16 @@ export function useVoiceRecorder() {
     return () => {
       if (state.audioUrl) URL.revokeObjectURL(state.audioUrl);
       clearInterval(durationIntervalRef.current);
+      // Clean up speech recognition and media recorder on unmount
+      shouldRestartRef.current = false;
+      try { recognitionRef.current?.abort(); } catch { /* */ }
+      recognitionRef.current = null;
+      const recorder = mediaRecorderRef.current;
+      if (recorder && recorder.state !== "inactive") {
+        recorder.stop();
+        recorder.stream.getTracks().forEach(t => t.stop());
+      }
+      mediaRecorderRef.current = null;
     };
   }, [state.audioUrl]);
 

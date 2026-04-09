@@ -8,7 +8,6 @@ interface User {
   display_name: string;
   email: string;
   role: UserRole;
-  avatar?: string;
   status?: 'active' | 'pending' | 'banned';
   phone?: string;
   company_slug?: string;
@@ -34,10 +33,22 @@ interface AuthState {
 let initialUser: User | null = null;
 try {
   const stored = typeof window !== 'undefined' ? localStorage.getItem('scc_user') : null;
-  if (stored) initialUser = JSON.parse(stored) as User;
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    // Validate minimum required fields before trusting localStorage data
+    if (parsed && typeof parsed === 'object' && parsed.email && parsed.role && parsed.user_id) {
+      initialUser = parsed as User;
+    } else {
+      localStorage.removeItem('scc_user');
+      localStorage.removeItem('scc_token');
+    }
+  }
 } catch {
   // Corrupt localStorage — start fresh
-  if (typeof window !== 'undefined') localStorage.removeItem('scc_user');
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('scc_user');
+    localStorage.removeItem('scc_token');
+  }
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -49,7 +60,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true, error: null });
     try {
       const raw = await api.auth.login(email, password, role);
-      const user = { ...raw, id: raw.user_id, name: raw.display_name, companyFile: raw.company_slug, supplierFile: raw.supplier_slug };
+      const user = { ...raw, role: raw.role as UserRole, status: raw.status as User['status'], id: raw.user_id, name: raw.display_name, companyFile: raw.company_slug, supplierFile: raw.supplier_slug };
       // Save JWT token separately for the API client
       if (raw.access_token) {
         localStorage.setItem('scc_token', raw.access_token);
@@ -66,7 +77,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true, error: null });
     try {
       const raw = await api.auth.signup(name, email, password, role, phone);
-      const user = { ...raw, id: raw.user_id, name: raw.display_name, companyFile: raw.company_slug, supplierFile: raw.supplier_slug };
+      const user = { ...raw, role: raw.role as UserRole, status: raw.status as User['status'], id: raw.user_id, name: raw.display_name, companyFile: raw.company_slug, supplierFile: raw.supplier_slug };
       if (raw.access_token) {
         localStorage.setItem('scc_token', raw.access_token);
       }

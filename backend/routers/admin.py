@@ -27,7 +27,7 @@ router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(re
 @router.get("/users")
 def list_all_users(
     page: int = Query(1, ge=1),
-    limit: int = Query(0, ge=0, le=500),
+    limit: int = Query(50, ge=1, le=500),
     role: str = Query("", description="Filter by role"),
     status: str = Query("", description="Filter by status"),
 ):
@@ -41,9 +41,8 @@ def list_all_users(
 
     total = len(users)
 
-    if limit > 0:
-        start = (page - 1) * limit
-        users = users[start:start + limit]
+    start = (page - 1) * limit
+    users = users[start:start + limit]
 
     result = []
     for u in users:

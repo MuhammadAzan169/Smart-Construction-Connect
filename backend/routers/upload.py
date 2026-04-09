@@ -60,7 +60,11 @@ def _safe_folder_name(name: str) -> str:
     name = name.strip().lower()
     name = re.sub(r"[^a-z0-9_-]", "-", name)
     name = re.sub(r"-+", "-", name).strip("-")
-    return name[:60] or "unknown"
+    name = name[:60] or "unknown"
+    # Guard against any path traversal that survived sanitization
+    if ".." in name or "/" in name or "\\" in name:
+        raise HTTPException(status_code=400, detail="Invalid entity name")
+    return name
 
 
 def _role_folder(role: str) -> str:
@@ -70,6 +74,12 @@ def _role_folder(role: str) -> str:
     if not folder:
         raise HTTPException(status_code=400, detail=f"Invalid role: {role}")
     return folder
+
+
+def _ensure_within(dest: Path, root: Path) -> None:
+    """Raise if resolved dest escapes the root directory (path traversal guard)."""
+    if not dest.resolve().is_relative_to(root.resolve()):
+        raise HTTPException(status_code=400, detail="Invalid path")
 
 
 @router.post("/image")
@@ -100,6 +110,7 @@ async def upload_image(
     role_dir = _role_folder(role)
     safe_name = _safe_folder_name(entity_name)
     folder = COMPANY_DATA_ROOT / role_dir / safe_name
+    _ensure_within(folder, COMPANY_DATA_ROOT)
     folder.mkdir(parents=True, exist_ok=True)
 
     ext = _IMG_EXT_MAP.get(content_type, "jpg")
@@ -144,6 +155,7 @@ async def upload_document(
     safe_doc_type = re.sub(r"[^a-z0-9_-]", "_", doc_type.strip().lower())[:40] or "document"
 
     folder = COMPANY_DATA_ROOT / role_dir / safe_name / "documents"
+    _ensure_within(folder, COMPANY_DATA_ROOT)
     folder.mkdir(parents=True, exist_ok=True)
 
     ext = _DOC_EXT_MAP.get(content_type, "pdf")
@@ -188,6 +200,7 @@ async def upload_gallery_image(
     safe_item = re.sub(r"[^a-z0-9_-]", "_", str(item_id).strip().lower())[:20] or "0"
 
     folder = COMPANY_DATA_ROOT / role_dir / safe_name / "gallery"
+    _ensure_within(folder, COMPANY_DATA_ROOT)
     folder.mkdir(parents=True, exist_ok=True)
 
     ext = _IMG_EXT_MAP.get(content_type, "jpg")
@@ -260,6 +273,7 @@ async def upload_message_file(
     safe_sender = _safe_email_folder(sender_email)
     safe_convo = re.sub(r"[^a-z0-9-]", "", conversation_id.strip().lower())[:60]
     folder = UPLOADS_ROOT / safe_sender / safe_convo
+    _ensure_within(folder, UPLOADS_ROOT)
     folder.mkdir(parents=True, exist_ok=True)
 
     # Generate unique filename

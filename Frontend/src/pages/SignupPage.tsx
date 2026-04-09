@@ -45,11 +45,11 @@ function passwordStrength(pw: string): { score: number; label: string; color: st
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.1 } },
-};
+} as const;
 const itemVariants = {
   hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.38, ease: "easeOut" } },
-};
+  visible: { opacity: 1, y: 0, transition: { duration: 0.38, ease: "easeOut" as const } },
+} as const;
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -82,10 +82,15 @@ export default function SignupPage() {
     e.preventDefault();
     setError("");
     if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
+    if (!/[A-Z]/.test(password)) { setError("Password must contain at least one uppercase letter."); return; }
+    if (!/[0-9]/.test(password)) { setError("Password must contain at least one digit."); return; }
+    if (!/[^A-Za-z0-9]/.test(password)) { setError("Password must contain at least one special character."); return; }
     if (password !== confirmPassword) { setError("Passwords do not match."); return; }
     setSubmitting(true);
     try {
-      await signup(name, email, password, role, phone);
+      // For business roles, use companyName as the display name if provided
+      const displayName = needsBusinessInfo && companyName.trim() ? companyName.trim() : name;
+      await signup(displayName, email, password, role, phone);
       navigate("/dashboard");
     } catch (err: any) {
       setError(err.message || "Signup failed");

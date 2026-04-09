@@ -47,11 +47,13 @@ function ClientDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     Promise.all([
-      api.companies.list().then((res) => setCompanies(res.items)).catch(() => {}),
-      api.requests.stats().then((s) => setRequestStats(s as typeof requestStats)).catch(() => {}),
-      api.requests.list().then((r) => setRecentRequests(r.slice(0, 5))).catch(() => {}),
-    ]).finally(() => setLoading(false));
+      api.companies.list().then((res) => { if (!cancelled) setCompanies(res.items); }).catch(() => {}),
+      api.requests.stats().then((s) => { if (!cancelled) setRequestStats(s as typeof requestStats); }).catch(() => {}),
+      api.requests.list().then((r) => { if (!cancelled) setRecentRequests(r.slice(0, 5)); }).catch(() => {}),
+    ]).finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   const topPicks = useMemo(() => {
@@ -352,18 +354,20 @@ function CompanyDashboard() {
   const [loadingReqs, setLoadingReqs] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     if (companySlug) {
       api.companies.getProfile(companySlug)
-        .then((d) => setProfile(d))
+        .then((d) => { if (!cancelled) setProfile(d); })
         .catch(() => {})
-        .finally(() => setLoadingProfile(false));
+        .finally(() => { if (!cancelled) setLoadingProfile(false); });
     } else {
       setLoadingProfile(false);
     }
     api.requests.list()
-      .then(setRequests)
+      .then((r) => { if (!cancelled) setRequests(r); })
       .catch(() => {})
-      .finally(() => setLoadingReqs(false));
+      .finally(() => { if (!cancelled) setLoadingReqs(false); });
+    return () => { cancelled = true; };
   }, [companySlug]);
 
   const activePackages = useMemo(() => {
@@ -843,10 +847,12 @@ function AdminDashboard() {
   const [activity, setActivity] = useState<{ timestamp: string; action: string; target: string; details: string }[]>([]);
 
   useEffect(() => {
+    let cancelled = false;
     Promise.all([
-      api.admin.getStats().then(setStats).catch(() => {}),
-      api.admin.getActivity().then(setActivity).catch(() => {}),
-    ]).finally(() => setLoading(false));
+      api.admin.getStats().then((s) => { if (!cancelled) setStats(s); }).catch(() => {}),
+      api.admin.getActivity().then((a) => { if (!cancelled) setActivity(a); }).catch(() => {}),
+    ]).finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   const recentActivity = activity.slice(0, 6);

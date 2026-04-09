@@ -77,10 +77,11 @@ export default function MessagesPage() {
   const audioPreviewRef = useRef<HTMLAudioElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimer = useRef<ReturnType<typeof setTimeout>>();
+  const [wsConnected, setWsConnected] = useState(false);
   const voice = useVoiceRecorder();
 
   const email = user?.email ?? "";
-  const token = useAuthStore((s) => s.token);
+  const token = typeof window !== 'undefined' ? localStorage.getItem('scc_token') : null;
 
   const loadConversations = useCallback(async () => {
     try {
@@ -107,8 +108,13 @@ export default function MessagesPage() {
       if (!alive) return;
       const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
       const host = window.location.host;
-      const ws = new WebSocket(`${proto}//${host}/api/messages/ws/${encodeURIComponent(email)}`);
+      const tokenParam = token ? `?token=${encodeURIComponent(token)}` : "";
+      const ws = new WebSocket(`${proto}//${host}/api/messages/ws/${encodeURIComponent(email)}${tokenParam}`);
       wsRef.current = ws;
+
+      ws.onopen = () => {
+        setWsConnected(true);
+      };
 
       ws.onmessage = (evt) => {
         try {
@@ -149,6 +155,7 @@ export default function MessagesPage() {
 
       ws.onclose = () => {
         wsRef.current = null;
+        setWsConnected(false);
         if (alive) {
           reconnectTimer.current = setTimeout(connect, 3000);
         }
@@ -541,9 +548,17 @@ export default function MessagesPage() {
                 <p className="text-sm font-semibold text-foreground truncate leading-tight">
                   {getOtherName(activeConvoData)}
                 </p>
-                <p className="text-[11px] text-muted-foreground truncate leading-tight">
-                  {getOtherEmail(activeConvoData)}
-                </p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-[11px] text-muted-foreground truncate leading-tight">
+                    {getOtherEmail(activeConvoData)}
+                  </p>
+                  {!wsConnected && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/15 px-1.5 py-0.5 text-[9px] font-medium text-yellow-500" title="Real-time connection lost — polling every 30s">
+                      <span className="h-1.5 w-1.5 rounded-full bg-yellow-500 animate-pulse" />
+                      Reconnecting
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -809,7 +824,7 @@ export default function MessagesPage() {
                 {voice.isSupported && (
                   <motion.button
                     type="button"
-                    onClick={voice.isRecording ? voice.stopRecording : voice.startRecording}
+                    onClick={() => voice.isRecording ? voice.stopRecording() : voice.startRecording()}
                     disabled={sending || voice.isPreviewing}
                     className={cn(
                       "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-colors disabled:opacity-40",

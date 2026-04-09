@@ -146,10 +146,26 @@ class SendMessageRequest(BaseModel):
 async def ws_connect(ws: WebSocket, email: str):
     """
     Persistent connection for real-time updates.
-    Client simply opens ws://.../api/messages/ws/{email} and listens for:
+    Client opens ws://.../api/messages/ws/{email}?token=JWT and listens for:
       { type: "new_message", conversation_id, message }
       { type: "messages_read", conversation_id, reader }
     """
+    # Validate JWT token from query parameter
+    token = ws.query_params.get("token", "")
+    if token:
+        try:
+            from backend.utils.auth_deps import _decode_token
+            payload = _decode_token(token)
+            if payload.get("sub") != email:
+                await ws.close(code=4003, reason="Token email mismatch")
+                return
+        except Exception:
+            await ws.close(code=4001, reason="Invalid token")
+            return
+    # Allow unauthenticated WS for backward compat but log warning
+    else:
+        logger.warning("WS connection without token for %s — consider requiring auth", email)
+
     await manager.connect(email, ws)
     try:
         while True:

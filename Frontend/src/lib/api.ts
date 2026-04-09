@@ -66,14 +66,13 @@ export interface UserResponse {
 export interface AdminUser {
   id: string;
   name: string;
+  display_name: string;
   email: string;
   role: string;
   status: string;
   joinDate?: string;
   phone?: string;
-  // Original field aliases (also returned by backend for backwards compat)
   user_id: string;
-  display_name: string;
   created_at?: string;
 }
 

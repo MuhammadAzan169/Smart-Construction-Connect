@@ -1039,6 +1039,7 @@ class FileProcessingService:
                 "content": ""
             }
         
+        tmp_path = None
         try:
             # Save file to temporary location
             with tempfile.NamedTemporaryFile(suffix=Path(filename).suffix, delete=False) as tmp:
@@ -1047,12 +1048,6 @@ class FileProcessingService:
             
             # Process the file
             result = self.processor.process_file(tmp_path)
-            
-            # Clean up temp file
-            try:
-                os.unlink(tmp_path)
-            except:
-                pass
             
             if result.success:
                 # Format the result for display
@@ -1084,6 +1079,12 @@ class FileProcessingService:
                 "error": str(e),
                 "content": ""
             }
+        finally:
+            if tmp_path:
+                try:
+                    os.unlink(tmp_path)
+                except OSError:
+                    pass
     
     def _format_extracted_content(self, result: ExtractionResult, filename: str) -> str:
         """Format extracted content for display"""

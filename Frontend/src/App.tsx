@@ -29,8 +29,35 @@ import MessagesPage from "./pages/MessagesPage";
 import AdminMessagesPage from "./pages/AdminMessagesPage";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { type ReactNode } from "react";
 
 const queryClient = new QueryClient();
+
+/** Page-level error boundary wrapper — catches crashes per-page without tearing down the app. */
+function PageBoundary({ children }: { children: ReactNode }) {
+  return (
+    <ErrorBoundary
+      fallback={
+        <div className="flex min-h-[60vh] items-center justify-center p-8">
+          <div className="rounded-2xl border border-border bg-card p-8 text-center shadow-sm max-w-md">
+            <h2 className="text-lg font-semibold text-foreground">Page Error</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              This page encountered an error. Other parts of the app still work.
+            </p>
+            <button
+              className="mt-4 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              onClick={() => window.location.reload()}
+            >
+              Reload page
+            </button>
+          </div>
+        </div>
+      }
+    >
+      {children}
+    </ErrorBoundary>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -45,26 +72,26 @@ const App = () => (
           <Route path="/signup" element={<SignupPage />} />
 
           <Route element={<DashboardLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/companies" element={<CompaniesPage />} />
-            <Route path="/companies/:id" element={<CompanyProfilePage />} />
-            <Route path="/suppliers/:id" element={<SupplierProfilePage />} />
-            <Route path="/requests" element={<RequestsPage />} />
-            <Route path="/ai-chat" element={<AIChatPage />} />
-            <Route path="/supplier-ai" element={<SupplierAIChatPage />} />
-            <Route path="/admin-ai" element={<AdminAIChatPage />} />
-            <Route path="/client-ai" element={<ClientAIChatPage />} />
-            <Route path="/company-ai" element={<CompanyAIChatPage />} />
-            <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/plans" element={<SaaSPlansPage />} />
-            <Route path="/products" element={<InventoryPage />} />
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/approvals" element={<ApprovalsPage />} />
-            <Route path="/activity" element={<ActivityPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/messages" element={<MessagesPage />} />
-            <Route path="/admin-messages" element={<AdminMessagesPage />} />
+            <Route path="/dashboard" element={<PageBoundary><Dashboard /></PageBoundary>} />
+            <Route path="/companies" element={<PageBoundary><CompaniesPage /></PageBoundary>} />
+            <Route path="/companies/:id" element={<PageBoundary><CompanyProfilePage /></PageBoundary>} />
+            <Route path="/suppliers/:id" element={<PageBoundary><SupplierProfilePage /></PageBoundary>} />
+            <Route path="/requests" element={<PageBoundary><RequestsPage /></PageBoundary>} />
+            <Route path="/ai-chat" element={<PageBoundary><AIChatPage /></PageBoundary>} />
+            <Route path="/supplier-ai" element={<PageBoundary><SupplierAIChatPage /></PageBoundary>} />
+            <Route path="/admin-ai" element={<PageBoundary><AdminAIChatPage /></PageBoundary>} />
+            <Route path="/client-ai" element={<PageBoundary><ClientAIChatPage /></PageBoundary>} />
+            <Route path="/company-ai" element={<PageBoundary><CompanyAIChatPage /></PageBoundary>} />
+            <Route path="/pricing" element={<PageBoundary><PricingPage /></PageBoundary>} />
+            <Route path="/plans" element={<PageBoundary><SaaSPlansPage /></PageBoundary>} />
+            <Route path="/products" element={<PageBoundary><InventoryPage /></PageBoundary>} />
+            <Route path="/users" element={<PageBoundary><UsersPage /></PageBoundary>} />
+            <Route path="/approvals" element={<PageBoundary><ApprovalsPage /></PageBoundary>} />
+            <Route path="/activity" element={<PageBoundary><ActivityPage /></PageBoundary>} />
+            <Route path="/analytics" element={<PageBoundary><AnalyticsPage /></PageBoundary>} />
+            <Route path="/settings" element={<PageBoundary><SettingsPage /></PageBoundary>} />
+            <Route path="/messages" element={<PageBoundary><MessagesPage /></PageBoundary>} />
+            <Route path="/admin-messages" element={<PageBoundary><AdminMessagesPage /></PageBoundary>} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

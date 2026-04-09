@@ -62,6 +62,14 @@ app.include_router(events.router)
 
 @app.on_event("startup")
 def on_startup():
+    # Validate critical dependencies are available
+    try:
+        import bcrypt  # noqa: F401
+    except ImportError:
+        raise RuntimeError(
+            "bcrypt is required for password hashing. Install it: pip install bcrypt"
+        )
+
     from backend.utils.embeddings import initialize_embeddings
     from backend.utils.rag_engine import rebuild_index
     initialize_embeddings()
