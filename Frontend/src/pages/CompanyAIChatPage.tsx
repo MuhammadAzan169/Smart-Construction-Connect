@@ -140,6 +140,53 @@ export default function CompanyAIChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
+  /* ── History callbacks ── */
+  const saveSession = useCallback(async (msgs: Message[]) => {
+    if (!user?.email || msgs.length < 2) return;
+    const title = msgs.find((m) => m.role === "user")?.text.slice(0, 60) ?? "New Chat";
+    try {
+      if (currentSessionId) {
+        const updated = await api.ai.updateChatSession(currentSessionId, { messages: msgs.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text })) });
+        setChatSessions((prev) => prev.map((s) => s.session_id === currentSessionId ? { ...s, ...updated } : s).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()));
+      } else {
+        const newSession = await api.ai.createChatSession(title, msgs.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text })));
+        setCurrentSessionId(newSession.session_id);
+        setChatSessions((prev) => [newSession, ...prev]);
+      }
+    } catch { /* silent */ }
+  }, [currentSessionId, user?.email]);
+
+  const loadSession = useCallback(async (sessionId: string) => {
+    try {
+      const session = await api.ai.getChatSession(sessionId);
+      setCurrentSessionId(sessionId);
+      setMessages(session.messages.map((m: { role: string; content: string }, i: number) => ({
+        id: i + 1,
+        role: m.role === "assistant" ? "ai" : "user",
+        text: m.content,
+      })));
+      nextIdRef.current = session.messages.length + 1;
+    } catch { /* silent */ }
+  }, []);
+
+  const startNewChat = useCallback(() => {
+    setCurrentSessionId(null);
+    setMessages([]);
+    api.ai.chat([], user?.email || "", "company").then((res) => {
+      setMessages([{ id: getNextId(), role: "ai", text: res.response }]);
+    }).catch(() => {
+      setMessages([{ id: getNextId(), role: "ai", text: "Hello! 🏗️ I'm your AI Business Advisor. Ask me about material sourcing, cost estimation, supplier comparisons, or market pricing." }]);
+    });
+  }, [user?.email, getNextId]);
+
+  const deleteSession = useCallback(async (sessionId: string) => {
+    try {
+      await api.ai.deleteChatSession(sessionId);
+      setChatSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
+      if (currentSessionId === sessionId) startNewChat();
+    } catch { /* silent */ }
+  }, [currentSessionId, startNewChat]);
+
   /* ── Send message (streaming) ── */
   const handleSend = useCallback(async (overrideText?: string) => {
     const text = (overrideText ?? input).trim();
@@ -224,53 +271,6 @@ export default function CompanyAIChatPage() {
   }, [profile, requests, user?.display_name]);
 
   const recentRequests = useMemo(() => requests.slice(0, 4), [requests]);
-
-  /* ── History callbacks ── */
-  const saveSession = useCallback(async (msgs: Message[]) => {
-    if (!user?.email || msgs.length < 2) return;
-    const title = msgs.find((m) => m.role === "user")?.text.slice(0, 60) ?? "New Chat";
-    try {
-      if (currentSessionId) {
-        const updated = await api.ai.updateChatSession(currentSessionId, { messages: msgs.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text })) });
-        setChatSessions((prev) => prev.map((s) => s.session_id === currentSessionId ? { ...s, ...updated } : s).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()));
-      } else {
-        const newSession = await api.ai.createChatSession(title, msgs.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text })));
-        setCurrentSessionId(newSession.session_id);
-        setChatSessions((prev) => [newSession, ...prev]);
-      }
-    } catch { /* silent */ }
-  }, [currentSessionId, user?.email]);
-
-  const loadSession = useCallback(async (sessionId: string) => {
-    try {
-      const session = await api.ai.getChatSession(sessionId);
-      setCurrentSessionId(sessionId);
-      setMessages(session.messages.map((m: { role: string; content: string }, i: number) => ({
-        id: i + 1,
-        role: m.role === "assistant" ? "ai" : "user",
-        text: m.content,
-      })));
-      nextIdRef.current = session.messages.length + 1;
-    } catch { /* silent */ }
-  }, []);
-
-  const startNewChat = useCallback(() => {
-    setCurrentSessionId(null);
-    setMessages([]);
-    api.ai.chat([], user?.email || "", "company").then((res) => {
-      setMessages([{ id: getNextId(), role: "ai", text: res.response }]);
-    }).catch(() => {
-      setMessages([{ id: getNextId(), role: "ai", text: "Hello! 🏗️ I'm your AI Business Advisor. Ask me about material sourcing, cost estimation, supplier comparisons, or market pricing." }]);
-    });
-  }, [user?.email, getNextId]);
-
-  const deleteSession = useCallback(async (sessionId: string) => {
-    try {
-      await api.ai.deleteChatSession(sessionId);
-      setChatSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
-      if (currentSessionId === sessionId) startNewChat();
-    } catch { /* silent */ }
-  }, [currentSessionId, startNewChat]);
 
   const injectPrompt = (s: string) => {
     setInput(s);
