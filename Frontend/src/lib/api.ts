@@ -137,6 +137,41 @@ export interface RequestStats {
   completed: number;
 }
 
+export interface EnrichedRecommendation {
+  id: string;
+  name: string;
+  type: "company" | "supplier";
+  score: number;
+  location?: string;
+  description?: string;
+  logo_url?: string;
+  dp_url?: string;
+  city?: string;
+  contact?: Record<string, string>;
+  services?: Record<string, unknown>;
+  construction_capability?: Record<string, unknown>;
+  verification_status?: string;
+  experience?: Record<string, unknown>;
+  year_established?: number;
+  ai_scores?: Record<string, number>;
+  min_price_sqft?: number;
+  max_price_sqft?: number;
+  gallery_images?: string[];
+  rating?: number;
+  materials?: Record<string, unknown>[];
+  cities_served?: string[];
+}
+
+export interface AdminFile {
+  filename: string;
+  url: string;
+  sender: string;
+  conversation_id: string;
+  category: string;
+  size: number;
+  uploaded_at: string;
+}
+
 // ── API client ───────────────────────────────────────────────────────────────
 
 export const api = {
@@ -243,6 +278,14 @@ export const api = {
         method: "PUT",
         body: JSON.stringify({ slug, entity_type: entityType, doc_type: docType, status, notes }),
       }),
+    listFiles: (fileType?: string, limit = 50) => {
+      const qs = new URLSearchParams();
+      if (fileType) qs.set("file_type", fileType);
+      qs.set("limit", String(limit));
+      return request<{ files: AdminFile[]; total: number }>(`/ai/admin/files?${qs.toString()}`);
+    },
+    deleteFile: (url: string) =>
+      request<{ status: string; deleted: string }>(`/ai/admin/files?url=${encodeURIComponent(url)}`, { method: "DELETE" }),
   },
 
   messages: {
@@ -395,6 +438,20 @@ export const api = {
       request<{ files: { id: string; filename: string; summary: string; keywords: string[] }[] }>(
         `/ai/session/${encodeURIComponent(email)}`
       ),
+    extractRequirements: (messages: { role: string; content: string }[], userEmail: string, userRole = "client") =>
+      request<{
+        requirements: Record<string, unknown>;
+        recommendations: EnrichedRecommendation[];
+        is_complete: boolean;
+        missing_fields: string[];
+      }>("/ai/requirements/extract", {
+        method: "POST",
+        body: JSON.stringify({ messages, user_email: userEmail, user_role: userRole }),
+      }),
+    getRequirements: (email: string) =>
+      request<{ requirements: Record<string, unknown> }>(`/ai/requirements/${encodeURIComponent(email)}`),
+    clearRequirements: (email: string) =>
+      request<{ status: string }>(`/ai/requirements/${encodeURIComponent(email)}`, { method: "DELETE" }),
   },
 
   requests: {

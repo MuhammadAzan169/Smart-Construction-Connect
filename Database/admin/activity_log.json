@@ -1,5 +1,35 @@
 [
   {
+    "timestamp": "2026-04-09T23:26:01.039343+00:00",
+    "action": "verification_updated",
+    "target": "gulberg-elite-developers",
+    "details": "Admin set ntn_certificate to approved for company gulberg-elite-developers"
+  },
+  {
+    "timestamp": "2026-04-09T23:25:59.455562+00:00",
+    "action": "verification_updated",
+    "target": "gulberg-elite-developers",
+    "details": "Admin set registration_certificate to approved for company gulberg-elite-developers"
+  },
+  {
+    "timestamp": "2026-04-09T23:25:58.194323+00:00",
+    "action": "verification_updated",
+    "target": "gulberg-elite-developers",
+    "details": "Admin set ntn_certificate to rejected for company gulberg-elite-developers"
+  },
+  {
+    "timestamp": "2026-04-09T23:25:53.740627+00:00",
+    "action": "verification_updated",
+    "target": "gulberg-elite-developers",
+    "details": "Admin set secp_certificate to approved for company gulberg-elite-developers"
+  },
+  {
+    "timestamp": "2026-04-09T23:25:49.997722+00:00",
+    "action": "verification_updated",
+    "target": "gulberg-elite-developers",
+    "details": "Admin set secp_certificate to rejected for company gulberg-elite-developers"
+  },
+  {
     "timestamp": "2026-04-08T17:42:48.164540+00:00",
     "action": "ai_chat",
     "target": "admin@smartconnect.pk",

@@ -254,6 +254,7 @@ const scopeOptions = getScopeValueOptions(companyDataset);
 // ─── Company Pricing Editor ───────────────────────────────────────────────────
 
 function CompanyPricingEditor({ email, companySlug }: { email: string; companySlug?: string }) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const company = useMemo(() => getCompanyByEmail(email) ?? null, [email]);
   const companyKey = company?.company_id ?? email;

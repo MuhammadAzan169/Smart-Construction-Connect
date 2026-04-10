@@ -447,6 +447,7 @@ const paymentOptions = getPaymentTermOptions(companyDataset);
 // ─── SettingsEditor ────────────────────────────────────────────────────────────
 
 function SettingsEditor({ email, companySlug }: { email: string; companySlug?: string }) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const company = useMemo(() => getCompanyByEmail(email) ?? null, [email]);

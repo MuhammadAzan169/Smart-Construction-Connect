@@ -4,17 +4,26 @@ import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { api, type Conversation, type Message } from "@/lib/api";
+import { api, type AdminFile, type Conversation, type Message } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 import {
   ArrowLeft,
   Bot,
+  Download,
+  FileText,
+  Filter,
+  FolderOpen,
+  Image as ImageIcon,
   Loader2,
   MessageSquare,
+  Music,
   Search,
   ShieldCheck,
   Sparkles,
+  Trash2,
+  Video,
+  Volume2,
   X,
 } from "lucide-react";
 
@@ -77,6 +86,11 @@ export default function AdminMessagesPage() {
   const [loading, setLoading] = useState(true);
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [summary, setSummary] = useState<{ text: string; messageCount: number; windowSize: number } | null>(null);
+  const [adminTab, setAdminTab] = useState<"conversations" | "files">("conversations");
+  const [adminFiles, setAdminFiles] = useState<AdminFile[]>([]);
+  const [filesLoading, setFilesLoading] = useState(false);
+  const [fileFilter, setFileFilter] = useState<string | undefined>(undefined);
+  const [fileDeleteUrl, setFileDeleteUrl] = useState<string | null>(null);
 
   const loadConversations = useCallback(async () => {
     try {
@@ -92,6 +106,32 @@ export default function AdminMessagesPage() {
   useEffect(() => {
     loadConversations();
   }, [loadConversations]);
+
+  const loadFiles = useCallback(async (filter?: string) => {
+    setFilesLoading(true);
+    try {
+      const data = await api.admin.listFiles(filter, 200);
+      setAdminFiles(data);
+    } catch {
+      // ignore
+    } finally {
+      setFilesLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (adminTab === "files") loadFiles(fileFilter);
+  }, [adminTab, fileFilter, loadFiles]);
+
+  const handleDeleteFile = async (url: string) => {
+    try {
+      await api.admin.deleteFile(url);
+      setAdminFiles((prev) => prev.filter((f) => f.url !== url));
+    } catch {
+      // ignore
+    }
+    setFileDeleteUrl(null);
+  };
 
   const openConversation = async (id: string) => {
     setActiveConvo(id);
@@ -158,84 +198,229 @@ export default function AdminMessagesPage() {
           </div>
         </div>
 
-        <div className="px-4 py-3 border-b border-border/60">
-          <div className="relative">
-            <Search className="absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name or email..."
-              className="w-full rounded-xl border border-transparent bg-secondary/50 ps-9 pe-3 h-9 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/30 transition-colors"
-            />
-          </div>
+        {/* Tab Switcher */}
+        <div className="flex border-b border-border">
+          <button
+            onClick={() => setAdminTab("conversations")}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors",
+              adminTab === "conversations"
+                ? "text-violet-600 dark:text-violet-400 border-b-2 border-violet-500"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <MessageSquare className="h-3.5 w-3.5" />
+            Chats
+          </button>
+          <button
+            onClick={() => setAdminTab("files")}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors",
+              adminTab === "files"
+                ? "text-violet-600 dark:text-violet-400 border-b-2 border-violet-500"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <FolderOpen className="h-3.5 w-3.5" />
+            Files
+          </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
-          {loading ? (
-            <div className="space-y-1 p-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex items-center gap-3 rounded-xl p-3">
-                  <div className="h-10 w-10 rounded-full animate-pulse bg-muted/50" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-3 w-2/3 rounded animate-pulse bg-muted/50" />
-                    <div className="h-2.5 w-4/5 rounded animate-pulse bg-muted/30" />
-                  </div>
-                </div>
-              ))}
+        {adminTab === "conversations" ? (
+          <>
+            <div className="px-4 py-3 border-b border-border/60">
+              <div className="relative">
+                <Search className="absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search by name or email..."
+                  className="w-full rounded-xl border border-transparent bg-secondary/50 ps-9 pe-3 h-9 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/30 transition-colors"
+                />
+              </div>
             </div>
-          ) : filteredConvos.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
-              <MessageSquare className="h-7 w-7 text-muted-foreground/40" />
-              <p className="text-sm font-medium text-foreground">
-                {search ? "No results" : "No conversations found"}
-              </p>
-            </div>
-          ) : (
-            <div className="p-2 space-y-0.5">
-              {filteredConvos.map((convo) => {
-                const isActive = activeConvo === convo.id;
-                return (
-                  <motion.button
-                    key={convo.id}
-                    onClick={() => openConversation(convo.id)}
-                    whileHover={{ x: 2 }}
-                    transition={{ duration: 0.15 }}
-                    className={cn(
-                      "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition-colors",
-                      isActive ? "bg-violet-500/10 border border-violet-500/20" : "hover:bg-secondary/50",
-                    )}
-                  >
-                    <div className="flex -space-x-3">
-                      {convo.participant_names.slice(0, 2).map((name, i) => (
-                        <ChatAvatar key={i} name={name} size="sm" />
-                      ))}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-foreground leading-tight">
-                        {convo.participant_names.join(" & ")}
-                      </p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <p className="truncate text-xs text-muted-foreground leading-tight">
-                          {convo.last_message?.content ?? "No messages"}
-                        </p>
+
+            <div className="flex-1 overflow-y-auto">
+              {loading ? (
+                <div className="space-y-1 p-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="flex items-center gap-3 rounded-xl p-3">
+                      <div className="h-10 w-10 rounded-full animate-pulse bg-muted/50" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-3 w-2/3 rounded animate-pulse bg-muted/50" />
+                        <div className="h-2.5 w-4/5 rounded animate-pulse bg-muted/30" />
                       </div>
                     </div>
-                    <div className="shrink-0 text-end">
-                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                        {convo.message_count} msg{convo.message_count !== 1 ? "s" : ""}
-                      </Badge>
-                      {convo.last_message && (
-                        <p className="text-[10px] text-muted-foreground mt-0.5 tabular-nums">
-                          {timeAgo(convo.last_message.timestamp)}
-                        </p>
-                      )}
-                    </div>
-                  </motion.button>
-                );
-              })}
+                  ))}
+                </div>
+              ) : filteredConvos.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
+                  <MessageSquare className="h-7 w-7 text-muted-foreground/40" />
+                  <p className="text-sm font-medium text-foreground">
+                    {search ? "No results" : "No conversations found"}
+                  </p>
+                </div>
+              ) : (
+                <div className="p-2 space-y-0.5">
+                  {filteredConvos.map((convo) => {
+                    const isActive = activeConvo === convo.id;
+                    return (
+                      <motion.button
+                        key={convo.id}
+                        onClick={() => openConversation(convo.id)}
+                        whileHover={{ x: 2 }}
+                        transition={{ duration: 0.15 }}
+                        className={cn(
+                          "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition-colors",
+                          isActive ? "bg-violet-500/10 border border-violet-500/20" : "hover:bg-secondary/50",
+                        )}
+                      >
+                        <div className="flex -space-x-3">
+                          {convo.participant_names.slice(0, 2).map((name, i) => (
+                            <ChatAvatar key={i} name={name} size="sm" />
+                          ))}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium text-foreground leading-tight">
+                            {convo.participant_names.join(" & ")}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <p className="truncate text-xs text-muted-foreground leading-tight">
+                              {convo.last_message?.content ?? "No messages"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="shrink-0 text-end">
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {convo.message_count} msg{convo.message_count !== 1 ? "s" : ""}
+                          </Badge>
+                          {convo.last_message && (
+                            <p className="text-[10px] text-muted-foreground mt-0.5 tabular-nums">
+                              {timeAgo(convo.last_message.timestamp)}
+                            </p>
+                          )}
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        ) : (
+          <>
+            {/* File category filters */}
+            <div className="flex flex-wrap gap-1.5 px-4 py-3 border-b border-border/60">
+              {([
+                { label: "All", value: undefined, icon: Filter },
+                { label: "Images", value: "image", icon: ImageIcon },
+                { label: "Videos", value: "video", icon: Video },
+                { label: "Audio", value: "audio", icon: Music },
+                { label: "Docs", value: "document", icon: FileText },
+              ] as const).map((cat) => (
+                <button
+                  key={cat.label}
+                  onClick={() => setFileFilter(cat.value)}
+                  className={cn(
+                    "flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition-colors",
+                    fileFilter === cat.value
+                      ? "bg-violet-500/15 text-violet-600 dark:text-violet-400"
+                      : "bg-secondary/40 text-muted-foreground hover:bg-secondary/70",
+                  )}
+                >
+                  <cat.icon className="h-3 w-3" />
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* File list */}
+            <div className="flex-1 overflow-y-auto">
+              {filesLoading ? (
+                <div className="space-y-2 p-4">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="flex items-center gap-3 rounded-xl p-3">
+                      <div className="h-10 w-10 rounded-lg animate-pulse bg-muted/50" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-3 w-3/4 rounded animate-pulse bg-muted/50" />
+                        <div className="h-2.5 w-1/2 rounded animate-pulse bg-muted/30" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : adminFiles.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
+                  <FolderOpen className="h-7 w-7 text-muted-foreground/40" />
+                  <p className="text-sm font-medium text-foreground">No files found</p>
+                  <p className="text-xs text-muted-foreground">
+                    {fileFilter ? "Try a different category filter" : "No uploaded files yet"}
+                  </p>
+                </div>
+              ) : (
+                <div className="p-2 space-y-1">
+                  {adminFiles.map((file) => {
+                    const isImage = file.category === "image";
+                    return (
+                      <div
+                        key={file.url}
+                        className="flex items-center gap-3 rounded-xl p-2.5 hover:bg-secondary/40 transition-colors group"
+                      >
+                        {/* Thumbnail / icon */}
+                        {isImage ? (
+                          <img
+                            src={file.url}
+                            alt={file.filename}
+                            className="h-10 w-10 rounded-lg object-cover border border-border/30"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary/60">
+                            {file.category === "video" ? <Video className="h-4 w-4 text-muted-foreground" /> :
+                             file.category === "audio" || file.category === "voice" ? <Music className="h-4 w-4 text-muted-foreground" /> :
+                             <FileText className="h-4 w-4 text-muted-foreground" />}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-foreground truncate">{file.filename}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">
+                            {file.sender} · {(file.size / 1024).toFixed(0)} KB
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">
+                            {new Date(file.uploaded_at).toLocaleDateString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <a
+                            href={file.url}
+                            download={file.filename}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-secondary/80 transition-colors"
+                            title="Download"
+                          >
+                            <Download className="h-3.5 w-3.5 text-muted-foreground" />
+                          </a>
+                          <button
+                            onClick={() => setFileDeleteUrl(file.url)}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-destructive/10 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 className="h-3.5 w-3.5 text-destructive/70" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* File stats footer */}
+            <div className="border-t border-border px-4 py-2">
+              <p className="text-[10px] text-muted-foreground text-center">
+                {adminFiles.length} file{adminFiles.length !== 1 ? "s" : ""} · {(adminFiles.reduce((a, f) => a + f.size, 0) / (1024 * 1024)).toFixed(1)} MB total
+              </p>
+            </div>
+          </>
+        )}
       </div>
 
       {/* ── Chat Viewer ── */}
@@ -362,6 +547,50 @@ export default function AdminMessagesPage() {
                             <p className="mb-1 text-[10px] font-semibold opacity-60">{msg.sender_name}</p>
                           )}
                           <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                          {/* Attachment rendering */}
+                          {msg.attachment && (
+                            <div className="mt-2">
+                              {msg.attachment.type === "image" || msg.attachment.content_type?.startsWith("image/") ? (
+                                <div className="relative group/img">
+                                  <img
+                                    src={msg.attachment.url}
+                                    alt={msg.attachment.filename}
+                                    className="max-w-[220px] rounded-xl border border-border/30"
+                                    loading="lazy"
+                                  />
+                                  <a
+                                    href={msg.attachment.url}
+                                    download={msg.attachment.filename}
+                                    className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-md bg-black/40 text-white opacity-0 group-hover/img:opacity-100 transition-opacity"
+                                  >
+                                    <Download className="h-3 w-3" />
+                                  </a>
+                                </div>
+                              ) : msg.attachment.type === "voice" || msg.attachment.content_type?.startsWith("audio/") ? (
+                                <div className="flex items-center gap-2 rounded-xl bg-background/30 p-2">
+                                  <Volume2 className="h-3.5 w-3.5 shrink-0 opacity-60" />
+                                  <audio src={msg.attachment.url} controls className="h-7 flex-1 [&::-webkit-media-controls-panel]:bg-transparent" />
+                                </div>
+                              ) : msg.attachment.type === "video" || msg.attachment.content_type?.startsWith("video/") ? (
+                                <video
+                                  src={msg.attachment.url}
+                                  controls
+                                  className="max-w-[240px] rounded-xl border border-border/30"
+                                  preload="metadata"
+                                />
+                              ) : (
+                                <a
+                                  href={msg.attachment.url}
+                                  download={msg.attachment.filename}
+                                  className="flex items-center gap-2 rounded-xl bg-background/20 p-2 hover:bg-background/40 transition-colors"
+                                >
+                                  <FileText className="h-3.5 w-3.5 shrink-0 opacity-60" />
+                                  <span className="text-xs truncate">{msg.attachment.filename}</span>
+                                  <Download className="h-3 w-3 shrink-0 opacity-40" />
+                                </a>
+                              )}
+                            </div>
+                          )}
                           <div className="mt-1 flex items-center gap-1.5">
                             <span className="text-[10px] text-muted-foreground tabular-nums">{formatTime(msg.timestamp)}</span>
                             {msg.status && (
@@ -400,6 +629,49 @@ export default function AdminMessagesPage() {
           </div>
         )}
       </div>
+
+      {/* ── File Delete Confirmation Modal ── */}
+      <AnimatePresence>
+        {fileDeleteUrl && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={() => setFileDeleteUrl(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.15 }}
+              className="mx-4 w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10">
+                  <Trash2 className="h-5 w-5 text-destructive" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">Delete File</h3>
+                  <p className="text-xs text-muted-foreground">This action cannot be undone.</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mb-5">
+                Are you sure you want to permanently delete this file from the server?
+              </p>
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" size="sm" onClick={() => setFileDeleteUrl(null)} className="rounded-xl">
+                  Cancel
+                </Button>
+                <Button variant="destructive" size="sm" onClick={() => handleDeleteFile(fileDeleteUrl)} className="rounded-xl">
+                  Delete
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

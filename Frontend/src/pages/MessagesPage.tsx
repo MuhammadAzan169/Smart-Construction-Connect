@@ -73,6 +73,7 @@ export default function MessagesPage() {
   const [sending, setSending] = useState(false);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ type: "conversation"; id: string } | { type: "message"; convoId: string; msgId: string } | null>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -395,6 +396,44 @@ export default function MessagesPage() {
         )}
       </AnimatePresence>
 
+      {/* ── Image Lightbox Modal ── */}
+      <AnimatePresence>
+        {lightboxUrl && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            onClick={() => setLightboxUrl(null)}
+          >
+            <motion.img
+              src={lightboxUrl}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="max-h-[85vh] max-w-[90vw] rounded-xl object-contain shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              onClick={() => setLightboxUrl(null)}
+              className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <a
+              href={lightboxUrl}
+              download
+              className="absolute bottom-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+              title="Download"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Download className="h-4 w-4" />
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Conversation Sidebar ── */}
       <div
         className={cn(
@@ -645,31 +684,73 @@ export default function MessagesPage() {
                                 {msg.attachment && (
                                   <div className="mt-2">
                                     {msg.attachment.type === "image" || msg.attachment.content_type?.startsWith("image/") ? (
-                                      <a href={msg.attachment.url} target="_blank" rel="noopener noreferrer" className="block">
+                                      <div className="relative group/img">
                                         <img
                                           src={msg.attachment.url}
                                           alt={msg.attachment.filename}
                                           className="max-w-[240px] rounded-xl border border-border/30 cursor-pointer hover:opacity-90 transition-opacity"
                                           loading="lazy"
+                                          onClick={() => setLightboxUrl(msg.attachment!.url)}
                                         />
-                                      </a>
+                                        <a
+                                          href={msg.attachment.url}
+                                          download={msg.attachment.filename}
+                                          className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-lg bg-black/40 text-white opacity-0 group-hover/img:opacity-100 transition-opacity hover:bg-black/60"
+                                          title="Download"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          <Download className="h-3.5 w-3.5" />
+                                        </a>
+                                      </div>
                                     ) : msg.attachment.type === "voice" || msg.attachment.content_type?.startsWith("audio/") ? (
                                       <div className="flex items-center gap-2 rounded-xl bg-background/30 p-2">
                                         <Volume2 className="h-4 w-4 shrink-0 opacity-60" />
                                         <audio src={msg.attachment.url} controls className="h-8 flex-1 [&::-webkit-media-controls-panel]:bg-transparent" />
+                                        <a href={msg.attachment.url} download={msg.attachment.filename} className="shrink-0 opacity-40 hover:opacity-80 transition-opacity" title="Download">
+                                          <Download className="h-3.5 w-3.5" />
+                                        </a>
                                       </div>
                                     ) : msg.attachment.type === "video" || msg.attachment.content_type?.startsWith("video/") ? (
-                                      <video
-                                        src={msg.attachment.url}
-                                        controls
-                                        className="max-w-[280px] rounded-xl border border-border/30"
-                                        preload="metadata"
-                                      />
+                                      <div className="relative">
+                                        <video
+                                          src={msg.attachment.url}
+                                          controls
+                                          className="max-w-[280px] rounded-xl border border-border/30"
+                                          preload="metadata"
+                                        />
+                                        <a
+                                          href={msg.attachment.url}
+                                          download={msg.attachment.filename}
+                                          className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-lg bg-black/40 text-white opacity-0 hover:opacity-100 transition-opacity hover:bg-black/60"
+                                          title="Download"
+                                        >
+                                          <Download className="h-3.5 w-3.5" />
+                                        </a>
+                                      </div>
+                                    ) : msg.attachment.content_type === "application/pdf" ? (
+                                      <div className="rounded-xl border border-border/30 overflow-hidden bg-background/20">
+                                        <iframe
+                                          src={msg.attachment.url}
+                                          title={msg.attachment.filename}
+                                          className="w-full h-48 border-0"
+                                        />
+                                        <a
+                                          href={msg.attachment.url}
+                                          download={msg.attachment.filename}
+                                          className="flex items-center gap-2 border-t border-border/20 p-2.5 hover:bg-background/40 transition-colors"
+                                        >
+                                          <FileText className="h-4 w-4 shrink-0 opacity-60" />
+                                          <div className="flex-1 min-w-0">
+                                            <p className="text-xs font-medium truncate">{msg.attachment.filename}</p>
+                                            <p className="text-[10px] opacity-60">{(msg.attachment.size / 1024).toFixed(0)} KB · PDF</p>
+                                          </div>
+                                          <Download className="h-3.5 w-3.5 shrink-0 opacity-40" />
+                                        </a>
+                                      </div>
                                     ) : (
                                       <a
                                         href={msg.attachment.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                        download={msg.attachment.filename}
                                         className="flex items-center gap-2 rounded-xl bg-background/20 p-2.5 hover:bg-background/40 transition-colors"
                                       >
                                         <FileText className="h-4 w-4 shrink-0 opacity-60" />

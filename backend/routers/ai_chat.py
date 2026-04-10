@@ -8,17 +8,24 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, File, Form, UploadFile, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from backend.utils.rag_engine import generate_ai_response, generate_ai_response_stream
-from backend.utils.data_handler import add_activity_log, DB_DIR
+from backend.utils.rag_engine import (
+    generate_ai_response,
+    generate_ai_response_stream,
+    get_recommendations,
+    _extract_intent,
+    _INDEX,
+)
+from backend.utils.data_handler import add_activity_log, DB_DIR, read_json, write_json
 from backend.utils.auth_deps import get_current_user
 from backend.routers.filereader import file_processor
 
@@ -288,3 +295,419 @@ async def get_session_files(email: str):
                 "keywords": info.get("keywords", []),
             })
     return {"files": files}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Client requirement tracking & persistent chat history
+# ═══════════════════════════════════════════════════════════════════════════════
+
+_CHATS_DIR = DB_DIR / "ai_chats"
+_CHATS_DIR.mkdir(parents=True, exist_ok=True)
+
+_REQUIREMENTS_DIR = DB_DIR / "ai_chats" / "requirements"
+_REQUIREMENTS_DIR.mkdir(parents=True, exist_ok=True)
+
+UPLOADS_ROOT = Path(__file__).resolve().parents[2] / "uploads"
+
+
+def _get_requirements_path(email: str) -> Path:
+    safe = email.replace("@", "-at-").replace(".", "-")[:60]
+    return _REQUIREMENTS_DIR / f"{safe}.json"
+
+
+def _load_requirements(email: str) -> dict:
+    """Load current gathered requirements for a client."""
+    path = _get_requirements_path(email)
+    data = read_json(path)
+    if not isinstance(data, dict) or not data:
+        return {
+            "email": email,
+            "status": "gathering",
+            "city": None,
+            "area": None,
+            "plot_size": None,
+            "project_type": None,
+            "budget_min": None,
+            "budget_max": None,
+            "num_floors": None,
+            "num_rooms": None,
+            "design_style": None,
+            "timeline": None,
+            "special_requirements": [],
+            "construction_type": None,
+            "collected_fields": [],
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
+    return data
+
+
+def _save_requirements(email: str, reqs: dict) -> None:
+    reqs["updated_at"] = datetime.now(timezone.utc).isoformat()
+    write_json(_get_requirements_path(email), reqs)
+
+
+def _extract_requirements_from_messages(messages: list[dict]) -> dict[str, Any]:
+    """Extract structured requirements from conversation using intent + pattern matching."""
+    import re
+
+    combined = " ".join(m.get("content", "") for m in messages if m.get("role") == "user").lower()
+    reqs: dict[str, Any] = {}
+
+    # City
+    from backend.utils.rag_engine import _PAKISTAN_CITIES, _AREA_PATTERNS
+    for city in _PAKISTAN_CITIES:
+        if city in combined:
+            reqs["city"] = city.title()
+            break
+
+    # Area
+    for area in _AREA_PATTERNS:
+        if area in combined:
+            reqs["area"] = area.title()
+            break
+
+    # Plot size
+    m = re.search(r"(\d+)\s*(marla|kanal)", combined)
+    if m:
+        reqs["plot_size"] = f"{m.group(1)} {m.group(2)}"
+
+    # Budget
+    from backend.utils.rag_engine import _parse_budget
+    bmin, bmax = _parse_budget(combined)
+    if bmin is not None:
+        reqs["budget_min"] = bmin
+        reqs["budget_max"] = bmax
+
+    # Floors
+    floor_patterns = [
+        (r"(\d+)\s*(?:floor|storey|manzil)", None),
+        (r"single\s*(?:storey|floor)", "1"),
+        (r"double\s*(?:storey|floor)", "2"),
+        (r"triple\s*(?:storey|floor)", "3"),
+        (r"ground\s*(?:\+|plus)\s*(\d+)", None),
+    ]
+    for pattern, fixed in floor_patterns:
+        fm = re.search(pattern, combined)
+        if fm:
+            if fixed:
+                reqs["num_floors"] = int(fixed)
+            else:
+                val = fm.group(1) if fm.lastindex else "1"
+                reqs["num_floors"] = int(val)
+            break
+
+    # Rooms
+    rm = re.search(r"(\d+)\s*(?:room|bedroom|kamr[ae])", combined)
+    if rm:
+        reqs["num_rooms"] = int(rm.group(1))
+
+    # Design style
+    styles = {
+        "modern": "modern", "contemporary": "modern",
+        "traditional": "traditional", "classic": "traditional",
+        "minimalist": "minimalist", "colonial": "colonial",
+        "spanish": "spanish", "mediterranean": "mediterranean",
+    }
+    for keyword, style in styles.items():
+        if keyword in combined:
+            reqs["design_style"] = style
+            break
+
+    # Timeline
+    tm = re.search(r"(\d+)\s*(month|year|mahine|saal)", combined)
+    if tm:
+        val = int(tm.group(1))
+        unit = tm.group(2)
+        if unit in ("year", "saal"):
+            reqs["timeline"] = f"{val} year{'s' if val > 1 else ''}"
+        else:
+            reqs["timeline"] = f"{val} month{'s' if val > 1 else ''}"
+
+    # Construction type
+    if any(w in combined for w in ["grey structure", "grey", "gray structure"]):
+        reqs["construction_type"] = "grey_structure"
+    elif any(w in combined for w in ["full finish", "complete", "turnkey"]):
+        reqs["construction_type"] = "full_finish"
+    elif any(w in combined for w in ["renovation", "remodel", "repair"]):
+        reqs["construction_type"] = "renovation"
+
+    # Project type
+    project_types = {
+        "house": "house", "home": "house", "ghar": "house", "makaan": "house",
+        "plaza": "plaza", "commercial": "commercial",
+        "villa": "villa", "bungalow": "bungalow",
+        "apartment": "apartment", "flat": "apartment",
+        "farmhouse": "farmhouse",
+    }
+    for keyword, ptype in project_types.items():
+        if keyword in combined:
+            reqs["project_type"] = ptype
+            break
+
+    # Special requirements
+    specials = []
+    special_map = {
+        "basement": "basement", "solar": "solar panels",
+        "smart home": "smart home", "pool": "swimming pool",
+        "swimming": "swimming pool", "lift": "elevator/lift",
+        "elevator": "elevator/lift", "garden": "garden/landscaping",
+        "rooftop": "rooftop", "parking": "parking",
+        "boundary wall": "boundary wall",
+    }
+    for keyword, label in special_map.items():
+        if keyword in combined and label not in specials:
+            specials.append(label)
+    if specials:
+        reqs["special_requirements"] = specials
+
+    return reqs
+
+
+class RequirementsResponse(BaseModel):
+    requirements: dict
+    recommendations: list[dict] = []
+    is_complete: bool = False
+    missing_fields: list[str] = []
+
+
+@router.post("/requirements/extract")
+async def extract_requirements(req: ChatRequest):
+    """Extract and update client requirements from conversation messages.
+
+    Returns current requirement state + whether enough info for recommendations.
+    """
+    if not req.user_email:
+        raise HTTPException(status_code=400, detail="user_email required")
+
+    messages = [m.model_dump() for m in req.messages]
+    extracted = _extract_requirements_from_messages(messages)
+
+    # Load and merge with existing requirements
+    current = _load_requirements(req.user_email)
+    collected = set(current.get("collected_fields", []))
+
+    for key, val in extracted.items():
+        if val is not None and val != [] and val != "":
+            current[key] = val
+            collected.add(key)
+
+    current["collected_fields"] = sorted(collected)
+
+    # Determine completeness
+    required_fields = ["city", "budget_min", "plot_size", "project_type"]
+    optional_fields = ["num_floors", "design_style", "timeline", "construction_type", "special_requirements", "area", "num_rooms"]
+    missing = [f for f in required_fields if not current.get(f)]
+    filled_count = len([f for f in required_fields + optional_fields if current.get(f)])
+    is_complete = len(missing) == 0 and filled_count >= 5
+
+    if is_complete:
+        current["status"] = "complete"
+    elif len(missing) <= 2:
+        current["status"] = "nearly_complete"
+    else:
+        current["status"] = "gathering"
+
+    _save_requirements(req.user_email, current)
+
+    # Get recommendations if requirements are sufficient
+    recommendations = []
+    if len(missing) <= 1 and filled_count >= 3:
+        try:
+            data = get_recommendations(messages, user_role="client")
+            raw_recs = data.get("recommendations", [])
+            # Enrich recommendations with full company data
+            recommendations = _enrich_recommendations(raw_recs)
+        except Exception as e:
+            logger.warning("Recommendation enrichment failed: %s", e)
+
+    return {
+        "requirements": current,
+        "recommendations": recommendations,
+        "is_complete": is_complete,
+        "missing_fields": missing,
+    }
+
+
+@router.get("/requirements/{email}")
+async def get_requirements(email: str):
+    """Get current requirement state for a client."""
+    reqs = _load_requirements(email)
+    return {"requirements": reqs}
+
+
+@router.delete("/requirements/{email}")
+async def clear_requirements(email: str):
+    """Reset client requirements for a new project."""
+    path = _get_requirements_path(email)
+    if path.exists():
+        path.unlink()
+    return {"status": "ok"}
+
+
+def _enrich_recommendations(raw_recs: list[dict]) -> list[dict]:
+    """Enrich recommendation entries with full company/supplier data for rich cards."""
+    enriched = []
+    for rec in raw_recs[:3]:
+        entry: dict[str, Any] = {**rec}
+        slug = rec.get("id", "")
+
+        if rec.get("type") == "company":
+            # Find full company data
+            try:
+                companies = _INDEX.get_all_companies()
+                company = next(
+                    (c for c in companies if c.get("slug") == slug or c.get("company_id") == slug),
+                    None,
+                )
+                if company:
+                    entry["description"] = company.get("description") or ""
+                    entry["logo_url"] = company.get("logo_url") or ""
+                    entry["dp_url"] = company.get("dp_url") or ""
+                    entry["city"] = company.get("city") or rec.get("location", "")
+                    entry["contact"] = company.get("contact") or {}
+                    entry["services"] = company.get("services") or {}
+                    entry["construction_capability"] = company.get("construction_capability") or {}
+                    entry["verification_status"] = company.get("verification_status", "")
+                    entry["experience"] = company.get("experience") or {}
+                    entry["year_established"] = (company.get("legal_info") or {}).get("year_established")
+                    entry["ai_scores"] = company.get("ai_scores") or {}
+
+                    # Extract key packages/pricing
+                    flat_areas = company.get("flattened_operational_areas", [])
+                    prices = [r["price_per_sqft"] for r in flat_areas
+                              if isinstance(r.get("price_per_sqft"), (int, float)) and r["price_per_sqft"] > 0]
+                    if prices:
+                        entry["min_price_sqft"] = min(prices)
+                        entry["max_price_sqft"] = max(prices)
+
+                    # Gallery images
+                    company_slug = company.get("slug", "")
+                    gallery_path = Path(__file__).resolve().parents[2] / "company_data" / "construction_company" / company_slug / "gallery"
+                    gallery_images = []
+                    if gallery_path.exists():
+                        for img in sorted(gallery_path.iterdir())[:4]:
+                            if img.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp"):
+                                gallery_images.append(f"/company_data/construction_company/{company_slug}/gallery/{img.name}")
+                    entry["gallery_images"] = gallery_images
+            except Exception as e:
+                logger.warning("Failed to enrich company %s: %s", slug, e)
+
+        elif rec.get("type") == "supplier":
+            try:
+                suppliers = _INDEX.get_all_suppliers()
+                supplier = next(
+                    (s for s in suppliers if s.get("slug") == slug or s.get("supplier_id") == slug),
+                    None,
+                )
+                if supplier:
+                    entry["description"] = supplier.get("description") or ""
+                    entry["logo_url"] = supplier.get("logo_url") or ""
+                    entry["dp_url"] = supplier.get("dp_url") or ""
+                    entry["city"] = supplier.get("city") or rec.get("location", "")
+                    entry["contact"] = supplier.get("contact") or {}
+                    entry["verification_status"] = supplier.get("verification_status", "")
+                    entry["materials"] = supplier.get("materials", [])[:6]
+                    entry["cities_served"] = supplier.get("cities_served", [])
+            except Exception as e:
+                logger.warning("Failed to enrich supplier %s: %s", slug, e)
+
+        enriched.append(entry)
+    return enriched
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Admin: File monitoring across all uploads
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/admin/files")
+async def admin_list_all_files(
+    user: dict = Depends(get_current_user),
+    file_type: str = "",
+    limit: int = 50,
+):
+    """List all uploaded files across the platform for admin monitoring.
+
+    Supports filtering by file_type: image, video, audio, document, voice
+    """
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    files: list[dict] = []
+    if not UPLOADS_ROOT.exists():
+        return {"files": [], "total": 0}
+
+    for user_dir in sorted(UPLOADS_ROOT.iterdir()):
+        if not user_dir.is_dir():
+            continue
+        sender_email = user_dir.name.replace("-at-", "@").replace("-", ".")
+        for convo_dir in sorted(user_dir.iterdir()):
+            if not convo_dir.is_dir():
+                continue
+            for file_path in sorted(convo_dir.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
+                if not file_path.is_file():
+                    continue
+
+                ext = file_path.suffix.lower().lstrip(".")
+                # Determine category
+                if ext in ("jpg", "jpeg", "png", "gif", "webp"):
+                    category = "image"
+                elif ext in ("mp4", "webm", "mov"):
+                    category = "video"
+                elif ext in ("ogg", "wav", "mp3", "m4a"):
+                    category = "audio"
+                elif ext in ("pdf", "doc", "docx", "xls", "xlsx", "txt", "csv"):
+                    category = "document"
+                else:
+                    category = "other"
+
+                if file_type and category != file_type:
+                    continue
+
+                stat = file_path.stat()
+                files.append({
+                    "filename": file_path.name,
+                    "url": f"/uploads/{user_dir.name}/{convo_dir.name}/{file_path.name}",
+                    "sender": sender_email,
+                    "conversation_id": convo_dir.name,
+                    "category": category,
+                    "size": stat.st_size,
+                    "uploaded_at": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat(),
+                })
+
+                if len(files) >= limit:
+                    break
+            if len(files) >= limit:
+                break
+        if len(files) >= limit:
+            break
+
+    files.sort(key=lambda f: f["uploaded_at"], reverse=True)
+    return {"files": files[:limit], "total": len(files)}
+
+
+@router.delete("/admin/files")
+async def admin_delete_file(
+    url: str,
+    user: dict = Depends(get_current_user),
+):
+    """Delete a specific uploaded file (admin only)."""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    if not url.startswith("/uploads/"):
+        raise HTTPException(status_code=400, detail="Invalid file URL")
+
+    # Resolve and validate path
+    relative = url.lstrip("/")
+    file_path = Path(__file__).resolve().parents[2] / relative
+    resolved = file_path.resolve()
+
+    # Ensure path is within uploads directory
+    if not str(resolved).startswith(str(UPLOADS_ROOT.resolve())):
+        raise HTTPException(status_code=400, detail="Invalid file path")
+
+    if not resolved.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+
+    resolved.unlink()
+    return {"status": "ok", "deleted": url}
