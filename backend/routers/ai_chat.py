@@ -652,9 +652,9 @@ async def admin_list_all_files(
                 # Determine category
                 if ext in ("jpg", "jpeg", "png", "gif", "webp"):
                     category = "image"
-                elif ext in ("mp4", "webm", "mov"):
+                elif ext in ("mp4", "mov") or (ext == "webm" and not file_path.name.startswith("voice-")):
                     category = "video"
-                elif ext in ("ogg", "wav", "mp3", "m4a"):
+                elif ext in ("ogg", "wav", "mp3", "m4a") or (ext == "webm" and file_path.name.startswith("voice-")):
                     category = "audio"
                 elif ext in ("pdf", "doc", "docx", "xls", "xlsx", "txt", "csv"):
                     category = "document"

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
+import { renderMarkdown } from "@/components/shared/MarkdownRenderer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { api, type AdminFile, type Conversation, type Message } from "@/lib/api";
@@ -111,7 +112,7 @@ export default function AdminMessagesPage() {
     setFilesLoading(true);
     try {
       const data = await api.admin.listFiles(filter, 200);
-      setAdminFiles(data);
+      setAdminFiles(data.files);
     } catch {
       // ignore
     } finally {
@@ -493,7 +494,9 @@ export default function AdminMessagesPage() {
                             <X className="h-3.5 w-3.5 text-muted-foreground" />
                           </button>
                         </div>
-                        <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{summary.text}</p>
+                        <div className="text-sm text-foreground leading-relaxed max-h-64 overflow-y-auto scroll-styled">
+                          {renderMarkdown(summary.text)}
+                        </div>
                         {summary.messageCount > 0 && (
                           <p className="mt-2 text-[10px] text-muted-foreground">
                             Based on {summary.windowSize} of {summary.messageCount} total messages

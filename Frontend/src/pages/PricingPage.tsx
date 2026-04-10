@@ -6,6 +6,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -690,7 +691,7 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
                       {pricing.packages.map((pkg) => (
                         <div key={pkg.id} className="space-y-2">
                           <Label className="text-xs text-muted-foreground">{pkg.label} (₨/sq ft)</Label>
-                          <Input type="number" min={0} step={50} value={row.rates?.[pkg.id] ?? ""} onChange={(e) => patchAreaRate(row.id, pkg.id, parseOptionalNumber(e.target.value))} className="bg-background/40" placeholder="PKR/sq ft" />
+                          <NumberInput variant="arrows" min={0} step={50} value={row.rates?.[pkg.id] ?? ""} onChange={(e) => patchAreaRate(row.id, pkg.id, parseOptionalNumber(e.target.value))} className="bg-background/40" placeholder="PKR/sq ft" />
                         </div>
                       ))}
                     </div>
@@ -733,10 +734,10 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
                             <TableRow key={r.id}>
                               <TableCell className="font-medium text-foreground">{r.plotSizeLabel}</TableCell>
                               <TableCell>
-                                <Input type="number" min={0} step={50000} value={cell.min ?? ""} onChange={(e) => updateCell(r.id, pkg.id, "min", parseOptionalNumber(e.target.value))} className={cn("bg-background/40", invalid && "border-destructive/60")} placeholder="Min" />
+                                <NumberInput variant="arrows" min={0} step={50000} value={cell.min ?? ""} onChange={(e) => updateCell(r.id, pkg.id, "min", parseOptionalNumber(e.target.value))} className={cn("bg-background/40", invalid && "border-destructive/60")} placeholder="Min" />
                               </TableCell>
                               <TableCell>
-                                <Input type="number" min={0} step={50000} value={cell.max ?? ""} onChange={(e) => updateCell(r.id, pkg.id, "max", parseOptionalNumber(e.target.value))} className={cn("bg-background/40", invalid && "border-destructive/60")} placeholder="Max" />
+                                <NumberInput variant="arrows" min={0} step={50000} value={cell.max ?? ""} onChange={(e) => updateCell(r.id, pkg.id, "max", parseOptionalNumber(e.target.value))} className={cn("bg-background/40", invalid && "border-destructive/60")} placeholder="Max" />
                                 {invalid && <p className="mt-1 text-xs text-destructive">Min must be ≤ Max.</p>}
                               </TableCell>
                               <TableCell className="text-end">

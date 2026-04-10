@@ -9,6 +9,7 @@ import { StatCard } from "@/components/shared/StatCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -267,9 +268,9 @@ export default function InventoryPage() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Price (PKR)</Label>
-              <Input
-                type="number"
+              <NumberInput
                 min={0}
+                step={100}
                 value={editingMaterial.price || ""}
                 onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, price: Number(e.target.value) || 0 } : prev)}
                 placeholder="e.g., 1250"
@@ -278,8 +279,7 @@ export default function InventoryPage() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Stock</Label>
-              <Input
-                type="number"
+              <NumberInput
                 min={0}
                 value={editingMaterial.stock || ""}
                 onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, stock: Number(e.target.value) || 0 } : prev)}
@@ -431,22 +431,21 @@ export default function InventoryPage() {
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">Price (PKR)</Label>
-                    <Input
-                      type="number"
+                    <NumberInput
+                      min={0}
+                      step={100}
                       value={m.price}
                       onChange={(e) => updateField(idx, "price", Number(e.target.value))}
                       className="bg-background/40"
-                      min={0}
                     />
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">Stock ({m.unit})</Label>
-                    <Input
-                      type="number"
+                    <NumberInput
+                      min={0}
                       value={m.stock}
                       onChange={(e) => updateField(idx, "stock", Number(e.target.value))}
                       className="bg-background/40"
-                      min={0}
                     />
                   </div>
                 </div>

@@ -17,14 +17,14 @@ import {
   Building2, ArrowRight, Plus, Layers, AlertCircle,
   Mic, Square, Play, RotateCcw, Check, Star, MapPin,
   Phone, Shield, Calendar, Eye, MessageCircle, ChevronDown, ChevronUp,
-  Sparkles, Target, Image as ImageIcon,
+  Sparkles, Target, Image as ImageIcon, History, Trash2,
 } from "lucide-react";
 
 import { renderMarkdown } from "@/components/shared/MarkdownRenderer";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { api, QuoteRequest, type EnrichedRecommendation } from "@/lib/api";
+import { api, QuoteRequest, type EnrichedRecommendation, type ChatSessionMeta } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 
@@ -225,7 +225,13 @@ export default function ClientAIChatPage() {
   const [requests, setRequests] = useState<QuoteRequest[]>([]);
   const [stats, setStats] = useState({ total: 0, pending: 0, accepted: 0, rejected: 0, completed: 0 });
   const [loadingHub, setLoadingHub] = useState(true);
-  const [sidebarTab, setSidebarTab] = useState<"tracker" | "hub">("tracker");
+  const [sidebarTab, setSidebarTab] = useState<"tracker" | "hub" | "history">("tracker");
+
+  /* ── Chat history state ── */
+  const [chatSessions, setChatSessions] = useState<ChatSessionMeta[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const shouldAutoScrollRef = useRef(true);
@@ -247,6 +253,14 @@ export default function ClientAIChatPage() {
           setReqStatus(res.requirements.status as string || "gathering");
         }
       }).catch(() => {});
+    }
+
+    // Load chat history sessions
+    if (user?.email) {
+      setLoadingHistory(true);
+      api.ai.listChatSessions().then((res) => {
+        setChatSessions(res.sessions ?? []);
+      }).catch(() => {}).finally(() => setLoadingHistory(false));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -292,6 +306,79 @@ export default function ClientAIChatPage() {
     }
   }, [user?.email]);
 
+  /* ── Auto-save chat to history ── */
+  const saveSession = useCallback(async (msgs: Message[], sessId: string | null) => {
+    if (!user?.email || msgs.length < 2) return;
+    const history = msgs.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text }));
+    try {
+      if (sessId) {
+        await api.ai.updateChatSession(sessId, { messages: history });
+        // Refresh session list title
+        setChatSessions((prev) => prev.map((s) =>
+          s.session_id === sessId ? { ...s, message_count: msgs.length, updated_at: new Date().toISOString() } : s
+        ));
+      } else {
+        const res = await api.ai.createChatSession("", history);
+        setCurrentSessionId(res.session_id);
+        setChatSessions((prev) => [{ session_id: res.session_id, title: res.title, created_at: res.created_at, updated_at: res.created_at, message_count: msgs.length }, ...prev]);
+      }
+    } catch {
+      // Non-critical
+    }
+  }, [user?.email]);
+
+  /* ── Load a past chat session ── */
+  const loadSession = useCallback(async (sessionId: string) => {
+    try {
+      const res = await api.ai.getChatSession(sessionId);
+      const loaded: Message[] = res.messages
+        .filter((m: { role: string; content: string }) => m.role === "user" || m.role === "assistant")
+        .map((m: { role: string; content: string }, i: number) => ({
+          id: i + 1,
+          role: m.role === "assistant" ? "ai" as const : "user" as const,
+          text: m.content,
+        }));
+      nextIdRef.current = loaded.length + 1;
+      setMessages(loaded);
+      setCurrentSessionId(sessionId);
+      setSidebarTab("tracker");
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  /* ── Start a new chat ── */
+  const startNewChat = useCallback(() => {
+    nextIdRef.current = 1;
+    setMessages([]);
+    setCurrentSessionId(null);
+    setRecommendations([]);
+    setRequirements({});
+    setMissingFields([]);
+    setReqStatus("gathering");
+    setSidebarTab("tracker");
+    api.ai.chat([], user?.email || "", "client").then((res) => {
+      setMessages([{ id: 1, role: "ai", text: res.response }]);
+      nextIdRef.current = 2;
+    }).catch(() => {
+      setMessages([{ id: 1, role: "ai", text: "Hello! 🏗️ I'm your AI Construction Consultant. Tell me about your project — location, budget, and plot size — and I'll find the best builders for you!" }]);
+      nextIdRef.current = 2;
+    });
+  }, [user?.email]);
+
+  /* ── Delete a chat session ── */
+  const deleteSession = useCallback(async (sessionId: string) => {
+    try {
+      await api.ai.deleteChatSession(sessionId);
+      setChatSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
+      if (currentSessionId === sessionId) {
+        startNewChat();
+      }
+    } catch {
+      // ignore
+    }
+  }, [currentSessionId, startNewChat]);
+
   /* ── Send message (streaming) ── */
   const handleSend = useCallback(async (overrideText?: string) => {
     const text = (overrideText ?? input).trim();
@@ -335,6 +422,11 @@ export default function ClientAIChatPage() {
           setMessages((prev) => prev.map((m) => m.id === streamMsgId ? { ...m, isStreaming: false } : m));
           // Extract requirements after AI response
           extractRequirements(history.concat([{ role: "assistant", content: fullText }]));
+          // Auto-save session (debounced)
+          clearTimeout(autoSaveTimerRef.current);
+          autoSaveTimerRef.current = setTimeout(() => {
+            setMessages((prev) => { saveSession(prev, currentSessionId); return prev; });
+          }, 1500);
         }
       }
     } catch {
@@ -342,7 +434,7 @@ export default function ClientAIChatPage() {
     } finally {
       setIsTyping(false);
     }
-  }, [getNextId, input, isTyping, messages, user?.email, attachedFile, extractRequirements]);
+  }, [getNextId, input, isTyping, messages, user?.email, attachedFile, extractRequirements, saveSession, currentSessionId]);
 
   /* ── Voice handling ── */
   const handleVoiceAccept = useCallback(() => {
@@ -430,7 +522,7 @@ export default function ClientAIChatPage() {
         {/* Messages */}
         <div
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto px-5 py-5 space-y-3"
+          className="flex-1 overflow-y-auto scroll-styled px-5 py-5 space-y-3"
           role="log"
           aria-live="polite"
         >
@@ -671,20 +763,30 @@ export default function ClientAIChatPage() {
           <button
             type="button"
             onClick={() => setSidebarTab("tracker")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium transition-colors ${
+            className={`flex-1 flex items-center justify-center gap-1 py-2 text-xs font-medium transition-colors ${
               sidebarTab === "tracker" ? "bg-sky-500/10 text-sky-500 border-b-2 border-sky-500" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Target className="h-3.5 w-3.5" /> Requirements
+            <Target className="h-3 w-3" /> Reqs
           </button>
           <button
             type="button"
             onClick={() => setSidebarTab("hub")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium transition-colors ${
+            className={`flex-1 flex items-center justify-center gap-1 py-2 text-xs font-medium transition-colors ${
               sidebarTab === "hub" ? "bg-sky-500/10 text-sky-500 border-b-2 border-sky-500" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Layers className="h-3.5 w-3.5" /> Project Hub
+            <Layers className="h-3 w-3" /> Hub
+          </button>
+          <button
+            type="button"
+            onClick={() => setSidebarTab("history")}
+            className={`flex-1 flex items-center justify-center gap-1 py-2 text-xs font-medium transition-colors ${
+              sidebarTab === "history" ? "bg-sky-500/10 text-sky-500 border-b-2 border-sky-500" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <History className="h-3 w-3" /> History
+            {chatSessions.length > 0 && <span className="ms-0.5 rounded-full bg-sky-500 px-1 py-0 text-[10px] font-bold text-white leading-4">{chatSessions.length}</span>}
           </button>
         </div>
 
@@ -936,6 +1038,79 @@ export default function ClientAIChatPage() {
               </div>
             </GlassCard>
           </>
+        )}
+
+        {/* ── Chat History Panel ── */}
+        {sidebarTab === "history" && (
+          <GlassCard interactive={false} className="flex flex-col flex-1 p-0 overflow-hidden card-shadow">
+            <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/10">
+                <History className="h-4 w-4 text-sky-500" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-bold text-foreground leading-tight">Chat History</h3>
+                <p className="text-[11px] text-muted-foreground leading-tight">{chatSessions.length} saved session{chatSessions.length !== 1 ? "s" : ""}</p>
+              </div>
+              <button
+                type="button"
+                onClick={startNewChat}
+                className="flex items-center gap-1 rounded-xl border border-sky-500/30 bg-sky-500/5 px-2.5 py-1.5 text-[11px] font-medium text-sky-500 hover:bg-sky-500/10 transition-colors"
+              >
+                <Plus className="h-3 w-3" /> New
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+              {loadingHistory ? (
+                <div className="space-y-1.5">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-14 rounded-xl bg-muted/30 animate-pulse" />
+                  ))}
+                </div>
+              ) : chatSessions.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-border py-8 text-center">
+                  <History className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground">No saved chats yet</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">Chats are saved automatically</p>
+                </div>
+              ) : (
+                chatSessions.map((session) => {
+                  const isActive = session.session_id === currentSessionId;
+                  const date = new Date(session.updated_at);
+                  const dateStr = date.toLocaleDateString([], { month: "short", day: "numeric" });
+                  return (
+                    <motion.div
+                      key={session.session_id}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className={`group flex items-start gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-all ${
+                        isActive
+                          ? "border-sky-500/40 bg-sky-500/8"
+                          : "border-border hover:border-sky-500/20 hover:bg-sky-500/5"
+                      }`}
+                      onClick={() => loadSession(session.session_id)}
+                    >
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 mt-0.5">
+                        <Bot className="h-3.5 w-3.5 text-sky-500" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-foreground truncate leading-tight">{session.title}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">{dateStr} · {session.message_count} msg{session.message_count !== 1 ? "s" : ""}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); deleteSession(session.session_id); }}
+                        className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive text-muted-foreground"
+                        title="Delete session"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </motion.div>
+                  );
+                })
+              )}
+            </div>
+          </GlassCard>
         )}
       </div>
     </motion.div>

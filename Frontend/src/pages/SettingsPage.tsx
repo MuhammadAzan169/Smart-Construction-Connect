@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -1018,8 +1019,8 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                 </div>
                 <div className="space-y-2">
                   <Label>Year Established</Label>
-                  <Input
-                    type="number"
+                  <NumberInput
+                    variant="arrows"
                     value={settings.legal_info.year_established ?? ""}
                     onChange={(e) => setSettings((prev) => ({ ...prev, legal_info: { ...prev.legal_info, year_established: e.target.value.trim() ? Number(e.target.value) : null } }))}
                     className="bg-background/40"
@@ -1078,8 +1079,8 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Advance payment %</Label>
-                <Input
-                  type="number" min={0} max={100}
+                <NumberInput
+                  variant="stepper" min={0} max={100} step={5}
                   value={settings.payment_terms.advance_percentage ?? ""}
                   onChange={(e) => setSettings((prev) => ({ ...prev, payment_terms: { ...prev.payment_terms, advance_percentage: e.target.value.trim() ? Number(e.target.value) : null } }))}
                   className="bg-background/40" placeholder="e.g., 30"
@@ -1432,7 +1433,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
             <GlassCard interactive={false} className="p-5">
               <p className="text-sm font-semibold text-foreground">Timeline Estimates</p>
               <p className="mt-1 text-xs text-muted-foreground">Min / Typical / Max months per plot size (based on capability above).</p>
-              <div className="mt-4 overflow-x-auto rounded-2xl border border-border bg-card">
+              <div className="mt-4 overflow-x-auto scroll-styled rounded-2xl border border-border bg-card">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -1501,7 +1502,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                 <p className="text-xs text-muted-foreground">No operational areas yet. Click "Add Area" to set pricing.</p>
               </div>
             ) : (
-              <div className="mt-4 overflow-x-auto rounded-2xl border border-border bg-card">
+              <div className="mt-4 overflow-x-auto scroll-styled rounded-2xl border border-border bg-card">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -1823,8 +1824,8 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Year</Label>
-                    <Input
-                      type="number"
+                    <NumberInput
+                      variant="arrows"
                       min={2000}
                       max={2030}
                       value={editingProject.year}
@@ -1852,8 +1853,8 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Duration (months)</Label>
-                    <Input
-                      type="number"
+                    <NumberInput
+                      variant="stepper"
                       min={1}
                       value={editingProject.duration_months || ""}
                       onChange={(e) => setEditingProject((prev) => prev ? { ...prev, duration_months: Number(e.target.value) || 0 } : prev)}
@@ -2763,8 +2764,8 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
                 </div>
                 <div className="space-y-2">
                   <Label>Year Established</Label>
-                  <Input
-                    type="number"
+                  <NumberInput
+                    variant="arrows"
                     value={settings.legal_info.year_established ?? ""}
                     onChange={(e) => setSettings((prev) => ({ ...prev, legal_info: { ...prev.legal_info, year_established: e.target.value.trim() ? Number(e.target.value) : null } }))}
                     className="bg-background/40"
@@ -2972,9 +2973,9 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Price (PKR)</Label>
-                    <Input
-                      type="number"
+                    <NumberInput
                       min={0}
+                      step={100}
                       value={editingMaterial.price || ""}
                       onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, price: Number(e.target.value) || 0 } : prev)}
                       placeholder="e.g., 1250"
@@ -2983,8 +2984,7 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Stock</Label>
-                    <Input
-                      type="number"
+                    <NumberInput
                       min={0}
                       value={editingMaterial.stock || ""}
                       onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, stock: Number(e.target.value) || 0 } : prev)}
@@ -3175,8 +3175,8 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Advance payment %</Label>
-                <Input
-                  type="number" min={0} max={100}
+                <NumberInput
+                  variant="stepper" min={0} max={100} step={5}
                   value={settings.payment_terms.advance_percentage ?? ""}
                   onChange={(e) => setSettings((prev) => ({ ...prev, payment_terms: { ...prev.payment_terms, advance_percentage: e.target.value.trim() ? Number(e.target.value) : null } }))}
                   className="bg-background/40" placeholder="e.g., 50"
@@ -3184,8 +3184,8 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
               </div>
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Minimum order value (PKR)</Label>
-                <Input
-                  type="number" min={0} step={1000}
+                <NumberInput
+                  variant="stepper" min={0} step={1000}
                   value={settings.payment_terms.minimum_order_value ?? ""}
                   onChange={(e) => setSettings((prev) => ({ ...prev, payment_terms: { ...prev.payment_terms, minimum_order_value: e.target.value.trim() ? Number(e.target.value) : null } }))}
                   className="bg-background/40" placeholder="e.g., 10000"
@@ -3254,8 +3254,8 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
               </div>
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Free delivery above (PKR)</Label>
-                <Input
-                  type="number" min={0} step={5000}
+                <NumberInput
+                  variant="stepper" min={0} step={5000}
                   value={settings.delivery_info.free_delivery_above ?? ""}
                   onChange={(e) => setSettings((prev) => ({ ...prev, delivery_info: { ...prev.delivery_info, free_delivery_above: e.target.value.trim() ? Number(e.target.value) : null } }))}
                   className="bg-background/40" placeholder="e.g., 50000"
@@ -3633,9 +3633,10 @@ function ClientSettingsEditor() {
 
               <div className="space-y-1.5">
                 <Label>Budget – Minimum (PKR)</Label>
-                <Input
-                  type="number"
+                <NumberInput
+                  variant="stepper"
                   min={0}
+                  step={500000}
                   value={prefs.budget_min ?? ""}
                   onChange={(e) => patchPref("budget_min", e.target.value ? Math.max(0, Number(e.target.value)) : null)}
                   placeholder="e.g. 5000000"
@@ -3645,9 +3646,10 @@ function ClientSettingsEditor() {
 
               <div className="space-y-1.5">
                 <Label>Budget – Maximum (PKR)</Label>
-                <Input
-                  type="number"
+                <NumberInput
+                  variant="stepper"
                   min={0}
+                  step={500000}
                   value={prefs.budget_max ?? ""}
                   onChange={(e) => patchPref("budget_max", e.target.value ? Math.max(0, Number(e.target.value)) : null)}
                   placeholder="e.g. 15000000"

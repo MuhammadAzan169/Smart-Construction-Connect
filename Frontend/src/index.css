@@ -348,8 +348,8 @@
 /* ─── Themed scrollbars (global) ─────────────────────────────── */
 /* Webkit browsers */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: rgb(var(--card));
@@ -381,13 +381,26 @@
 .scroll-styled {
   scrollbar-color: rgb(var(--primary) / 0.25) rgb(var(--card));
 }
+/* Smooth scroll for overflow containers */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+/* Horizontal overflow with fade edges */
+.overflow-fade-x {
+  mask-image: linear-gradient(to right, transparent, black 1rem, black calc(100% - 1rem), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 1rem, black calc(100% - 1rem), transparent);
+}
 
 /* ─── Themed native form controls ────────────────────────────── */
-/* Number input spinner arrows */
+/* Hide default number input spinner arrows globally */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-  opacity: 1;
-  height: 28px;
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 /* Color picker */

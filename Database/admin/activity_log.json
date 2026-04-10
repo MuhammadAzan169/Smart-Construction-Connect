@@ -1,5 +1,17 @@
 [
   {
+    "timestamp": "2026-04-10T14:40:26.604589+00:00",
+    "action": "ai_chat",
+    "target": "fatima@example.com",
+    "details": "AI chat (stream): I want to build a 5 marla house in Lahore DHA, budget 80 lacs"
+  },
+  {
+    "timestamp": "2026-04-10T13:48:19.575487+00:00",
+    "action": "ai_chat",
+    "target": "fatima@example.com",
+    "details": "AI chat (stream): I want to build a 5 marla house in Lahore DHA, budget 80 lacs"
+  },
+  {
     "timestamp": "2026-04-10T12:39:28.710643+00:00",
     "action": "ai_chat",
     "target": "ahmed@example.com",

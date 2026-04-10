@@ -16,14 +16,14 @@ import {
   ArrowLeft, Bot, User, Send, Paperclip, FileText, X,
   Package, TrendingUp, TrendingDown, AlertTriangle, BarChart2,
   Zap, ChevronRight, Layers, ShoppingCart, Tag, BadgeDollarSign,
-  Mic, Square, Play, RotateCcw, Check,
+  Mic, Square, Play, RotateCcw, Check, History, Trash2, Plus,
 } from "lucide-react";
 
 import { renderMarkdown } from "@/components/shared/MarkdownRenderer";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/api";
+import { api, type ChatSessionMeta } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 
@@ -84,6 +84,13 @@ export default function SupplierAIChatPage() {
   const shouldAutoScrollRef = useRef(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  /* ── Chat History state ── */
+  const [chatSessions, setChatSessions] = useState<ChatSessionMeta[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [sidebarTab, setSidebarTab] = useState<"inv" | "history">("inv");
+
   /* ── Load greeting ── */
   useEffect(() => {
     api.ai.chat([], user?.email || "", "supplier").then((res) => {
@@ -93,6 +100,17 @@ export default function SupplierAIChatPage() {
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /* ── Load chat history sessions ── */
+  useEffect(() => {
+    if (!user?.email) return;
+    setLoadingHistory(true);
+    api.ai.listChatSessions()
+      .then((res) => setChatSessions((res.sessions || []).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())))
+      .catch(() => {})
+      .finally(() => setLoadingHistory(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.email]);
 
   /* ── Load inventory ── */
   useEffect(() => {
@@ -143,7 +161,12 @@ export default function SupplierAIChatPage() {
 
       if (currentFile) {
         const result = await api.ai.chatWithFile(currentFile, history, user?.email || "", "supplier");
-        setMessages((prev) => [...prev, { id: getNextId(), role: "ai", text: result.response }]);
+        setMessages((prev) => {
+          const m = [...prev, { id: getNextId(), role: "ai" as const, text: result.response }];
+          if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+          autoSaveTimerRef.current = setTimeout(() => saveSession(m), 1500);
+          return m;
+        });
       } else {
         const streamMsgId = getNextId();
         setMessages((prev) => [...prev, { id: streamMsgId, role: "ai", text: "", isStreaming: true }]);
@@ -161,7 +184,12 @@ export default function SupplierAIChatPage() {
         if (!fullText) {
           setMessages((prev) => prev.map((m) => m.id === streamMsgId ? { ...m, text: "Connection issue. Please try again.", isStreaming: false } : m));
         } else {
-          setMessages((prev) => prev.map((m) => m.id === streamMsgId ? { ...m, isStreaming: false } : m));
+          setMessages((prev) => {
+            const updated = prev.map((m) => m.id === streamMsgId ? { ...m, isStreaming: false } : m);
+            if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+            autoSaveTimerRef.current = setTimeout(() => saveSession(updated), 1500);
+            return updated;
+          });
         }
       }
     } catch {
@@ -169,7 +197,7 @@ export default function SupplierAIChatPage() {
     } finally {
       setIsTyping(false);
     }
-  }, [getNextId, input, isTyping, messages, user?.email, attachedFile]);
+  }, [getNextId, input, isTyping, messages, user?.email, attachedFile, saveSession]);
 
   /* ── Voice handling ── */
   const handleVoiceAccept = useCallback(() => {
@@ -194,6 +222,53 @@ export default function SupplierAIChatPage() {
     })).sort((a, b) => b.count - a.count).slice(0, 6);
     return { total, lowStock, outOfStock, categories: categories.length, topByPrice, catBreakdown };
   }, [materials]);
+
+  /* ── History callbacks ── */
+  const saveSession = useCallback(async (msgs: Message[]) => {
+    if (!user?.email || msgs.length < 2) return;
+    const title = msgs.find((m) => m.role === "user")?.text.slice(0, 60) ?? "New Chat";
+    try {
+      if (currentSessionId) {
+        const updated = await api.ai.updateChatSession(currentSessionId, { messages: msgs.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text })) });
+        setChatSessions((prev) => prev.map((s) => s.session_id === currentSessionId ? { ...s, ...updated } : s).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()));
+      } else {
+        const newSession = await api.ai.createChatSession(title, msgs.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text })));
+        setCurrentSessionId(newSession.session_id);
+        setChatSessions((prev) => [newSession, ...prev]);
+      }
+    } catch { /* silent */ }
+  }, [currentSessionId, user?.email]);
+
+  const loadSession = useCallback(async (sessionId: string) => {
+    try {
+      const session = await api.ai.getChatSession(sessionId);
+      setCurrentSessionId(sessionId);
+      setMessages(session.messages.map((m: { role: string; content: string }, i: number) => ({
+        id: i + 1,
+        role: m.role === "assistant" ? "ai" : "user",
+        text: m.content,
+      })));
+      nextIdRef.current = session.messages.length + 1;
+    } catch { /* silent */ }
+  }, []);
+
+  const startNewChat = useCallback(() => {
+    setCurrentSessionId(null);
+    setMessages([]);
+    api.ai.chat([], user?.email || "", "supplier").then((res) => {
+      setMessages([{ id: getNextId(), role: "ai", text: res.response }]);
+    }).catch(() => {
+      setMessages([{ id: getNextId(), role: "ai", text: "Hello! 📊 I'm your AI Market Analyst. Ask me about pricing strategies, demand trends, or competitive analysis." }]);
+    });
+  }, [user?.email, getNextId]);
+
+  const deleteSession = useCallback(async (sessionId: string) => {
+    try {
+      await api.ai.deleteChatSession(sessionId);
+      setChatSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
+      if (currentSessionId === sessionId) startNewChat();
+    } catch { /* silent */ }
+  }, [currentSessionId, startNewChat]);
 
   /* ── Inject suggestion into input ── */
   const injectPrompt = (s: string) => {
@@ -249,7 +324,7 @@ export default function SupplierAIChatPage() {
         {/* Messages */}
         <div
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto px-5 py-5 space-y-3"
+          className="flex-1 overflow-y-auto scroll-styled px-5 py-5 space-y-3"
           role="log"
           aria-live="polite"
         >
@@ -465,7 +540,23 @@ export default function SupplierAIChatPage() {
           Right: Inventory Intelligence Panel
       ═══════════════════════════════════════════════════════════ */}
       <div className="hidden lg:flex w-80 flex-col gap-3">
+        {/* Sidebar Tab Switcher */}
+        <div className="flex rounded-xl border border-border bg-secondary/30 p-0.5 gap-0.5">
+          {(["inv", "history"] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setSidebarTab(tab)}
+              className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-all ${
+                sidebarTab === tab ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tab === "inv" ? <><Package className="h-3.5 w-3.5" /> Inventory</> : <><History className="h-3.5 w-3.5" /> History {chatSessions.length > 0 && <span className="rounded-full bg-orange-500/15 px-1.5 text-[10px] text-orange-500">{chatSessions.length}</span>}</> }
+            </button>
+          ))}
+        </div>
 
+        {sidebarTab === "inv" && <>
         {/* Inventory stats */}
         <GlassCard interactive={false} className="p-0 overflow-hidden card-shadow">
           <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
@@ -623,6 +714,72 @@ export default function SupplierAIChatPage() {
             ))}
           </div>
         </GlassCard>
+        </> /* end sidebarTab === "inv" */}
+
+        {/* ── Chat History Panel ── */}
+        {sidebarTab === "history" && (
+          <GlassCard interactive={false} className="flex flex-col flex-1 p-0 overflow-hidden card-shadow">
+            <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/10">
+                <History className="h-4 w-4 text-orange-500" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-bold text-foreground leading-tight">Chat History</h3>
+                <p className="text-[11px] text-muted-foreground leading-tight">{chatSessions.length} saved session{chatSessions.length !== 1 ? "s" : ""}</p>
+              </div>
+              <button
+                type="button"
+                onClick={startNewChat}
+                className="flex items-center gap-1 rounded-xl border border-orange-500/30 bg-orange-500/5 px-2.5 py-1.5 text-[11px] font-medium text-orange-500 hover:bg-orange-500/10 transition-colors"
+              >
+                <Plus className="h-3 w-3" /> New
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+              {loadingHistory ? (
+                <div className="space-y-1.5">
+                  {[1, 2, 3].map((i) => <div key={i} className="h-14 rounded-xl bg-muted/30 animate-pulse" />)}
+                </div>
+              ) : chatSessions.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-border py-8 text-center">
+                  <History className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground">No saved chats yet</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">Chats are saved automatically</p>
+                </div>
+              ) : (
+                chatSessions.map((session) => {
+                  const isActive = session.session_id === currentSessionId;
+                  const dateStr = new Date(session.updated_at).toLocaleDateString([], { month: "short", day: "numeric" });
+                  return (
+                    <motion.div
+                      key={session.session_id}
+                      initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+                      className={`group flex items-start gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-all ${
+                        isActive ? "border-orange-500/40 bg-orange-500/8" : "border-border hover:border-orange-500/20 hover:bg-orange-500/5"
+                      }`}
+                      onClick={() => loadSession(session.session_id)}
+                    >
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 mt-0.5">
+                        <Bot className="h-3.5 w-3.5 text-orange-500" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-foreground truncate leading-tight">{session.title}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">{dateStr} · {session.message_count} msg{session.message_count !== 1 ? "s" : ""}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); deleteSession(session.session_id); }}
+                        className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive text-muted-foreground"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </motion.div>
+                  );
+                })
+              )}
+            </div>
+          </GlassCard>
+        )}
       </div>
     </motion.div>
   );

@@ -98,7 +98,7 @@ export default function CompanyProfilePage() {
     const id = params.id;
     if (!id) { setLoading(false); return; }
     fetchCompanyDirectory()
-      .then((dir) => setCompany(dir.find((c) => c.id === id)))
+      .then((dir) => setCompany(dir.find((c) => c.id === id || (c.raw as unknown as { slug?: string }).slug === id)))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [params.id]);

@@ -59,22 +59,22 @@ export function renderMarkdown(text: string): React.ReactNode {
     if (!tableHeader && !tableRows.length) return;
     const headers = tableHeader || [];
     elements.push(
-      <div key={`tbl-${elements.length}`} className="my-2 overflow-x-auto rounded-lg border border-border">
+      <div key={`tbl-${elements.length}`} className="my-2 overflow-x-auto rounded-lg border border-border scroll-styled">
         <table className="w-full text-xs">
           {headers.length > 0 && (
             <thead>
               <tr className="border-b border-border bg-muted/50">
                 {headers.map((h, i) => (
-                  <th key={i} className="px-3 py-2 text-start font-semibold text-foreground">{inlineFormat(h.trim())}</th>
+                  <th key={i} className="px-3 py-2 text-start font-semibold text-foreground whitespace-nowrap">{inlineFormat(h.trim())}</th>
                 ))}
               </tr>
             </thead>
           )}
           <tbody>
             {tableRows.map((row, ri) => (
-              <tr key={ri} className={ri % 2 === 0 ? "" : "bg-muted/20"}>
+              <tr key={ri} className={ri % 2 === 0 ? "bg-background/40" : "bg-muted/20"}>
                 {row.map((cell, ci) => (
-                  <td key={ci} className="px-3 py-2 text-muted-foreground border-t border-border/50">{inlineFormat(cell.trim())}</td>
+                  <td key={ci} className="px-3 py-2 text-muted-foreground border-t border-border/50 whitespace-nowrap">{inlineFormat(cell.trim())}</td>
                 ))}
               </tr>
             ))}

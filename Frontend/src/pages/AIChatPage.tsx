@@ -547,7 +547,7 @@ export default function AIChatPage() {
         {/* Messages */}
         <div
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto px-5 py-5 space-y-3"
+          className="flex-1 overflow-y-auto scroll-styled px-5 py-5 space-y-3"
           role="log"
           aria-live="polite"
           aria-relevant="additions"

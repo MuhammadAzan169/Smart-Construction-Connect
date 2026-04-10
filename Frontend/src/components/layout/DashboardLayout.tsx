@@ -54,7 +54,7 @@ export function DashboardLayout() {
       <AppSidebar />
       <SidebarInset className="relative bg-background border-s border-border">
         <TopNavbar />
-        <main className="relative flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
+        <main className="relative flex-1 overflow-auto scroll-styled px-4 py-6 sm:px-6 lg:px-8">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={location.pathname}
