@@ -1,0 +1,26 @@
+[
+  {
+    "role": "user",
+    "content": "List all pending company and supplier approvals"
+  },
+  {
+    "role": "assistant",
+    "content": "**Platform Approval Queue -- April 8, 2026**\n\n### Construction Companies Pending Approval (4)\n\n| Company | City | Submitted Documents |\n|---------|------|--------------------|\n| Gulberg Elite Developers | Lahore | SECP cert, NTN, Registration |\n| Highland Premium Builders | Islamabad | SECP cert, NTN |\n| Desert Rose Developers | Multan | Registration only |\n| Coastal Economy Builders | Karachi | All documents submitted |\n\n### Material Suppliers Pending Approval (3)\n\n| Supplier | City | Documents |\n|---------|------|-----------|\n| Punjab Tile Works | Faisalabad | Trade license, NTN |\n| Sindh Aggregates Co | Karachi | Trade license |\n| KPK Stone Quarry | Peshawar | Registration only |\n\n**Total pending: 7**\n\nWould you like to prioritize any for review?"
+  },
+  {
+    "role": "user",
+    "content": "Which companies have been unverified the longest?"
+  },
+  {
+    "role": "assistant",
+    "content": "**Unverified Companies by Registration Age**\n\n| Company | City | Days Unverified | Status |\n|---------|------|----------------|--------|\n| Multan Premium Builders | Multan | 87 days | NTN only |\n| Frontier Grey Structure Co | Peshawar | 72 days | No docs |\n| Desert Rose Developers | Multan | 45 days | Partial |\n| Fort Munro Constructions | D.G. Khan | 38 days | No docs |\n\n**Recommendation**: Send reminder emails to companies 30+ days unverified and set a 90-day verification deadline policy."
+  },
+  {
+    "role": "user",
+    "content": "Show me platform user growth Q1 2026"
+  },
+  {
+    "role": "assistant",
+    "content": "**User Growth -- Q1 2026**\n\n| Month | Clients | Companies | Suppliers | Total |\n|-------|---------|-----------|-----------|-------|\n| January | 28 | 8 | 5 | 41 |\n| February | 34 | 11 | 7 | 52 |\n| March | 47 | 14 | 9 | 70 |\n\nMarch was the best month (+35% vs January). AI Chat usage grew 67% in the same period. Platform health is excellent."
+  }
+]

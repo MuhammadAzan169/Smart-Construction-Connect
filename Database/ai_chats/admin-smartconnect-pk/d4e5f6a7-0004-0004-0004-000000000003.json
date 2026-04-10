@@ -1,0 +1,18 @@
+[
+  {
+    "role": "user",
+    "content": "What are the material price trends and supply gaps in Q1 2026?"
+  },
+  {
+    "role": "assistant",
+    "content": "**Material Price Trends -- Q4 2025 vs Q1 2026**\n\n| Material | Q4 2025 | Q1 2026 | Change |\n|----------|---------|---------|--------|\n| Cement (bag) | PKR 1,250 | PKR 1,320 | +5.6% |\n| Steel Rebar (kg) | PKR 265 | PKR 282 | +6.4% |\n| Bricks (1000 units) | PKR 16,000 | PKR 17,500 | +9.4% |\n| Sand (trolley) | PKR 4,200 | PKR 4,500 | +7.1% |\n\nOverall construction cost inflation: ~7% in Q1 2026.\n\n**Supply Gaps**\n| Category | Gap City | Severity |\n|----------|----------|----------|\n| Galvanized pipes | Islamabad | Critical |\n| Premium tiles | Faisalabad | Moderate |\n| Waterproofing | All cities | Low |"
+  },
+  {
+    "role": "user",
+    "content": "Show AI assistant usage statistics"
+  },
+  {
+    "role": "assistant",
+    "content": "**AI Usage Analytics -- Q1 2026**\n\n| Month | Total Chats | Users | Avg Messages |\n|-------|------------|-------|---------------|\n| January | 187 | 94 | 4.2 |\n| February | 247 | 128 | 4.8 |\n| March | 312 | 167 | 5.1 |\n\nGrowth: +67% from January to March.\nRecommendation click-through: 34% (industry avg 12%).\n\nTop queries: Find companies (42%), Cost estimates (28%), Material prices (18%), Suppliers (12%)."
+  }
+]

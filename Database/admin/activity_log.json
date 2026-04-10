@@ -1,5 +1,23 @@
 [
   {
+    "timestamp": "2026-04-10T12:39:28.710643+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): مجھے اسلام آباد میں 10 مرلہ مکان بنوانا ہے"
+  },
+  {
+    "timestamp": "2026-04-10T12:37:37.271568+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): I want to build a 5 marla house in Lahore DHA, budget 80 lacs"
+  },
+  {
+    "timestamp": "2026-04-10T00:59:17.346673+00:00",
+    "action": "request_accepted",
+    "target": "req-003",
+    "details": "Request req-003 set to accepted by Karachi Builders"
+  },
+  {
     "timestamp": "2026-04-09T23:26:01.039343+00:00",
     "action": "verification_updated",
     "target": "gulberg-elite-developers",

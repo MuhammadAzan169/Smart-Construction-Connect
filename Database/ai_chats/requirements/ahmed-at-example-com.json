@@ -1,0 +1,25 @@
+{
+  "email": "ahmed@example.com",
+  "status": "complete",
+  "city": "Lahore",
+  "area": "Dha",
+  "plot_size": "5 marla",
+  "project_type": "house",
+  "budget_min": 7.0,
+  "budget_max": 13.0,
+  "num_floors": null,
+  "num_rooms": null,
+  "design_style": null,
+  "timeline": null,
+  "special_requirements": [],
+  "construction_type": null,
+  "collected_fields": [
+    "area",
+    "budget_max",
+    "budget_min",
+    "city",
+    "plot_size",
+    "project_type"
+  ],
+  "updated_at": "2026-04-10T12:39:40.035077+00:00"
+}

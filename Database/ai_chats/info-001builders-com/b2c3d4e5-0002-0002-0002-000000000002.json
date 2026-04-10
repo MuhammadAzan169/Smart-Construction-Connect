@@ -1,0 +1,18 @@
+[
+  {
+    "role": "user",
+    "content": "Help me estimate cost for a 10 marla grey structure project in Karachi DHA."
+  },
+  {
+    "role": "assistant",
+    "content": "**10 Marla Grey Structure Cost Estimate \u2014 DHA Karachi (April 2026)**\n\n*Total built-up area (G+1): approx. 2,250 sqft*\n\n| Item | Quantity | Rate | Cost |\n|------|---------|------|------|\n| Foundation | Lump sum | \u2014 | PKR 6\u20138 lacs |\n| Brick masonry | 22,000 bricks | PKR 18 | PKR 3.96 lacs |\n| Cement (bags) | 900 bags | PKR 1,330 | PKR 11.97 lacs |\n| Steel rebar | 10 tonnes | PKR 282/kg | PKR 28.2 lacs |\n| Shuttering & formwork | Lump sum | \u2014 | PKR 4\u20135 lacs |\n| Sand & crush | 80 trolleys | PKR 4,800 avg | PKR 3.84 lacs |\n| Labour (mason+helper) | 600 man-days | PKR 2,500 avg | PKR 15 lacs |\n| Miscellaneous (5%) | \u2014 | \u2014 | PKR 4 lacs |\n| **Total** | | | **PKR 77\u201380 lacs** |\n\n*Note: DHA Karachi premium adds ~8\u201310% vs SITE area.*\n\nWant a breakdown for full finish instead?"
+  },
+  {
+    "role": "user",
+    "content": "Yes please also include full finish estimate so I can give client options"
+  },
+  {
+    "role": "assistant",
+    "content": "**Full Finish Add-on Costs \u2014 10 Marla, DHA Karachi**\n\n| Finishing Item | Estimated Cost |\n|---------------|---------------|\n| Floor tiles (imported, 800sqft) | PKR 8\u201312 lacs |\n| Wall tiles (kitchen + bathrooms) | PKR 3\u20134 lacs |\n| Internal plaster + paint | PKR 5\u20137 lacs |\n| Woodwork (doors, frames, kitchen) | PKR 9\u201313 lacs |\n| Electrical wiring + fixtures | PKR 6\u20138 lacs |\n| Plumbing + sanitary fittings | PKR 5\u20137 lacs |\n| External plaster + paint | PKR 3\u20134 lacs |\n| **Total Finishing** | **PKR 39\u201355 lacs** |\n\n---\n\n| Package | Total Cost |\n|---------|------------|\n| Grey Structure Only | PKR 77\u201380 lacs |\n| Full Finish (standard) | PKR 116\u2013135 lacs |\n| Full Finish (premium) | PKR 145\u2013160 lacs |\n\n*These are competitive rates for DHA Karachi. You can confidently quote PKR 3,200\u20133,800 per sqft for full finish in this area.*"
+  }
+]

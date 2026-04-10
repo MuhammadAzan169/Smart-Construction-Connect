@@ -172,6 +172,14 @@ export interface AdminFile {
   uploaded_at: string;
 }
 
+export interface ChatSessionMeta {
+  session_id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
+}
+
 // ── API client ───────────────────────────────────────────────────────────────
 
 export const api = {
@@ -452,6 +460,33 @@ export const api = {
       request<{ requirements: Record<string, unknown> }>(`/ai/requirements/${encodeURIComponent(email)}`),
     clearRequirements: (email: string) =>
       request<{ status: string }>(`/ai/requirements/${encodeURIComponent(email)}`, { method: "DELETE" }),
+
+    // ── Persistent chat history (ChatGPT-style) ──
+    listChatSessions: () =>
+      request<{ sessions: ChatSessionMeta[] }>("/ai/history"),
+    createChatSession: (title: string, messages: { role: string; content: string }[]) =>
+      request<{ session_id: string; title: string; created_at: string }>("/ai/history", {
+        method: "POST",
+        body: JSON.stringify({ title, messages }),
+      }),
+    getChatSession: (sessionId: string) =>
+      request<{ session_id: string; title: string; created_at: string; updated_at: string; messages: { role: string; content: string }[] }>(
+        `/ai/history/${encodeURIComponent(sessionId)}`
+      ),
+    updateChatSession: (sessionId: string, data: { title?: string; messages?: { role: string; content: string }[] }) =>
+      request<{ session_id: string; title: string; updated_at: string }>(`/ai/history/${encodeURIComponent(sessionId)}`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+    deleteChatSession: (sessionId: string) =>
+      request<{ status: string; session_id: string }>(`/ai/history/${encodeURIComponent(sessionId)}`, {
+        method: "DELETE",
+      }),
+    renameChatSession: (sessionId: string, title: string) =>
+      request<{ session_id: string; title: string }>(`/ai/history/${encodeURIComponent(sessionId)}/rename`, {
+        method: "PATCH",
+        body: JSON.stringify({ title }),
+      }),
   },
 
   requests: {

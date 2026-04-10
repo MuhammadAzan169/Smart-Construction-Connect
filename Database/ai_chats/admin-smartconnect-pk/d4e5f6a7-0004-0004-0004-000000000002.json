@@ -1,0 +1,18 @@
+[
+  {
+    "role": "user",
+    "content": "Show me the top 5 construction companies and top 3 suppliers by performance"
+  },
+  {
+    "role": "assistant",
+    "content": "**Top 5 Construction Companies (March 2026)**\n\n| Rank | Company | City | Rating | Reviews |\n|------|---------|------|--------|---------|\n| 1 | Diplomatic Enclave Developers | Islamabad | 4.9 | 156 |\n| 2 | Gulberg Elite Developers | Lahore | 4.8 | 312 |\n| 3 | Heritage Builders Lahore | Lahore | 4.8 | 245 |\n| 4 | Highland Premium Builders | Islamabad | 4.7 | 189 |\n| 5 | Seaview Premium Builders | Karachi | 4.7 | 167 |\n\n**Top 3 Material Suppliers**\n\n| Rank | Supplier | City | Rating |\n|------|---------|------|--------|\n| 1 | Steel Hub PK | Karachi | 4.9 |\n| 2 | Bestway Building Materials | Lahore | 4.8 |\n| 3 | Punjab Cement Traders | Lahore | 4.6 |"
+  },
+  {
+    "role": "user",
+    "content": "Which cities have most active clients?"
+  },
+  {
+    "role": "assistant",
+    "content": "**Most Active Client Cities -- Q1 2026**\n\n| City | Clients | Requests | AI Chats |\n|------|---------|----------|----------|\n| Lahore | 52 | 89 | 134 |\n| Islamabad | 38 | 64 | 98 |\n| Karachi | 34 | 58 | 87 |\n| Rawalpindi | 18 | 29 | 44 |\n| Faisalabad | 14 | 21 | 32 |\n\nLahore accounts for 33% of all activity. Islamabad growing fastest at +28% QoQ."
+  }
+]

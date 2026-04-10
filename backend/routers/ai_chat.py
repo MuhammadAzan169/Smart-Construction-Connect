@@ -9,6 +9,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -711,3 +712,214 @@ async def admin_delete_file(
 
     resolved.unlink()
     return {"status": "ok", "deleted": url}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  ChatGPT-style Persistent Chat History
+#  Storage layout:
+#    Database/ai_chats/{safe_email}/index.json   → list of session metadata
+#    Database/ai_chats/{safe_email}/{session_id}.json → messages for each session
+# ═══════════════════════════════════════════════════════════════════════════════
+
+_CHATS_ROOT = DB_DIR / "ai_chats"
+_CHATS_ROOT.mkdir(parents=True, exist_ok=True)
+
+
+def _safe_email(email: str) -> str:
+    return re.sub(r"[^a-z0-9]", "-", email.lower())[:80]
+
+
+def _user_chats_dir(email: str) -> Path:
+    d = _CHATS_ROOT / _safe_email(email)
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _index_path(email: str) -> Path:
+    return _user_chats_dir(email) / "index.json"
+
+
+def _session_path(email: str, session_id: str) -> Path:
+    # Guard against path traversal
+    safe_id = re.sub(r"[^a-zA-Z0-9\-]", "", session_id)[:64]
+    return _user_chats_dir(email) / f"{safe_id}.json"
+
+
+def _load_index(email: str) -> list[dict]:
+    data = read_json(_index_path(email))
+    return data if isinstance(data, list) else []
+
+
+def _save_index(email: str, index: list[dict]) -> None:
+    write_json(_index_path(email), index)
+
+
+def _auto_title(messages: list[dict]) -> str:
+    """Generate a short title from the first user message (max 60 chars)."""
+    for m in messages:
+        if m.get("role") == "user":
+            text = m.get("content", "").strip()
+            # Strip file context blocks
+            if "---" in text:
+                text = text.split("---")[0].strip()
+            title = text[:60]
+            if len(text) > 60:
+                title += "…"
+            return title or "New Chat"
+    return "New Chat"
+
+
+class ChatSessionCreate(BaseModel):
+    title: str = ""
+    messages: list[ChatMessage] = []
+
+
+class ChatSessionUpdate(BaseModel):
+    title: str | None = None
+    messages: list[ChatMessage] | None = None
+
+
+class ChatSessionMeta(BaseModel):
+    session_id: str
+    title: str
+    created_at: str
+    updated_at: str
+    message_count: int
+
+
+@router.get("/history", summary="List all chat sessions for the authenticated user")
+async def list_chat_sessions(user: dict = Depends(get_current_user)):
+    """Return a list of previous AI chat sessions, newest first."""
+    index = _load_index(user["email"])
+    index.sort(key=lambda s: s.get("updated_at", ""), reverse=True)
+    return {"sessions": index}
+
+
+@router.post("/history", summary="Create a new chat session")
+async def create_chat_session(
+    body: ChatSessionCreate,
+    user: dict = Depends(get_current_user),
+):
+    """Create and persist a new chat session."""
+    session_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc).isoformat()
+    messages = [m.model_dump() for m in body.messages]
+    title = body.title.strip() or _auto_title(messages) or "New Chat"
+
+    meta: dict = {
+        "session_id": session_id,
+        "title": title,
+        "created_at": now,
+        "updated_at": now,
+        "message_count": len(messages),
+    }
+
+    # Write the message file
+    write_json(_session_path(user["email"], session_id), messages)
+
+    # Update index
+    index = _load_index(user["email"])
+    index.insert(0, meta)
+    _save_index(user["email"], index)
+
+    return {"session_id": session_id, "title": title, "created_at": now}
+
+
+@router.get("/history/{session_id}", summary="Load a specific chat session")
+async def get_chat_session(
+    session_id: str,
+    user: dict = Depends(get_current_user),
+):
+    """Return the full message list for a specific session."""
+    path = _session_path(user["email"], session_id)
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Chat session not found")
+    messages = read_json(path)
+    if not isinstance(messages, list):
+        messages = []
+
+    # Find meta from index
+    index = _load_index(user["email"])
+    meta = next((s for s in index if s.get("session_id") == session_id), {})
+
+    return {
+        "session_id": session_id,
+        "title": meta.get("title", "Chat"),
+        "created_at": meta.get("created_at", ""),
+        "updated_at": meta.get("updated_at", ""),
+        "messages": messages,
+    }
+
+
+@router.put("/history/{session_id}", summary="Append messages / rename a session")
+async def update_chat_session(
+    session_id: str,
+    body: ChatSessionUpdate,
+    user: dict = Depends(get_current_user),
+):
+    """Update title and/or replace the full message list for a session."""
+    path = _session_path(user["email"], session_id)
+    index = _load_index(user["email"])
+    meta = next((s for s in index if s.get("session_id") == session_id), None)
+
+    if not meta:
+        raise HTTPException(status_code=404, detail="Chat session not found")
+
+    now = datetime.now(timezone.utc).isoformat()
+
+    if body.messages is not None:
+        messages = [m.model_dump() for m in body.messages]
+        write_json(path, messages)
+        meta["message_count"] = len(messages)
+        if not body.title and meta.get("title") in ("New Chat", ""):
+            meta["title"] = _auto_title(messages)
+
+    if body.title is not None:
+        meta["title"] = body.title.strip() or meta.get("title", "Chat")
+
+    meta["updated_at"] = now
+    _save_index(user["email"], index)
+
+    return {"session_id": session_id, "title": meta["title"], "updated_at": now}
+
+
+@router.delete("/history/{session_id}", summary="Delete a chat session")
+async def delete_chat_session(
+    session_id: str,
+    user: dict = Depends(get_current_user),
+):
+    """Permanently delete a chat session and its messages."""
+    path = _session_path(user["email"], session_id)
+    index = _load_index(user["email"])
+
+    new_index = [s for s in index if s.get("session_id") != session_id]
+    if len(new_index) == len(index):
+        raise HTTPException(status_code=404, detail="Chat session not found")
+
+    if path.exists():
+        path.unlink()
+
+    _save_index(user["email"], new_index)
+    return {"status": "deleted", "session_id": session_id}
+
+
+@router.patch("/history/{session_id}/rename", summary="Rename a chat session")
+async def rename_chat_session(
+    session_id: str,
+    body: dict,
+    user: dict = Depends(get_current_user),
+):
+    """Rename a chat session title only."""
+    new_title = (body.get("title") or "").strip()
+    if not new_title:
+        raise HTTPException(status_code=400, detail="title is required")
+
+    index = _load_index(user["email"])
+    meta = next((s for s in index if s.get("session_id") == session_id), None)
+    if not meta:
+        raise HTTPException(status_code=404, detail="Chat session not found")
+
+    meta["title"] = new_title[:120]
+    meta["updated_at"] = datetime.now(timezone.utc).isoformat()
+    _save_index(user["email"], index)
+    return {"session_id": session_id, "title": meta["title"]}
