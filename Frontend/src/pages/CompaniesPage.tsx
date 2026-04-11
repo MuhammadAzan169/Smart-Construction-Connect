@@ -1766,9 +1766,18 @@ function AdminCompaniesView() {
                         {c.verified ? <StatusBadge status="verified" /> : <StatusBadge status="pending" />}
                       </TableCell>
                       <TableCell className="text-end" onClick={(e) => e.stopPropagation()}>
-                        <Button size="sm" variant="secondary" onClick={() => navigate(`/companies/${c.id}`)}>
-                          View
-                        </Button>
+                        <div className="flex items-center justify-end gap-2">
+                          <Button size="sm" variant="ghost" className="gap-1.5" onClick={() => {
+                            const email = c.raw?.contact?.email;
+                            if (!email) return;
+                            api.messages.startConversation(email, c.name, `Hi ${c.name}, this is admin reaching out.`).then(() => navigate("/messages")).catch(() => {});
+                          }}>
+                            <MessageSquare className="h-4 w-4" /> Message
+                          </Button>
+                          <Button size="sm" variant="secondary" onClick={() => navigate(`/companies/${c.id}`)}>
+                            View
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -1819,9 +1828,18 @@ function AdminCompaniesView() {
                         <TableCell className="text-foreground">{s.rating > 0 ? s.rating : " - "}</TableCell>
                         <TableCell className="text-muted-foreground">{priceText}</TableCell>
                         <TableCell className="text-end" onClick={(e) => e.stopPropagation()}>
-                          <Button size="sm" variant="secondary" onClick={() => navigate(`/suppliers/${s.id}`)}>
-                            View
-                          </Button>
+                          <div className="flex items-center justify-end gap-2">
+                            <Button size="sm" variant="ghost" className="gap-1.5" onClick={() => {
+                              const email = s.contact?.email;
+                              if (!email) return;
+                              api.messages.startConversation(email, s.name, `Hi ${s.name}, this is admin reaching out.`).then(() => navigate("/messages")).catch(() => {});
+                            }}>
+                              <MessageSquare className="h-4 w-4" /> Message
+                            </Button>
+                            <Button size="sm" variant="secondary" onClick={() => navigate(`/suppliers/${s.id}`)}>
+                              View
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );

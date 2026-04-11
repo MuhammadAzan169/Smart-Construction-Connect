@@ -17,7 +17,7 @@ import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 import {
   ArrowLeft, Ban, Building2, CheckCircle2, ChevronDown, Loader2,
-  MoreHorizontal, Package, Search, ShieldCheck, UserPlus, Users,
+  MessageSquare, MoreHorizontal, Package, Search, ShieldCheck, UserPlus, Users,
   UserX, Clock, Filter,
 } from "lucide-react";
 
@@ -294,6 +294,16 @@ export default function UsersPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-44">
+                            {u.role !== "admin" && (
+                              <DropdownMenuItem
+                                className="gap-2"
+                                onClick={() => {
+                                  api.messages.startConversation(u.email, u.name, `Hi ${u.name}, this is admin reaching out.`).then(() => navigate("/messages")).catch(() => {});
+                                }}
+                              >
+                                <MessageSquare className="h-4 w-4" /> Message
+                              </DropdownMenuItem>
+                            )}
                             {u.status === "pending" && (
                               <DropdownMenuItem
                                 className="gap-2 text-green-600 focus:text-green-600"

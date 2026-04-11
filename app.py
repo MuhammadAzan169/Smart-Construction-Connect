@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 import sys, subprocess, time, uuid, threading, webbrowser
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 # ── Ensure repo root is on sys.path so `backend.*` imports work ──
@@ -124,10 +125,33 @@ class CacheControlMiddleware(BaseHTTPMiddleware):
         return response
 
 
+# ── Lifespan: initialize embeddings index on startup ──
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from backend.utils.embeddings import initialize_embeddings
+    from backend.utils.rag_engine import rebuild_index
+    from backend.utils.semantic_embeddings import semantic_index
+
+    # Legacy TF-IDF index (kept for backward compatibility)
+    count = initialize_embeddings()
+    rebuild_index()
+    logger.info("Legacy TF-IDF: %d entities indexed", count)
+
+    # New hybrid semantic index (SBERT + FAISS + BM25)
+    semantic_index.build()
+    stats = semantic_index.get_stats()
+    logger.info(
+        "Semantic index ready: %d entities, mode=%s",
+        stats["total_entities"], stats["mode"],
+    )
+    yield
+
+
 app = FastAPI(
     title="Smart Construction Connect",
     version="1.0.0",
     description="Unified API + frontend for the Smart Construction Connect platform",
+    lifespan=lifespan,
 )
 
 # ── Global exception handler ──
@@ -166,26 +190,6 @@ app.include_router(events.router)
 def health():
     return {"status": "ok", "version": "1.0.0"}
 
-
-# ── Startup: initialize embeddings index ──
-@app.on_event("startup")
-def on_startup():
-    from backend.utils.embeddings import initialize_embeddings
-    from backend.utils.rag_engine import rebuild_index
-    from backend.utils.semantic_embeddings import semantic_index
-
-    # Legacy TF-IDF index (kept for backward compatibility)
-    count = initialize_embeddings()
-    rebuild_index()
-    logger.info("Legacy TF-IDF: %d entities indexed", count)
-
-    # New hybrid semantic index (SBERT + FAISS + BM25)
-    semantic_index.build()
-    stats = semantic_index.get_stats()
-    logger.info(
-        "Semantic index ready: %d entities, mode=%s",
-        stats["total_entities"], stats["mode"],
-    )
 
 
 @app.get("/")
