@@ -17,10 +17,11 @@ import {
   Building2, ArrowRight, Plus, Layers, AlertCircle,
   Mic, Square, Play, RotateCcw, Check, Star, MapPin,
   Phone, Shield, Calendar, Eye, MessageCircle, ChevronDown, ChevronUp,
-  Sparkles, Target, Image as ImageIcon, History, Trash2, ChevronLeft, ChevronRight, Pencil,
+  Sparkles, Target, Image as ImageIcon, History, Trash2, ChevronLeft, ChevronRight, Pencil, MessageSquare,
 } from "lucide-react";
 
 import { renderMarkdown } from "@/components/shared/MarkdownRenderer";
+import { MatchScoreRing } from "@/components/shared/MatchScoreRing";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,7 +48,7 @@ const STATUS_META = {
   pending:   { label: "Pending",   color: "text-amber-500",  bg: "bg-amber-500/10",   icon: Clock },
   accepted:  { label: "Accepted",  color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2 },
   rejected:  { label: "Rejected",  color: "text-red-500",    bg: "bg-red-500/10",     icon: XCircle },
-  completed: { label: "Completed", color: "text-sky-500",    bg: "bg-sky-500/10",     icon: FileCheck },
+  completed: { label: "Completed", color: "text-primary",    bg: "bg-primary/10",     icon: FileCheck },
 } as const;
 
 const REQUIREMENT_LABELS: Record<string, { label: string; icon: string }> = {
@@ -83,7 +84,7 @@ function RecommendationCard({ rec, onContact }: { rec: EnrichedRecommendation; o
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-sky-500/20 bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+      className="rounded-2xl border border-primary/20 bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow"
     >
       {/* Gallery / Image */}
       {gallery.length > 0 ? (
@@ -143,7 +144,7 @@ function RecommendationCard({ rec, onContact }: { rec: EnrichedRecommendation; o
         )}
 
         <div className="flex items-center justify-between">
-          {priceRange && <span className="text-xs font-semibold text-sky-600 dark:text-sky-400">{priceRange}</span>}
+          {priceRange && <span className="text-xs font-semibold text-primary">{priceRange}</span>}
           {rec.year_established && <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground"><Calendar className="h-3 w-3" /> Est. {rec.year_established}</span>}
         </div>
 
@@ -180,7 +181,7 @@ function RecommendationCard({ rec, onContact }: { rec: EnrichedRecommendation; o
           <Button asChild size="sm" variant="outline" className="flex-1 text-xs h-8 gap-1.5 rounded-xl">
             <Link to={`/companies/${encodeURIComponent(slug)}`}><Eye className="h-3.5 w-3.5" /> View Details</Link>
           </Button>
-          <Button size="sm" className="flex-1 text-xs h-8 gap-1.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white" onClick={() => onContact(rec)}>
+          <Button size="sm" className="flex-1 text-xs h-8 gap-1.5 rounded-xl gradient-bg text-primary-foreground" onClick={() => onContact(rec)}>
             <MessageCircle className="h-3.5 w-3.5" /> Contact Now
           </Button>
           <button type="button" onClick={() => setExpanded(!expanded)}
@@ -226,7 +227,7 @@ export default function ClientAIChatPage() {
   const [stats, setStats] = useState({ total: 0, pending: 0, accepted: 0, rejected: 0, completed: 0 });
   const [loadingHub, setLoadingHub] = useState(true);
   const [sidebarTab, setSidebarTab] = useState<"tracker" | "hub">("tracker");
-  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(true);
 
   /* ── Chat history state ── */
   const [chatSessions, setChatSessions] = useState<ChatSessionMeta[]>([]);
@@ -586,7 +587,7 @@ export default function ClientAIChatPage() {
           >
             <GlassCard interactive={false} className="flex flex-col h-full p-0 overflow-hidden card-shadow">
               <div className="flex items-center gap-2 border-b border-border px-3 py-3 shrink-0">
-                <History className="h-4 w-4 text-sky-500 shrink-0" />
+                <MessageSquare className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-sm font-semibold text-foreground flex-1 truncate">History</span>
                 <button type="button" onClick={startNewChat} title="New chat"
                   className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
@@ -605,7 +606,7 @@ export default function ClientAIChatPage() {
                     <div
                       key={s.session_id}
                       className={`group relative flex flex-col px-3 py-2 mx-1 rounded-lg cursor-pointer transition-colors hover:bg-secondary/70 ${
-                        currentSessionId === s.session_id ? "bg-sky-500/10 hover:bg-sky-500/15" : ""
+                        currentSessionId === s.session_id ? "bg-primary/10 hover:bg-primary/15" : ""
                       }`}
                       onClick={() => {
                         if (editingSessionId !== s.session_id && deletingSessionId !== s.session_id) {
@@ -621,7 +622,7 @@ export default function ClientAIChatPage() {
                             if (e.key === "Enter") handleRenameSession(s.session_id);
                             if (e.key === "Escape") { setEditingSessionId(null); setEditingTitle(""); }
                           }}
-                          className="w-full rounded border border-sky-500/40 bg-background px-2 py-0.5 text-xs text-foreground outline-none"
+                          className="w-full rounded border border-primary/40 bg-background px-2 py-0.5 text-xs text-foreground outline-none"
                           onClick={(e) => e.stopPropagation()}
                         />
                       ) : (
@@ -677,7 +678,7 @@ export default function ClientAIChatPage() {
 
         {/* Header */}
         <div className="relative flex items-center gap-3 border-b border-border px-5 py-4 overflow-hidden">
-          <div className="absolute start-0 top-0 h-full w-40 bg-gradient-to-r from-sky-500/8 to-transparent pointer-events-none" />
+          <div className="absolute start-0 top-0 h-full w-40 bg-gradient-to-r from-primary/8 to-transparent pointer-events-none" />
           <button
             type="button"
             onClick={() => navigate("/dashboard")}
@@ -685,9 +686,9 @@ export default function ClientAIChatPage() {
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Back
           </button>
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-500 shadow-md">
-            <Home className="h-5 w-5 text-white" />
-            <div className="absolute inset-0 rounded-xl ring-2 ring-sky-500/30" />
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl gradient-bg shadow-md">
+            <Bot className="h-5 w-5 text-primary-foreground" />
+            <div className="absolute inset-0 rounded-xl ring-2 ring-primary/20" />
           </div>
           <div>
             <h2 className="text-sm font-bold text-foreground leading-tight">{t("aiChat.aiConsultant")}</h2>
@@ -716,7 +717,7 @@ export default function ClientAIChatPage() {
                   key={s}
                   type="button"
                   onClick={() => injectPrompt(s)}
-                  className="rounded-xl border border-sky-500/20 bg-sky-500/5 px-3 py-1.5 text-xs text-muted-foreground hover:border-sky-500/40 hover:bg-sky-500/10 hover:text-foreground transition-colors text-start"
+                  className="rounded-xl border border-border bg-secondary/50 px-3 py-1.5 text-xs text-muted-foreground hover:border-primary/30 hover:bg-secondary hover:text-foreground transition-colors text-start"
                 >
                   {s}
                 </button>
@@ -734,22 +735,22 @@ export default function ClientAIChatPage() {
                 className={`flex items-end gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
               >
                 <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl shadow-sm ${
-                  msg.role === "ai" ? "bg-sky-500" : "bg-secondary border border-border"
+                  msg.role === "ai" ? "gradient-bg" : "bg-secondary border border-border"
                 }`}>
-                  {msg.role === "ai" ? <Home className="h-4 w-4 text-white" /> : <User className="h-4 w-4 text-muted-foreground" />}
+                  {msg.role === "ai" ? <Bot className="h-4 w-4 text-primary-foreground" /> : <User className="h-4 w-4 text-muted-foreground" />}
                 </div>
                 <div
                   className={`max-w-[85%] md:max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm overflow-hidden break-words ${
                     msg.role === "ai"
                       ? "bg-secondary text-foreground rounded-bl-md"
-                      : "bg-sky-500 text-white rounded-br-md"
+                      : "gradient-bg text-primary-foreground rounded-br-md"
                   }`}
                   dir="auto"
                 >
                   {msg.role === "ai" ? (
                     <>
                       {renderMarkdown(msg.text)}
-                      {msg.isStreaming && <span className="inline-block w-1.5 h-4 ms-0.5 bg-sky-500/60 animate-pulse rounded-sm" />}
+                      {msg.isStreaming && <span className="inline-block w-1.5 h-4 ms-0.5 bg-primary/60 animate-pulse rounded-sm" />}
                     </>
                   ) : <span className="whitespace-pre-wrap">{msg.text}</span>}
                 </div>
@@ -765,8 +766,8 @@ export default function ClientAIChatPage() {
               className="space-y-3 py-2"
             >
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-500 shadow-sm">
-                  <Sparkles className="h-4 w-4 text-white" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl gradient-bg shadow-sm">
+                  <Sparkles className="h-4 w-4 text-primary-foreground" />
                 </div>
                 <p className="text-sm font-semibold text-foreground">Top Recommendations for You</p>
               </div>
@@ -784,8 +785,8 @@ export default function ClientAIChatPage() {
               initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="flex items-end gap-2.5"
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-500 shadow-sm">
-                <Home className="h-4 w-4 text-white" />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl gradient-bg shadow-sm">
+                <Bot className="h-4 w-4 text-primary-foreground" />
               </div>
               <div className="rounded-2xl rounded-bl-md bg-secondary px-4 py-3 shadow-sm">
                 <div className="flex gap-1.5 items-center">
@@ -807,8 +808,8 @@ export default function ClientAIChatPage() {
         {/* Input */}
         <div className="border-t border-border px-5 py-4">
           {attachedFile && !voice.isRecording && !voice.isPreviewing && (
-            <div className="mb-2 flex items-center gap-2 rounded-xl border border-sky-500/20 bg-sky-500/5 px-3 py-2">
-              <FileText className="h-4 w-4 text-sky-500 shrink-0" />
+            <div className="mb-2 flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
+              <FileText className="h-4 w-4 text-primary shrink-0" />
               <span className="flex-1 truncate text-xs text-foreground">{attachedFile.name}</span>
               <span className="text-[10px] text-muted-foreground">{(attachedFile.size / 1024).toFixed(0)} KB</span>
               <button type="button" onClick={() => setAttachedFile(null)} className="flex h-5 w-5 items-center justify-center rounded-full hover:bg-secondary transition-colors" aria-label="Remove file">
@@ -861,13 +862,13 @@ export default function ClientAIChatPage() {
                   <>
                     <audio ref={audioPreviewRef} src={voice.audioUrl} className="hidden" />
                     <motion.button type="button" onClick={() => audioPreviewRef.current?.play()}
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-sky-500/30 bg-sky-500/5 text-sky-500 hover:bg-sky-500/10 transition-colors"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 transition-colors"
                       whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Play recording">
                       <Play className="h-4 w-4" />
                     </motion.button>
                   </>
                 )}
-                <div className="flex-1 flex items-start rounded-2xl border border-sky-500/30 bg-sky-500/5 px-3 py-1 focus-within:border-sky-500/50 transition-colors min-w-0">
+                <div className="flex-1 flex items-start rounded-2xl border border-primary/30 bg-primary/5 px-3 py-1 focus-within:border-primary/50 transition-colors min-w-0">
                   <textarea value={voice.transcript} onChange={(e) => voice.setTranscript(e.target.value)}
                     className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-1.5 resize-none max-h-20 overflow-y-auto"
                     placeholder="Edit transcript before sending…"
@@ -882,7 +883,7 @@ export default function ClientAIChatPage() {
                   <RotateCcw className="h-4 w-4" />
                 </motion.button>
                 <motion.button type="button" onClick={handleVoiceAccept} disabled={!voice.transcript.trim()}
-                  className="flex h-10 shrink-0 items-center gap-1.5 rounded-2xl bg-sky-500 px-3 text-xs font-medium text-white shadow-sm disabled:opacity-40 transition-opacity"
+                  className="flex h-10 shrink-0 items-center gap-1.5 rounded-2xl gradient-bg px-3 text-xs font-medium text-primary-foreground shadow-sm disabled:opacity-40 transition-opacity"
                   whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Use transcript">
                   <Check className="h-3.5 w-3.5" /> Use
                 </motion.button>
@@ -892,7 +893,7 @@ export default function ClientAIChatPage() {
             {/* Normal state: text input + attach + mic + send */}
             {!voice.isRecording && !voice.isPreviewing && (
               <>
-                <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-sky-500/40 transition-colors">
+                <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-primary/40 transition-colors">
                   <textarea
                     id="client-chat-input"
                     rows={1}
@@ -909,19 +910,19 @@ export default function ClientAIChatPage() {
                   />
                 </div>
                 <motion.button type="button" onClick={() => fileInputRef.current?.click()} disabled={isTyping}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-sky-500/30 transition-colors disabled:opacity-40"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-40"
                   whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Attach file">
                   <Paperclip className="h-4 w-4" />
                 </motion.button>
                 {(voice.isSupported || voice.isMediaSupported) && (
                   <motion.button type="button" onClick={() => voice.startRecording("auto")} disabled={isTyping}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-sky-500/30 transition-colors disabled:opacity-40"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-40"
                     whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Start voice input">
                     <Mic className="h-4 w-4" />
                   </motion.button>
                 )}
                 <motion.button type="submit" disabled={(!input.trim() && !attachedFile) || isTyping}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-500 text-white shadow-sm disabled:opacity-40 transition-opacity"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl gradient-bg text-primary-foreground shadow-sm disabled:opacity-40 transition-opacity"
                   whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Send message">
                   <Send className="h-4 w-4" />
                 </motion.button>
@@ -945,7 +946,7 @@ export default function ClientAIChatPage() {
             type="button"
             onClick={() => setSidebarTab("tracker")}
             className={`flex-1 flex items-center justify-center gap-1 py-2 text-xs font-medium transition-colors ${
-              sidebarTab === "tracker" ? "bg-sky-500/10 text-sky-500 border-b-2 border-sky-500" : "text-muted-foreground hover:text-foreground"
+              sidebarTab === "tracker" ? "bg-primary/10 text-primary border-b-2 border-primary" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Target className="h-3 w-3" /> Reqs
@@ -954,7 +955,7 @@ export default function ClientAIChatPage() {
             type="button"
             onClick={() => setSidebarTab("hub")}
             className={`flex-1 flex items-center justify-center gap-1 py-2 text-xs font-medium transition-colors ${
-              sidebarTab === "hub" ? "bg-sky-500/10 text-sky-500 border-b-2 border-sky-500" : "text-muted-foreground hover:text-foreground"
+              sidebarTab === "hub" ? "bg-primary/10 text-primary border-b-2 border-primary" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Layers className="h-3 w-3" /> Hub
@@ -965,8 +966,8 @@ export default function ClientAIChatPage() {
         {sidebarTab === "tracker" && (
           <GlassCard interactive={false} className="flex flex-col flex-1 p-0 overflow-hidden card-shadow">
             <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/10">
-                <Target className="h-4 w-4 text-sky-500" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                <Target className="h-4 w-4 text-primary" />
               </div>
               <div className="flex-1">
                 <h3 className="text-sm font-bold text-foreground leading-tight">Project Requirements</h3>
@@ -987,8 +988,8 @@ export default function ClientAIChatPage() {
                 <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
                   <motion.div
                     className={`h-full rounded-full transition-colors ${
-                      reqStatus === "complete" ? "bg-emerald-500" :
-                      reqStatus === "nearly_complete" ? "bg-amber-500" : "bg-sky-500"
+                    reqStatus === "complete" ? "bg-emerald-500" :
+                      reqStatus === "nearly_complete" ? "bg-amber-500" : "bg-primary"
                     }`}
                     initial={{ width: 0 }}
                     animate={{ width: `${reqProgressPct}%` }}
@@ -1080,8 +1081,8 @@ export default function ClientAIChatPage() {
           <>
             <GlassCard interactive={false} className="flex flex-col p-0 overflow-hidden card-shadow">
               <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/10">
-                  <Layers className="h-4 w-4 text-sky-500" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                  <Layers className="h-4 w-4 text-primary" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-sm font-bold text-foreground leading-tight">Project Hub</h3>
@@ -1096,7 +1097,7 @@ export default function ClientAIChatPage() {
                     { label: "Total", value: stats.total, color: "text-foreground", bg: "bg-secondary/60" },
                     { label: "Pending", value: stats.pending, color: "text-amber-500", bg: "bg-amber-500/8" },
                     { label: "Accepted", value: stats.accepted, color: "text-emerald-500", bg: "bg-emerald-500/8" },
-                    { label: "Completed", value: stats.completed, color: "text-sky-500", bg: "bg-sky-500/8" },
+                    { label: "Completed", value: stats.completed, color: "text-primary", bg: "bg-primary/8" },
                   ].map(({ label, value, color, bg }) => (
                     <div key={label} className={`rounded-xl ${bg} px-3 py-2.5 text-center`}>
                       <p className={`text-xl font-bold ${color}`}>{loadingHub ? "…" : value}</p>
@@ -1112,7 +1113,7 @@ export default function ClientAIChatPage() {
                     {[
                       { label: "Pending", pct: pendingPct, color: "bg-amber-500" },
                       { label: "Accepted", pct: acceptedPct, color: "bg-emerald-500" },
-                      { label: "Completed", pct: completedPct, color: "bg-sky-500" },
+                      { label: "Completed", pct: completedPct, color: "bg-primary" },
                     ].map(({ label, pct, color }) => (
                       <div key={label} className="space-y-1">
                         <div className="flex justify-between text-[10px] text-muted-foreground">
@@ -1135,7 +1136,7 @@ export default function ClientAIChatPage() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Recent Requests</p>
-                    <Link to="/requests" className="text-[10px] text-sky-500 hover:underline flex items-center gap-0.5">
+                    <Link to="/requests" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
                       View all <ArrowRight className="h-3 w-3" />
                     </Link>
                   </div>
@@ -1173,10 +1174,10 @@ export default function ClientAIChatPage() {
 
                 {/* Action buttons */}
                 <div className="grid grid-cols-2 gap-2 pt-1">
-                  <Button asChild size="sm" className="bg-sky-500 hover:bg-sky-600 text-white text-xs h-8 gap-1.5">
+                  <Button asChild size="sm" className="gradient-bg text-primary-foreground text-xs h-8 gap-1.5">
                     <Link to="/requests"><Plus className="h-3.5 w-3.5" /> New Request</Link>
                   </Button>
-                  <Button asChild size="sm" variant="outline" className="text-xs h-8 gap-1.5 border-sky-500/20 hover:border-sky-500/40">
+                  <Button asChild size="sm" variant="outline" className="text-xs h-8 gap-1.5 border-primary/20 hover:border-primary/40">
                     <Link to="/companies"><Building2 className="h-3.5 w-3.5" /> Browse</Link>
                   </Button>
                 </div>
@@ -1186,8 +1187,8 @@ export default function ClientAIChatPage() {
             {/* Quick Queries */}
             <GlassCard interactive={false} className="flex flex-col p-0 overflow-hidden card-shadow">
               <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/10">
-                  <Bot className="h-4 w-4 text-sky-500" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                  <Bot className="h-4 w-4 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-foreground leading-tight">Quick Queries</h3>
@@ -1200,9 +1201,9 @@ export default function ClientAIChatPage() {
                     key={prompt}
                     type="button"
                     onClick={() => injectPrompt(prompt)}
-                    className="w-full flex items-center gap-2.5 rounded-xl border border-border bg-secondary/30 px-3 py-2 text-start hover:border-sky-500/30 hover:bg-sky-500/5 transition-all group"
+                    className="w-full flex items-center gap-2.5 rounded-xl border border-border bg-secondary/30 px-3 py-2 text-start hover:border-primary/30 hover:bg-primary/5 transition-all group"
                   >
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500/50 group-hover:bg-sky-500 transition-colors" />
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary/50 group-hover:bg-primary transition-colors" />
                     <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors leading-snug line-clamp-2">{prompt}</span>
                   </button>
                 ))}
