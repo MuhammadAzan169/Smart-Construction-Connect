@@ -697,7 +697,7 @@ export default function AdminAIChatPage() {
               <p className="text-[11px] text-muted-foreground">Tap to ask instantly</p>
             </div>
           </div>
-          <div className="p-3 space-y-1.5 overflow-y-auto">
+          <div className="p-3 space-y-1.5 max-h-64 overflow-y-auto scroll-styled">
             {[
               { icon: BarChart3, color: "text-violet-500 bg-violet-500/10", text: "Give me a full platform health summary" },
               { icon: ShieldAlert, color: "text-amber-500 bg-amber-500/10", text: "List all pending company and supplier approvals" },

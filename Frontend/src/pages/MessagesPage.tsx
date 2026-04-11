@@ -819,14 +819,14 @@ export default function MessagesPage() {
                           </motion.button>
                         </div>
                         {voice.transcript && (
-                          <p className="text-xs text-muted-foreground italic truncate px-1">
+                          <p className="text-xs text-muted-foreground italic px-1 break-words line-clamp-3">
                             "{voice.transcript}"
                           </p>
                         )}
                       </div>
                     ) : voice.isPreviewing ? (
                       <div className="space-y-3">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <motion.button type="button"
                             onClick={() => { if (audioPreviewRef.current) { audioPreviewRef.current.currentTime = 0; audioPreviewRef.current.play(); } }}
                             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary"

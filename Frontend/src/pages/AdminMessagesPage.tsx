@@ -485,14 +485,14 @@ export default function AdminMessagesPage() {
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className="absolute inset-x-0 top-0 z-20 p-3"
                   >
-                    <div className="rounded-2xl border border-violet-500/25 bg-card/97 backdrop-blur-md shadow-2xl overflow-hidden">
+                    <div className="rounded-2xl border-2 border-violet-500/40 bg-card/98 backdrop-blur-xl shadow-2xl ring-1 ring-violet-500/10 overflow-hidden">
                       {/* Panel header */}
-                      <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-violet-500/15 bg-violet-500/5">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-violet-500/15">
-                          <Bot className="h-3.5 w-3.5 text-violet-500" />
+                      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-violet-500/20 bg-gradient-to-r from-violet-500/10 to-primary/5">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-primary shadow-sm">
+                          <Bot className="h-4 w-4 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-violet-600 dark:text-violet-400 leading-tight">AI Summary</p>
+                          <p className="text-sm font-bold text-violet-600 dark:text-violet-400 leading-tight">AI Summary</p>
                           {summary.messageCount > 0 && (
                             <p className="text-[10px] text-muted-foreground leading-tight">
                               Based on {summary.windowSize} of {summary.messageCount} messages
@@ -507,7 +507,7 @@ export default function AdminMessagesPage() {
                         </button>
                       </div>
                       {/* Scrollable summary content */}
-                      <div className="px-4 py-3 max-h-60 overflow-y-auto scroll-styled">
+                      <div className="px-4 py-3 max-h-72 overflow-y-auto scroll-styled">
                         <div className="text-sm text-foreground [&_p]:leading-[1.75] [&_p]:mb-2 [&_li]:leading-[1.7] [&_li]:mb-1 [&_h3]:mt-3 [&_h4]:mt-2.5 [&_h3]:mb-1.5 [&_h4]:mb-1">
                           {renderMarkdown(summary.text)}
                         </div>

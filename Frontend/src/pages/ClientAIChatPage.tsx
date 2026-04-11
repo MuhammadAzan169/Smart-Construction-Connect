@@ -1195,7 +1195,7 @@ export default function ClientAIChatPage() {
                   <p className="text-[11px] text-muted-foreground leading-tight">Tap to ask instantly</p>
                 </div>
               </div>
-              <div className="p-3 space-y-1.5">
+              <div className="p-3 space-y-1.5 max-h-64 overflow-y-auto scroll-styled">
                 {CLIENT_PROMPTS.map((prompt) => (
                   <button
                     key={prompt}

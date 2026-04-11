@@ -739,7 +739,7 @@ export default function SupplierAIChatPage() {
               <p className="text-[11px] text-muted-foreground">Tap to ask instantly</p>
             </div>
           </div>
-          <div className="p-3 space-y-1.5 overflow-y-auto">
+          <div className="p-3 space-y-1.5 max-h-64 overflow-y-auto scroll-styled">
             {[
               { icon: BadgeDollarSign, color: "text-emerald-500 bg-emerald-500/10", text: "What are current cement prices across Pakistan?" },
               { icon: TrendingUp, color: "text-blue-500 bg-blue-500/10", text: "Which materials are trending in demand right now?" },
