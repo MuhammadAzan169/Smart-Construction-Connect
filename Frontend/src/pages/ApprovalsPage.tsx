@@ -7,11 +7,13 @@ import { PdfViewerDialog } from "@/components/shared/PdfViewerDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuthStore } from "@/stores/authStore";
+import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import {
-  ArrowLeft, Building2, CheckCircle2, Clock, Download, Eye, FileCheck,
-  Loader2, Package, ShieldCheck, XCircle,
+  AlertTriangle, ArrowLeft, Building2, CheckCircle2, Clock, Download, Eye, FileCheck,
+  Loader2, Package, RefreshCw, ShieldCheck, XCircle,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -53,13 +55,23 @@ export default function ApprovalsPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [docFilter, setDocFilter] = useState<"pending" | "all">("pending");
   const [pdfViewer, setPdfViewer] = useState<{ url: string; title: string } | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [rejectDialog, setRejectDialog] = useState<{ slug: string; entityType: string; docType: string } | null>(null);
+  const [rejectNote, setRejectNote] = useState("");
+  const { toast } = useToast();
 
-  useEffect(() => {
+  const loadData = () => {
+    setLoadingDocs(true);
+    setLoadError(false);
     Promise.all([
       api.admin.getCompanies().then((d) => setCompanies(d as EntityRecord[])),
       api.admin.getSuppliers().then((d) => setSuppliers(d as EntityRecord[])),
-    ]).catch(() => {}).finally(() => setLoadingDocs(false));
-  }, []);
+    ]).catch(() => {
+      setLoadError(true);
+    }).finally(() => setLoadingDocs(false));
+  };
+
+  useEffect(() => { loadData(); }, []);
 
   /* ---------- Guard ---------- */
   if (!user || user.role !== "admin") {
@@ -116,21 +128,33 @@ export default function ApprovalsPage() {
     entityType: string,
     docType: string,
     status: "approved" | "rejected",
+    notes = "",
   ) => {
     const key = `${slug}-${docType}`;
     setActionLoading(key);
     try {
-      const res = await api.admin.updateVerification(slug, entityType, docType, status, "");
+      const res = await api.admin.updateVerification(slug, entityType, docType, status, notes);
       const setter = entityType === "company" ? setCompanies : setSuppliers;
       setter((prev) =>
         prev.map((e) => {
           if (e.slug !== slug) return e;
           const verification = { ...(e.verification ?? {}) };
-          verification[docType] = { status, notes: "" };
+          verification[docType] = { status, notes };
           return { ...e, verification, verification_status: res.verification_status };
         }),
       );
-    } catch {}
+      toast({
+        title: status === "approved" ? "Document approved" : "Document rejected",
+        description: status === "approved" ? "The document has been approved successfully." : "The document has been rejected.",
+        variant: status === "rejected" ? "destructive" : "default",
+      });
+    } catch (err) {
+      toast({
+        title: "Action failed",
+        description: err instanceof Error ? err.message : "Could not update document status. Please try again.",
+        variant: "destructive",
+      });
+    }
     setActionLoading(null);
   };
 
@@ -208,6 +232,15 @@ export default function ApprovalsPage() {
 
             {loadingDocs ? (
               <LoadingState />
+            ) : loadError ? (
+              <div className="rounded-2xl border border-destructive/30 bg-destructive/5 py-14 text-center">
+                <AlertTriangle className="mx-auto mb-3 h-10 w-10 text-destructive/60" />
+                <h3 className="text-base font-semibold text-foreground">Failed to load documents</h3>
+                <p className="mt-1 text-sm text-muted-foreground">Could not connect to the server. Check your connection and try again.</p>
+                <Button variant="outline" size="sm" className="mt-4 gap-1.5" onClick={loadData}>
+                  <RefreshCw className="h-3.5 w-3.5" /> Retry
+                </Button>
+              </div>
             ) : displayedVerifications.length === 0 ? (
               <EmptyState
                 icon={<ShieldCheck className="mx-auto mb-4 h-12 w-12 text-green-500" />}
@@ -369,7 +402,7 @@ export default function ApprovalsPage() {
                                     </button>
                                     <a
                                       href={doc.url}
-                                      download={`${doc.docType}.pdf`}
+                                      download={`${doc.docType}.${doc.url.split("?")[0].split(".").pop() ?? "file"}`}
                                       className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-primary hover:bg-primary/10 transition-colors"
                                       title="Download document"
                                     >
@@ -399,7 +432,7 @@ export default function ApprovalsPage() {
                                           size="sm"
                                           className="h-8 gap-1.5 text-xs"
                                           disabled={loading}
-                                          onClick={() => handleDocAction(slug, entityType, doc.docType, "rejected")}
+                                          onClick={() => { setRejectNote(""); setRejectDialog({ slug, entityType, docType: doc.docType }); }}
                                         >
                                           {loading
                                             ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -442,6 +475,53 @@ export default function ApprovalsPage() {
           url={pdfViewer.url}
           title={pdfViewer.title}
         />
+      )}
+
+      {/* Rejection notes dialog */}
+      {rejectDialog && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setRejectDialog(null)}
+        >
+          <div
+            className="mx-4 w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10">
+                <XCircle className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground">Reject Document</h3>
+                <p className="text-xs text-muted-foreground">{DOC_LABELS[rejectDialog.docType] ?? rejectDialog.docType}</p>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-3">Optionally provide a reason for rejection. This will be visible to the entity owner.</p>
+            <Textarea
+              placeholder="Reason for rejection (optional)…"
+              value={rejectNote}
+              onChange={(e) => setRejectNote(e.target.value)}
+              className="mb-4 min-h-[80px] resize-none text-sm"
+              maxLength={500}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setRejectDialog(null)} className="rounded-xl">
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="rounded-xl"
+                onClick={() => {
+                  handleDocAction(rejectDialog.slug, rejectDialog.entityType, rejectDialog.docType, "rejected", rejectNote.trim());
+                  setRejectDialog(null);
+                }}
+              >
+                Reject
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

@@ -18,7 +18,7 @@ const QUICK_ACTIONS = [
 ];
 
 const AI_API =
-  typeof window !== "undefined" && window.location.port === "5173"
+  typeof window !== "undefined" && ["5173", "8080"].includes(window.location.port)
     ? "http://localhost:8000/api/ai/chat"
     : "/api/ai/chat";
 

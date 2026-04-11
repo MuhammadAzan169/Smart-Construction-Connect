@@ -337,7 +337,7 @@ export function humanizeToken(value: string) {
 // ── Async API-based fetcher (production) ──
 
 const COMPANY_API =
-  window.location.port === "5173"
+  window.location.port === "5173" || window.location.port === "8080"
     ? "http://localhost:8000/api/companies/"
     : "/api/companies/";
 

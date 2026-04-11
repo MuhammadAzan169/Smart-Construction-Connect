@@ -51,7 +51,7 @@ export type SupplierDirectoryItem = {
 };
 
 const SUPPLIER_API =
-  window.location.port === "5173"
+  window.location.port === "5173" || window.location.port === "8080"
     ? "http://localhost:8000/api/suppliers/"
     : "/api/suppliers/";
 

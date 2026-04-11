@@ -24,6 +24,19 @@ JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "scc-dev-secret-change-me-in-p
 JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 
+_ENV = os.getenv("ENV", "development")
+if JWT_SECRET_KEY == "scc-dev-secret-change-me-in-production" and _ENV == "production":
+    raise RuntimeError(
+        "JWT_SECRET_KEY must be set to a strong secret in production. "
+        "Set the JWT_SECRET_KEY environment variable."
+    )
+if JWT_SECRET_KEY == "scc-dev-secret-change-me-in-production":
+    import warnings
+    warnings.warn(
+        "Using the default insecure JWT_SECRET_KEY. Set JWT_SECRET_KEY in your .env file before deploying.",
+        stacklevel=2,
+    )
+
 # ── CORS ──────────────────────────────────────────────────────────────────────
 
 CORS_ORIGINS: list[str] = [

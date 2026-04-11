@@ -602,7 +602,7 @@ export default function CompanyProfilePage() {
                               <button type="button" onClick={() => setPdfViewer({ url: doc.url, title: docLabels[doc.docType] ?? doc.docType })} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-primary hover:bg-primary/10 transition-colors" title="View">
                                 <Eye className="h-4 w-4" />
                               </button>
-                              <a href={doc.url} download={`${doc.docType}.pdf`} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-primary hover:bg-primary/10 transition-colors" title="Download">
+                              <a href={doc.url} download={`${doc.docType}.${doc.url.split("?")[0].split(".").pop() ?? "file"}`} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-primary hover:bg-primary/10 transition-colors" title="Download">
                                 <Download className="h-4 w-4" />
                               </a>
                             </div>
