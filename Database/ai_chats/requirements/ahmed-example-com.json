@@ -1,26 +1,30 @@
 {
   "email": "ahmed@example.com",
-  "status": "nearly_complete",
-  "city": "Islamabad",
-  "area": null,
-  "plot_size": "4 kanal",
-  "project_type": null,
+  "status": "complete",
+  "city": "Lahore",
+  "area": "Dha",
+  "plot_size": "5 marla",
+  "project_type": "house",
   "budget_min": 2.0,
-  "budget_max": 20000000.0,
-  "num_floors": null,
+  "budget_max": 8000000.0,
+  "num_floors": 2,
   "num_rooms": null,
   "design_style": null,
   "timeline": null,
   "special_requirements": [
     "basement"
   ],
-  "construction_type": null,
+  "construction_type": "grey_structure",
   "collected_fields": [
+    "area",
     "budget_max",
     "budget_min",
     "city",
+    "construction_type",
+    "num_floors",
     "plot_size",
+    "project_type",
     "special_requirements"
   ],
-  "updated_at": "2026-04-11T19:14:37.184945+00:00"
+  "updated_at": "2026-04-11T23:07:13.060002+00:00"
 }

@@ -1,0 +1,22 @@
+[
+  {
+    "role": "assistant",
+    "content": "Hello! 👋 I'm your AI Construction Consultant.\n\nTell me about your dream house:\n• **City & area** — Where do you want to build?\n• **Plot size** — How many marla/kanal?\n• **Floors** — Single, double, triple storey?\n• **Budget** — What's your range in PKR?\n• **Type** — Grey structure or full finish?\n\nI'll find the best companies and suppliers for you! 🏠\n(آپ اردو میں بھی بات کر سکتے ہیں)"
+  },
+  {
+    "role": "user",
+    "content": "I want to build a 5 marla house in Lahore DHA, budget 80 lacs"
+  },
+  {
+    "role": "assistant",
+    "content": "Great! 5 marla ka plot Lahore ke DHA mein, aur budget 80 lakh PKR. 👍\n\nAap kitne storey ka ghar soch rahe hain?  \nAur aapko sirf **grey structure** chahiye ya **full finish** (plaster, flooring, paint, etc.)?  \n\n(Thoda timeline ya koi khaas feature—jaise solar panels, smart home, basement—bata dein bhi.)"
+  },
+  {
+    "role": "user",
+    "content": "ghar 2 storey ho or gray structure or basement bhi ho sath ma"
+  },
+  {
+    "role": "assistant",
+    "content": "Samajh gaya! Aapko 5 marla ka **2‑storey** ghar chahiye **grey structure** ke saath **basement** bhi. Lahore DHA ke liye aapka budget 80 lakh PKR hai.\n\n**Recommended companies (100 % match)**  \n\n1. **Punjab Modern Constructions** ⭐ 4.5/5  \n   📍 Location: Lahore, Sargodha  \n   💰 Price: 2,501 – 6,930 PKR/sq ft  \n   🏗️ Specialization: duplex, semi‑commercial  \n\n   *Kyoon match karta hai?* Yeh company high‑rise aur duplex projects mein mahir hai, is liye 2‑storey aur basement wale design ko efficiently handle kar sakti hai. Unka price range aapke budget ke andar aata hai (5 marla ≈ 2,250 sq ft, 2 storey + basement ≈ 3,000 sq ft → 2,501 × 3,000 ≈ 75 lakh).  \n\n2. **Minar Low‑Cost Constructions** ⭐ 4.7/5  \n   📍 Location: Lahore, Sargodha  \n   💰 Price: 2,850 – 6,790 PKR/sq ft  \n   🏗️ Specialization: small_plots, economy_housing  \n\n   *Kyoon match karta hai?* Small‑plot aur economy housing mein expertise hone ki wajah se yeh aapke 5 marla plot ko optimum layout ke saath basement ke liye space allocate kar sakte hain, aur cost‑effective solution dete hain.  \n\n3. **Al‑Rehman Builders** ⭐ 4.0/5  \n   📍 Location: Lahore, Sahiwal  \n   💰 Price: 2,550 – 6,940 PKR/sq ft  \n   🏗️ Specialization: economy_housing, grey_structure_only  \n\n   *Kyoon match karta hai?* Grey‑structure only projects unki core strength hai, is liye aapko high‑quality structural work milayega, aur basement ka design bhi incorporate kar sakte hain.  \n\n---\n\n### Next Steps & Cost Guide\n\n| Item | Approx. Qty (2‑storey + basement) | Unit Cost (PKR) | Approx. Cost |\n|------|-----------------------------------|-----------------|--------------|\n| **Construction (grey structure)** | ~3,000 sq ft | 2,800 – 4,500 (Lahore) | 8.4 – 13.5 million |\n| **Basement excavation & walls** | ~1,200 sq ft | 2,500 – 3,500 (typical) | 3.0 – 4.2 million |\n| **Cement (50 kg bag)** | 1,200 bags* | 1,450 (Lucky) | 1.74 million |\n| **Steel (metric ton)** | 30 tons* | 270,000 (Amreli Grade 40) | 8.1 million |\n| **Bricks (A‑Class)** | 45,000 bricks* | 18 | 0.81 million |\n| **Sand (Ravi)** | 5,000 cft* | 75 | 0.38 million |\n| **Aggregate (Sargodha crush)** | 4,000 cft* | 85 | 0.34 million |\n\n\\* Approximate quantities for a 5 marla, 2‑storey + basement house. Exact numbers will be refined after detailed BOQ.\n\n**Total rough estimate:** **≈ 23 – 27 million PKR** for full grey structure + basement.  \n\nAapka **80 lakh** budget sirf structural work ke liye kaafi tight hai. Agar aap sirf core structure (foundation, columns, beams, slab) tak limit karen, toh Minar Low‑Cost ya Al‑Rehman ki lower price band aapko 70‑80 lakh ke andar laa sakti hai, lekin basement ke liye additional funds ki zaroorat hogi.\n\n### How to move forward\n\n1. **Site visit & detailed drawing** – In companies ko site dikhayein; wo aapko exact square footage aur basement depth ke hisaab se final quote denge.  \n2. **Choose a company** – Aapko price, timeline, aur past project portfolio dekh kar decide karna hoga.  \n3. **Finalize contract** – Scope (grey structure + basement), payment schedule, aur completion timeline likh lein.  \n4. **Material selection** – Cement, steel, bricks, sand ke liye humare market price list ka use kar sakte hain; aapko best supplier se direct order place karna hoga.  \n\nKya aap inme se koi specific company ko contact karna chahte hain, ya phir detailed cost breakdown aur timeline ke liye aur info chahiye? 🚀"
+  }
+]
