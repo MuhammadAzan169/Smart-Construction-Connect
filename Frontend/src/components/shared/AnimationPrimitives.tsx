@@ -225,6 +225,7 @@ export function BackButton({ className }: { className?: string }) {
       size="sm"
       onClick={() => navigate(-1)}
       className={cn("gap-1.5 text-muted-foreground hover:text-foreground", className)}
+      aria-label="Go back to previous page"
     >
       <ArrowLeft className="h-4 w-4" />
       Back

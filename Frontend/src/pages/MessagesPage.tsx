@@ -669,7 +669,7 @@ export default function MessagesPage() {
                             <div className="relative">
                               <div
                                 className={cn(
-                                  "max-w-[72%] px-4 py-2.5 text-sm leading-relaxed shadow-sm",
+                                  "max-w-[85%] md:max-w-[78%] px-4 py-2.5 text-sm leading-relaxed shadow-sm",
                                   isMine
                                     ? "gradient-bg text-primary-foreground rounded-2xl rounded-br-md"
                                     : "bg-secondary text-foreground rounded-2xl rounded-bl-md",

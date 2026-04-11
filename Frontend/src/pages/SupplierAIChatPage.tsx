@@ -426,7 +426,7 @@ export default function SupplierAIChatPage() {
                   {msg.role === "ai" ? <BarChart2 className="h-4 w-4 text-white" /> : <User className="h-4 w-4 text-muted-foreground" />}
                 </div>
                 <div
-                  className={`max-w-[76%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm overflow-hidden break-words ${
+                  className={`max-w-[85%] md:max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm overflow-hidden break-words ${
                     msg.role === "ai"
                       ? "bg-secondary text-foreground rounded-bl-md"
                       : "bg-orange-500 text-white rounded-br-md"

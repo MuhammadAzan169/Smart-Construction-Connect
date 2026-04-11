@@ -15,7 +15,11 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 export function StatusBadge({ status }: StatusBadgeProps) {
   const config = statusConfig[status] || statusConfig.pending;
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${config.className}`}>
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${config.className}`}
+      role="status"
+      aria-label={`Status: ${config.label}`}
+    >
       {config.label}
     </span>
   );

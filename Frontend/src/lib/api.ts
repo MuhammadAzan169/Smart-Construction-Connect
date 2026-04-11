@@ -33,6 +33,14 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     });
 
     if (!res.ok) {
+      if (res.status === 401) {
+        // Token expired / invalid — clear auth state and redirect
+        localStorage.removeItem("scc_token");
+        localStorage.removeItem("scc_user");
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
+      }
       const body = await res.json().catch(() => ({})) as { detail?: string };
       throw new Error(body.detail ?? `Request failed: ${res.status}`);
     }

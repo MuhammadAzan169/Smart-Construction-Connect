@@ -93,7 +93,7 @@ export function TopNavbar() {
         className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-background/30 px-4 backdrop-blur-xl sm:px-6"
       >
         <div className="flex flex-1 items-center gap-3">
-          <SidebarTrigger className="md:hidden" />
+          <SidebarTrigger className="lg:hidden" />
 
           {canGoBack && (
             <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }}>
@@ -102,6 +102,7 @@ export function TopNavbar() {
                 size="sm"
                 onClick={() => navigate(-1)}
                 className="gap-1.5 text-muted-foreground hover:text-foreground"
+                aria-label={t("common.back")}
               >
                 <ArrowLeft className="h-4 w-4" />
                 <span className="hidden sm:inline">{t("common.back")}</span>
@@ -139,31 +140,34 @@ export function TopNavbar() {
                   className="absolute start-0 top-11 z-50 w-full"
                 >
                   <GlassCard interactive={false} className="max-h-80 overflow-y-auto p-2">
-                    {searchLoading && <p className="px-3 py-2 text-xs text-muted-foreground">{t("nav.searching")}</p>}
+                    {searchLoading && <p className="px-3 py-2 text-xs text-muted-foreground" role="status">{t("nav.searching")}</p>}
                     {!searchLoading && searchResults.length === 0 && (
                       <p className="px-3 py-2 text-xs text-muted-foreground">{t("common.noResults")}</p>
                     )}
+                    <ul role="listbox" className="list-none p-0 m-0">
                     {searchResults.map((r, i) => (
-                      <motion.button
-                        key={String(r.slug ?? r.id ?? i)}
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.03 }}
-                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start text-sm transition-colors hover:bg-accent"
-                        onClick={() => {
-                          const route = r.type === "supplier" ? `/suppliers/${r.slug ?? r.id}` : `/companies/${r.slug ?? r.id}`;
-                          navigate(route);
-                          setShowSearch(false);
-                          setSearchQuery("");
-                        }}
-                      >
-                        {r.type === "supplier" ? <Package className="h-4 w-4 shrink-0 text-orange-500" /> : <Building2 className="h-4 w-4 shrink-0 text-primary" />}
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate font-medium text-foreground">{String(r.name ?? "")}</p>
-                          <p className="truncate text-xs text-muted-foreground">{String(r.location ?? r.city ?? "")} {r.score != null ? `· ${Math.round(Number(r.score) * 100)}% match` : ""}</p>
-                        </div>
-                      </motion.button>
+                      <li key={String(r.slug ?? r.id ?? i)} role="option">
+                        <motion.button
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.03 }}
+                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start text-sm transition-colors hover:bg-accent"
+                          onClick={() => {
+                            const route = r.type === "supplier" ? `/suppliers/${r.slug ?? r.id}` : `/companies/${r.slug ?? r.id}`;
+                            navigate(route);
+                            setShowSearch(false);
+                            setSearchQuery("");
+                          }}
+                        >
+                          {r.type === "supplier" ? <Package className="h-4 w-4 shrink-0 text-orange-500" /> : <Building2 className="h-4 w-4 shrink-0 text-primary" />}
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate font-medium text-foreground">{String(r.name ?? "")}</p>
+                            <p className="truncate text-xs text-muted-foreground">{String(r.location ?? r.city ?? "")} {r.score != null ? `· ${Math.round(Number(r.score) * 100)}% match` : ""}</p>
+                          </div>
+                        </motion.button>
+                      </li>
                     ))}
+                    </ul>
                   </GlassCard>
                 </motion.div>
               )}
@@ -218,13 +222,14 @@ export function TopNavbar() {
               variant="ghost"
               size="icon"
               className="relative h-10 w-10 text-muted-foreground"
+              aria-label={`${t("nav.notifications")}${unread > 0 ? ` (${unread})` : ""}`}
             >
               <Bell className="h-4 w-4" />
               {unread > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute end-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive"
+                  className="absolute end-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-destructive ring-2 ring-background"
                 />
               )}
             </Button>
@@ -299,7 +304,6 @@ export function TopNavbar() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => { if (searchResults.length) setShowSearch(true); }}
                 className="h-10 bg-background/40 ps-9 transition-all focus:bg-background/60 focus:ring-1 focus:ring-primary/30"
-                autoFocus
               />
               {showSearch && searchResults.length > 0 && (
                 <div className="mt-2 max-h-60 overflow-y-auto rounded-xl border border-border bg-card p-2">

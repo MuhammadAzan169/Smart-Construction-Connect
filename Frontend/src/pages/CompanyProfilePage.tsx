@@ -151,7 +151,7 @@ export default function CompanyProfilePage() {
           </Button>
           <div className="flex items-center gap-2">
             <MatchScoreRing score={company.matchScore} size={48} />
-            <Button type="button" size="sm">Request quote</Button>
+            <Button type="button" size="sm" onClick={() => navigate(`/requests?company=${company.id}&name=${encodeURIComponent(company.name)}`)}>Request quote</Button>
             {user && user.role !== "admin" && (
               <Button
                 type="button"

@@ -18,7 +18,7 @@ const applyLanguage = (lang: Language) => {
   document.documentElement.setAttribute('lang', lang);
   document.documentElement.setAttribute('dir', lang === 'ur' ? 'rtl' : 'ltr');
   localStorage.setItem('scc_language', lang);
-  i18n.changeLanguage(lang);
+  void i18n.changeLanguage(lang);
 };
 
 const initial = getInitial();

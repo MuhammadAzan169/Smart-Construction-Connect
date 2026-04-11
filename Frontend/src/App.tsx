@@ -3,37 +3,47 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
-import Dashboard from "./pages/Dashboard";
-import AIChatPage from "./pages/AIChatPage";
-import SupplierAIChatPage from "./pages/SupplierAIChatPage";
-import AdminAIChatPage from "./pages/AdminAIChatPage";
-import ClientAIChatPage from "./pages/ClientAIChatPage";
-import CompanyAIChatPage from "./pages/CompanyAIChatPage";
-import PricingPage from "./pages/PricingPage";
-import SaaSPlansPage from "./pages/SaaSPlansPage";
-import CompaniesPage from "./pages/CompaniesPage";
-import CompanyProfilePage from "./pages/CompanyProfilePage";
-import SupplierProfilePage from "./pages/SupplierProfilePage";
-import RequestsPage from "./pages/RequestsPage";
-import InventoryPage from "./pages/InventoryPage";
-import UsersPage from "./pages/UsersPage";
-import ApprovalsPage from "./pages/ApprovalsPage";
-import ActivityPage from "./pages/ActivityPage";
-import AnalyticsPage from "./pages/AnalyticsPage";
-import SettingsPage from "./pages/SettingsPage";
-import MessagesPage from "./pages/MessagesPage";
-import AdminMessagesPage from "./pages/AdminMessagesPage";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
-import { type ReactNode } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
+import { Loader2 } from "lucide-react";
+
+/* ── Route-level code splitting — each page loads on demand ── */
+const Index = lazy(() => import("./pages/Index"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const SignupPage = lazy(() => import("./pages/SignupPage"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const AIChatPage = lazy(() => import("./pages/AIChatPage"));
+const SupplierAIChatPage = lazy(() => import("./pages/SupplierAIChatPage"));
+const AdminAIChatPage = lazy(() => import("./pages/AdminAIChatPage"));
+const ClientAIChatPage = lazy(() => import("./pages/ClientAIChatPage"));
+const CompanyAIChatPage = lazy(() => import("./pages/CompanyAIChatPage"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
+const SaaSPlansPage = lazy(() => import("./pages/SaaSPlansPage"));
+const CompaniesPage = lazy(() => import("./pages/CompaniesPage"));
+const CompanyProfilePage = lazy(() => import("./pages/CompanyProfilePage"));
+const SupplierProfilePage = lazy(() => import("./pages/SupplierProfilePage"));
+const RequestsPage = lazy(() => import("./pages/RequestsPage"));
+const InventoryPage = lazy(() => import("./pages/InventoryPage"));
+const UsersPage = lazy(() => import("./pages/UsersPage"));
+const ApprovalsPage = lazy(() => import("./pages/ApprovalsPage"));
+const ActivityPage = lazy(() => import("./pages/ActivityPage"));
+const AnalyticsPage = lazy(() => import("./pages/AnalyticsPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const MessagesPage = lazy(() => import("./pages/MessagesPage"));
+const AdminMessagesPage = lazy(() => import("./pages/AdminMessagesPage"));
 
 const queryClient = new QueryClient();
 
-/** Page-level error boundary wrapper — catches crashes per-page without tearing down the app. */
+function PageLoader() {
+  return (
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>
+  );
+}
+
 function PageBoundary({ children }: { children: ReactNode }) {
   return (
     <ErrorBoundary
@@ -59,43 +69,55 @@ function PageBoundary({ children }: { children: ReactNode }) {
   );
 }
 
+function LazyPage({ children }: { children: ReactNode }) {
+  return (
+    <PageBoundary>
+      <Suspense fallback={<PageLoader />}>
+        {children}
+      </Suspense>
+    </PageBoundary>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <ErrorBoundary>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+        <BrowserRouter>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
 
-          <Route element={<DashboardLayout />}>
-            <Route path="/dashboard" element={<PageBoundary><Dashboard /></PageBoundary>} />
-            <Route path="/companies" element={<PageBoundary><CompaniesPage /></PageBoundary>} />
-            <Route path="/companies/:id" element={<PageBoundary><CompanyProfilePage /></PageBoundary>} />
-            <Route path="/suppliers/:id" element={<PageBoundary><SupplierProfilePage /></PageBoundary>} />
-            <Route path="/requests" element={<PageBoundary><RequestsPage /></PageBoundary>} />
-            <Route path="/ai-chat" element={<PageBoundary><AIChatPage /></PageBoundary>} />
-            <Route path="/supplier-ai" element={<PageBoundary><SupplierAIChatPage /></PageBoundary>} />
-            <Route path="/admin-ai" element={<PageBoundary><AdminAIChatPage /></PageBoundary>} />
-            <Route path="/client-ai" element={<PageBoundary><ClientAIChatPage /></PageBoundary>} />
-            <Route path="/company-ai" element={<PageBoundary><CompanyAIChatPage /></PageBoundary>} />
-            <Route path="/pricing" element={<PageBoundary><PricingPage /></PageBoundary>} />
-            <Route path="/plans" element={<PageBoundary><SaaSPlansPage /></PageBoundary>} />
-            <Route path="/products" element={<PageBoundary><InventoryPage /></PageBoundary>} />
-            <Route path="/users" element={<PageBoundary><UsersPage /></PageBoundary>} />
-            <Route path="/approvals" element={<PageBoundary><ApprovalsPage /></PageBoundary>} />
-            <Route path="/activity" element={<PageBoundary><ActivityPage /></PageBoundary>} />
-            <Route path="/analytics" element={<PageBoundary><AnalyticsPage /></PageBoundary>} />
-            <Route path="/settings" element={<PageBoundary><SettingsPage /></PageBoundary>} />
-            <Route path="/messages" element={<PageBoundary><MessagesPage /></PageBoundary>} />
-            <Route path="/admin-messages" element={<PageBoundary><AdminMessagesPage /></PageBoundary>} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+              <Route element={<DashboardLayout />}>
+                <Route path="/dashboard" element={<LazyPage><Dashboard /></LazyPage>} />
+                <Route path="/companies" element={<LazyPage><CompaniesPage /></LazyPage>} />
+                <Route path="/companies/:id" element={<LazyPage><CompanyProfilePage /></LazyPage>} />
+                <Route path="/suppliers/:id" element={<LazyPage><SupplierProfilePage /></LazyPage>} />
+                <Route path="/requests" element={<LazyPage><RequestsPage /></LazyPage>} />
+                <Route path="/ai-chat" element={<LazyPage><AIChatPage /></LazyPage>} />
+                <Route path="/supplier-ai" element={<LazyPage><SupplierAIChatPage /></LazyPage>} />
+                <Route path="/admin-ai" element={<LazyPage><AdminAIChatPage /></LazyPage>} />
+                <Route path="/client-ai" element={<LazyPage><ClientAIChatPage /></LazyPage>} />
+                <Route path="/company-ai" element={<LazyPage><CompanyAIChatPage /></LazyPage>} />
+                <Route path="/pricing" element={<LazyPage><PricingPage /></LazyPage>} />
+                <Route path="/plans" element={<LazyPage><SaaSPlansPage /></LazyPage>} />
+                <Route path="/products" element={<LazyPage><InventoryPage /></LazyPage>} />
+                <Route path="/users" element={<LazyPage><UsersPage /></LazyPage>} />
+                <Route path="/approvals" element={<LazyPage><ApprovalsPage /></LazyPage>} />
+                <Route path="/activity" element={<LazyPage><ActivityPage /></LazyPage>} />
+                <Route path="/analytics" element={<LazyPage><AnalyticsPage /></LazyPage>} />
+                <Route path="/settings" element={<LazyPage><SettingsPage /></LazyPage>} />
+                <Route path="/messages" element={<LazyPage><MessagesPage /></LazyPage>} />
+                <Route path="/admin-messages" element={<LazyPage><AdminMessagesPage /></LazyPage>} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
       </ErrorBoundary>
     </TooltipProvider>
   </QueryClientProvider>

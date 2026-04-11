@@ -629,7 +629,7 @@ export default function AIChatPage() {
 
                 {/* Bubble */}
                 <div
-                  className={`max-w-[76%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm overflow-hidden break-words ${
+                  className={`max-w-[85%] md:max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm overflow-hidden break-words ${
                     msg.role === "ai"
                       ? "bg-secondary text-foreground rounded-bl-md"
                       : "gradient-bg text-primary-foreground rounded-br-md"

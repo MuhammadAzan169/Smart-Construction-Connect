@@ -540,7 +540,7 @@ export default function AdminMessagesPage() {
 
                         <div
                           className={cn(
-                            "max-w-[72%] px-4 py-2.5 text-sm leading-relaxed shadow-sm",
+                            "max-w-[85%] md:max-w-[78%] px-4 py-2.5 text-sm leading-relaxed shadow-sm",
                             isLeft
                               ? "bg-secondary text-foreground rounded-2xl rounded-bl-md"
                               : "bg-violet-500/15 text-foreground rounded-2xl rounded-br-md",

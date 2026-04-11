@@ -19,6 +19,7 @@ export function PdfViewerDialog({ open, onClose, url, title }: Props) {
             src={url}
             title={title}
             className="w-full h-full border-0"
+            sandbox="allow-same-origin allow-scripts allow-popups"
           />
         </div>
       </DialogContent>

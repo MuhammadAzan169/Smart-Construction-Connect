@@ -29,21 +29,32 @@ export function useInView(threshold = 0.15): [RefObject<HTMLDivElement | null>, 
 export function useAnimatedCounter(target: number, duration = 1200, startOnView = true) {
   const [count, setCount] = useState(0);
   const [ref, inView] = useInView(0.3);
+  const prevTarget = useRef(target);
   const hasRun = useRef(false);
+
+  // Reset hasRun when target changes so the counter re-animates
+  useEffect(() => {
+    if (prevTarget.current !== target) {
+      hasRun.current = false;
+      prevTarget.current = target;
+    }
+  }, [target]);
 
   useEffect(() => {
     if (startOnView && !inView) return;
     if (hasRun.current) return;
     hasRun.current = true;
 
+    let rafId: number;
     const start = performance.now();
     const step = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
       setCount(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(step);
+      if (progress < 1) rafId = requestAnimationFrame(step);
     };
-    requestAnimationFrame(step);
+    rafId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafId);
   }, [target, duration, inView, startOnView]);
 
   return { count, ref };
@@ -100,9 +111,13 @@ export function useParallax(speed = 0.2) {
     const el = ref.current;
     if (!el) return;
 
-    let raf: number;
+    let raf = 0;
+    let ticking = false;
     const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
       raf = requestAnimationFrame(() => {
+        ticking = false;
         const rect = el.getBoundingClientRect();
         const viewCenter = window.innerHeight / 2;
         const elCenter = rect.top + rect.height / 2;

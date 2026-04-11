@@ -11,10 +11,10 @@ interface StatCardProps {
 }
 
 function StatValue({ value }: { value: string | number }) {
-  const num = typeof value === "number" ? value : parseInt(value, 10);
-  const isNum = !isNaN(num) && typeof value === "number";
-  const suffix = typeof value === "string" ? value.replace(/[\d,]/g, "") : "";
-  const { count, ref } = useAnimatedCounter(isNum ? num : 0);
+  const num = typeof value === "number" ? value : parseFloat(String(value).replace(/[^\d.-]/g, ""));
+  const isNum = !isNaN(num) && isFinite(num);
+  const suffix = typeof value === "string" ? value.replace(/[\d,.-]/g, "").trim() : "";
+  const { count, ref } = useAnimatedCounter(isNum ? Math.round(num) : 0);
 
   if (!isNum) return <span>{value}</span>;
   return <span ref={ref}>{count}{suffix}</span>;

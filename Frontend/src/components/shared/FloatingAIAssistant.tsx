@@ -46,6 +46,7 @@ function renderMd(text: string) {
     let last = 0;
     const rx = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
     let m: RegExpExecArray | null;
+    rx.lastIndex = 0;
     while ((m = rx.exec(s)) !== null) {
       if (m.index > last) parts.push(s.slice(last, m.index));
       if (m[2]) parts.push(<strong key={m.index}>{m[2]}</strong>);
@@ -148,6 +149,13 @@ export function FloatingAIAssistant() {
     });
   }, [isOpen]);
 
+  // Reset greeting on close so re-opening refreshes
+  useEffect(() => {
+    if (!isOpen) {
+      greetingLoaded.current = false;
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
@@ -158,7 +166,7 @@ export function FloatingAIAssistant() {
       if (!msg || isTyping) return;
 
       const userMsg: Message = { id: nextId.current++, role: "user", text: msg };
-      setMessages((prev) => [...prev, userMsg]);
+      setMessages((prev) => [...prev, userMsg].slice(-50));
       setInput("");
       setIsTyping(true);
 
@@ -168,7 +176,7 @@ export function FloatingAIAssistant() {
           content: m.text,
         }));
         const response = await fetchLandingResponse(history);
-        setMessages((prev) => [...prev, { id: nextId.current++, role: "ai", text: response }]);
+        setMessages((prev) => [...prev, { id: nextId.current++, role: "ai", text: response }].slice(-50));
       } catch {
         setMessages((prev) => [
           ...prev,

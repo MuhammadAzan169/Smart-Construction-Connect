@@ -8,10 +8,19 @@ export function MatchScoreRing({ score, size = 56 }: MatchScoreRingProps) {
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
 
-  const color = score >= 85 ? "rgb(var(--success))" : score >= 60 ? "rgb(var(--warning))" : "rgb(var(--destructive))";
+  const color = score >= 85 ? "#22C55E" : score >= 60 ? "#FBBF24" : "#EF4444";
+  const label = score >= 85 ? "Excellent" : score >= 60 ? "Good" : "Low";
 
   return (
-    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+    <div
+      className="relative inline-flex items-center justify-center"
+      style={{ width: size, height: size }}
+      role="meter"
+      aria-valuenow={score}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label={`Match score: ${score}% (${label})`}
+    >
       <svg width={size} height={size} className="-rotate-90">
         <circle
           cx={size / 2}

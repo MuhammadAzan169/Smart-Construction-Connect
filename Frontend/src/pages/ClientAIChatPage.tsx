@@ -577,10 +577,10 @@ export default function ClientAIChatPage() {
         {historyOpen && (
           <motion.div
             key="history-sidebar"
-            initial={{ opacity: 0, width: 0 }}
+            initial={{ opacity: 0, width: "2.25rem" }}
             animate={{ opacity: 1, width: "14rem" }}
-            exit={{ opacity: 0, width: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            exit={{ opacity: 0, width: "2.25rem" }}
+            transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="hidden lg:flex flex-col overflow-hidden shrink-0"
             style={{ minWidth: 0 }}
           >
@@ -739,7 +739,7 @@ export default function ClientAIChatPage() {
                   {msg.role === "ai" ? <Home className="h-4 w-4 text-white" /> : <User className="h-4 w-4 text-muted-foreground" />}
                 </div>
                 <div
-                  className={`max-w-[76%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm overflow-hidden break-words ${
+                  className={`max-w-[85%] md:max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm overflow-hidden break-words ${
                     msg.role === "ai"
                       ? "bg-secondary text-foreground rounded-bl-md"
                       : "bg-sky-500 text-white rounded-br-md"
@@ -937,7 +937,7 @@ export default function ClientAIChatPage() {
       {/* ═══════════════════════════════════════════════════════
           Right: Sidebar — Requirement Tracker + Project Hub
       ═══════════════════════════════════════════════════════ */}
-      <div className="hidden lg:flex w-80 flex-col gap-3">
+      <div className="hidden lg:flex w-80 shrink-0 flex-col gap-3">
 
         {/* Tab switcher */}
         <div className="flex rounded-xl border border-border bg-card overflow-hidden">

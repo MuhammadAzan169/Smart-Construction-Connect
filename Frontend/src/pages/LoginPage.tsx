@@ -213,10 +213,10 @@ export default function LoginPage() {
                   </motion.div>
 
                   {/* Role selector */}
-                  <motion.div variants={itemVariants}>
-                    <p className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  <motion.fieldset variants={itemVariants}>
+                    <legend className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                       {t("auth.chooseRole")}
-                    </p>
+                    </legend>
                     <div className="grid grid-cols-2 gap-2">
                       {roles.map((r) => {
                         const selected = role === r.value;
@@ -259,7 +259,7 @@ export default function LoginPage() {
                         );
                       })}
                     </div>
-                  </motion.div>
+                  </motion.fieldset>
                 </motion.div>
 
                 <form onSubmit={handleSubmit}>
@@ -389,7 +389,7 @@ export default function LoginPage() {
                         {!loading && (
                           <motion.div
                             className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                            animate={{ translateX: ["−100%", "200%"] }}
+                            animate={{ translateX: ["-100%", "200%"] }}
                             transition={{ duration: 2.5, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
                           />
                         )}
