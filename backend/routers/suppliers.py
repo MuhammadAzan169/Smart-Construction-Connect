@@ -79,6 +79,9 @@ _ALLOWED_PROFILE_FIELDS = {
     "supplier_name", "description", "logo_url", "dp_url",
     "city", "area", "contact", "cities_served",
     "verification_documents",
+    "legal_info", "payment_terms", "delivery_info",
+    "status", "material_categories", "profile_settings",
+    "_editor_settings",
 }
 
 _PROTECTED_FIELDS = {

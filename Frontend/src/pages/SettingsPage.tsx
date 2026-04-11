@@ -738,7 +738,6 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
         materials_used: settings.materials_used,
         timeline_estimates: settings.timeline_estimates,
         timeline_notes: settings.timeline_notes,
-        reliability_score: settings.reliability_score,
         experience_track: settings.experience_track,
         quality_control: settings.quality_control,
         after_handover_support: settings.after_handover_support,
@@ -936,16 +935,14 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
             <p className="mt-1 text-xs text-muted-foreground">Primary city where your company is based.</p>
             <div className="mt-3">
               <Label>City</Label>
-              <Select
-                value={settings.city || "__none__"}
-                onValueChange={(v) => setSettings((prev) => ({ ...prev, city: v === "__none__" ? "" : v }))}
-              >
-                <SelectTrigger className="mt-1 bg-background/40"><SelectValue placeholder="Select city" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Not set</SelectItem>
-                  {(cityOptions as readonly string[]).map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <div className="mt-1">
+                <SelectWithCustom
+                  value={settings.city || "__none__"}
+                  onValueChange={(v) => setSettings((prev) => ({ ...prev, city: v === "__none__" ? "" : v }))}
+                  placeholder="Select city"
+                  options={(cityOptions as readonly string[]).map((c) => ({ value: c, label: c }))}
+                />
+              </div>
             </div>
           </GlassCard>
 
@@ -1521,37 +1518,23 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
                       return (
                         <TableRow key={row.id}>
                           <TableCell>
-                            <Select
+                            <SelectWithCustom
                               value={row.city || "__none__"}
                               onValueChange={(v) => patchArea(row.id, { city: v === "__none__" ? "" : v, society: "", phase: "" })}
-                            >
-                              <SelectTrigger className="bg-background/40 h-8 text-xs">
-                                <SelectValue placeholder="City" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="__none__">Select</SelectItem>
-                                {(cityOptions as readonly string[]).map((c) => (
-                                  <SelectItem key={c} value={c}>{c}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                              placeholder="City"
+                              className="bg-background/40 h-8 text-xs"
+                              options={(cityOptions as readonly string[]).map((c) => ({ value: c, label: c }))}
+                            />
                           </TableCell>
                           <TableCell>
                             {citySocieties.length > 0 ? (
-                              <Select
+                              <SelectWithCustom
                                 value={row.society || "__none__"}
                                 onValueChange={(v) => patchArea(row.id, { society: v === "__none__" ? "" : v })}
-                              >
-                                <SelectTrigger className="bg-background/40 h-8 text-xs">
-                                  <SelectValue placeholder="Society" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="__none__">Select</SelectItem>
-                                  {citySocieties.map((s: string) => (
-                                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                                placeholder="Society"
+                                className="bg-background/40 h-8 text-xs"
+                                options={citySocieties.map((s: string) => ({ value: s, label: s }))}
+                              />
                             ) : (
                               <Input
                                 value={row.society}
@@ -2160,10 +2143,28 @@ function defaultSupplierSettings(profile: Record<string, unknown> | null, email:
   const contact = profile?.contact && typeof profile.contact === "object" ? (profile.contact as Record<string, unknown>) : {};
   const editorSettings = profile?._editor_settings && typeof profile._editor_settings === "object" ? (profile._editor_settings as Record<string, unknown>) : {};
   const editorContact = editorSettings.contact && typeof editorSettings.contact === "object" ? (editorSettings.contact as Record<string, unknown>) : {};
+
+  // Read from top-level first, then fall back to _editor_settings for backward compatibility
+  const topLegal = profile?.legal_info && typeof profile.legal_info === "object" ? (profile.legal_info as Record<string, unknown>) : null;
   const editorLegal = editorSettings.legal_info && typeof editorSettings.legal_info === "object" ? (editorSettings.legal_info as Record<string, unknown>) : {};
+  const legalSrc = topLegal ?? editorLegal;
+
+  const topProfile = profile?.profile_settings && typeof profile.profile_settings === "object" ? (profile.profile_settings as Record<string, unknown>) : null;
   const editorProfile = editorSettings.profile_settings && typeof editorSettings.profile_settings === "object" ? (editorSettings.profile_settings as Record<string, unknown>) : {};
+  const profileSrc = topProfile ?? editorProfile;
+
+  const topPayment = profile?.payment_terms && typeof profile.payment_terms === "object" ? (profile.payment_terms as Record<string, unknown>) : null;
   const editorPayment = editorSettings.payment_terms && typeof editorSettings.payment_terms === "object" ? (editorSettings.payment_terms as Record<string, unknown>) : {};
+  const paymentSrc = topPayment ?? editorPayment;
+
+  const topDelivery = profile?.delivery_info && typeof profile.delivery_info === "object" ? (profile.delivery_info as Record<string, unknown>) : null;
   const editorDelivery = editorSettings.delivery_info && typeof editorSettings.delivery_info === "object" ? (editorSettings.delivery_info as Record<string, unknown>) : {};
+  const deliverySrc = topDelivery ?? editorDelivery;
+
+  const topVDocs = profile?.verification_documents && typeof profile.verification_documents === "object" ? (profile.verification_documents as Record<string, unknown>) : null;
+  const editorVDocs = editorSettings.verification_documents && typeof editorSettings.verification_documents === "object" ? (editorSettings.verification_documents as Record<string, unknown>) : {};
+  const vDocsSrc = topVDocs ?? editorVDocs;
+
   return {
     supplier_name: str(profile?.supplier_name, ""),
     description: str(profile?.description, ""),
@@ -2176,44 +2177,41 @@ function defaultSupplierSettings(profile: Record<string, unknown> | null, email:
       phone: str(contact.phone, ""),
       email: str(contact.email, email),
       website: str(contact.website, ""),
-      linkedin: str(editorContact.linkedin, ""),
-      facebook: str(editorContact.facebook, ""),
+      linkedin: str(contact.linkedin ?? editorContact.linkedin, ""),
+      facebook: str(contact.facebook ?? editorContact.facebook, ""),
     },
     legal_info: {
-      registered: bool(editorLegal.registered, false),
-      secp_registered: bool(editorLegal.secp_registered, false),
-      ntn: str(editorLegal.ntn, ""),
-      year_established: numOrNull(editorLegal.year_established, null),
+      registered: bool(legalSrc.registered, false),
+      secp_registered: bool(legalSrc.secp_registered, false),
+      ntn: str(legalSrc.ntn, ""),
+      year_established: numOrNull(legalSrc.year_established, null),
     },
     payment_terms: {
-      advance_percentage: numOrNull(editorPayment.advance_percentage, null),
-      accepted_payments: strArr(editorPayment.accepted_payments, []),
-      minimum_order_value: numOrNull(editorPayment.minimum_order_value, null),
+      advance_percentage: numOrNull(paymentSrc.advance_percentage, null),
+      accepted_payments: strArr(paymentSrc.accepted_payments, []),
+      minimum_order_value: numOrNull(paymentSrc.minimum_order_value, null),
     },
     delivery_info: {
-      delivery_time_days: numOrNull(editorDelivery.delivery_time_days, null),
-      delivery_charges: str(editorDelivery.delivery_charges, ""),
-      free_delivery_above: numOrNull(editorDelivery.free_delivery_above, null),
+      delivery_time_days: numOrNull(deliverySrc.delivery_time_days, null),
+      delivery_charges: str(deliverySrc.delivery_charges, ""),
+      free_delivery_above: numOrNull(deliverySrc.free_delivery_above, null),
     },
     status: str(profile?.status ?? editorSettings.status, "active"),
-    material_categories: strArr(editorSettings.material_categories, []),
+    material_categories: strArr(profile?.material_categories ?? editorSettings.material_categories, []),
     profile_settings: {
-      public_profile: bool(editorProfile.public_profile, true),
-      show_contact: bool(editorProfile.show_contact, true),
+      public_profile: bool(profileSrc.public_profile, true),
+      show_contact: bool(profileSrc.show_contact, true),
     },
-    verification_documents: (() => {
-      const vdRaw = editorSettings.verification_documents && typeof editorSettings.verification_documents === "object" ? (editorSettings.verification_documents as Record<string, unknown>) : {};
-      return {
-        secp_certificate_url: str(vdRaw.secp_certificate_url, ""),
-        ntn_certificate_url: str(vdRaw.ntn_certificate_url, ""),
-        registration_certificate_url: str(vdRaw.registration_certificate_url, ""),
-        cnic_front_url: str(vdRaw.cnic_front_url, ""),
-        cnic_back_url: str(vdRaw.cnic_back_url, ""),
-        other_document_url: str(vdRaw.other_document_url, ""),
-        verification_status: str(vdRaw.verification_status, "not_submitted"),
-        verification_notes: str(vdRaw.verification_notes, ""),
-      };
-    })(),
+    verification_documents: {
+      secp_certificate_url: str(vDocsSrc.secp_certificate_url, ""),
+      ntn_certificate_url: str(vDocsSrc.ntn_certificate_url, ""),
+      registration_certificate_url: str(vDocsSrc.registration_certificate_url, ""),
+      cnic_front_url: str(vDocsSrc.cnic_front_url, ""),
+      cnic_back_url: str(vDocsSrc.cnic_back_url, ""),
+      other_document_url: str(vDocsSrc.other_document_url, ""),
+      verification_status: str(vDocsSrc.verification_status, "not_submitted"),
+      verification_notes: str(vDocsSrc.verification_notes, ""),
+    },
   };
 }
 
@@ -2405,17 +2403,17 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
           phone: settings.contact.phone,
           email: settings.contact.email,
           website: settings.contact.website,
+          linkedin: settings.contact.linkedin,
+          facebook: settings.contact.facebook,
         },
-        _editor_settings: {
-          contact: { linkedin: settings.contact.linkedin, facebook: settings.contact.facebook },
-          legal_info: settings.legal_info,
-          payment_terms: settings.payment_terms,
-          delivery_info: settings.delivery_info,
-          status: settings.status,
-          material_categories: settings.material_categories,
-          profile_settings: settings.profile_settings,
-          verification_documents: settings.verification_documents,
-        },
+        legal_info: settings.legal_info,
+        payment_terms: settings.payment_terms,
+        delivery_info: settings.delivery_info,
+        status: settings.status,
+        material_categories: settings.material_categories,
+        profile_settings: settings.profile_settings,
+        verification_documents: settings.verification_documents,
+        _editor_settings: settings,
       };
       await api.suppliers.updateProfile(supplierSlug, profileData);
       profileRef.current = profileData;
@@ -2937,16 +2935,12 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Category *</Label>
-                    <Select
+                    <SelectWithCustom
                       value={editingMaterial.category || "__none__"}
                       onValueChange={(v) => setEditingMaterial((prev) => prev ? { ...prev, category: v === "__none__" ? "" : v } : prev)}
-                    >
-                      <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select category" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__none__">Select category</SelectItem>
-                        {materialCategoryOptions.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                      placeholder="Select category"
+                      options={materialCategoryOptions.map((c) => ({ value: c, label: c }))}
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Brand</Label>
@@ -2959,17 +2953,12 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Unit</Label>
-                    <Select
+                    <SelectWithCustom
                       value={editingMaterial.unit || "bag"}
-                      onValueChange={(v) => setEditingMaterial((prev) => prev ? { ...prev, unit: v } : prev)}
-                    >
-                      <SelectTrigger className="bg-background/40"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {["bag", "ton", "kg", "piece", "sqft", "cft", "meter", "feet", "sheet", "bundle", "liter", "gallon", "truck"].map((u) => (
-                          <SelectItem key={u} value={u}>{u}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      onValueChange={(v) => setEditingMaterial((prev) => prev ? { ...prev, unit: v === "__none__" ? "bag" : v } : prev)}
+                      placeholder="Select unit"
+                      options={["bag", "ton", "kg", "piece", "sqft", "cft", "meter", "feet", "sheet", "bundle", "liter", "gallon", "truck"].map((u) => ({ value: u, label: u }))}
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Price (PKR)</Label>
@@ -3218,39 +3207,35 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Typical delivery time (days)</Label>
-                <Select
+                <SelectWithCustom
                   value={settings.delivery_info.delivery_time_days != null ? String(settings.delivery_info.delivery_time_days) : "__none__"}
-                  onValueChange={(v) => setSettings((prev) => ({ ...prev, delivery_info: { ...prev.delivery_info, delivery_time_days: v === "__none__" ? null : Number(v) || null } }))}
-                >
-                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select delivery time" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not set</SelectItem>
-                    <SelectItem value="0">Same Day</SelectItem>
-                    <SelectItem value="1">1 Day</SelectItem>
-                    <SelectItem value="2">2 Days</SelectItem>
-                    <SelectItem value="3">3 Days</SelectItem>
-                    <SelectItem value="5">5 Days</SelectItem>
-                    <SelectItem value="7">7 Days</SelectItem>
-                    <SelectItem value="14">14 Days</SelectItem>
-                  </SelectContent>
-                </Select>
+                  onValueChange={(v) => setSettings((prev) => ({ ...prev, delivery_info: { ...prev.delivery_info, delivery_time_days: v === "__none__" || v === "" ? null : Number(v) || null } }))}
+                  placeholder="Select delivery time"
+                  options={[
+                    { value: "0", label: "Same Day" },
+                    { value: "1", label: "1 Day" },
+                    { value: "2", label: "2 Days" },
+                    { value: "3", label: "3 Days" },
+                    { value: "5", label: "5 Days" },
+                    { value: "7", label: "7 Days" },
+                    { value: "14", label: "14 Days" },
+                  ]}
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Delivery charges</Label>
-                <Select
+                <SelectWithCustom
                   value={settings.delivery_info.delivery_charges || "__none__"}
                   onValueChange={(v) => setSettings((prev) => ({ ...prev, delivery_info: { ...prev.delivery_info, delivery_charges: v === "__none__" ? "" : v } }))}
-                >
-                  <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select delivery charges" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not set</SelectItem>
-                    <SelectItem value="free">Free Delivery</SelectItem>
-                    <SelectItem value="fixed">Fixed Charges</SelectItem>
-                    <SelectItem value="per_km">Per KM</SelectItem>
-                    <SelectItem value="negotiable">Negotiable</SelectItem>
-                    <SelectItem value="buyer_arranged">Buyer Arranges</SelectItem>
-                  </SelectContent>
-                </Select>
+                  placeholder="Select delivery charges"
+                  options={[
+                    { value: "free", label: "Free Delivery" },
+                    { value: "fixed", label: "Fixed Charges" },
+                    { value: "per_km", label: "Per KM" },
+                    { value: "negotiable", label: "Negotiable" },
+                    { value: "buyer_arranged", label: "Buyer Arranges" },
+                  ]}
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Free delivery above (PKR)</Label>

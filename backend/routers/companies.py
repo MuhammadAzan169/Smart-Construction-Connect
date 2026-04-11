@@ -93,13 +93,14 @@ class CompanyProfileUpdate(BaseModel):
 _ALLOWED_PROFILE_FIELDS = {
     "company_name", "description", "logo_url", "dp_url", "city",
     "contact", "legal_info",
-    "construction_capability", "services",
-    "payment_terms", "timeline_estimates",
-    "experience", "quality_control",
-    "after_handover_support", "legal_and_contract",
+    "construction_capability", "services", "services_offered",
+    "payment_terms", "timeline_estimates", "timeline_notes",
+    "experience", "experience_track", "quality_control",
+    "after_handover_support", "legal_and_contract", "legal_contract",
     "ideal_customer_profile",
     "verification_documents",
     "projects",
+    "materials_used", "profile_settings", "_editor_settings",
 }
 
 # Fields that only admins can modify — never writable by regular users.
