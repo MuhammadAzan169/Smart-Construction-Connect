@@ -261,7 +261,7 @@ export default function AdminAIChatPage() {
 
   return (
     <motion.div
-      className="flex h-[calc(100vh-5rem)] gap-3"
+      className="flex flex-1 min-h-0 gap-3"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}

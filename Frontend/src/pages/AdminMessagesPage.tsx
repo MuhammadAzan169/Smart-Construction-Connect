@@ -178,7 +178,7 @@ export default function AdminMessagesPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
+    <div className="flex flex-1 min-h-0 overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
 
       {/* ── Sidebar: All Conversations ── */}
       <div

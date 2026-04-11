@@ -54,8 +54,8 @@ export function DashboardLayout() {
       <AppSidebar />
       <SidebarInset className="relative bg-background border-s border-border">
         <TopNavbar />
-        <main className="relative flex-1 overflow-auto scroll-styled px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-screen-2xl">
+        <main className="relative flex-1 overflow-auto scroll-styled px-4 py-6 sm:px-6 lg:px-8 flex flex-col min-h-0">
+          <div className="mx-auto max-w-screen-2xl w-full flex-1 flex flex-col min-h-0">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={location.pathname}
@@ -63,6 +63,7 @@ export function DashboardLayout() {
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
                 transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="flex-1 flex flex-col min-h-0"
               >
                 <Outlet />
               </motion.div>

@@ -1,5 +1,11 @@
 [
   {
+    "timestamp": "2026-04-11T21:58:17.881596+00:00",
+    "action": "chat_deleted",
+    "target": "ahmed@example.com",
+    "details": "ahmed@example.com soft-deleted conversation f6efba92-6a5d-42cf-8252-494213b5334a"
+  },
+  {
     "timestamp": "2026-04-11T21:50:07.752157+00:00",
     "action": "ai_chat",
     "target": "admin@smartconnect.pk",
