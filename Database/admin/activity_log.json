@@ -1,5 +1,11 @@
 [
   {
+    "timestamp": "2026-04-11T21:50:07.752157+00:00",
+    "action": "ai_chat",
+    "target": "admin@smartconnect.pk",
+    "details": "AI chat (stream): List all pending company approvals"
+  },
+  {
     "timestamp": "2026-04-11T21:10:48.829525+00:00",
     "action": "chat_deleted",
     "target": "ahmed@example.com",

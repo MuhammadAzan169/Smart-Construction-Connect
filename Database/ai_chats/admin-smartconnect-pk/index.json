@@ -1,5 +1,12 @@
 [
   {
+    "session_id": "e8b3df0b-27a5-417f-a913-6a4e2eed60f8",
+    "title": "List all pending company approvals",
+    "created_at": "2026-04-11T21:50:16.053024+00:00",
+    "updated_at": "2026-04-11T21:50:16.053024+00:00",
+    "message_count": 3
+  },
+  {
     "session_id": "d4e5f6a7-0004-0004-0004-000000000001",
     "title": "Platform summary - pending approvals April 2026",
     "created_at": "2026-04-08T17:42:48+00:00",

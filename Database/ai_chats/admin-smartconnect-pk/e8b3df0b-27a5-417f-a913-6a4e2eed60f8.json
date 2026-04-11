@@ -1,0 +1,14 @@
+[
+  {
+    "role": "assistant",
+    "content": "Hello Admin! 👋\n\nI have access to all platform data. Ask me:\n• **User summary** — how many users, by role, status\n• **Top companies** — best rated, most projects\n• **Pending approvals** — unapproved companies/suppliers\n• **City analytics** — coverage gaps, demand\n• **Market prices** — current material costs\n\nWhat would you like to know?"
+  },
+  {
+    "role": "user",
+    "content": "List all pending company approvals"
+  },
+  {
+    "role": "assistant",
+    "content": "**Pending / Unverified Companies (39 total)**  \n\n| # | Company | City |\n|---|---------------------------|----------|\n| 1 | Sindh Affordable Constructions | Karachi |\n| 2 | Arabian Sea Developers | Karachi |\n| 3 | Federal Building Associates | Islamabad |\n| 4 | Diplomatic Enclave Developers | Islamabad |\n| 5 | Zenith Premium Constructions | Islamabad |\n| 6 | *(remaining 34 companies are not listed individually in the current data extract)* | — |\n\n*Note:* The platform data mentions a total of 39 pending/unverified companies, but only the five above are explicitly named. If you need the full list, please let me know and I can retrieve the detailed records from the system."
+  }
+]
