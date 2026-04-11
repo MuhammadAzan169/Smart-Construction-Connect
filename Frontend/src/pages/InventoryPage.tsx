@@ -41,7 +41,7 @@ const formatPKR = (value: number) =>
 const categoryOptions = [
   "Cement", "Steel", "Bricks", "Aggregate", "Paint", "Tiles", "Wood",
   "Electrical", "Plumbing", "Glass", "Doors & Windows", "Hardware",
-  "Waterproofing", "Concrete", "Marble & Granite", "Other",
+  "Waterproofing", "Concrete", "Marble & Granite",
 ];
 
 const unitOptions = ["bag", "ton", "kg", "cft", "sqft", "ft", "piece", "sheet", "bucket", "tin", "roll", "liter", "set", "meter", "gallon", "truck", "bundle"];
@@ -234,16 +234,39 @@ export default function InventoryPage() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Category *</Label>
-              <Select
-                value={editingMaterial.category || "__none__"}
-                onValueChange={(v) => setEditingMaterial((prev) => prev ? { ...prev, category: v === "__none__" ? "" : v } : prev)}
-              >
-                <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select category" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Select category</SelectItem>
-                  {categoryOptions.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              {(() => {
+                const catVal = editingMaterial.category || "";
+                const isCustomCat = catVal !== "" && !categoryOptions.includes(catVal);
+                const selectVal = isCustomCat ? "__custom__" : (catVal || "__none__");
+                return (
+                  <>
+                    <Select
+                      value={selectVal}
+                      onValueChange={(v) => {
+                        if (v === "__none__") setEditingMaterial((prev) => prev ? { ...prev, category: "" } : prev);
+                        else if (v === "__custom__") setEditingMaterial((prev) => prev ? { ...prev, category: "" } : prev);
+                        else setEditingMaterial((prev) => prev ? { ...prev, category: v } : prev);
+                      }}
+                    >
+                      <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select category" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none__">Select category</SelectItem>
+                        {categoryOptions.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                        <SelectItem value="__custom__" className="text-primary">Custom…</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {(isCustomCat || selectVal === "__custom__") && (
+                      <Input
+                        autoFocus
+                        value={catVal}
+                        onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, category: e.target.value } : prev)}
+                        placeholder="Type custom category…"
+                        className="mt-1.5 bg-background/40"
+                      />
+                    )}
+                  </>
+                );
+              })()}
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Brand</Label>

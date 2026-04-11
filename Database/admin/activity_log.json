@@ -1,5 +1,23 @@
 [
   {
+    "timestamp": "2026-04-11T23:16:38.699640+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation 6bc80d3e-08eb-4894-91fc-e98f66f93b53"
+  },
+  {
+    "timestamp": "2026-04-11T23:14:29.212998+00:00",
+    "action": "ai_chat",
+    "target": "info@steelhub.pk",
+    "details": "AI chat (stream): Suggest materials I should add to my inventory"
+  },
+  {
+    "timestamp": "2026-04-11T23:13:32.726289+00:00",
+    "action": "ai_chat",
+    "target": "info@steelhub.pk",
+    "details": "AI chat (stream): What's the seasonal demand pattern for building materials?"
+  },
+  {
     "timestamp": "2026-04-11T23:08:49.314089+00:00",
     "action": "ai_chat",
     "target": "info@001builders.com",
