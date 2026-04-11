@@ -1,5 +1,41 @@
 [
   {
+    "timestamp": "2026-04-11T18:50:54.256778+00:00",
+    "action": "ai_chat",
+    "target": "fatima@example.com",
+    "details": "AI chat (stream): 10 milliom pkr bidget and 2 floor house"
+  },
+  {
+    "timestamp": "2026-04-11T18:50:14.852730+00:00",
+    "action": "ai_chat",
+    "target": "fatima@example.com",
+    "details": "AI chat (stream): 1 Kanal"
+  },
+  {
+    "timestamp": "2026-04-11T18:49:52.596244+00:00",
+    "action": "ai_chat",
+    "target": "fatima@example.com",
+    "details": "AI chat (stream): City Karachi"
+  },
+  {
+    "timestamp": "2026-04-11T18:49:34.617932+00:00",
+    "action": "ai_chat",
+    "target": "fatima@example.com",
+    "details": "AI chat (stream): Hi"
+  },
+  {
+    "timestamp": "2026-04-11T18:14:15.101003+00:00",
+    "action": "ai_chat",
+    "target": "fatima@example.com",
+    "details": "AI chat (stream): tell me which are unverfied"
+  },
+  {
+    "timestamp": "2026-04-11T18:13:35.775619+00:00",
+    "action": "ai_chat",
+    "target": "fatima@example.com",
+    "details": "AI chat (stream): Find me top-rated construction companies in Islamabad"
+  },
+  {
     "timestamp": "2026-04-11T15:33:44.944882+00:00",
     "action": "chat_deleted",
     "target": "info@ravigreybuil1.pk",

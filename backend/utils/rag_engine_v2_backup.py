@@ -1,15 +1,17 @@
-"""RAG recommendation engine v3 — hybrid search, anti-hallucination, context-aware.
+"""RAG recommendation engine v2 — role-aware, bilingual, auto-refreshing.
 
 Architecture
 ────────────
-1. Hybrid semantic index (Sentence Transformers + FAISS + BM25) with auto-refresh.
-   Falls back to BM25-only if sentence-transformers not installed.
-2. Intent extraction: city, budget, plot size, material keywords, language.
-3. Structural boosting: city, budget, rating, experience + semantic score → 0-100.
-4. Role-specific system prompts with strict anti-hallucination guards.
-5. Conversation memory: context summarization for long chats.
-6. Response caching for frequent queries.
-7. Graceful fallback chain: LLM → rule-based summary → "I don't know".
+1. TF-IDF in-memory index built from Database/construction/companies.json
+   and Database/suppliers/catalog.json.  Refreshes automatically when file
+   hashes change (covers edits from the frontend).
+2. Intent extraction pulls city, budget, plot size, material keywords, and
+   language preference from the full conversation.
+3. Structural boosting (city, budget, rating, experience) combines with
+   TF-IDF cosine score → 0-100 relevance.
+4. Role-specific system prompts (landing, client, company, supplier, admin)
+   get RAG context + market prices injected before the OpenRouter LLM call.
+5. Graceful fallback: if LLM fails, a rule-based summary is returned.
 """
 
 from __future__ import annotations
@@ -36,9 +38,6 @@ from backend.utils.data_handler import (
     get_activity_log,
 )
 from backend.utils.market_prices import get_market_prices_context
-from backend.utils.semantic_embeddings import semantic_index
-from backend.utils.conversation_memory import conversation_memory, requirement_tracker
-from backend.utils.response_cache import response_cache
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -80,32 +79,18 @@ _OPENROUTER_BASE = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v
 _API_KEYS = _load_api_keys()
 _MODELS = _load_models()
 
+# Retryable HTTP status codes — move to the next key on these
 _RETRYABLE_STATUSES = {429, 500, 502, 503, 504}
+# Fatal key-level errors — key is bad, skip it entirely
 _BAD_KEY_STATUSES = {401, 403}
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  Anti-hallucination guard (injected into every prompt)
-# ═══════════════════════════════════════════════════════════════════════════════
-
-_ANTI_HALLUCINATION_GUARD = """
-CRITICAL RULES — NEVER VIOLATE:
-1. ONLY use information from the DATA sections below (RECOMMENDED MATCHES, MARKET PRICES, PLATFORM DATA).
-2. NEVER invent, fabricate, or guess company names, prices, phone numbers, addresses, ratings, or any factual data.
-3. If the user asks about something NOT covered by the data below, respond: "I don't have that specific information in my database. Let me help you with what I do know."
-4. NEVER create fictional companies, suppliers, or contact details.
-5. If unsure about a fact, say so honestly rather than guessing.
-6. When recommending companies/suppliers, ONLY use entities listed in RECOMMENDED MATCHES — never make up alternatives.
-7. For prices, ONLY cite numbers from MARKET PRICES data. If a price is not listed, say "I don't have current pricing for that item."
-8. Do not extrapolate or estimate data that isn't provided.
-"""
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  Role-based system prompts (upgraded with anti-hallucination)
+#  Role-based system prompts
 # ═══════════════════════════════════════════════════════════════════════════════
 
 _SYSTEM_PROMPTS: dict[str, str] = {
+    # ── Landing page (marketing bot) ──────────────────────────────────────────
     "landing": (
         "You are the official AI assistant for Smart Construction Connect — "
         "Pakistan's premier platform connecting homeowners with verified "
@@ -121,74 +106,56 @@ _SYSTEM_PROMPTS: dict[str, str] = {
         "Rules:\n"
         "• You are a MARKETING assistant. Be enthusiastic and persuasive.\n"
         "• Do NOT recommend specific companies or suppliers (the visitor is not logged in).\n"
-        "• Do NOT answer unrelated topics (politics, religion, sports, etc.).\n"
+        "• Do NOT answer unrelated topics (politics, religion, etc.).\n"
         "• If the visitor wants to find a builder or supplier, tell them to sign up.\n"
         "• Respond in the SAME language the user writes in. If they write Urdu/Roman Urdu, reply in Urdu. "
         "If English, reply in English. You can mix if they mix.\n"
-        "• Keep answers concise (under 200 words) with bullet points and emojis.\n"
-        "• If asked about topics outside construction/real estate, say: "
-        "'I'm specialized in construction and can only help with building-related questions.'"
+        "• Keep answers concise (under 200 words) with bullet points and emojis."
     ),
 
+    # ── Client (homeowner) ────────────────────────────────────────────────────
     "client": (
-        "You are an expert AI Construction Consultant for homeowners on Smart Construction Connect — "
-        "Pakistan's premier platform connecting homeowners with verified builders.\n\n"
-        "YOUR PERSONALITY:\n"
-        "• Warm, professional, and conversational — like a knowledgeable friend in the construction industry.\n"
-        "• Engage naturally. Ask ONE question at a time. Don't overwhelm with bullet lists of questions.\n"
-        "• Show genuine interest in the user's project. React to what they say before asking the next question.\n"
-        "• Use a mix of encouragement and expertise.\n\n"
-        "CONVERSATION WORKFLOW — STRICT ORDER:\n\n"
-        "PHASE 1 — UNDERSTAND (keep asking until you know enough):\n"
-        "   Have a natural conversation to understand what the user wants. Ask about:\n"
-        "   • City & area — Where do they want to build? (e.g. Lahore DHA, Islamabad G-13)\n"
-        "   • Plot size (marla/kanal) and number of floors\n"
-        "   • Budget range in PKR\n"
-        "   • Construction type (grey structure / full finish / renovation)\n"
-        "   • Timeline and any special features (solar, smart home, basement, pool)\n\n"
-        "   IMPORTANT: Ask ONE or TWO questions per message. Build on their answers. Show you're listening.\n"
-        "   Example flow:\n"
-        "   User: 'I want to build a house in Lahore'\n"
-        "   You: 'Great choice! Lahore has some amazing construction companies. "
-        "Which area are you thinking — DHA, Bahria Town, Johar Town, Model Town? "
-        "And what's your plot size in marla or kanal?'\n\n"
-        "PHASE 2 — RECOMMEND (ONLY when RECOMMENDED MATCHES data exists below):\n"
-        "   When you see a section titled 'RECOMMENDED MATCHES FROM DATABASE' below,\n"
-        "   present the TOP 3 matches with this format:\n"
-        "   **Company Name** ⭐ Rating/5\n"
-        "   📍 Location | 💰 Price range | 🏗️ Specializations\n"
-        "   Brief personalized explanation of why they match THIS user's needs.\n\n"
-        "PHASE 3 — GUIDE:\n"
-        "   After recommending, help with cost breakdowns, comparisons, and next steps.\n\n"
-        "ABSOLUTE RULES:\n"
-        "• If there is NO section titled 'RECOMMENDED MATCHES FROM DATABASE' below, "
-        "you MUST keep gathering requirements. Do NOT recommend any company.\n"
-        "• NEVER invent or guess company names, prices, phone numbers, or addresses.\n"
-        "• ONLY recommend companies/suppliers listed in RECOMMENDED MATCHES — never make up alternatives.\n"
-        "• Respond in the SAME language the user writes in (English/Urdu/Roman Urdu).\n"
-        "• If a file is uploaded (floor plan, BOQ, contract), analyze it thoroughly.\n"
-        "• Remember what the user told you in previous messages — don't re-ask.\n"
-        "• If the user asks something outside your data, say so honestly."
+        "You are an expert AI Construction Consultant for homeowners on Smart Construction Connect.\n\n"
+        "WORKFLOW — follow this strictly:\n"
+        "STEP 1 — GATHER requirements first (do NOT recommend yet):\n"
+        "   Ask conversationally, one or two questions at a time:\n"
+        "   - City & area/society (e.g. Lahore DHA, Islamabad G-13)\n"
+        "   - Plot size (marla/kanal)\n"
+        "   - Construction type (grey structure / full finish / renovation)\n"
+        "   - Budget range in PKR\n"
+        "   - Number of floors\n"
+        "   - Timeline and any special features (solar, smart home, pool)\n"
+        "STEP 2 — ONLY after you have AT LEAST city + budget (minimum 2 key facts), "
+        "present the TOP 3 matches from RECOMMENDED MATCHES below.\n"
+        "STEP 3 — Provide cost breakdown using MARKET PRICES data.\n\n"
+        "CRITICAL RULES:\n"
+        "• NEVER recommend companies or suppliers before gathering minimum requirements.\n"
+        "• NEVER invent or hallucinate company names, prices, or contact details.\n"
+        "• ONLY recommend entries that appear in RECOMMENDED MATCHES.\n"
+        "• If user only needs materials, recommend suppliers only.\n"
+        "• Use markdown: bold headings (**text**), bullet lists, cost tables with | pipes |.\n"
+        "• Respond in the SAME language the user is writing in (see LANGUAGE DIRECTIVE below).\n"
+        "• If a file is uploaded (floor plan, BOQ, contract), analyze it thoroughly."
     ),
 
+    # ── Construction company ──────────────────────────────────────────────────
     "company": (
         "You are an AI Business Advisor for construction companies on Smart Construction Connect.\n\n"
         "Your capabilities:\n"
-        "1. Recommend TOP 3 material suppliers from RECOMMENDED MATCHES below.\n"
-        "2. Provide current market prices from MARKET PRICES data.\n"
-        "3. Help with pricing strategy, project costing, competitive analysis.\n"
+        "1. Recommend the TOP 3 best material suppliers matching what the company needs.\n"
+        "2. Provide current market prices for construction materials in Pakistan.\n"
+        "3. Help with pricing strategy, project costing, and competitive analysis.\n"
         "4. Suggest material alternatives to optimize cost.\n"
         "5. Help with project planning and timeline estimation.\n\n"
         "Rules:\n"
-        "• When recommending suppliers, ONLY use those in RECOMMENDED MATCHES.\n"
+        "• When recommending suppliers, ONLY use those in RECOMMENDED MATCHES below.\n"
         "• Back all price suggestions with MARKET PRICES data.\n"
         "• Keep advice data-driven and actionable.\n"
         "• Respond in the SAME language the user writes in.\n"
-        "• If a file is uploaded, analyze it and provide insights.\n"
-        "• Never invent supplier names, prices, or contact information.\n"
-        "• If you don't have data for something, say so clearly."
+        "• If a file is uploaded, analyze it and provide insights."
     ),
 
+    # ── Material supplier ─────────────────────────────────────────────────────
     "supplier": (
         "You are an AI Market Analyst for material suppliers on Smart Construction Connect.\n\n"
         "Your capabilities:\n"
@@ -199,13 +166,13 @@ _SYSTEM_PROMPTS: dict[str, str] = {
         "5. Recommend new product opportunities based on platform demand data.\n"
         "6. Analyze stock levels and suggest reorder points.\n\n"
         "Rules:\n"
-        "• Always ground price discussions in MARKET PRICES data below.\n"
+        "• Always ground price discussions in the MARKET PRICES data below.\n"
         "• Be data-driven and analytical.\n"
         "• Respond in the SAME language the user writes in.\n"
-        "• If a file is uploaded (inventory, price sheet), analyze it.\n"
-        "• Never fabricate pricing data or market statistics."
+        "• If a file is uploaded (inventory, price sheet), analyze it."
     ),
 
+    # ── Admin ─────────────────────────────────────────────────────────────────
     "admin": (
         "You are an AI Analytics Assistant for administrators of Smart Construction Connect.\n\n"
         "Your capabilities:\n"
@@ -217,25 +184,195 @@ _SYSTEM_PROMPTS: dict[str, str] = {
         "6. Answer any analytical question about the platform data.\n\n"
         "Rules:\n"
         "• Use ONLY the PLATFORM DATA section below for facts. Do not guess.\n"
-        "• Be concise, use tables, bullet points, numbers.\n"
-        "• Respond in the SAME language the admin writes in.\n"
-        "• If data is not available, clearly state so."
+        "• Be concise and use tables, bullet points, numbers.\n"
+        "• Respond in the SAME language the admin writes in."
     ),
 }
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  Backward-compatible index wrapper (delegates to semantic_embeddings)
+#  TF-IDF Embedding Index (auto-refreshing)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-_INDEX = semantic_index  # Alias for backward compatibility
+def _tokenize(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+
+def _build_tfidf(docs: list[list[str]]) -> tuple[dict[str, float], list[dict[str, float]]]:
+    N = len(docs)
+    if N == 0:
+        return {}, []
+    df: Counter = Counter()
+    for tokens in docs:
+        df.update(set(tokens))
+    idf = {term: math.log((N + 1) / (count + 1)) + 1.0 for term, count in df.items()}
+    tf_vecs: list[dict[str, float]] = []
+    for tokens in docs:
+        if not tokens:
+            tf_vecs.append({})
+            continue
+        freq = Counter(tokens)
+        max_freq = max(freq.values())
+        tf_vecs.append({t: (c / max_freq) * idf.get(t, 1.0) for t, c in freq.items()})
+    return idf, tf_vecs
+
+
+def _cosine(a: dict[str, float], b: dict[str, float]) -> float:
+    if not a or not b:
+        return 0.0
+    dot = sum(a.get(t, 0.0) * v for t, v in b.items())
+    na = math.sqrt(sum(v * v for v in a.values()))
+    nb = math.sqrt(sum(v * v for v in b.values()))
+    return dot / (na * nb) if na and nb else 0.0
+
+
+def _file_hash(path: Path) -> str:
+    """Quick hash of a file to detect changes."""
+    try:
+        return hashlib.md5(path.read_bytes()).hexdigest()
+    except Exception:
+        return ""
+
+
+class _EmbeddingIndex:
+    """Thread-safe TF-IDF index that auto-refreshes when JSON files change."""
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._companies: list[dict] = []
+        self._suppliers: list[dict] = []
+        self._company_vecs: list[dict[str, float]] = []
+        self._supplier_vecs: list[dict[str, float]] = []
+        self._idf: dict[str, float] = {}
+        self._built = False
+        self._company_hash = ""
+        self._supplier_hash = ""
+
+    # ── Document builders ─────────────────────────────────────────────────────
+
+    @staticmethod
+    def _company_doc(c: dict) -> str:
+        parts = [
+            c.get("company_name", ""),
+            c.get("description") or "",
+            c.get("city", ""),
+        ]
+        for row in c.get("flattened_operational_areas", []):
+            parts.extend([row.get("city", ""), row.get("area", ""), row.get("subarea", ""), row.get("package", "")])
+        for ck in (c.get("operational_areas") or {}).keys():
+            parts.append(ck)
+        for sp in (c.get("experience") or {}).get("specializations", []):
+            parts.append(sp)
+        for sk in (c.get("services") or {}).keys():
+            parts.append(sk)
+        for pkg_mats in (c.get("materials_used") or {}).values():
+            if isinstance(pkg_mats, dict):
+                parts.extend(pkg_mats.values())
+        cap = c.get("construction_capability") or {}
+        for ht in cap.get("house_types", []):
+            parts.append(ht)
+        legal = c.get("legal_info") or {}
+        if legal.get("year_established"):
+            parts.append(str(legal["year_established"]))
+        return " ".join(str(p) for p in parts if p)
+
+    @staticmethod
+    def _supplier_doc(s: dict) -> str:
+        parts = [
+            s.get("supplier_name", ""),
+            s.get("description") or "",
+            s.get("city", ""),
+            s.get("area", ""),
+        ]
+        parts.extend(s.get("cities_served", []))
+        for mat in s.get("materials", []):
+            parts.extend([mat.get("name", ""), mat.get("category", ""), mat.get("brand", ""), mat.get("description", "") or ""])
+        return " ".join(str(p) for p in parts if p)
+
+    # ── Build / refresh ───────────────────────────────────────────────────────
+
+    def _needs_refresh(self) -> bool:
+        ch = _file_hash(companies_dataset_path())
+        sh = _file_hash(suppliers_dataset_path())
+        with self._lock:
+            return ch != self._company_hash or sh != self._supplier_hash
+
+    def build(self, force: bool = False):
+        if self._built and not force and not self._needs_refresh():
+            return
+
+        comp_path = companies_dataset_path()
+        supp_path = suppliers_dataset_path()
+
+        companies = read_json(comp_path)
+        suppliers = read_json(supp_path)
+        if not isinstance(companies, list):
+            companies = []
+        if not isinstance(suppliers, list):
+            suppliers = []
+        companies = [c for c in companies if isinstance(c, dict) and c.get("company_id")]
+        suppliers = [s for s in suppliers if isinstance(s, dict) and s.get("supplier_id")]
+
+        cdocs = [_tokenize(self._company_doc(c)) for c in companies]
+        sdocs = [_tokenize(self._supplier_doc(s)) for s in suppliers]
+        idf, vecs = _build_tfidf(cdocs + sdocs)
+
+        with self._lock:
+            self._companies = companies
+            self._suppliers = suppliers
+            self._idf = idf
+            self._company_vecs = vecs[:len(cdocs)]
+            self._supplier_vecs = vecs[len(cdocs):]
+            self._company_hash = _file_hash(comp_path)
+            self._supplier_hash = _file_hash(supp_path)
+            self._built = True
+
+        logger.info("Index built: %d companies, %d suppliers, %d terms", len(companies), len(suppliers), len(idf))
+
+    def _ensure(self):
+        if not self._built or self._needs_refresh():
+            self.build()
+
+    def _qvec(self, query: str) -> dict[str, float]:
+        tokens = _tokenize(query)
+        if not tokens:
+            return {}
+        freq = Counter(tokens)
+        mx = max(freq.values())
+        return {t: (c / mx) * self._idf.get(t, 1.0) for t, c in freq.items()}
+
+    def search_companies(self, query: str, top_k: int = 10) -> list[tuple[dict, float]]:
+        self._ensure()
+        with self._lock:
+            qv = self._qvec(query)
+            scored = [(c, _cosine(qv, v)) for c, v in zip(self._companies, self._company_vecs)]
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return scored[:top_k]
+
+    def search_suppliers(self, query: str, top_k: int = 10) -> list[tuple[dict, float]]:
+        self._ensure()
+        with self._lock:
+            qv = self._qvec(query)
+            scored = [(s, _cosine(qv, v)) for s, v in zip(self._suppliers, self._supplier_vecs)]
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return scored[:top_k]
+
+    def get_all_companies(self) -> list[dict]:
+        self._ensure()
+        with self._lock:
+            return list(self._companies)
+
+    def get_all_suppliers(self) -> list[dict]:
+        self._ensure()
+        with self._lock:
+            return list(self._suppliers)
+
+
+_INDEX = _EmbeddingIndex()
 
 
 def rebuild_index():
-    """Force rebuild of the semantic index."""
-    semantic_index.build(force=True)
-    response_cache.invalidate()
-    logger.info("Index rebuilt and cache cleared")
+    _INDEX.build(force=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -282,32 +419,45 @@ def _parse_budget(text: str) -> tuple[float | None, float | None]:
     return None, None
 
 
+# Comprehensive Roman Urdu word set — Urdu written in Latin script
 _ROMAN_URDU_MARKERS: frozenset[str] = frozenset([
+    # Pronouns & basic
     "main", "mein", "hum", "aap", "tum", "wo", "woh", "yeh", "ye",
+    # Verbs / conjugations
     "hai", "hain", "tha", "the", "thi", "ho", "hoga", "hogi", "houn",
     "karo", "karna", "karte", "karta", "karti", "kar", "kia", "kiya",
     "dena", "dedo", "lena", "lo", "batao", "batayen", "btao", "bata",
     "chahiye", "chahie", "chahta", "chahti", "chahye",
+    # Question words
     "kya", "kia", "kab", "kahan", "kyun", "kaisa", "kesa", "kitna",
     "kitne", "kitni", "kaun", "konsa",
+    # Common connectors
     "aur", "lekin", "magar", "agar", "phir", "toh", "to", "ya",
     "ke", "ka", "ki", "ko", "se", "mein", "pe", "par", "tak",
+    # Responses
     "nahi", "nahin", "nhi", "na", "haan", "han", "ji", "bilkul",
     "achha", "acha", "accha", "theek", "thek", "sahi",
+    # Greetings / politeness
     "bhai", "dost", "sahib",
     "shukriya", "shukria", "meherbani", "shukar", "shukran",
     "zaroorat", "zarurat", "zaroor", "madad", "madat",
+    # Construction / house
     "ghar", "makan", "makaan", "gher", "banwana", "banana", "bana",
     "marla", "kanal", "manzil", "kamra", "tameer", "taameer", "nirman",
+    # Numbers / money
     "paise", "rupay", "lakh", "crore",
+    # Degree words
     "kam", "zyada", "bara", "chota", "chhota", "pura", "sara", "sab",
     "dono", "pehle", "baad", "jaldi", "abhi",
 ])
 
 
 def _detect_language(text: str) -> str:
+    """Detect language: 'urdu' (script), 'roman_urdu', or 'english'."""
+    # Urdu / Arabic script characters
     if any(0x0600 <= ord(c) <= 0x06FF for c in text):
         return "urdu"
+    # Roman Urdu — Urdu words written in Latin letters
     words = set(re.findall(r"[a-z]+", text.lower()))
     roman_hits = len(words & _ROMAN_URDU_MARKERS)
     if roman_hits >= 2:
@@ -316,6 +466,7 @@ def _detect_language(text: str) -> str:
 
 
 def _get_language_directive(lang: str) -> str:
+    """Return a system-prompt injection enforcing correct reply language."""
     if lang == "urdu":
         return (
             "\n\nLANGUAGE DIRECTIVE: The user is writing in Urdu script (اردو). "
@@ -334,23 +485,22 @@ def _get_language_directive(lang: str) -> str:
             "Do NOT reply in English. Do NOT use Urdu script. "
             "Keep it natural and conversational like a friend talking in Roman Urdu."
         )
-    return "\n\nLANGUAGE DIRECTIVE: The user is writing in English. Reply in English."
+    return (
+        "\n\nLANGUAGE DIRECTIVE: The user is writing in English. Reply in English."
+    )
 
 
 def _has_enough_requirements(intent: dict, user_msg_count: int) -> bool:
-    """Gate recommendations: require multiple exchanges AND sufficient detail.
-
-    Ensures the AI gathers requirements conversationally before recommending.
-    """
+    """True when we have enough info to surface company/supplier recommendations."""
     if user_msg_count < 2:
-        return False
+        return False  # Always ask at least once before recommending
     filled = sum([
         bool(intent.get("city")),
         bool(intent.get("budget_min")),
         bool(intent.get("plot_size")),
         bool(intent.get("project_type")),
     ])
-    return filled >= 3
+    return filled >= 2
 
 
 def _extract_plot_size(text: str) -> str | None:
@@ -376,11 +526,13 @@ def _extract_intent(messages: list[dict]) -> dict[str, Any]:
         "language": _detect_language(combined),
     }
 
+    # Project type
     if any(w in combined for w in ["build", "house", "construct", "home", "villa", "bungalow",
                                      "marla", "kanal", "ghar", "makaan", "banwana", "floor", "storey"]):
         intent["project_type"] = "construction"
         intent["needs_company"] = True
 
+    # Material / supplier needs
     mat_kw = ["cement", "steel", "brick", "paint", "tile", "wood", "pipe", "marble",
               "glass", "electrical", "plumbing", "sanitary", "door", "window", "waterproof",
               "sand", "aggregate", "crush", "material", "supply", "supplier"]
@@ -413,12 +565,13 @@ def _extract_intent(messages: list[dict]) -> dict[str, Any]:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  Scoring / boosting (applied on top of semantic similarity)
+#  Scoring / boosting
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def _boost_company(c: dict, intent: dict, embed_score: float) -> float:
     score = embed_score * 60.0
 
+    # City match
     cities: set[str] = set()
     for row in c.get("flattened_operational_areas", []):
         if row.get("city"):
@@ -432,6 +585,7 @@ def _boost_company(c: dict, intent: dict, embed_score: float) -> float:
         elif cities:
             score -= 10.0
 
+    # Area match
     if intent["area"]:
         area_lower = intent["area"].lower()
         has_area = any(area_lower in (row.get("area", "") + row.get("subarea", "")).lower()
@@ -439,6 +593,7 @@ def _boost_company(c: dict, intent: dict, embed_score: float) -> float:
         if has_area:
             score += 8.0
 
+    # Budget compatibility
     if intent["budget_min"] is not None:
         prices = [r.get("price_per_sqft", 0) for r in c.get("flattened_operational_areas", [])
                   if isinstance(r.get("price_per_sqft"), (int, float))]
@@ -451,6 +606,7 @@ def _boost_company(c: dict, intent: dict, embed_score: float) -> float:
             else:
                 score -= 8.0
 
+    # Rating & reviews
     fb = c.get("customer_feedback") or {}
     rating = fb.get("average_rating", 0)
     reviews = fb.get("review_count", 0)
@@ -461,12 +617,14 @@ def _boost_company(c: dict, intent: dict, embed_score: float) -> float:
     if reviews >= 100:
         score += 3.0
 
+    # AI reliability scores
     ai = c.get("ai_scores") or {}
     for k in ["timeline_reliability", "budget_accuracy", "quality_consistency"]:
         v = ai.get(k, 0)
         if isinstance(v, (int, float)):
             score += v * 2.0
 
+    # Verified status
     if c.get("verification_status") == "verified":
         score += 3.0
 
@@ -495,6 +653,7 @@ def _boost_supplier(s: dict, intent: dict, embed_score: float) -> float:
     elif mat_count >= 3:
         score += 2.0
 
+    # Material keyword match
     if intent["material_keywords"]:
         mat_text = " ".join(m.get("name", "") + " " + m.get("category", "") for m in s.get("materials", [])).lower()
         hits = sum(1 for k in intent["material_keywords"] if k in mat_text)
@@ -520,16 +679,18 @@ def _get_company_price_range(c: dict) -> str:
 
 
 def get_recommendations(messages: list[dict], user_role: str = "client") -> dict:
-    """Retrieve and rank recommendations using hybrid semantic search."""
     intent = _extract_intent(messages)
     query = " ".join(m.get("content", "") for m in messages if m.get("role") == "user")
     results: list[dict] = []
 
+    # Client: both companies and suppliers (user can narrow)
+    # Company: only suppliers
+    # Supplier/admin: no RAG recommendations (they get market data instead)
     search_companies = user_role in ("client",) and intent["needs_company"]
     search_suppliers = user_role in ("client", "company") and (intent["needs_supplier"] or user_role == "company")
 
     if search_companies:
-        for c, es in semantic_index.search_companies(query, top_k=10):
+        for c, es in _INDEX.search_companies(query, top_k=10):
             sc = _boost_company(c, intent, es)
             results.append({
                 "type": "company",
@@ -545,7 +706,7 @@ def get_recommendations(messages: list[dict], user_role: str = "client") -> dict
             })
 
     if search_suppliers:
-        for s, es in semantic_index.search_suppliers(query, top_k=10):
+        for s, es in _INDEX.search_suppliers(query, top_k=10):
             sc = _boost_supplier(s, intent, es)
             cats = list(set(m.get("category", "") for m in s.get("materials", [])))
             results.append({
@@ -571,9 +732,10 @@ def get_recommendations(messages: list[dict], user_role: str = "client") -> dict
 def _build_rag_context(recommendations: list[dict], user_role: str) -> str:
     lines: list[str] = []
 
+    # Catalog overview
     try:
-        all_c = semantic_index.get_all_companies()
-        all_s = semantic_index.get_all_suppliers()
+        all_c = _INDEX.get_all_companies()
+        all_s = _INDEX.get_all_suppliers()
         cities: set[str] = set()
         for c in all_c:
             for row in c.get("flattened_operational_areas", []):
@@ -590,9 +752,9 @@ def _build_rag_context(recommendations: list[dict], user_role: str) -> str:
     except Exception:
         pass
 
+    # Recommendations
     if recommendations:
         lines.append("\n\n--- RECOMMENDED MATCHES FROM DATABASE ---")
-        lines.append("(These are REAL entities from our verified database. Use ONLY these for recommendations.)")
         for i, rec in enumerate(recommendations, 1):
             if rec["type"] == "company":
                 lines.append(
@@ -612,12 +774,9 @@ def _build_rag_context(recommendations: list[dict], user_role: str) -> str:
                 )
         lines.append("--- END MATCHES ---")
     else:
-        lines.append("\n\n--- NO RECOMMENDATIONS YET ---")
-        lines.append("You do NOT have enough information to recommend companies/suppliers yet.")
-        lines.append("Continue gathering requirements conversationally: city, budget, plot size, construction type.")
-        lines.append("Do NOT mention any specific company or supplier names. Focus on understanding the user's project needs.")
-        lines.append("--- END ---")
+        lines.append("\n\nNo specific matches found yet — ask the user for more details.")
 
+    # Market prices (for all roles except landing)
     if user_role != "landing":
         lines.append(get_market_prices_context())
 
@@ -625,12 +784,14 @@ def _build_rag_context(recommendations: list[dict], user_role: str) -> str:
 
 
 def _build_admin_context() -> str:
+    """Build platform analytics context for admin chatbot."""
     lines = ["\n\n--- PLATFORM DATA (LIVE) ---"]
     try:
         users = get_all_users()
-        companies = semantic_index.get_all_companies()
-        suppliers = semantic_index.get_all_suppliers()
+        companies = _INDEX.get_all_companies()
+        suppliers = _INDEX.get_all_suppliers()
 
+        # User stats
         role_counts: dict[str, int] = {}
         status_counts: dict[str, int] = {}
         for u in users:
@@ -643,6 +804,7 @@ def _build_admin_context() -> str:
             lines.append(f"  • {r}: {cnt}")
         lines.append(f"User status: {status_counts}")
 
+        # Company stats
         lines.append(f"\nTotal companies: {len(companies)}")
         top_rated = sorted(companies, key=lambda c: (c.get("customer_feedback") or {}).get("average_rating", 0), reverse=True)[:5]
         if top_rated:
@@ -651,15 +813,18 @@ def _build_admin_context() -> str:
                 fb = c.get("customer_feedback") or {}
                 lines.append(f"  • {c.get('company_name')}: {fb.get('average_rating', 0)}/5 ({fb.get('review_count', 0)} reviews)")
 
+        # Pending approvals
         pending = [c for c in companies if c.get("verification_status") != "verified"]
         lines.append(f"\nPending/unverified companies: {len(pending)}")
         for c in pending[:5]:
             lines.append(f"  • {c.get('company_name')} ({c.get('city', 'N/A')})")
 
+        # Supplier stats
         lines.append(f"\nTotal suppliers: {len(suppliers)}")
         pending_s = [s for s in suppliers if s.get("verification_status") != "verified"]
         lines.append(f"Pending/unverified suppliers: {len(pending_s)}")
 
+        # City distribution
         city_dist: dict[str, int] = {}
         for c in companies:
             for ck in (c.get("operational_areas") or {}).keys():
@@ -669,6 +834,7 @@ def _build_admin_context() -> str:
             for city, cnt in sorted(city_dist.items(), key=lambda x: -x[1])[:10]:
                 lines.append(f"  • {city}: {cnt} companies")
 
+        # Recent activity
         activity = get_activity_log()[:10]
         if activity:
             lines.append("\nRecent activity:")
@@ -684,11 +850,20 @@ def _build_admin_context() -> str:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  OpenRouter LLM call with robust retry
+#  OpenRouter LLM call
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def _call_openrouter(system_prompt: str, messages: list[dict]) -> str:
-    """Call OpenRouter with model-first, key-exhaustion strategy."""
+    """Call OpenRouter with model-first, key-exhaustion strategy.
+
+    For every model in order:
+        Try every API key in order.
+        On success → return immediately.
+        On retryable error (429, 5xx, timeout) → next key.
+        On bad-key error (401, 403) → skip that key for this model, try next key.
+    If all keys fail for the current model → move to the next model.
+    If all models exhausted → raise RuntimeError.
+    """
     if not _API_KEYS:
         raise RuntimeError("No OpenRouter API keys configured in .env")
     if not _MODELS:
@@ -714,7 +889,7 @@ def _call_openrouter(system_prompt: str, messages: list[dict]) -> str:
                             "model": model,
                             "messages": payload_messages,
                             "max_tokens": 1500,
-                            "temperature": 0.6,  # Lower temp = more factual
+                            "temperature": 0.7,
                         },
                     )
 
@@ -727,32 +902,60 @@ def _call_openrouter(system_prompt: str, messages: list[dict]) -> str:
                         .strip()
                     )
                     if content:
-                        logger.info("LLM success: model=%s key=%d/%d", model, key_idx, len(_API_KEYS))
+                        logger.info(
+                            "LLM success: model=%s key=%d/%d",
+                            model, key_idx, len(_API_KEYS),
+                        )
                         return content
-                    logger.warning("LLM empty response: model=%s key=%d/%d", model, key_idx, len(_API_KEYS))
+                    # Empty response — treat as soft failure, try next key
+                    logger.warning(
+                        "LLM empty response: model=%s key=%d/%d",
+                        model, key_idx, len(_API_KEYS),
+                    )
 
                 elif resp.status_code in _BAD_KEY_STATUSES:
-                    logger.warning("LLM bad key (HTTP %d): model=%s key=%d — skipping", resp.status_code, model, key_idx)
+                    logger.warning(
+                        "LLM bad key (HTTP %d): model=%s key=%d/%d — skipping key",
+                        resp.status_code, model, key_idx, len(_API_KEYS),
+                    )
+                    # Key is invalid; no point retrying it on the same model
                     continue
 
                 elif resp.status_code in _RETRYABLE_STATUSES:
-                    logger.warning("LLM retryable (HTTP %d): model=%s key=%d", resp.status_code, model, key_idx)
+                    logger.warning(
+                        "LLM retryable error (HTTP %d): model=%s key=%d/%d — next key",
+                        resp.status_code, model, key_idx, len(_API_KEYS),
+                    )
                     continue
 
                 elif resp.status_code == 404:
-                    logger.warning("LLM model not found (HTTP 404): %s — skipping model", model)
-                    break
+                    # Model not found on this endpoint — no point trying other keys
+                    logger.warning(
+                        "LLM model not found (HTTP 404): model=%s — skipping model",
+                        model,
+                    )
+                    break  # Break inner (key) loop → try next model
 
                 else:
-                    logger.warning("LLM unexpected HTTP %d: model=%s key=%d", resp.status_code, model, key_idx)
+                    logger.warning(
+                        "LLM unexpected HTTP %d: model=%s key=%d/%d — next key",
+                        resp.status_code, model, key_idx, len(_API_KEYS),
+                    )
 
             except httpx.TimeoutException:
-                logger.warning("LLM timeout: model=%s key=%d", model, key_idx)
+                logger.warning(
+                    "LLM timeout: model=%s key=%d/%d — next key",
+                    model, key_idx, len(_API_KEYS),
+                )
             except Exception as exc:
-                logger.warning("LLM exception: model=%s key=%d — %s", model, key_idx, exc)
+                logger.warning(
+                    "LLM exception: model=%s key=%d/%d — %s",
+                    model, key_idx, len(_API_KEYS), exc,
+                )
 
         else:
-            logger.warning("LLM: all keys exhausted for model=%s", model)
+            # All keys exhausted for this model
+            logger.warning("LLM: all keys exhausted for model=%s — trying next model", model)
             continue
 
     raise RuntimeError("All OpenRouter models and keys exhausted")
@@ -785,15 +988,8 @@ def _build_fallback(recommendations: list[dict], intent: dict) -> str:
 #  Main entry point
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def generate_ai_response(
-    messages: list[dict],
-    *,
-    user_role: str = "client",
-    extra_context: str = "",
-    user_email: str = "",
-    session_id: str = "",
-) -> dict:
-    """Generate a RAG-grounded LLM response with memory and caching.
+def generate_ai_response(messages: list[dict], *, user_role: str = "client", extra_context: str = "") -> dict:
+    """Generate a RAG-grounded LLM response.
 
     Roles: landing | client | company | supplier | admin
     """
@@ -854,29 +1050,10 @@ def generate_ai_response(
             "recommendations": [],
         }
 
-    # ── Check response cache ─────────────────────────────────────────────────
-    cached = response_cache.get(messages, user_role)
-    if cached is not None:
-        logger.info("Cache hit for AI response")
-        return cached
-
     # ── Language detection ────────────────────────────────────────────────────
     combined_user = " ".join(m.get("content", "") for m in messages if m.get("role") == "user")
     lang = _detect_language(combined_user)
     lang_directive = _get_language_directive(lang)
-
-    # ── Conversation memory: optimize context window ──────────────────────────
-    optimized_messages, memory_context = conversation_memory.build_context_injection(
-        messages, user_email, session_id,
-    )
-
-    # ── Requirement tracking (for clients) ────────────────────────────────────
-    requirement_context = ""
-    if user_role == "client" and user_email:
-        reqs = requirement_tracker.update_from_messages(user_email, messages)
-        follow_up = requirement_tracker.get_follow_up_prompt(reqs)
-        if follow_up:
-            requirement_context = follow_up
 
     # ── RAG retrieval ────────────────────────────────────────────────────────
     top_matches: list[dict] = []
@@ -892,38 +1069,30 @@ def generate_ai_response(
     # ── Decide which recommendations to surface ───────────────────────────────
     user_msg_count = sum(1 for m in messages if m.get("role") == "user")
     if user_role == "client":
+        # Only show recs after enough requirements gathered
         recs_to_return = top_matches if _has_enough_requirements(intent, user_msg_count) else []
     elif user_role == "company":
-        recs_to_return = top_matches
+        recs_to_return = top_matches  # company users get supplier recs immediately
     else:
         recs_to_return = []
 
-    # ── Build system prompt with all context layers ───────────────────────────
-    # CRITICAL: pass recs_to_return (not top_matches) so LLM only sees company
-    # data when requirements gate is passed — prevents premature recommendations.
+    # ── Build system prompt with context ─────────────────────────────────────
     if user_role == "admin":
         context = _build_admin_context()
     else:
-        context = _build_rag_context(recs_to_return, user_role)
+        context = _build_rag_context(top_matches, user_role)
 
-    system_prompt = (
-        base_system
-        + _ANTI_HALLUCINATION_GUARD
-        + lang_directive
-        + memory_context
-        + requirement_context
-        + context
-        + extra_context
-    )
+    system_prompt = base_system + lang_directive + context + extra_context
 
     # ── LLM call ─────────────────────────────────────────────────────────────
     try:
-        response_text = _call_openrouter(system_prompt, optimized_messages)
+        response_text = _call_openrouter(system_prompt, messages)
     except RuntimeError as e:
         logger.error("LLM failed: %s", e)
         if top_matches and recs_to_return:
             response_text = _build_fallback(top_matches, intent)
         else:
+            # Fallback in all three languages
             if lang == "roman_urdu":
                 response_text = (
                     "Abhi connection mein masla hai. Thodi der baad dobara try karein! "
@@ -936,29 +1105,17 @@ def generate_ai_response(
                     "I'm having trouble connecting right now. Please try again in a moment! 🙏"
                 )
 
-    result = {
+    return {
         "response": response_text,
         "recommendations": recs_to_return,
     }
-
-    # ── Cache the result ─────────────────────────────────────────────────────
-    response_cache.put(messages, user_role, result)
-
-    return result
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
 #  Streaming response generator
 # ═══════════════════════════════════════════════════════════════════════════════
 
-async def generate_ai_response_stream(
-    messages: list[dict],
-    *,
-    user_role: str = "client",
-    extra_context: str = "",
-    user_email: str = "",
-    session_id: str = "",
-):
+async def generate_ai_response_stream(messages: list[dict], *, user_role: str = "client", extra_context: str = ""):
     """Async generator that yields streaming tokens for SSE.
 
     Yields dicts: {type: "recommendations", ...}, {type: "token", content: "..."}, {type: "done"}
@@ -986,19 +1143,6 @@ async def generate_ai_response_stream(
     lang = _detect_language(combined_user)
     lang_directive = _get_language_directive(lang)
 
-    # Conversation memory
-    optimized_messages, memory_context = conversation_memory.build_context_injection(
-        messages, user_email, session_id,
-    )
-
-    # Requirement tracking
-    requirement_context = ""
-    if user_role == "client" and user_email:
-        reqs = requirement_tracker.update_from_messages(user_email, messages)
-        follow_up = requirement_tracker.get_follow_up_prompt(reqs)
-        if follow_up:
-            requirement_context = follow_up
-
     # RAG retrieval
     top_matches: list[dict] = []
     intent: dict = {}
@@ -1021,23 +1165,13 @@ async def generate_ai_response_stream(
     # Send recommendations first
     yield {"type": "recommendations", "recommendations": recs_to_return}
 
-    # Build system prompt
-    # CRITICAL: pass recs_to_return (not top_matches) so LLM only sees company
-    # data when requirements gate is passed — prevents premature recommendations.
+    # Build system prompt with context
     if user_role == "admin":
         context = _build_admin_context()
     else:
-        context = _build_rag_context(recs_to_return, user_role)
+        context = _build_rag_context(top_matches, user_role)
 
-    system_prompt = (
-        base_system
-        + _ANTI_HALLUCINATION_GUARD
-        + lang_directive
-        + memory_context
-        + requirement_context
-        + context
-        + extra_context
-    )
+    system_prompt = base_system + lang_directive + context + extra_context
 
     # Try streaming from OpenRouter
     if not _API_KEYS or not _MODELS:
@@ -1045,7 +1179,7 @@ async def generate_ai_response_stream(
         yield {"type": "done"}
         return
 
-    payload_messages = [{"role": "system", "content": system_prompt}] + optimized_messages
+    payload_messages = [{"role": "system", "content": system_prompt}] + messages
     streamed = False
 
     for model in _MODELS:
@@ -1067,7 +1201,7 @@ async def generate_ai_response_stream(
                             "model": model,
                             "messages": payload_messages,
                             "max_tokens": 1500,
-                            "temperature": 0.6,
+                            "temperature": 0.7,
                             "stream": True,
                         },
                     ) as resp:
@@ -1077,7 +1211,7 @@ async def generate_ai_response_stream(
                             if resp.status_code in _RETRYABLE_STATUSES:
                                 continue
                             if resp.status_code == 404:
-                                break
+                                break  # skip model
                             continue
 
                         async for line in resp.aiter_lines():
@@ -1104,8 +1238,9 @@ async def generate_ai_response_stream(
                 logger.warning("Stream error: model=%s — %s", model, exc)
 
     if not streamed:
+        # Fallback to non-streaming
         try:
-            response_text = _call_openrouter(system_prompt, optimized_messages)
+            response_text = _call_openrouter(system_prompt, messages)
             yield {"type": "token", "content": response_text}
         except RuntimeError:
             if top_matches and recs_to_return:

@@ -230,6 +230,7 @@ export default function ClientAIChatPage() {
   /* ── Chat history state ── */
   const [chatSessions, setChatSessions] = useState<ChatSessionMeta[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const currentSessionIdRef = useRef<string | null>(null);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
@@ -237,13 +238,20 @@ export default function ClientAIChatPage() {
   const shouldAutoScrollRef = useRef(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  /* ── Helper to set session ID in both state and ref ── */
+  const setSessionId = useCallback((id: string | null) => {
+    currentSessionIdRef.current = id;
+    setCurrentSessionId(id);
+    if (id) {
+      localStorage.setItem("scc_client_chat_session", id);
+    } else {
+      localStorage.removeItem("scc_client_chat_session");
+    }
+  }, []);
+
   /* ── Load greeting ── */
   useEffect(() => {
-    api.ai.chat([], user?.email || "", "client").then((res) => {
-      setMessages([{ id: getNextId(), role: "ai", text: res.response }]);
-    }).catch(() => {
-      setMessages([{ id: getNextId(), role: "ai", text: "Hello! 🏗️ I'm your AI Construction Consultant. Tell me about your project — location, budget, and plot size — and I'll find the best builders for you!" }]);
-    });
+    const savedSessionId = localStorage.getItem("scc_client_chat_session");
 
     // Load existing requirements
     if (user?.email) {
@@ -255,12 +263,48 @@ export default function ClientAIChatPage() {
       }).catch(() => {});
     }
 
-    // Load chat history sessions
+    // Load chat history sessions and potentially restore saved session
     if (user?.email) {
       setLoadingHistory(true);
       api.ai.listChatSessions().then((res) => {
         setChatSessions(res.sessions ?? []);
-      }).catch(() => {}).finally(() => setLoadingHistory(false));
+        // If we have a saved session that still exists, restore it
+        if (savedSessionId && res.sessions?.some((s: ChatSessionMeta) => s.session_id === savedSessionId)) {
+          api.ai.getChatSession(savedSessionId).then((sess) => {
+            const loaded: Message[] = sess.messages
+              .filter((m: { role: string; content: string }) => m.role === "user" || m.role === "assistant")
+              .map((m: { role: string; content: string }, i: number) => ({
+                id: i + 1,
+                role: m.role === "assistant" ? "ai" as const : "user" as const,
+                text: m.content,
+              }));
+            nextIdRef.current = loaded.length + 1;
+            setMessages(loaded);
+            setSessionId(savedSessionId);
+            // Re-extract requirements to restore recommendation cards
+            if (loaded.length > 0) {
+              const history = loaded.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text }));
+              extractRequirements(history);
+            }
+          }).catch(() => {
+            _loadFreshGreeting();
+          });
+        } else {
+          _loadFreshGreeting();
+        }
+      }).catch(() => {
+        _loadFreshGreeting();
+      }).finally(() => setLoadingHistory(false));
+    } else {
+      _loadFreshGreeting();
+    }
+
+    function _loadFreshGreeting() {
+      api.ai.chat([], user?.email || "", "client").then((r) => {
+        setMessages([{ id: getNextId(), role: "ai", text: r.response }]);
+      }).catch(() => {
+        setMessages([{ id: getNextId(), role: "ai", text: "Hello! 🏗️ I'm your AI Construction Consultant. Tell me about your project — location, budget, and plot size — and I'll find the best builders for you!" }]);
+      });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -309,7 +353,7 @@ export default function ClientAIChatPage() {
   /* ── Auto-save chat to history ── */
   const saveSession = useCallback(async (msgs: Message[], sessId: string | null) => {
     if (!user?.email || msgs.length < 2) return;
-    const history = msgs.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text }));
+    const history = msgs.filter((m) => !m.isStreaming).map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text }));
     try {
       if (sessId) {
         await api.ai.updateChatSession(sessId, { messages: history });
@@ -319,13 +363,13 @@ export default function ClientAIChatPage() {
         ));
       } else {
         const res = await api.ai.createChatSession("", history);
-        setCurrentSessionId(res.session_id);
+        setSessionId(res.session_id);
         setChatSessions((prev) => [{ session_id: res.session_id, title: res.title, created_at: res.created_at, updated_at: res.created_at, message_count: msgs.length }, ...prev]);
       }
     } catch {
       // Non-critical
     }
-  }, [user?.email]);
+  }, [user?.email, setSessionId]);
 
   /* ── Load a past chat session ── */
   const loadSession = useCallback(async (sessionId: string) => {
@@ -340,18 +384,23 @@ export default function ClientAIChatPage() {
         }));
       nextIdRef.current = loaded.length + 1;
       setMessages(loaded);
-      setCurrentSessionId(sessionId);
+      setSessionId(sessionId);
       setSidebarTab("tracker");
+      // Re-extract requirements and recommendations from loaded history
+      if (loaded.length > 0) {
+        const history = loaded.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text }));
+        extractRequirements(history);
+      }
     } catch {
       // ignore
     }
-  }, []);
+  }, [setSessionId, extractRequirements]);
 
   /* ── Start a new chat ── */
   const startNewChat = useCallback(() => {
     nextIdRef.current = 1;
     setMessages([]);
-    setCurrentSessionId(null);
+    setSessionId(null);
     setRecommendations([]);
     setRequirements({});
     setMissingFields([]);
@@ -364,7 +413,7 @@ export default function ClientAIChatPage() {
       setMessages([{ id: 1, role: "ai", text: "Hello! 🏗️ I'm your AI Construction Consultant. Tell me about your project — location, budget, and plot size — and I'll find the best builders for you!" }]);
       nextIdRef.current = 2;
     });
-  }, [user?.email]);
+  }, [user?.email, setSessionId]);
 
   /* ── Delete a chat session ── */
   const deleteSession = useCallback(async (sessionId: string) => {
@@ -398,7 +447,12 @@ export default function ClientAIChatPage() {
 
       if (currentFile) {
         const result = await api.ai.chatWithFile(currentFile, history, user?.email || "", "client");
-        setMessages((prev) => [...prev, { id: getNextId(), role: "ai", text: result.response }]);
+        setMessages((prev) => {
+          const updated = [...prev, { id: getNextId(), role: "ai" as const, text: result.response }];
+          // Save immediately to prevent data loss on navigation
+          saveSession(updated, currentSessionIdRef.current);
+          return updated;
+        });
         // Extract requirements after file chat
         extractRequirements(history.concat([{ role: "assistant", content: result.response }]));
       } else {
@@ -410,6 +464,10 @@ export default function ClientAIChatPage() {
           if (chunk.type === "token" && chunk.content) {
             fullText += chunk.content;
             setMessages((prev) => prev.map((m) => m.id === streamMsgId ? { ...m, text: fullText } : m));
+          } else if (chunk.type === "recommendations" && chunk.recommendations) {
+            if (chunk.recommendations.length > 0) {
+              setRecommendations(chunk.recommendations as EnrichedRecommendation[]);
+            }
           } else if (chunk.type === "error" && chunk.content) {
             fullText = chunk.content;
           } else if (chunk.type === "done") {
@@ -419,14 +477,14 @@ export default function ClientAIChatPage() {
         if (!fullText) {
           setMessages((prev) => prev.map((m) => m.id === streamMsgId ? { ...m, text: "Connection issue. Please try again.", isStreaming: false } : m));
         } else {
-          setMessages((prev) => prev.map((m) => m.id === streamMsgId ? { ...m, isStreaming: false } : m));
+          setMessages((prev) => {
+            const updated = prev.map((m) => m.id === streamMsgId ? { ...m, isStreaming: false } : m);
+            // Save immediately (not debounced) to prevent data loss on navigation
+            saveSession(updated, currentSessionIdRef.current);
+            return updated;
+          });
           // Extract requirements after AI response
           extractRequirements(history.concat([{ role: "assistant", content: fullText }]));
-          // Auto-save session (debounced)
-          clearTimeout(autoSaveTimerRef.current);
-          autoSaveTimerRef.current = setTimeout(() => {
-            setMessages((prev) => { saveSession(prev, currentSessionId); return prev; });
-          }, 1500);
         }
       }
     } catch {
@@ -434,7 +492,7 @@ export default function ClientAIChatPage() {
     } finally {
       setIsTyping(false);
     }
-  }, [getNextId, input, isTyping, messages, user?.email, attachedFile, extractRequirements, saveSession, currentSessionId]);
+  }, [getNextId, input, isTyping, messages, user?.email, attachedFile, extractRequirements, saveSession]);
 
   /* ── Voice handling ── */
   const handleVoiceAccept = useCallback(() => {

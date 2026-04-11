@@ -29,6 +29,9 @@ from backend.utils.rag_engine import (
 from backend.utils.data_handler import add_activity_log, DB_DIR, read_json, write_json
 from backend.utils.auth_deps import get_current_user
 from backend.routers.filereader import file_processor
+from backend.utils.conversation_memory import requirement_tracker
+from backend.utils.response_cache import response_cache
+from backend.utils.semantic_embeddings import semantic_index
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +122,13 @@ async def ai_chat(req: ChatRequest):
     # Inject session file context if available
     session_ctx = _get_session_context(req.user_email)
 
-    result = generate_ai_response(messages, user_role=req.user_role, extra_context=session_ctx)
+    result = generate_ai_response(
+        messages,
+        user_role=req.user_role,
+        extra_context=session_ctx,
+        user_email=req.user_email,
+        session_id=req.session_id,
+    )
 
     # Log AI interaction
     if req.user_email:
@@ -143,7 +152,13 @@ async def ai_chat_stream(req: ChatRequest):
     async def event_stream():
         try:
             recs_sent = False
-            async for chunk in generate_ai_response_stream(messages, user_role=req.user_role, extra_context=session_ctx):
+            async for chunk in generate_ai_response_stream(
+                messages,
+                user_role=req.user_role,
+                extra_context=session_ctx,
+                user_email=req.user_email,
+                session_id=req.session_id,
+            ):
                 if chunk.get("type") == "recommendations" and not recs_sent:
                     yield f"data: {json.dumps(chunk)}\n\n"
                     recs_sent = True
@@ -243,7 +258,12 @@ async def ai_chat_with_file(
 
     # Inject session context for other previously uploaded files
     session_ctx = _get_session_context(user_email)
-    result = generate_ai_response(parsed_messages, user_role=user_role, extra_context=session_ctx)
+    result = generate_ai_response(
+        parsed_messages,
+        user_role=user_role,
+        extra_context=session_ctx,
+        user_email=user_email,
+    )
 
     # Log
     if user_email:
@@ -510,9 +530,9 @@ async def extract_requirements(req: ChatRequest):
 
     _save_requirements(req.user_email, current)
 
-    # Get recommendations if requirements are sufficient
+    # Get recommendations if requirements are sufficiently complete
     recommendations = []
-    if len(missing) <= 1 and filled_count >= 3:
+    if len(missing) == 0 and filled_count >= 4:
         try:
             data = get_recommendations(messages, user_role="client")
             raw_recs = data.get("recommendations", [])
@@ -555,7 +575,7 @@ def _enrich_recommendations(raw_recs: list[dict]) -> list[dict]:
         if rec.get("type") == "company":
             # Find full company data
             try:
-                companies = _INDEX.get_all_companies()
+                companies = semantic_index.get_all_companies()
                 company = next(
                     (c for c in companies if c.get("slug") == slug or c.get("company_id") == slug),
                     None,
@@ -595,7 +615,7 @@ def _enrich_recommendations(raw_recs: list[dict]) -> list[dict]:
 
         elif rec.get("type") == "supplier":
             try:
-                suppliers = _INDEX.get_all_suppliers()
+                suppliers = semantic_index.get_all_suppliers()
                 supplier = next(
                     (s for s in suppliers if s.get("slug") == slug or s.get("supplier_id") == slug),
                     None,

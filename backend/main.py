@@ -72,8 +72,10 @@ def on_startup():
 
     from backend.utils.embeddings import initialize_embeddings
     from backend.utils.rag_engine import rebuild_index
+    from backend.utils.semantic_embeddings import semantic_index
     initialize_embeddings()
     rebuild_index()
+    semantic_index.build()
 
 
 @app.get("/api/health")

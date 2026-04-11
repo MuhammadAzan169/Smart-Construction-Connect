@@ -68,6 +68,7 @@ export default function AIChatPage() {
   // ── Chat history state ──
   const [chatSessions, setChatSessions] = useState<ChatSessionMeta[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const currentSessionIdRef = useRef<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(true);
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
@@ -80,13 +81,20 @@ export default function AIChatPage() {
   const voice = useVoiceRecorder();
   const audioPreviewRef = useRef<HTMLAudioElement>(null);
 
+  // ── Helper to set session ID in both state and ref ──
+  const setSessionId = useCallback((id: string | null) => {
+    currentSessionIdRef.current = id;
+    setCurrentSessionId(id);
+    if (id) {
+      localStorage.setItem("scc_chat_session", id);
+    } else {
+      localStorage.removeItem("scc_chat_session");
+    }
+  }, []);
+
   // Load greeting, session files, and chat history on mount
   useEffect(() => {
-    api.ai.chat([], user?.email || "", userRole).then((res) => {
-      setMessages([{ id: getNextId(), role: "ai", text: res.response }]);
-    }).catch(() => {
-      setMessages([{ id: getNextId(), role: "ai", text: "Hello! 👋 I'm your AI Construction Assistant. Tell me about your project!" }]);
-    });
+    const savedSessionId = localStorage.getItem("scc_chat_session");
 
     // Load session files
     if (user?.email) {
@@ -95,10 +103,32 @@ export default function AIChatPage() {
       }).catch(() => {});
     }
 
-    // Load chat history sessions
+    // Load chat history sessions and potentially restore saved session
     api.ai.listChatSessions().then((res) => {
-      setChatSessions(res.sessions);
-    }).catch(() => {});
+      setChatSessions(res.sessions ?? []);
+      if (savedSessionId && res.sessions?.some((s: ChatSessionMeta) => s.session_id === savedSessionId)) {
+        api.ai.getChatSession(savedSessionId).then((sess) => {
+          const msgs: Message[] = sess.messages.map((m: { role: string; content: string }, idx: number) => ({
+            id: idx + 1,
+            role: m.role === "assistant" ? "ai" as const : "user" as const,
+            text: m.content,
+          }));
+          setMessages(msgs.length > 0 ? msgs : [{ id: 1, role: "ai", text: "Chat loaded. How can I help you further?" }]);
+          nextIdRef.current = (msgs.length || 1) + 1;
+          setSessionId(savedSessionId);
+        }).catch(() => { _loadFreshGreeting(); });
+      } else {
+        _loadFreshGreeting();
+      }
+    }).catch(() => { _loadFreshGreeting(); });
+
+    function _loadFreshGreeting() {
+      api.ai.chat([], user?.email || "", userRole).then((r) => {
+        setMessages([{ id: getNextId(), role: "ai", text: r.response }]);
+      }).catch(() => {
+        setMessages([{ id: getNextId(), role: "ai", text: "Hello! 👋 I'm your AI Construction Assistant. Tell me about your project!" }]);
+      });
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -106,22 +136,22 @@ export default function AIChatPage() {
   const loadSession = useCallback(async (sessionId: string) => {
     try {
       const session = await api.ai.getChatSession(sessionId);
-      setCurrentSessionId(sessionId);
-      const msgs: Message[] = session.messages.map((m, idx) => ({
+      setSessionId(sessionId);
+      const msgs: Message[] = session.messages.map((m: { role: string; content: string }, idx: number) => ({
         id: idx + 1,
-        role: m.role === "assistant" ? "ai" : "user",
+        role: m.role === "assistant" ? "ai" as const : "user" as const,
         text: m.content,
       }));
       setMessages(msgs.length > 0 ? msgs : [{ id: 1, role: "ai", text: "Chat loaded. How can I help you further?" }]);
-      nextIdRef.current = msgs.length + 2;
+      nextIdRef.current = (msgs.length || 1) + 2;
       setRecommendations([]);
     } catch {
       // silent
     }
-  }, []);
+  }, [setSessionId]);
 
   const startNewChat = useCallback(() => {
-    setCurrentSessionId(null);
+    setSessionId(null);
     setRecommendations([]);
     nextIdRef.current = 1;
     api.ai.chat([], user?.email || "", userRole).then((res) => {
@@ -130,7 +160,7 @@ export default function AIChatPage() {
       setMessages([{ id: getNextId(), role: "ai", text: "Hello! 👋 Start a new conversation!" }]);
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.email, userRole]);
+  }, [user?.email, userRole, setSessionId]);
 
   const saveMessagesToHistory = useCallback(async (msgs: Message[]) => {
     if (!user?.email) return;
@@ -144,9 +174,10 @@ export default function AIChatPage() {
     }));
 
     try {
-      if (!currentSessionId) {
+      const sessId = currentSessionIdRef.current;
+      if (!sessId) {
         const res = await api.ai.createChatSession("", chatMessages);
-        setCurrentSessionId(res.session_id);
+        setSessionId(res.session_id);
         setChatSessions(prev => [{
           session_id: res.session_id,
           title: res.title,
@@ -155,9 +186,9 @@ export default function AIChatPage() {
           message_count: chatMessages.length,
         }, ...prev]);
       } else {
-        await api.ai.updateChatSession(currentSessionId, { messages: chatMessages });
+        await api.ai.updateChatSession(sessId, { messages: chatMessages });
         setChatSessions(prev => prev.map(s =>
-          s.session_id === currentSessionId
+          s.session_id === sessId
             ? { ...s, message_count: chatMessages.length, updated_at: new Date().toISOString() }
             : s
         ));
@@ -165,7 +196,7 @@ export default function AIChatPage() {
     } catch {
       // silent — chat still works even if save fails
     }
-  }, [currentSessionId, user?.email]);
+  }, [user?.email, setSessionId]);
 
   const handleDeleteSession = useCallback(async (sessionId: string) => {
     try {

@@ -172,9 +172,20 @@ def health():
 def on_startup():
     from backend.utils.embeddings import initialize_embeddings
     from backend.utils.rag_engine import rebuild_index
+    from backend.utils.semantic_embeddings import semantic_index
+
+    # Legacy TF-IDF index (kept for backward compatibility)
     count = initialize_embeddings()
     rebuild_index()
-    logger.info("Embeddings initialized: %d entities indexed", count)
+    logger.info("Legacy TF-IDF: %d entities indexed", count)
+
+    # New hybrid semantic index (SBERT + FAISS + BM25)
+    semantic_index.build()
+    stats = semantic_index.get_stats()
+    logger.info(
+        "Semantic index ready: %d entities, mode=%s",
+        stats["total_entities"], stats["mode"],
+    )
 
 
 @app.get("/")
