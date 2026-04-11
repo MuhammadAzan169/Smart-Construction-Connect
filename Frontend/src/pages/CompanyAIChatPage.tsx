@@ -18,7 +18,7 @@ import {
   ArrowLeft, Bot, User, Send, Paperclip, FileText, X,
   Briefcase, Building2, Package, MapPin, Clock, CheckCircle2,
   XCircle, FileCheck, ShieldCheck, ArrowRight, Layers, CreditCard,
-  Mic, Square, Play, RotateCcw, Check, History, Trash2, Plus,
+  Mic, Square, Play, RotateCcw, Check, History, Trash2, Plus, ChevronLeft, ChevronRight,
 } from "lucide-react";
 
 import { renderMarkdown } from "@/components/shared/MarkdownRenderer";
@@ -86,7 +86,8 @@ export default function CompanyAIChatPage() {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [sidebarTab, setSidebarTab] = useState<"biz" | "history">("biz");
+  const [sidebarTab, setSidebarTab] = useState<"biz">("biz");
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   /* ── Load greeting ── */
   useEffect(() => {
@@ -288,14 +289,78 @@ export default function CompanyAIChatPage() {
 
   return (
     <motion.div
-      className="flex h-[calc(100vh-5rem)] gap-5"
+      className="flex h-[calc(100vh-5rem)] gap-3"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
     >
+      {/* ════ Left: Chat History Sidebar ════ */}
+      <AnimatePresence initial={false}>
+        {historyOpen && (
+          <motion.div
+            key="history-sidebar"
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: "14rem" }}
+            exit={{ opacity: 0, width: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="hidden lg:flex flex-col overflow-hidden shrink-0"
+            style={{ minWidth: 0 }}
+          >
+            <GlassCard interactive={false} className="flex flex-col h-full p-0 overflow-hidden card-shadow">
+              <div className="flex items-center gap-2 border-b border-border px-3 py-3 shrink-0">
+                <History className="h-4 w-4 text-emerald-500 shrink-0" />
+                <span className="text-sm font-semibold text-foreground flex-1 truncate">History</span>
+                <button type="button" onClick={startNewChat} title="New chat"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
+                  <Plus className="h-4 w-4" />
+                </button>
+                <button type="button" onClick={() => setHistoryOpen(false)} title="Close"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto scroll-styled py-2">
+                {chatSessions.length === 0 ? (
+                  <p className="px-3 py-6 text-center text-xs text-muted-foreground">No saved chats yet</p>
+                ) : (
+                  chatSessions.map((s) => (
+                    <div
+                      key={s.session_id}
+                      className={`group relative flex flex-col px-3 py-2 mx-1 rounded-lg cursor-pointer transition-colors hover:bg-secondary/70 ${
+                        currentSessionId === s.session_id ? "bg-emerald-500/10 hover:bg-emerald-500/15" : ""
+                      }`}
+                      onClick={() => loadSession(s.session_id)}
+                    >
+                      <span className="text-xs font-medium text-foreground truncate leading-snug pr-8">
+                        {s.title || "Untitled chat"}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground mt-0.5">
+                        {new Date(s.updated_at).toLocaleDateString("en-PK", { month: "short", day: "numeric" })}
+                        {" · "}{s.message_count} msg{s.message_count !== 1 ? "s" : ""}
+                      </span>
+                      <button type="button" title="Delete"
+                        onClick={(e) => { e.stopPropagation(); deleteSession(s.session_id); }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 flex h-6 w-6 items-center justify-center rounded hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-all">
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </GlassCard>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {!historyOpen && (
+        <button type="button" onClick={() => setHistoryOpen(true)} title="Open chat history"
+          className="hidden lg:flex h-9 w-9 shrink-0 self-start mt-2 items-center justify-center rounded-xl border border-border bg-card hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground shadow-sm">
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      )}
+
       {/* ═══════════════════════════════════════════════════════
-          Left: Chat Panel
-      ═══════════════════════════════════════════════════════ */}
+          Center: Chat Panel
+      ═══════════════════════════════════════════════════════════ */}
       <GlassCard interactive={false} className="flex flex-1 flex-col p-0 overflow-hidden card-shadow">
 
         {/* Header */}
@@ -362,7 +427,7 @@ export default function CompanyAIChatPage() {
                   {msg.role === "ai" ? <Briefcase className="h-4 w-4 text-white" /> : <User className="h-4 w-4 text-muted-foreground" />}
                 </div>
                 <div
-                  className={`max-w-[76%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
+                  className={`max-w-[76%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm overflow-hidden break-words ${
                     msg.role === "ai"
                       ? "bg-secondary text-foreground rounded-bl-md"
                       : "bg-emerald-500 text-white rounded-br-md"
@@ -374,7 +439,7 @@ export default function CompanyAIChatPage() {
                       {renderMarkdown(msg.text)}
                       {msg.isStreaming && <span className="inline-block w-1.5 h-4 ms-0.5 bg-emerald-500/60 animate-pulse rounded-sm" />}
                     </>
-                  ) : msg.text}
+                  ) : <span className="whitespace-pre-wrap">{msg.text}</span>}
                 </div>
               </motion.div>
             ))}
@@ -428,23 +493,7 @@ export default function CompanyAIChatPage() {
               }}
             />
 
-            {/* Normal state: Attach + Mic buttons */}
-            {!voice.isRecording && !voice.isPreviewing && (
-              <>
-                <motion.button type="button" onClick={() => fileInputRef.current?.click()} disabled={isTyping}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-emerald-500/30 transition-colors disabled:opacity-40"
-                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Attach file">
-                  <Paperclip className="h-4 w-4" />
-                </motion.button>
-                {(voice.isSupported || voice.isMediaSupported) && (
-                  <motion.button type="button" onClick={() => voice.startRecording("auto")} disabled={isTyping}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-emerald-500/30 transition-colors disabled:opacity-40"
-                    whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Start voice input">
-                    <Mic className="h-4 w-4" />
-                  </motion.button>
-                )}
-              </>
-            )}
+
 
             {/* Recording state: compact inline waveform */}
             {voice.isRecording && (
@@ -507,20 +556,37 @@ export default function CompanyAIChatPage() {
               </>
             )}
 
-            {/* Normal state: text input + send */}
+            {/* Normal state: text input + attach + mic + send */}
             {!voice.isRecording && !voice.isPreviewing && (
               <>
                 <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-emerald-500/40 transition-colors">
-                  <input
+                  <textarea
                     id="company-chat-input"
+                    rows={1}
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = Math.min(e.target.scrollHeight, 128) + 'px';
+                    }}
                     placeholder="Ask about material prices, suppliers, cost estimates..."
-                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none focus:outline-none min-w-0 py-2"
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none focus:outline-none min-w-0 py-2 resize-none max-h-32 overflow-y-auto"
                     disabled={isTyping}
-                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); (e.target as HTMLTextAreaElement).style.height = 'auto'; } }}
                   />
                 </div>
+                <motion.button type="button" onClick={() => fileInputRef.current?.click()} disabled={isTyping}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-emerald-500/30 transition-colors disabled:opacity-40"
+                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Attach file">
+                  <Paperclip className="h-4 w-4" />
+                </motion.button>
+                {(voice.isSupported || voice.isMediaSupported) && (
+                  <motion.button type="button" onClick={() => voice.startRecording("auto")} disabled={isTyping}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-emerald-500/30 transition-colors disabled:opacity-40"
+                    whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Start voice input">
+                    <Mic className="h-4 w-4" />
+                  </motion.button>
+                )}
                 <motion.button type="submit" disabled={(!input.trim() && !attachedFile) || isTyping}
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-sm disabled:opacity-40 transition-opacity"
                   whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} aria-label="Send message">
@@ -539,23 +605,6 @@ export default function CompanyAIChatPage() {
           Right: Business Intelligence Panel
       ═══════════════════════════════════════════════════════ */}
       <div className="hidden lg:flex w-80 flex-col gap-3">
-        {/* Sidebar Tab Switcher */}
-        <div className="flex rounded-xl border border-border bg-secondary/30 p-0.5 gap-0.5">
-          {(["biz", "history"] as const).map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setSidebarTab(tab)}
-              className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-all ${
-                sidebarTab === tab ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {tab === "biz" ? <><Layers className="h-3.5 w-3.5" /> Biz Intel</> : <><History className="h-3.5 w-3.5" /> History {chatSessions.length > 0 && <span className="rounded-full bg-emerald-500/15 px-1.5 text-[10px] text-emerald-500">{chatSessions.length}</span>}</> }
-            </button>
-          ))}
-        </div>
-
-        {sidebarTab === "biz" && <>
         {/* Company snapshot */}
         <GlassCard interactive={false} className="flex flex-col p-0 overflow-hidden card-shadow">
           <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
@@ -698,72 +747,6 @@ export default function CompanyAIChatPage() {
             ))}
           </div>
         </GlassCard>
-        </> /* end sidebarTab === "biz" */}
-
-        {/* ── Chat History Panel ── */}
-        {sidebarTab === "history" && (
-          <GlassCard interactive={false} className="flex flex-col flex-1 p-0 overflow-hidden card-shadow">
-            <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10">
-                <History className="h-4 w-4 text-emerald-500" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-bold text-foreground leading-tight">Chat History</h3>
-                <p className="text-[11px] text-muted-foreground leading-tight">{chatSessions.length} saved session{chatSessions.length !== 1 ? "s" : ""}</p>
-              </div>
-              <button
-                type="button"
-                onClick={startNewChat}
-                className="flex items-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-2.5 py-1.5 text-[11px] font-medium text-emerald-500 hover:bg-emerald-500/10 transition-colors"
-              >
-                <Plus className="h-3 w-3" /> New
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
-              {loadingHistory ? (
-                <div className="space-y-1.5">
-                  {[1, 2, 3].map((i) => <div key={i} className="h-14 rounded-xl bg-muted/30 animate-pulse" />)}
-                </div>
-              ) : chatSessions.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-border py-8 text-center">
-                  <History className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground">No saved chats yet</p>
-                  <p className="text-[10px] text-muted-foreground/60 mt-1">Chats are saved automatically</p>
-                </div>
-              ) : (
-                chatSessions.map((session) => {
-                  const isActive = session.session_id === currentSessionId;
-                  const dateStr = new Date(session.updated_at).toLocaleDateString([], { month: "short", day: "numeric" });
-                  return (
-                    <motion.div
-                      key={session.session_id}
-                      initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-                      className={`group flex items-start gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-all ${
-                        isActive ? "border-emerald-500/40 bg-emerald-500/8" : "border-border hover:border-emerald-500/20 hover:bg-emerald-500/5"
-                      }`}
-                      onClick={() => loadSession(session.session_id)}
-                    >
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 mt-0.5">
-                        <Bot className="h-3.5 w-3.5 text-emerald-500" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-foreground truncate leading-tight">{session.title}</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">{dateStr} · {session.message_count} msg{session.message_count !== 1 ? "s" : ""}</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); deleteSession(session.session_id); }}
-                        className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive text-muted-foreground"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                    </motion.div>
-                  );
-                })
-              )}
-            </div>
-          </GlassCard>
-        )}
       </div>
     </motion.div>
   );

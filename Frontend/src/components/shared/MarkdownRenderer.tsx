@@ -48,7 +48,7 @@ export function renderMarkdown(text: string): React.ReactNode {
     elements.push(
       <Tag key={`list-${elements.length}`} className={`my-1.5 ms-4 space-y-0.5 ${ordered ? "list-decimal" : "list-disc"}`}>
         {listItems.map((li, i) => (
-          <li key={i} className="text-sm leading-relaxed">{inlineFormat(li.text)}</li>
+          <li key={i} className="text-sm leading-relaxed break-words">{inlineFormat(li.text)}</li>
         ))}
       </Tag>
     );
@@ -145,11 +145,11 @@ export function renderMarkdown(text: string): React.ReactNode {
 
     // Headings
     const h3 = line.match(/^###\s+(.*)/);
-    if (h3) { elements.push(<h4 key={i} className="mt-3 mb-1 text-sm font-bold text-foreground border-s-2 border-primary ps-2">{inlineFormat(h3[1])}</h4>); continue; }
+    if (h3) { elements.push(<h4 key={i} className="mt-3 mb-1 text-sm font-bold text-foreground border-s-2 border-primary ps-2 break-words">{inlineFormat(h3[1])}</h4>); continue; }
     const h2 = line.match(/^##\s+(.*)/);
-    if (h2) { elements.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground">{inlineFormat(h2[1])}</h3>); continue; }
+    if (h2) { elements.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground break-words">{inlineFormat(h2[1])}</h3>); continue; }
     const h1 = line.match(/^#\s+(.*)/);
-    if (h1) { elements.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground">{inlineFormat(h1[1])}</h3>); continue; }
+    if (h1) { elements.push(<h3 key={i} className="mt-3 mb-1 text-base font-bold text-foreground break-words">{inlineFormat(h1[1])}</h3>); continue; }
 
     // Horizontal rule
     if (/^[-*_]{3,}$/.test(line.trim())) { elements.push(<hr key={i} className="my-2 border-border" />); continue; }
@@ -158,9 +158,9 @@ export function renderMarkdown(text: string): React.ReactNode {
     if (!line.trim()) { elements.push(<div key={i} className="h-2" />); continue; }
 
     // Normal paragraph
-    elements.push(<p key={i} className="text-sm leading-relaxed">{inlineFormat(line)}</p>);
+    elements.push(<p key={i} className="text-sm leading-relaxed break-words">{inlineFormat(line)}</p>);
   }
   flushList();
   flushTable();
-  return <div className="space-y-0.5">{elements}</div>;
+  return <div className="space-y-0.5 overflow-hidden break-words">{elements}</div>;
 }

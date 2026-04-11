@@ -75,7 +75,7 @@ export default function MessagesPage() {
   const [deleteTarget, setDeleteTarget] = useState<{ type: "conversation"; id: string } | { type: "message"; convoId: string; msgId: string } | null>(null);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioPreviewRef = useRef<HTMLAudioElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
@@ -922,18 +922,24 @@ export default function MessagesPage() {
                   </motion.button>
                 )}
                 <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-primary/40 transition-colors">
-                  <input
+                  <textarea
                     ref={inputRef}
+                    rows={1}
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = Math.min(e.target.scrollHeight, 128) + 'px';
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
                         sendMessage();
+                        (e.target as HTMLTextAreaElement).style.height = 'auto';
                       }
                     }}
                     placeholder={attachedFile ? "Add a caption…" : "Type a message..."}
-                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-1.5"
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-1.5 resize-none max-h-32 overflow-y-auto"
                     disabled={sending}
                   />
                 </div>

@@ -629,7 +629,7 @@ export default function AIChatPage() {
 
                 {/* Bubble */}
                 <div
-                  className={`max-w-[76%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
+                  className={`max-w-[76%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm overflow-hidden break-words ${
                     msg.role === "ai"
                       ? "bg-secondary text-foreground rounded-bl-md"
                       : "gradient-bg text-primary-foreground rounded-br-md"
@@ -643,7 +643,7 @@ export default function AIChatPage() {
                         <span className="inline-block w-1.5 h-4 ms-0.5 bg-primary/60 animate-pulse rounded-sm" />
                       )}
                     </>
-                  ) : msg.text}
+                  ) : <span className="whitespace-pre-wrap">{msg.text}</span>}
                 </div>
               </motion.div>
             ))}
@@ -718,35 +718,7 @@ export default function AIChatPage() {
               }}
             />
 
-            {/* Normal state: Attach + Mic buttons */}
-            {!voice.isRecording && !voice.isPreviewing && (
-              <>
-                <motion.button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isTyping}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-40"
-                  aria-label="Attach file"
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.94 }}
-                >
-                  <Paperclip className="h-4 w-4" />
-                </motion.button>
-                {(voice.isSupported || voice.isMediaSupported) && (
-                  <motion.button
-                    type="button"
-                    onClick={() => voice.startRecording("auto")}
-                    disabled={isTyping}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-40"
-                    aria-label="Start voice input"
-                    whileHover={{ scale: 1.06 }}
-                    whileTap={{ scale: 0.94 }}
-                  >
-                    <Mic className="h-4 w-4" />
-                  </motion.button>
-                )}
-              </>
-            )}
+
 
             {/* Recording state: compact inline waveform indicator */}
             {voice.isRecording && (
@@ -843,33 +815,46 @@ export default function AIChatPage() {
               </>
             )}
 
-            {/* Normal state: text input + send */}
+            {/* Normal state: text input + attach + mic + send */}
             {!voice.isRecording && !voice.isPreviewing && (
               <>
                 <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-1 focus-within:border-primary/40 transition-colors">
-                  <input
+                  <textarea
+                    rows={1}
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = Math.min(e.target.scrollHeight, 128) + 'px';
+                    }}
                     placeholder={attachedFile ? "Add a message about the file..." : "Describe your project — location, budget, type..."}
-                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-2"
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0 py-2 resize-none max-h-32 overflow-y-auto"
                     aria-label="Message"
                     disabled={isTyping}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
                         handleSend();
+                        (e.target as HTMLTextAreaElement).style.height = 'auto';
                       }
                     }}
                   />
                 </div>
-                <motion.button
-                  type="submit"
-                  disabled={(!input.trim() && !attachedFile) || isTyping}
+                <motion.button type="button" onClick={() => fileInputRef.current?.click()} disabled={isTyping}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-40"
+                  aria-label="Attach file" whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}>
+                  <Paperclip className="h-4 w-4" />
+                </motion.button>
+                {(voice.isSupported || voice.isMediaSupported) && (
+                  <motion.button type="button" onClick={() => voice.startRecording("auto")} disabled={isTyping}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-40"
+                    aria-label="Start voice input" whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}>
+                    <Mic className="h-4 w-4" />
+                  </motion.button>
+                )}
+                <motion.button type="submit" disabled={(!input.trim() && !attachedFile) || isTyping}
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl gradient-bg text-primary-foreground shadow-sm disabled:opacity-40 transition-opacity"
-                  aria-label="Send message"
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.94 }}
-                >
+                  aria-label="Send message" whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}>
                   <Send className="h-4 w-4" />
                 </motion.button>
               </>

@@ -1,5 +1,35 @@
 [
   {
+    "timestamp": "2026-04-11T19:14:37.170893+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): tell me top 3 of both"
+  },
+  {
+    "timestamp": "2026-04-11T19:13:09.202798+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): How many total companie of contruction is there and or matrrial supplier to"
+  },
+  {
+    "timestamp": "2026-04-11T19:12:26.478777+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): I want to by matrial to"
+  },
+  {
+    "timestamp": "2026-04-11T19:05:40.556419+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): Bugget is 20 million pkr and plot size in 4 kanal and it is vila with 2 flor and basement"
+  },
+  {
+    "timestamp": "2026-04-11T19:04:54.395804+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): Find me top-rated construction companies in Islamabad"
+  },
+  {
     "timestamp": "2026-04-11T18:50:54.256778+00:00",
     "action": "ai_chat",
     "target": "fatima@example.com",
