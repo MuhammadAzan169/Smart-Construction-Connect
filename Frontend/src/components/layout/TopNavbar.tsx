@@ -1,7 +1,7 @@
 import { useAuthStore } from "@/stores/authStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { useLanguageStore } from "@/stores/languageStore";
-import { Bell, Moon, Sun, LogOut, Search, ArrowLeft, Building2, Package, Languages } from "lucide-react";
+import { Bell, Moon, Sun, LogOut, Search, ArrowLeft, Building2, Package, Languages, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { api } from "@/lib/api";
@@ -35,6 +35,7 @@ export function TopNavbar() {
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,6 +44,15 @@ export function TopNavbar() {
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) setShowSearch(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Close notification panel on click outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setShowNotif(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -216,7 +226,7 @@ export function TopNavbar() {
           </motion.div>
 
           {/* Notifications */}
-          <div className="relative">
+          <div className="relative" ref={notifRef}>
             <Button
               onClick={() => setShowNotif(!showNotif)}
               variant="ghost"
@@ -240,24 +250,85 @@ export function TopNavbar() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.95 }}
                   transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="absolute end-0 top-11 z-50 w-80 max-w-[calc(100vw-2rem)]"
+                  className="absolute end-0 top-12 z-50 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border-2 border-border bg-popover text-popover-foreground shadow-2xl ring-1 ring-black/10 dark:ring-white/10"
                 >
-                  <GlassCard interactive={false} className="p-2">
-                    <div className="mb-2 px-3 py-2 text-xs font-semibold text-muted-foreground">{t("nav.notifications")}</div>
-                    {notifications.map((n, i) => (
-                      <motion.div
-                        key={n.id}
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        className={`rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-accent ${!n.read ? "bg-accent/50" : ""}`}
+                  {/* Header */}
+                  <div className="flex items-center justify-between border-b-2 border-border bg-secondary/60 px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Bell className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-semibold text-foreground">{t("nav.notifications")}</span>
+                      {unread > 0 && (
+                        <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold text-white">
+                          {unread}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowNotif(false)}
+                      className="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      aria-label="Close notifications"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+
+                  {/* Body */}
+                  <div className="max-h-72 overflow-y-auto scroll-styled">
+                    {notifications.length === 0 ? (
+                      <div className="flex flex-col items-center gap-3 px-4 py-8 text-center">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary border border-border">
+                          <Bell className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">No notifications</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">You're all caught up!</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-2 space-y-0.5">
+                        {notifications.map((n, i) => (
+                          <motion.div
+                            key={n.id}
+                            initial={{ opacity: 0, x: -8 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.05 }}
+                            className={`flex items-start gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-secondary cursor-pointer ${
+                              !n.read ? "bg-primary/10 border border-primary/20" : "bg-secondary/40 border border-transparent"
+                            }`}
+                          >
+                            <div className="mt-1.5 shrink-0">
+                              {!n.read
+                                ? <span className="block h-2 w-2 rounded-full bg-primary shadow-sm shadow-primary/50" />
+                                : <span className="block h-2 w-2 rounded-full bg-border" />
+                              }
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-foreground leading-snug">{n.title}</p>
+                              <p className="mt-0.5 text-xs text-muted-foreground leading-snug truncate">{n.message}</p>
+                              <p className="mt-1.5 text-[10px] text-muted-foreground/70 font-medium">{n.time}</p>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  {notifications.length > 0 && (
+                    <div className="flex items-center justify-between border-t-2 border-border bg-secondary/60 px-4 py-2.5">
+                      <span className="text-[11px] text-muted-foreground">
+                        {unread > 0 ? `${unread} unread` : "All read"}
+                      </span>
+                      <button
+                        type="button"
+                        className="text-[11px] font-medium text-primary hover:underline transition-colors"
+                        onClick={() => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))}
                       >
-                        <p className="font-medium text-foreground">{n.title}</p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">{n.message}</p>
-                        <p className="mt-1 text-xs text-subtle">{n.time}</p>
-                      </motion.div>
-                    ))}
-                  </GlassCard>
+                        Mark all read
+                      </button>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>

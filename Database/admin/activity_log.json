@@ -1,5 +1,11 @@
 [
   {
+    "timestamp": "2026-04-11T21:10:48.829525+00:00",
+    "action": "chat_deleted",
+    "target": "ahmed@example.com",
+    "details": "ahmed@example.com soft-deleted conversation e037df3d-61c4-4b94-830b-24e24ec586e7"
+  },
+  {
     "timestamp": "2026-04-11T19:14:37.170893+00:00",
     "action": "ai_chat",
     "target": "ahmed@example.com",

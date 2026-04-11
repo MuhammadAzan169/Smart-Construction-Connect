@@ -15,7 +15,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Inter", "Noto Nastaliq Urdu", "Noto Naskh Arabic", "Scheherazade New", "system-ui", "sans-serif"],
       },
       colors: {
         border: "rgb(var(--border) / <alpha-value>)",
