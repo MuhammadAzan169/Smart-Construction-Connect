@@ -472,45 +472,53 @@ export default function AdminMessagesPage() {
               </Button>
             </div>
 
-            {/* AI Summary Panel */}
-            <AnimatePresence>
-              {summary && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden border-b border-border"
-                >
-                  <div className="px-5 py-4 bg-violet-500/5">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-500/10">
-                        <Bot className="h-4 w-4 text-violet-500" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-xs font-bold text-violet-600 dark:text-violet-400">AI Summary</p>
-                          <button onClick={() => setSummary(null)} className="p-0.5 rounded hover:bg-secondary/50">
-                            <X className="h-3.5 w-3.5 text-muted-foreground" />
-                          </button>
+            {/* Messages + floating AI Summary overlay */}
+            <div className="relative flex-1 min-h-0 overflow-hidden">
+
+              {/* AI Summary — floats over the message list, no layout shift */}
+              <AnimatePresence>
+                {summary && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="absolute inset-x-0 top-0 z-20 p-3"
+                  >
+                    <div className="rounded-2xl border border-violet-500/25 bg-card/97 backdrop-blur-md shadow-2xl overflow-hidden">
+                      {/* Panel header */}
+                      <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-violet-500/15 bg-violet-500/5">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-violet-500/15">
+                          <Bot className="h-3.5 w-3.5 text-violet-500" />
                         </div>
-                        <div className="text-sm text-foreground leading-relaxed max-h-64 overflow-y-auto scroll-styled">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-violet-600 dark:text-violet-400 leading-tight">AI Summary</p>
+                          {summary.messageCount > 0 && (
+                            <p className="text-[10px] text-muted-foreground leading-tight">
+                              Based on {summary.windowSize} of {summary.messageCount} messages
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => setSummary(null)}
+                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg hover:bg-secondary/60 transition-colors"
+                        >
+                          <X className="h-3.5 w-3.5 text-muted-foreground" />
+                        </button>
+                      </div>
+                      {/* Scrollable summary content */}
+                      <div className="px-4 py-3 max-h-60 overflow-y-auto scroll-styled">
+                        <div className="text-sm text-foreground [&_p]:leading-[1.75] [&_p]:mb-2 [&_li]:leading-[1.7] [&_li]:mb-1 [&_h3]:mt-3 [&_h4]:mt-2.5 [&_h3]:mb-1.5 [&_h4]:mb-1">
                           {renderMarkdown(summary.text)}
                         </div>
-                        {summary.messageCount > 0 && (
-                          <p className="mt-2 text-[10px] text-muted-foreground">
-                            Based on {summary.windowSize} of {summary.messageCount} total messages
-                          </p>
-                        )}
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-            {/* Messages (read-only for admin) */}
-            <div className="flex-1 overflow-y-auto px-5 py-5 space-y-1">
+              {/* Messages (read-only for admin) */}
+              <div className="h-full overflow-y-auto px-5 py-5 space-y-1">
               {messages.length === 0 ? (
                 <div className="flex h-full items-center justify-center">
                   <p className="text-sm text-muted-foreground">No messages in this conversation.</p>
@@ -608,7 +616,8 @@ export default function AdminMessagesPage() {
                   );
                 })
               )}
-            </div>
+            </div>{/* end messages scroll */}
+            </div>{/* end relative chat body wrapper */}
 
             {/* Admin footer */}
             <div className="border-t border-border px-5 py-3 bg-muted/20">

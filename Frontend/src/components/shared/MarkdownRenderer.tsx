@@ -162,5 +162,5 @@ export function renderMarkdown(text: string): React.ReactNode {
   }
   flushList();
   flushTable();
-  return <div className="space-y-0.5 overflow-hidden break-words">{elements}</div>;
+  return <div className="space-y-1 overflow-hidden break-words">{elements}</div>;
 }
