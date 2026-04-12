@@ -100,6 +100,9 @@ export interface Message {
   read: boolean;
   status?: "sent" | "delivered" | "read";
   deleted_by?: string[];
+  is_system?: boolean;
+  doc_type?: string;
+  verification_status?: string;
   attachment?: {
     url: string;
     filename: string;
@@ -358,6 +361,8 @@ export const api = {
       request<{ conversation: Conversation; messages: Message[] }>(`/messages/admin/conversations/${encodeURIComponent(conversationId)}`),
     adminSummarize: (conversationId: string) =>
       request<{ summary: string; message_count: number; window_size: number }>(`/messages/admin/summary/${encodeURIComponent(conversationId)}`),
+    getAdminContact: () =>
+      request<{ email: string; name: string }>("/messages/admin-contact"),
   },
 
   ai: {

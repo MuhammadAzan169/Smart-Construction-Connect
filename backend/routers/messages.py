@@ -18,7 +18,7 @@ from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisco
 from pydantic import BaseModel
 
 from backend.utils.auth_deps import get_current_user, require_admin
-from backend.utils.data_handler import read_json, write_json, add_activity_log, DB_DIR
+from backend.utils.data_handler import read_json, write_json, add_activity_log, DB_DIR, get_users_by_role
 
 logger = logging.getLogger(__name__)
 
@@ -545,3 +545,85 @@ def admin_summarize_chat(conversation_id: str, admin: dict = Depends(require_adm
         summary = "\n".join(parts)
 
     return {"summary": summary, "message_count": len(all_messages), "window_size": len(window)}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Admin contact helper (used by admin.py for verification notifications)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/admin-contact")
+def get_admin_contact(user: dict = Depends(get_current_user)):
+    """Return admin email/name so any authenticated user can start a conversation with admin."""
+    admin_users = get_users_by_role("admin")
+    if admin_users:
+        a = admin_users[0]
+        return {"email": a.get("email", "admin@smartconnect.pk"), "name": a.get("display_name", "Platform Admin")}
+    return {"email": "admin@smartconnect.pk", "name": "Platform Admin"}
+
+
+async def send_system_notification(
+    recipient_email: str,
+    recipient_name: str,
+    content: str,
+    extra_fields: dict | None = None,
+) -> None:
+    """
+    Send an automated/system message from the admin account to a user.
+    Used by verification approval/rejection flows.
+    Call this from other routers — it is intentionally NOT an HTTP endpoint.
+    """
+    try:
+        admin_users = get_users_by_role("admin")
+        if admin_users:
+            admin = admin_users[0]
+            admin_email = admin.get("email", "admin@smartconnect.pk")
+            admin_name = admin.get("display_name", "Platform Admin")
+        else:
+            admin_email = "admin@smartconnect.pk"
+            admin_name = "Platform Admin"
+
+        convo = _get_or_create_conversation(
+            [admin_email, recipient_email],
+            [admin_name, recipient_name],
+        )
+
+        now = datetime.now(timezone.utc).isoformat()
+        msg: dict = {
+            "id": str(uuid.uuid4()),
+            "sender": admin_email,
+            "sender_name": admin_name,
+            "content": content,
+            "timestamp": now,
+            "read": False,
+            "status": "sent",
+            "deleted_by": [],
+            "is_system": True,
+        }
+        if extra_fields:
+            msg.update(extra_fields)
+
+        messages = read_json(_messages_path(convo["id"]))
+        messages.append(msg)
+        write_json(_messages_path(convo["id"]), messages)
+
+        convos = _load_conversations()
+        for c in convos:
+            if c["id"] == convo["id"]:
+                c["updated_at"] = now
+                c["last_message"] = {"content": content[:100], "sender": admin_email, "timestamp": now}
+                c["unread"] = c.get("unread", {})
+                c["unread"][recipient_email] = c["unread"].get(recipient_email, 0) + 1
+                deleted_by = c.get("deleted_by", [])
+                if recipient_email in deleted_by:
+                    deleted_by.remove(recipient_email)
+                break
+        _save_conversations(convos)
+
+        # Real-time push
+        await manager.send_to_user(recipient_email, {
+            "type": "new_message",
+            "conversation_id": convo["id"],
+            "message": msg,
+        })
+    except Exception as e:
+        logger.warning("send_system_notification failed: %s", e)

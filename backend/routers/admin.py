@@ -1,6 +1,7 @@
 """Admin routes — all endpoints require admin role."""
 
 from __future__ import annotations
+import asyncio
 import logging
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
@@ -157,7 +158,80 @@ def update_verification_status(body: VerificationUpdate):
         "slug": body.slug, "entity_type": body.entity_type,
         "doc_type": body.doc_type, "status": body.status,
     })
+
+    # ── Notify the entity owner via in-platform message ──
+    _notify_owner_of_verification(body.slug, body.entity_type, body.doc_type, body.status, body.notes)
+
     return {"status": "ok", "verification_status": entity["verification_status"]}
+
+
+def _notify_owner_of_verification(slug: str, entity_type: str, doc_type: str, status: str, notes: str) -> None:
+    """Find the owner of a company/supplier and send them a verification status message."""
+    try:
+        from backend.routers.messages import send_system_notification
+
+        role = "company" if entity_type == "company" else "supplier"
+        slug_field = "company_slug" if entity_type == "company" else "supplier_slug"
+        users = get_users_by_role(role)
+        owner = next((u for u in users if u.get(slug_field) == slug), None)
+        if not owner:
+            logger.warning("No %s user found with %s=%s", entity_type, slug_field, slug)
+            return
+
+        owner_email = owner.get("email", "")
+        owner_name = owner.get("display_name") or owner.get("name") or owner_email
+        doc_label = doc_type.replace("_", " ").title()
+
+        if status == "approved":
+            content = (
+                f"✅ Document Approved\n\n"
+                f"Your document \"{doc_label}\" has been reviewed and approved by the platform admin. "
+                f"Your profile verification status has been updated accordingly.\n\n"
+                f"Thank you for submitting your documents. Your profile will now appear as verified to clients."
+            )
+        elif status == "rejected":
+            content = (
+                f"❌ Document Rejected\n\n"
+                f"Your document \"{doc_label}\" could not be approved at this time."
+            )
+            if notes:
+                content += f"\n\nAdmin notes: {notes}"
+            content += (
+                "\n\nPlease log in to your Settings page, review the requirements, "
+                "and re-upload the corrected document. If you have questions, reply to this message."
+            )
+        else:
+            content = f"📋 Document Update\n\nYour document \"{doc_label}\" status has been updated to: {status}."
+            if notes:
+                content += f"\n\n{notes}"
+
+        asyncio.create_task(
+            send_system_notification(
+                recipient_email=owner_email,
+                recipient_name=owner_name,
+                content=content,
+                extra_fields={"doc_type": doc_type, "verification_status": status},
+            )
+        )
+    except RuntimeError:
+        # No running event loop (e.g., during sync tests) — fire-and-forget via a new loop
+        try:
+            from backend.routers.messages import send_system_notification
+            import asyncio as _aio
+            _loop = _aio.new_event_loop()
+            _loop.run_until_complete(
+                send_system_notification(
+                    recipient_email=owner_email,  # type: ignore[reportPossiblyUnbound]
+                    recipient_name=owner_name,  # type: ignore[reportPossiblyUnbound]
+                    content=content,  # type: ignore[reportPossiblyUnbound]
+                    extra_fields={"doc_type": doc_type, "verification_status": status},
+                )
+            )
+            _loop.close()
+        except Exception as inner:
+            logger.warning("Sync notification fallback failed: %s", inner)
+    except Exception as e:
+        logger.warning("_notify_owner_of_verification failed: %s", e)
 
 
 @router.get("/stats")

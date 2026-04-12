@@ -1,5 +1,17 @@
 [
   {
+    "timestamp": "2026-04-12T22:23:06.169679+00:00",
+    "action": "chat_deleted",
+    "target": "info@steelhub.pk",
+    "details": "info@steelhub.pk soft-deleted conversation 4ca23a41-854e-4734-a1c9-731e3459ea2b"
+  },
+  {
+    "timestamp": "2026-04-12T22:15:55.885619+00:00",
+    "action": "chat_deleted",
+    "target": "info@steelhub.pk",
+    "details": "info@steelhub.pk soft-deleted conversation 4ca23a41-854e-4734-a1c9-731e3459ea2b"
+  },
+  {
     "timestamp": "2026-04-12T21:32:34.352848+00:00",
     "action": "packages_updated",
     "target": "karachi-builders",
