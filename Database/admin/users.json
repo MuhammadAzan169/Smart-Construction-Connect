@@ -13,6 +13,8 @@
     "legacy_id": "ADMIN-001",
     "permissions": {
       "all": true
-    }
+    },
+    "reset_token": "587656",
+    "reset_token_expires": "2026-04-12T01:14:15.557382+00:00"
   }
 ]

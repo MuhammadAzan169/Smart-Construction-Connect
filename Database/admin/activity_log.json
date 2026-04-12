@@ -1,5 +1,11 @@
 [
   {
+    "timestamp": "2026-04-12T00:53:53.148978+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation 6bc80d3e-08eb-4894-91fc-e98f66f93b53"
+  },
+  {
     "timestamp": "2026-04-12T00:51:44.374691+00:00",
     "action": "chat_deleted",
     "target": "admin@smartconnect.pk",
