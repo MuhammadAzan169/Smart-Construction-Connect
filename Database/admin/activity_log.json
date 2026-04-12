@@ -1,5 +1,41 @@
 [
   {
+    "timestamp": "2026-04-12T19:36:15.140039+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): which one is best for me among these 3"
+  },
+  {
+    "timestamp": "2026-04-12T19:35:45.627343+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): my new budget is 3 crore"
+  },
+  {
+    "timestamp": "2026-04-12T19:35:22.409480+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): میں نے ابھی تک اپنے بڈ کا ذکر نہیں کیا"
+  },
+  {
+    "timestamp": "2026-04-12T19:33:35.324895+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): 10 marla with 1 storey and a basment"
+  },
+  {
+    "timestamp": "2026-04-12T19:33:10.650064+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): lahore"
+  },
+  {
+    "timestamp": "2026-04-12T19:32:43.640311+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): I want to build a house in park view society"
+  },
+  {
     "timestamp": "2026-04-12T13:49:10.995632+00:00",
     "action": "verification_updated",
     "target": "sindh-affordable-constructions",

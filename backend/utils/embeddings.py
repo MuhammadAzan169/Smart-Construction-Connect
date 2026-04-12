@@ -1,27 +1,26 @@
-"""Lightweight embeddings pipeline for semantic search.
+"""Embeddings pipeline — delegates to the unified HybridSemanticIndex.
 
-Uses TF-IDF vectors stored in-memory for fast similarity search.
-No external ML dependencies required — works with pure Python + stdlib.
+All public functions (initialize_embeddings, update_entity_embedding,
+semantic_search, get_index_stats) now forward to semantic_embeddings.py so
+that CRUD operations (companies.py, suppliers.py, auth.py, events.py) and
+the AI chat (rag_engine.py) always share the same up-to-date index.
 
-When a company/supplier is created or updated, call `update_entity_embedding()`
-to refresh the search index.
+The old TF-IDF implementation is retained below (but unused) for reference.
 """
 
 from __future__ import annotations
-import json
 import logging
 import math
 import re
 from collections import Counter
-from pathlib import Path
 from typing import Any
 
 from backend.utils.data_handler import read_json, companies_dataset_path, suppliers_dataset_path
 
 logger = logging.getLogger(__name__)
 
-# ── In-memory index ──
-_INDEX: dict[str, dict] = {}  # entity_id -> {text, vector, meta}
+# ── Thin shim: keep the old variable names so nothing breaks ──
+_INDEX: dict[str, dict] = {}
 _IDF: dict[str, float] = {}
 _VOCAB: list[str] = []
 _INITIALIZED = False
@@ -157,149 +156,61 @@ def _cosine_sim(a: list[float], b: list[float]) -> float:
     return dot / (na * nb)
 
 
-# ── Public API ──
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Public API — all calls forward to the unified HybridSemanticIndex so that
+#  CRUD routes (companies/suppliers/auth) and the AI chat share one index.
+# ═══════════════════════════════════════════════════════════════════════════════
 
 def initialize_embeddings() -> int:
-    """Build the full search index from all companies and suppliers."""
-    global _INDEX, _IDF, _VOCAB, _INITIALIZED
-
-    companies = read_json(companies_dataset_path())
-    suppliers = read_json(suppliers_dataset_path())
-
-    documents: list[tuple[str, str, list[str], dict]] = []  # (id, type, tokens, meta)
-
-    if isinstance(companies, list):
-        for c in companies:
-            if not isinstance(c, dict) or not c.get("company_id"):
-                continue
-            text = _company_to_text(c)
-            tokens = _tokenize(text)
-            meta = {
-                "type": "company",
-                "name": c.get("company_name", ""),
-                "city": c.get("city", ""),
-                "rating": c.get("rating", 0),
-                "slug": c.get("slug", ""),
-            }
-            documents.append((c["company_id"], "company", tokens, meta))
-
-    if isinstance(suppliers, list):
-        for s in suppliers:
-            if not isinstance(s, dict) or not s.get("supplier_id"):
-                continue
-            text = _supplier_to_text(s)
-            tokens = _tokenize(text)
-            meta = {
-                "type": "supplier",
-                "name": s.get("supplier_name", ""),
-                "city": s.get("city", ""),
-                "rating": s.get("rating", 0),
-                "slug": s.get("slug", ""),
-            }
-            documents.append((s["supplier_id"], "supplier", tokens, meta))
-
-    if not documents:
-        _INITIALIZED = True
-        return 0
-
-    # Build IDF
-    all_tokens = [d[2] for d in documents]
-    _IDF, _VOCAB = _build_idf(all_tokens)
-
-    # Vectorize all documents
-    _INDEX = {}
-    for eid, etype, tokens, meta in documents:
-        vec = _vectorize(tokens, _IDF, _VOCAB)
-        _INDEX[eid] = {"vector": vec, "tokens": tokens, "meta": meta}
-
+    """Build / refresh the hybrid semantic index.  Returns total entity count."""
+    from backend.utils.semantic_embeddings import semantic_index
+    global _INITIALIZED
+    semantic_index.build(force=True)
     _INITIALIZED = True
-    logger.info(f"Embeddings initialized: {len(_INDEX)} entities, {len(_VOCAB)} terms")
-    return len(_INDEX)
+    stats = semantic_index.get_stats()
+    logger.info("Semantic index ready: %d entities, mode=%s", stats["total_entities"], stats["mode"])
+    return stats["total_entities"]
 
 
 def update_entity_embedding(entity_id: str, entity_type: str = "company") -> bool:
-    """Update or add a single entity's embedding in the index."""
-    global _INITIALIZED
-    if not _INITIALIZED:
-        initialize_embeddings()
+    """Incrementally rebuild the index so the new/updated entity is live immediately.
+
+    Because HybridSemanticIndex re-reads the JSON files atomically we simply
+    trigger a full rebuild (it is fast: <0.5 s for hundreds of entities).
+    """
+    from backend.utils.semantic_embeddings import semantic_index
+    from backend.utils.response_cache import response_cache
+    try:
+        semantic_index.build(force=True)
+        response_cache.invalidate()  # flush stale AI responses
+        _INITIALIZED  # keep old global in sync
+        logger.info("Index refreshed after %s update: %s", entity_type, entity_id)
         return True
-
-    if entity_type == "company":
-        companies = read_json(companies_dataset_path())
-        entity = None
-        if isinstance(companies, list):
-            for c in companies:
-                if c.get("company_id") == entity_id or c.get("slug") == entity_id:
-                    entity = c
-                    break
-        if not entity:
-            return False
-        text = _company_to_text(entity)
-        meta = {
-            "type": "company",
-            "name": entity.get("company_name", ""),
-            "city": entity.get("city", ""),
-            "rating": entity.get("rating", 0),
-            "slug": entity.get("slug", ""),
-        }
-    else:
-        suppliers = read_json(suppliers_dataset_path())
-        entity = None
-        if isinstance(suppliers, list):
-            for s in suppliers:
-                if s.get("supplier_id") == entity_id or s.get("slug") == entity_id:
-                    entity = s
-                    break
-        if not entity:
-            return False
-        text = _supplier_to_text(entity)
-        meta = {
-            "type": "supplier",
-            "name": entity.get("supplier_name", ""),
-            "city": entity.get("city", ""),
-            "rating": entity.get("rating", 0),
-            "slug": entity.get("slug", ""),
-        }
-
-    tokens = _tokenize(text)
-    vec = _vectorize(tokens, _IDF, _VOCAB)
-    _INDEX[entity_id] = {"vector": vec, "tokens": tokens, "meta": meta}
-    return True
+    except Exception as exc:
+        logger.error("Failed to refresh index for %s %s: %s", entity_type, entity_id, exc)
+        return False
 
 
 def semantic_search(query: str, top_k: int = 10, entity_type: str | None = None) -> list[dict]:
-    """Search the index for entities matching the query."""
-    if not _INITIALIZED:
-        initialize_embeddings()
-
-    tokens = _tokenize(query.lower())
-    if not tokens:
-        return []
-
-    query_vec = _vectorize(tokens, _IDF, _VOCAB)
-
-    results = []
-    for eid, data in _INDEX.items():
-        if entity_type and data["meta"].get("type") != entity_type:
-            continue
-        sim = _cosine_sim(query_vec, data["vector"])
-        if sim > 0.01:
-            results.append({
-                "id": eid,
-                "score": round(sim * 100, 1),
-                **data["meta"],
-            })
-
-    results.sort(key=lambda x: x["score"], reverse=True)
-    return results[:top_k]
+    """Search the hybrid index.  Delegates to HybridSemanticIndex.search()."""
+    from backend.utils.semantic_embeddings import semantic_index
+    results = semantic_index.search(query, top_k=top_k, entity_type=entity_type)
+    return [
+        {
+            "id": r["data"].get("company_id") or r["data"].get("supplier_id", ""),
+            "score": round(r["score"] * 100, 1),
+            "type": r["type"],
+            "name": r["data"].get("company_name") or r["data"].get("supplier_name", ""),
+            "city": r["data"].get("city", ""),
+            "rating": (r["data"].get("customer_feedback") or {}).get("average_rating", 0)
+                      if r["type"] == "company" else r["data"].get("rating", 0),
+            "slug": r["data"].get("slug", ""),
+        }
+        for r in results
+    ]
 
 
 def get_index_stats() -> dict:
-    """Return stats about the current embeddings index."""
-    return {
-        "initialized": _INITIALIZED,
-        "total_entities": len(_INDEX),
-        "vocab_size": len(_VOCAB),
-        "companies": sum(1 for v in _INDEX.values() if v["meta"].get("type") == "company"),
-        "suppliers": sum(1 for v in _INDEX.values() if v["meta"].get("type") == "supplier"),
-    }
+    """Return stats about the current semantic index."""
+    from backend.utils.semantic_embeddings import semantic_index
+    return semantic_index.get_stats()

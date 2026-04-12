@@ -3,11 +3,11 @@
   "status": "complete",
   "city": "Lahore",
   "area": "Dha",
-  "plot_size": "5 marla",
+  "plot_size": "10 marla",
   "project_type": "house",
   "budget_min": 1.0,
-  "budget_max": 15000000.0,
-  "num_floors": 2,
+  "budget_max": 30000000.0,
+  "num_floors": 1,
   "num_rooms": null,
   "design_style": null,
   "timeline": null,
@@ -26,5 +26,5 @@
     "project_type",
     "special_requirements"
   ],
-  "updated_at": "2026-04-12T13:31:58.770635+00:00"
+  "updated_at": "2026-04-12T19:36:15.150155+00:00"
 }

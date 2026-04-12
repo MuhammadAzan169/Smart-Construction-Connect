@@ -90,12 +90,20 @@ _ANTI_HALLUCINATION_GUARD = """
 CRITICAL RULES — NEVER VIOLATE:
 1. ONLY use information from the DATA sections below (RECOMMENDED MATCHES, MARKET PRICES, PLATFORM DATA).
 2. NEVER invent, fabricate, or guess company names, prices, phone numbers, addresses, ratings, or any factual data.
-3. If the user asks about something NOT covered by the data below, respond: "I don't have that specific information in my database. Let me help you with what I do know."
+3. If the user asks about something NOT covered by the data below, respond honestly that you don't have that information.
 4. NEVER create fictional companies, suppliers, or contact details.
 5. If unsure about a fact, say so honestly rather than guessing.
 6. When recommending companies/suppliers, ONLY use entities listed in RECOMMENDED MATCHES — never make up alternatives.
-7. For prices, ONLY cite numbers from MARKET PRICES data. If a price is not listed, say "I don't have current pricing for that item."
+7. For prices, ONLY cite numbers from MARKET PRICES data. If a price is not listed, say you don't have current pricing.
 8. Do not extrapolate or estimate data that isn't provided.
+
+TOPIC RESTRICTION — STRICTLY ENFORCED:
+• You are ONLY allowed to discuss: construction, real estate, building materials, architecture, contractor selection, project planning, platform features, market prices in Pakistan, and topics directly related to the user's construction project.
+• If the user asks anything COMPLETELY UNRELATED to construction/real estate (e.g. politics, sports, religion, entertainment, coding, general chat topics, inappropriate or offensive content), respond ONLY with a polite refusal in the SAME language the user wrote in.
+  - English refusal: "I'm your Construction Assistant and can only help with building and construction-related questions. Feel free to ask me anything about finding a contractor, material prices, or planning your project!"
+  - Roman Urdu refusal: "Main aap ka Construction Assistant hoon aur sirf building aur construction se related sawalon mein madad kar sakta hoon. Apne ghar ya project ke baare mein kuch bhi poochhein!"
+  - Urdu refusal: "میں آپ کا تعمیراتی مددگار ہوں اور صرف تعمیر و عمارت سے متعلق سوالوں میں مدد کر سکتا ہوں۔"
+• NEVER engage with or respond to offensive, inappropriate, or abusive language. Just politely redirect.
 """
 
 
@@ -119,13 +127,15 @@ _SYSTEM_PROMPTS: dict[str, str] = {
         "Rules:\n"
         "• You are a MARKETING assistant. Be enthusiastic and persuasive.\n"
         "• Do NOT recommend specific companies or suppliers (the visitor is not logged in).\n"
-        "• Do NOT answer unrelated topics (politics, religion, sports, etc.).\n"
+        "• Do NOT answer unrelated topics (politics, religion, sports, entertainment, etc.).\n"
         "• If the visitor wants to find a builder or supplier, tell them to sign up.\n"
-        "• Respond in the SAME language the user writes in. If they write Urdu/Roman Urdu, reply in Urdu. "
-        "If English, reply in English. You can mix if they mix.\n"
+        "• LANGUAGE RULE (CRITICAL): Mirror the user's language exactly.\n"
+        "  - If they write in English → reply in English.\n"
+        "  - If they write in Roman Urdu (Urdu in Latin letters) → reply in Roman Urdu.\n"
+        "  - If they write in Urdu script → reply in Urdu script.\n"
+        "  - Match their tone: casual or formal, friendly or professional.\n"
         "• Keep answers concise (under 200 words) with bullet points and emojis.\n"
-        "• If asked about topics outside construction/real estate, say: "
-        "'I'm specialized in construction and can only help with building-related questions.'"
+        "• If asked about topics outside construction/real estate, politely decline and redirect."
     ),
 
     "client": (
@@ -136,6 +146,12 @@ _SYSTEM_PROMPTS: dict[str, str] = {
         "• Engage naturally. Ask ONE question at a time. Don't overwhelm with bullet lists of questions.\n"
         "• Show genuine interest in the user's project. React to what they say before asking the next question.\n"
         "• Use a mix of encouragement and expertise.\n\n"
+        "LANGUAGE RULE (CRITICAL — HIGHEST PRIORITY):\n"
+        "• Mirror the EXACT language and script of the user's most recent message.\n"
+        "• English message → Reply in English. Example: 'Hello, how are you?' → 'Hi! I'm doing great, how can I help with your construction project?'\n"
+        "• Roman Urdu message → Reply in Roman Urdu. Example: 'hello kia hal hey' → 'Hi! Main theek hoon, aap sunao! Aap ka ghar ka project share karein.'\n"
+        "• Urdu script message → Reply in Urdu script. Example: 'ہیلو آپ کیسے ہیں' → 'میں ٹھیک ہوں، آپ کے تعمیراتی منصوبے کے بارے میں بتائیں!'\n"
+        "• NEVER mix languages without the user mixing first.\n\n"
         "CONVERSATION WORKFLOW — STRICT ORDER:\n\n"
         "PHASE 1 — UNDERSTAND (keep asking until you know enough):\n"
         "   Have a natural conversation to understand what the user wants. Ask about:\n"
@@ -144,12 +160,7 @@ _SYSTEM_PROMPTS: dict[str, str] = {
         "   • Budget range in PKR\n"
         "   • Construction type (grey structure / full finish / renovation)\n"
         "   • Timeline and any special features (solar, smart home, basement, pool)\n\n"
-        "   IMPORTANT: Ask ONE or TWO questions per message. Build on their answers. Show you're listening.\n"
-        "   Example flow:\n"
-        "   User: 'I want to build a house in Lahore'\n"
-        "   You: 'Great choice! Lahore has some amazing construction companies. "
-        "Which area are you thinking — DHA, Bahria Town, Johar Town, Model Town? "
-        "And what's your plot size in marla or kanal?'\n\n"
+        "   IMPORTANT: Ask ONE or TWO questions per message. Build on their answers. Show you're listening.\n\n"
         "PHASE 2 — RECOMMEND (ONLY when RECOMMENDED MATCHES data exists below):\n"
         "   When you see a section titled 'RECOMMENDED MATCHES FROM DATABASE' below,\n"
         "   present the TOP 3 matches with this format:\n"
@@ -163,7 +174,6 @@ _SYSTEM_PROMPTS: dict[str, str] = {
         "you MUST keep gathering requirements. Do NOT recommend any company.\n"
         "• NEVER invent or guess company names, prices, phone numbers, or addresses.\n"
         "• ONLY recommend companies/suppliers listed in RECOMMENDED MATCHES — never make up alternatives.\n"
-        "• Respond in the SAME language the user writes in (English/Urdu/Roman Urdu).\n"
         "• If a file is uploaded (floor plan, BOQ, contract), analyze it thoroughly.\n"
         "• Remember what the user told you in previous messages — don't re-ask.\n"
         "• If the user asks something outside your data, say so honestly."
@@ -177,11 +187,12 @@ _SYSTEM_PROMPTS: dict[str, str] = {
         "3. Help with pricing strategy, project costing, competitive analysis.\n"
         "4. Suggest material alternatives to optimize cost.\n"
         "5. Help with project planning and timeline estimation.\n\n"
+        "LANGUAGE RULE (CRITICAL): Mirror the EXACT language of the user's message — "
+        "English → English, Roman Urdu → Roman Urdu, Urdu script → Urdu script.\n\n"
         "Rules:\n"
         "• When recommending suppliers, ONLY use those in RECOMMENDED MATCHES.\n"
         "• Back all price suggestions with MARKET PRICES data.\n"
         "• Keep advice data-driven and actionable.\n"
-        "• Respond in the SAME language the user writes in.\n"
         "• If a file is uploaded, analyze it and provide insights.\n"
         "• Never invent supplier names, prices, or contact information.\n"
         "• If you don't have data for something, say so clearly."
@@ -196,10 +207,11 @@ _SYSTEM_PROMPTS: dict[str, str] = {
         "4. Suggest competitive pricing strategies.\n"
         "5. Recommend new product opportunities based on platform demand data.\n"
         "6. Analyze stock levels and suggest reorder points.\n\n"
+        "LANGUAGE RULE (CRITICAL): Mirror the EXACT language of the user's message — "
+        "English → English, Roman Urdu → Roman Urdu, Urdu script → Urdu script.\n\n"
         "Rules:\n"
         "• Always ground price discussions in MARKET PRICES data below.\n"
         "• Be data-driven and analytical.\n"
-        "• Respond in the SAME language the user writes in.\n"
         "• If a file is uploaded (inventory, price sheet), analyze it.\n"
         "• Never fabricate pricing data or market statistics."
     ),
@@ -213,10 +225,11 @@ _SYSTEM_PROMPTS: dict[str, str] = {
         "4. Show market price trends and supply-demand gaps.\n"
         "5. Provide revenue and engagement insights.\n"
         "6. Answer any analytical question about the platform data.\n\n"
+        "LANGUAGE RULE (CRITICAL): Mirror the EXACT language of the admin's message — "
+        "English → English, Roman Urdu → Roman Urdu, Urdu script → Urdu script.\n\n"
         "Rules:\n"
         "• Use ONLY the PLATFORM DATA section below for facts. Do not guess.\n"
         "• Be concise, use tables, bullet points, numbers.\n"
-        "• Respond in the SAME language the admin writes in.\n"
         "• If data is not available, clearly state so."
     ),
 }
@@ -367,14 +380,38 @@ def _has_enough_requirements(intent: dict, user_msg_count: int) -> bool:
     return filled >= 3
 
 
+# Marla → approximate square feet conversion for budget math
+_MARLA_TO_SQFT: dict[str, float] = {
+    "3 marla": 270, "5 marla": 450, "7 marla": 630, "8 marla": 720,
+    "10 marla": 900, "12 marla": 1080, "14 marla": 1260, "1 kanal": 4500,
+    "2 kanal": 9000,
+}
+_DEFAULT_SQFT = 1000  # used when plot size is not specified
+
+
 def _extract_plot_size(text: str) -> str | None:
-    m = re.search(r"(\d+)\s*(marla|kanal)", text.lower())
+    m = re.search(r"(\d+(?:\.\d+)?)\s*(marla|kanal)", text.lower())
     if m:
         return f"{m.group(1)} {m.group(2)}"
     return None
 
 
+def _plot_size_to_sqft(plot_size: str | None) -> float:
+    """Convert extracted plot size string to approximate square feet."""
+    if not plot_size:
+        return _DEFAULT_SQFT
+    key = plot_size.lower().strip()
+    if key in _MARLA_TO_SQFT:
+        return _MARLA_TO_SQFT[key]
+    m = re.match(r"(\d+(?:\.\d+)?)\s*(marla|kanal)", key)
+    if m:
+        val = float(m.group(1))
+        return val * 90.0 if m.group(2) == "marla" else val * 4500.0
+    return _DEFAULT_SQFT
+
+
 def _extract_intent(messages: list[dict]) -> dict[str, Any]:
+    # Use all user messages for budget/plot extraction (cumulative context)
     combined = " ".join(m.get("content", "") for m in messages if m.get("role") == "user").lower()
 
     intent: dict[str, Any] = {
@@ -391,19 +428,24 @@ def _extract_intent(messages: list[dict]) -> dict[str, Any]:
     }
 
     if any(w in combined for w in ["build", "house", "construct", "home", "villa", "bungalow",
-                                     "marla", "kanal", "ghar", "makaan", "banwana", "floor", "storey"]):
+                                     "marla", "kanal", "ghar", "makaan", "banwana", "floor", "storey",
+                                     "tameer", "taameer", "nirman", "manzil"]):
         intent["project_type"] = "construction"
         intent["needs_company"] = True
 
-    mat_kw = ["cement", "steel", "brick", "paint", "tile", "wood", "pipe", "marble",
-              "glass", "electrical", "plumbing", "sanitary", "door", "window", "waterproof",
-              "sand", "aggregate", "crush", "material", "supply", "supplier"]
+    # Material keywords — include Roman Urdu construction materials
+    mat_kw = [
+        "cement", "sement", "steel", "sarya", "brick", "eent", "paint", "tile", "wood",
+        "pipe", "marble", "glass", "electrical", "plumbing", "sanitary", "door", "window",
+        "waterproof", "sand", "reti", "aggregate", "crush", "bajri", "material", "supply",
+        "supplier", "maal", "samaan",
+    ]
     found_mats = [k for k in mat_kw if k in combined]
     if found_mats:
         intent["needs_supplier"] = True
         intent["material_keywords"] = found_mats
 
-    if any(w in combined for w in ["both", "everything", "complete", "dono", "sab"]):
+    if any(w in combined for w in ["both", "everything", "complete", "dono", "sab", "tamam"]):
         intent["needs_company"] = True
         intent["needs_supplier"] = True
 
@@ -413,14 +455,31 @@ def _extract_intent(messages: list[dict]) -> dict[str, Any]:
     intent["budget_min"], intent["budget_max"] = _parse_budget(combined)
     intent["plot_size"] = _extract_plot_size(combined)
 
-    for city in _PAKISTAN_CITIES:
-        if city in combined:
-            intent["city"] = city.title()
+    # ── City detection: scan messages newest-first so the latest city wins ──
+    user_messages = [m for m in messages if m.get("role") == "user"]
+    for msg in reversed(user_messages):
+        text = msg.get("content", "").lower()
+        for city in _PAKISTAN_CITIES:
+            if city in text:
+                intent["city"] = city.title()
+                break
+        if intent["city"]:
             break
+    # Fallback: scan combined if still not found
+    if not intent["city"]:
+        for city in _PAKISTAN_CITIES:
+            if city in combined:
+                intent["city"] = city.title()
+                break
 
-    for area in _AREA_PATTERNS:
-        if area in combined:
-            intent["area"] = area.title()
+    # ── Area detection: newest-first ──
+    for msg in reversed(user_messages):
+        text = msg.get("content", "").lower()
+        for area in _AREA_PATTERNS:
+            if area in text:
+                intent["area"] = area.title()
+                break
+        if intent["area"]:
             break
 
     return intent
@@ -458,8 +517,9 @@ def _boost_company(c: dict, intent: dict, embed_score: float) -> float:
                   if isinstance(r.get("price_per_sqft"), (int, float))]
         if prices:
             avg = sum(prices) / len(prices)
-            est_min = avg * 1000
-            est_max = avg * 2000
+            sqft = _plot_size_to_sqft(intent.get("plot_size"))
+            est_min = avg * sqft * 0.8
+            est_max = avg * sqft * 1.2
             if est_min <= (intent["budget_max"] or float("inf")) and est_max >= intent["budget_min"]:
                 score += 10.0
             else:
@@ -478,8 +538,10 @@ def _boost_company(c: dict, intent: dict, embed_score: float) -> float:
     ai = c.get("ai_scores") or {}
     for k in ["timeline_reliability", "budget_accuracy", "quality_consistency"]:
         v = ai.get(k, 0)
-        if isinstance(v, (int, float)):
-            score += v * 2.0
+        if isinstance(v, (int, float)) and v > 0:
+            # Normalize: scores stored 0-10 → contribute up to 2 pts each
+            normalized = min(v / 10.0, 1.0) if v > 1.0 else v
+            score += normalized * 2.0
 
     if c.get("verification_status") == "verified":
         score += 3.0
@@ -869,7 +931,7 @@ def generate_ai_response(
         }
 
     # ── Check response cache ─────────────────────────────────────────────────
-    cached = response_cache.get(messages, user_role)
+    cached = response_cache.get(messages, user_role, user_email)
     if cached is not None:
         logger.info("Cache hit for AI response")
         return cached
@@ -906,7 +968,13 @@ def generate_ai_response(
     # ── Decide which recommendations to surface ───────────────────────────────
     user_msg_count = sum(1 for m in messages if m.get("role") == "user")
     if user_role == "client":
-        recs_to_return = top_matches if _has_enough_requirements(intent, user_msg_count) else []
+        # Prefer persisted tracker (handles returning users) with inline gate as fallback
+        if user_email:
+            reqs = requirement_tracker.load(user_email)
+            gate_passed = requirement_tracker.is_ready_for_recommendations(reqs, user_msg_count)
+        else:
+            gate_passed = _has_enough_requirements(intent, user_msg_count)
+        recs_to_return = top_matches if gate_passed else []
     elif user_role == "company":
         recs_to_return = top_matches
     else:
@@ -956,7 +1024,7 @@ def generate_ai_response(
     }
 
     # ── Cache the result ─────────────────────────────────────────────────────
-    response_cache.put(messages, user_role, result)
+    response_cache.put(messages, user_role, result, user_email)
 
     return result
 
@@ -1026,7 +1094,12 @@ async def generate_ai_response_stream(
 
     user_msg_count = sum(1 for m in messages if m.get("role") == "user")
     if user_role == "client":
-        recs_to_return = top_matches if _has_enough_requirements(intent, user_msg_count) else []
+        if user_email:
+            reqs = requirement_tracker.load(user_email)
+            gate_passed = requirement_tracker.is_ready_for_recommendations(reqs, user_msg_count)
+        else:
+            gate_passed = _has_enough_requirements(intent, user_msg_count)
+        recs_to_return = top_matches if gate_passed else []
     elif user_role == "company":
         recs_to_return = top_matches
     else:
@@ -1119,7 +1192,11 @@ async def generate_ai_response_stream(
 
     if not streamed:
         try:
-            response_text = _call_openrouter(system_prompt, optimized_messages)
+            import asyncio
+            loop = asyncio.get_event_loop()
+            response_text = await loop.run_in_executor(
+                None, _call_openrouter, system_prompt, optimized_messages
+            )
             yield {"type": "token", "content": response_text}
         except RuntimeError:
             if top_matches and recs_to_return:

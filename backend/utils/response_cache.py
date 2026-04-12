@@ -27,17 +27,17 @@ class ResponseCache:
         self._hits = 0
         self._misses = 0
 
-    def _make_key(self, messages: list[dict], role: str) -> str:
-        """Create a cache key from the last 3 user messages + role."""
+    def _make_key(self, messages: list[dict], role: str, user_email: str = "") -> str:
+        """Create a cache key from the last 3 user messages + role + user identity."""
         user_msgs = [m.get("content", "") for m in messages if m.get("role") == "user"]
-        # Use last 3 messages for key (captures recent context)
-        key_parts = user_msgs[-3:] + [role]
+        # Include user_email so different users never share cached responses
+        key_parts = user_msgs[-3:] + [role, user_email.lower()]
         raw = "|".join(key_parts).lower().strip()
         return hashlib.md5(raw.encode()).hexdigest()
 
-    def get(self, messages: list[dict], role: str) -> Any | None:
+    def get(self, messages: list[dict], role: str, user_email: str = "") -> Any | None:
         """Try to get a cached response."""
-        key = self._make_key(messages, role)
+        key = self._make_key(messages, role, user_email)
         with self._lock:
             if key in self._cache:
                 ts, value = self._cache[key]
@@ -50,9 +50,9 @@ class ResponseCache:
             self._misses += 1
             return None
 
-    def put(self, messages: list[dict], role: str, value: Any):
+    def put(self, messages: list[dict], role: str, value: Any, user_email: str = ""):
         """Cache a response."""
-        key = self._make_key(messages, role)
+        key = self._make_key(messages, role, user_email)
         with self._lock:
             if key in self._cache:
                 del self._cache[key]
