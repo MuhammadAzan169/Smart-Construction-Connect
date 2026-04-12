@@ -51,6 +51,7 @@ ROLE_FOLDER_MAP = {
     "company": "construction_company",
     "construction": "construction_company",
     "client": "client",
+    "admin": "admin",
     "supplier": "material_supplier",
 }
 

@@ -5,16 +5,16 @@
   "area": "Dha",
   "plot_size": "5 marla",
   "project_type": "house",
-  "budget_min": 10.0,
-  "budget_max": 10000000.0,
-  "num_floors": 1,
+  "budget_min": 2.0,
+  "budget_max": 8000000.0,
+  "num_floors": 2,
   "num_rooms": null,
   "design_style": null,
   "timeline": null,
   "special_requirements": [
     "basement"
   ],
-  "construction_type": "full_finish",
+  "construction_type": "grey_structure",
   "collected_fields": [
     "area",
     "budget_max",
@@ -26,5 +26,5 @@
     "project_type",
     "special_requirements"
   ],
-  "updated_at": "2026-04-11T23:32:38.328166+00:00"
+  "updated_at": "2026-04-12T00:13:21.797399+00:00"
 }

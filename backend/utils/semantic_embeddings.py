@@ -18,11 +18,17 @@ import os
 import re
 import threading
 import time
+import warnings
 from collections import Counter
 from pathlib import Path
 from typing import Any
 
 import numpy as np
+
+# Suppress benign HuggingFace / PyTorch warnings that clutter startup logs
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+warnings.filterwarnings("ignore", message=".*position_ids.*UNEXPECTED.*", category=FutureWarning)
+warnings.filterwarnings("ignore", message=".*position_ids.*UNEXPECTED.*")
 
 from backend.utils.data_handler import read_json, companies_dataset_path, suppliers_dataset_path
 

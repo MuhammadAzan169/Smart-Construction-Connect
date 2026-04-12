@@ -240,6 +240,7 @@ class ProfileUpdateRequest(BaseModel):
     display_name: str | None = None
     phone: str | None = None
     preferences: dict | None = None
+    profile_pic: str | None = None
 
 
 class ChangePasswordRequest(BaseModel):
@@ -272,6 +273,8 @@ def update_profile(body: ProfileUpdateRequest, user: dict = Depends(get_current_
                 record["display_name"] = body.display_name.strip()
             if body.phone is not None:
                 record["phone"] = body.phone.strip() or None
+            if body.profile_pic is not None:
+                record["profile_pic"] = body.profile_pic.strip() or None
             if body.preferences is not None:
                 existing = record.get("preferences") or {}
                 existing.update(body.preferences)

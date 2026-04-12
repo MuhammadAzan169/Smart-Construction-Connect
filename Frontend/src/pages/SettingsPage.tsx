@@ -3369,11 +3369,13 @@ function ClientSettingsEditor() {
   const { user } = useAuthStore();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const profilePicRef = useRef<HTMLInputElement>(null);
 
   // Profile
   const [displayName, setDisplayName] = useState(user?.display_name ?? "");
   const [phone, setPhone] = useState(user?.phone ?? "");
   const [city, setCity] = useState("");
+  const [profilePic, setProfilePic] = useState("");
 
   // Project preferences
   const [prefs, setPrefs] = useState<ClientPreferences>(DEFAULT_CLIENT_PREFS);
@@ -3396,6 +3398,7 @@ function ClientSettingsEditor() {
         setDisplayName((data.display_name as string) ?? "");
         setPhone((data.phone as string) ?? "");
         setCity((data.city as string) ?? "");
+        setProfilePic((data.profile_pic as string) ?? "");
         const raw = (data.preferences ?? {}) as Record<string, unknown>;
         setPrefs({
           construction_type: (raw.construction_type as string) ?? "",
@@ -3436,6 +3439,7 @@ function ClientSettingsEditor() {
       await api.auth.updateProfile({
         display_name: displayName.trim() || undefined,
         phone: phone.trim() || undefined,
+        profile_pic: profilePic || undefined,
         preferences: {
           city: city.trim(),
           construction_type: prefs.construction_type,
@@ -3526,6 +3530,51 @@ function ClientSettingsEditor() {
 
         {/* ── Tab 1: Profile ── */}
         <TabsContent value="profile" className="space-y-4">
+          {/* Profile Picture */}
+          <GlassCard interactive={false} className="p-5">
+            <div className="flex items-center gap-5">
+              <div className="relative shrink-0">
+                <div className="h-20 w-20 overflow-hidden rounded-2xl border-2 border-border bg-secondary shadow">
+                  {profilePic ? (
+                    <img src={profilePic} alt="Profile" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                      <Upload className="h-7 w-7" />
+                    </div>
+                  )}
+                </div>
+                <Button
+                  type="button" variant="secondary" size="sm"
+                  className="absolute -bottom-1.5 -right-1.5 h-7 w-7 rounded-full p-0 shadow"
+                  onClick={() => profilePicRef.current?.click()}
+                >
+                  <Upload className="h-3 w-3" />
+                </Button>
+                <input
+                  ref={profilePicRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    try {
+                      const url = await api.upload.image(file, user?.email ?? "client", "profile", "client");
+                      setProfilePic(url);
+                      await api.auth.updateProfile({ profile_pic: url });
+                      toast({ title: "Profile picture updated" });
+                    } catch { toast({ variant: "destructive", title: "Upload failed" }); }
+                    if (profilePicRef.current) profilePicRef.current.value = "";
+                  }}
+                />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Profile Picture</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Upload a photo that will be shown on your profile.</p>
+              </div>
+            </div>
+          </GlassCard>
+
           <GlassCard interactive={false} className="p-5 space-y-4">
             <div>
               <p className="text-sm font-semibold text-foreground">Personal Information</p>
@@ -3841,9 +3890,11 @@ function AdminSettingsEditor() {
   const { user } = useAuthStore();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const profilePicRef = useRef<HTMLInputElement>(null);
 
   const [displayName, setDisplayName] = useState(user?.display_name ?? "");
   const [phone, setPhone] = useState(user?.phone ?? "");
+  const [profilePic, setProfilePic] = useState("");
   const [currentPwd, setCurrentPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
@@ -3852,10 +3903,20 @@ function AdminSettingsEditor() {
   const [saving, setSaving] = useState(false);
   const [savingPwd, setSavingPwd] = useState(false);
 
+  useEffect(() => {
+    api.auth.getProfile()
+      .then((data) => {
+        setDisplayName((data.display_name as string) ?? "");
+        setPhone((data.phone as string) ?? "");
+        setProfilePic((data.profile_pic as string) ?? "");
+      })
+      .catch(() => {});
+  }, []);
+
   const handleSave = async () => {
     setSaving(true);
     try {
-      await api.auth.updateProfile({ display_name: displayName.trim() || undefined, phone: phone.trim() || undefined });
+      await api.auth.updateProfile({ display_name: displayName.trim() || undefined, phone: phone.trim() || undefined, profile_pic: profilePic || undefined });
       toast({ title: "Profile updated", description: "Your admin profile has been saved." });
     } catch (err) {
       toast({ title: "Save failed", description: err instanceof Error ? err.message : "Unknown error", variant: "destructive" });
@@ -3911,6 +3972,51 @@ function AdminSettingsEditor() {
         </TabsList>
 
         <TabsContent value="profile" className="space-y-4">
+          {/* Profile Picture */}
+          <GlassCard interactive={false} className="p-5">
+            <div className="flex items-center gap-5">
+              <div className="relative shrink-0">
+                <div className="h-20 w-20 overflow-hidden rounded-2xl border-2 border-border bg-secondary shadow">
+                  {profilePic ? (
+                    <img src={profilePic} alt="Profile" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                      <Upload className="h-7 w-7" />
+                    </div>
+                  )}
+                </div>
+                <Button
+                  type="button" variant="secondary" size="sm"
+                  className="absolute -bottom-1.5 -right-1.5 h-7 w-7 rounded-full p-0 shadow"
+                  onClick={() => profilePicRef.current?.click()}
+                >
+                  <Upload className="h-3 w-3" />
+                </Button>
+                <input
+                  ref={profilePicRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    try {
+                      const url = await api.upload.image(file, user?.email ?? "admin", "profile", "admin");
+                      setProfilePic(url);
+                      await api.auth.updateProfile({ profile_pic: url });
+                      toast({ title: "Profile picture updated" });
+                    } catch { toast({ variant: "destructive", title: "Upload failed" }); }
+                    if (profilePicRef.current) profilePicRef.current.value = "";
+                  }}
+                />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Profile Picture</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Upload a photo for your admin profile.</p>
+              </div>
+            </div>
+          </GlassCard>
+
           <GlassCard interactive={false} className="p-5 space-y-4">
             <div>
               <p className="text-sm font-semibold text-foreground">Personal Information</p>

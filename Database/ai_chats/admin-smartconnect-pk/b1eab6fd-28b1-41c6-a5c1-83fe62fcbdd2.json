@@ -1,0 +1,14 @@
+[
+  {
+    "role": "assistant",
+    "content": "Hello Admin! 👋\n\nI have access to all platform data. Ask me:\n• **User summary** — how many users, by role, status\n• **Top companies** — best rated, most projects\n• **Pending approvals** — unapproved companies/suppliers\n• **City analytics** — coverage gaps, demand\n• **Market prices** — current material costs\n\nWhat would you like to know?"
+  },
+  {
+    "role": "user",
+    "content": "whise companes and users have chatted with each other"
+  },
+  {
+    "role": "assistant",
+    "content": "I don't have that specific information in my database. Let me know if you’d like any other analytics—such as user totals, top‑rated companies, pending approvals, or current market prices."
+  }
+]

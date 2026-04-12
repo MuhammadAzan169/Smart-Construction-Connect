@@ -617,7 +617,7 @@ export default function CompanyAIChatPage() {
             </div>
           </div>
 
-          <div className="p-4 space-y-4">
+          <div className="p-4 space-y-4 max-h-64 overflow-y-auto scroll-styled">
             {/* Company header row */}
             <div className="flex items-center gap-3 rounded-xl border border-emerald-500/10 bg-emerald-500/5 px-3 py-2.5">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15">

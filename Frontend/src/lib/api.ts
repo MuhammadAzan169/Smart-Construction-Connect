@@ -203,7 +203,7 @@ export const api = {
         body: JSON.stringify({ name, email, password, role, phone }),
       }),
     getProfile: () => request<Record<string, unknown>>("/auth/profile"),
-    updateProfile: (data: { display_name?: string; phone?: string; preferences?: Record<string, unknown> }) =>
+    updateProfile: (data: { display_name?: string; phone?: string; preferences?: Record<string, unknown>; profile_pic?: string }) =>
       request<{ status: string }>("/auth/profile", {
         method: "PUT",
         body: JSON.stringify(data),

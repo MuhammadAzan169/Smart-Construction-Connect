@@ -1,5 +1,12 @@
 [
   {
+    "session_id": "b1eab6fd-28b1-41c6-a5c1-83fe62fcbdd2",
+    "title": "whise companes and users have chatted with each other",
+    "created_at": "2026-04-12T00:16:59.947539+00:00",
+    "updated_at": "2026-04-12T00:16:59.947539+00:00",
+    "message_count": 3
+  },
+  {
     "session_id": "e8b3df0b-27a5-417f-a913-6a4e2eed60f8",
     "title": "List all pending company approvals",
     "created_at": "2026-04-11T21:50:16.053024+00:00",

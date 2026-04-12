@@ -1090,7 +1090,7 @@ export default function ClientAIChatPage() {
                 </div>
               </div>
 
-              <div className="p-4 space-y-4">
+              <div className="p-4 space-y-4 max-h-64 overflow-y-auto scroll-styled">
                 {/* Stats grid */}
                 <div className="grid grid-cols-2 gap-2">
                   {[

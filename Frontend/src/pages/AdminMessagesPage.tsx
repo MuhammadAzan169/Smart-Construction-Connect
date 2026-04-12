@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { renderMarkdown } from "@/components/shared/MarkdownRenderer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { api, type AdminFile, type Conversation, type Message } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
@@ -79,6 +80,7 @@ type ConvoWithCount = Conversation & { message_count: number };
 export default function AdminMessagesPage() {
   const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
+  const { toast } = useToast();
   const [conversations, setConversations] = useState<ConvoWithCount[]>([]);
   const [activeConvo, setActiveConvo] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -92,6 +94,28 @@ export default function AdminMessagesPage() {
   const [filesLoading, setFilesLoading] = useState(false);
   const [fileFilter, setFileFilter] = useState<string | undefined>(undefined);
   const [fileDeleteUrl, setFileDeleteUrl] = useState<string | null>(null);
+  const [deleteConvoId, setDeleteConvoId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteConversation = async (id: string) => {
+    setDeleting(true);
+    try {
+      await api.messages.deleteConversation(id);
+      setConversations((prev) => prev.filter((c) => c.id !== id));
+      if (activeConvo === id) {
+        setActiveConvo(null);
+        setMessages([]);
+        setActiveConvoData(null);
+        setSummary(null);
+      }
+      toast({ title: "Conversation deleted", description: "The conversation has been removed." });
+    } catch {
+      toast({ title: "Delete failed", description: "Could not delete the conversation.", variant: "destructive" });
+    } finally {
+      setDeleting(false);
+      setDeleteConvoId(null);
+    }
+  };
 
   const loadConversations = useCallback(async () => {
     try {
@@ -456,21 +480,61 @@ export default function AdminMessagesPage() {
                   {activeConvoData.participants.join(" · ")}
                 </p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl gap-1.5 text-xs"
-                onClick={() => summarizeChat(activeConvo)}
-                disabled={summaryLoading}
-              >
-                {summaryLoading ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Sparkles className="h-3.5 w-3.5" />
-                )}
-                Summarize with AI
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-xl gap-1.5 text-xs"
+                  onClick={() => summarizeChat(activeConvo)}
+                  disabled={summaryLoading}
+                >
+                  {summaryLoading ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-3.5 w-3.5" />
+                  )}
+                  Summarize with AI
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-xl gap-1.5 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30"
+                  onClick={() => setDeleteConvoId(activeConvo)}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Delete
+                </Button>
+              </div>
             </div>
+
+            {/* Delete confirmation overlay */}
+            <AnimatePresence>
+              {deleteConvoId === activeConvo && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 z-30 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+                >
+                  <div className="rounded-2xl border border-destructive/30 bg-card p-6 shadow-2xl max-w-sm mx-4 space-y-4 text-center">
+                    <Trash2 className="h-8 w-8 text-destructive mx-auto" />
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">Delete this conversation?</p>
+                      <p className="text-xs text-muted-foreground mt-1">This will remove the conversation from the list. This action cannot be undone.</p>
+                    </div>
+                    <div className="flex gap-2 justify-center">
+                      <Button variant="outline" size="sm" onClick={() => setDeleteConvoId(null)} disabled={deleting}>
+                        Cancel
+                      </Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleDeleteConversation(activeConvo!)} disabled={deleting} className="gap-1.5">
+                        {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                        {deleting ? "Deleting…" : "Delete"}
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Messages + floating AI Summary overlay */}
             <div className="relative flex-1 min-h-0 overflow-hidden">

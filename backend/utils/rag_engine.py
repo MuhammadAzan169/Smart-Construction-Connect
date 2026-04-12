@@ -302,6 +302,18 @@ _ROMAN_URDU_MARKERS: frozenset[str] = frozenset([
     "paise", "rupay", "lakh", "crore",
     "kam", "zyada", "bara", "chota", "chhota", "pura", "sara", "sab",
     "dono", "pehle", "baad", "jaldi", "abhi",
+    # Additional markers for better detection
+    "bohot", "bahut", "bohat", "kuch", "koi", "wala", "wali", "wale",
+    "raha", "rahi", "rahe", "gaya", "gayi", "gaye", "laga", "lagi",
+    "dekho", "dekhna", "sunao", "suno", "samajh", "samjh",
+    "mushkil", "asaan", "asan", "behtareen", "behtreen",
+    "kaam", "paisay", "paisa", "dimagh", "waqt", "waqat",
+    "mujhe", "tumhe", "humein", "hamein", "unhein", "unhe",
+    "yahan", "wahan", "idhar", "udhar", "kidhar",
+    "matlab", "yani", "maslan", "warna", "kyunke", "kyunki",
+    "chalo", "chalein", "aao", "jao", "ruko",
+    "cement", "sement", "bajri", "reti", "sarya", "eent",
+    "mistry", "mistri", "thekedar", "karigar",
 ])
 
 
@@ -318,23 +330,27 @@ def _detect_language(text: str) -> str:
 def _get_language_directive(lang: str) -> str:
     if lang == "urdu":
         return (
-            "\n\nLANGUAGE DIRECTIVE: The user is writing in Urdu script (اردو). "
-            "You MUST reply entirely in Urdu script. "
-            "Use proper Urdu grammar. Avoid switching to English except for "
-            "technical terms (company names, prices, materials)."
+            "\n\n⚠️ CRITICAL LANGUAGE DIRECTIVE (MUST FOLLOW): "
+            "The user is writing in Urdu script (اردو). "
+            "You MUST reply ENTIRELY in Urdu script — every single sentence. "
+            "Use proper Urdu grammar. Do NOT switch to English under any circumstances "
+            "except for proper nouns (company names) and technical units (marla, kanal, sq ft). "
+            "If you reply in English, you are violating the user's language preference."
         )
     if lang == "roman_urdu":
         return (
-            "\n\nLANGUAGE DIRECTIVE: The user is writing in Roman Urdu "
-            "(Urdu words spelled in English letters). "
-            "You MUST reply in Roman Urdu — write Urdu words using the Latin alphabet. "
+            "\n\n⚠️ CRITICAL LANGUAGE DIRECTIVE (MUST FOLLOW): "
+            "The user is writing in Roman Urdu "
+            "(Urdu words spelled in English/Latin letters). "
+            "You MUST reply ONLY in Roman Urdu — write Urdu words using the Latin alphabet. "
             "Reply style example: 'Han bilkul! Aap Lahore mein ghar banana chahte hain? "
             "Budget aur plot size bata dein, main aap ke liye best companies "
             "dhundh lunga.' "
-            "Do NOT reply in English. Do NOT use Urdu script. "
-            "Keep it natural and conversational like a friend talking in Roman Urdu."
+            "Do NOT reply in English. Do NOT use Urdu script (اردو). "
+            "Keep it natural and conversational like a Pakistani friend talking in Roman Urdu. "
+            "EVERY sentence must be in Roman Urdu."
         )
-    return "\n\nLANGUAGE DIRECTIVE: The user is writing in English. Reply in English."
+    return "\n\nLANGUAGE DIRECTIVE: The user is writing in English. Reply in clear, professional English."
 
 
 def _has_enough_requirements(intent: dict, user_msg_count: int) -> bool:
@@ -909,11 +925,11 @@ def generate_ai_response(
     system_prompt = (
         base_system
         + _ANTI_HALLUCINATION_GUARD
-        + lang_directive
         + memory_context
         + requirement_context
         + context
         + extra_context
+        + lang_directive
     )
 
     # ── LLM call ─────────────────────────────────────────────────────────────
@@ -1032,11 +1048,11 @@ async def generate_ai_response_stream(
     system_prompt = (
         base_system
         + _ANTI_HALLUCINATION_GUARD
-        + lang_directive
         + memory_context
         + requirement_context
         + context
         + extra_context
+        + lang_directive
     )
 
     # Try streaming from OpenRouter

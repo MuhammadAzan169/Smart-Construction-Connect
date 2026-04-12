@@ -590,8 +590,8 @@ export default function AdminAIChatPage() {
       <div className="hidden lg:flex w-80 flex-col gap-3">
 
         {/* Platform stats */}
-        <GlassCard interactive={false} className="p-0 overflow-hidden card-shadow">
-          <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
+        <GlassCard interactive={false} className="p-0 overflow-hidden card-shadow flex flex-col">
+          <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5 shrink-0">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-500/10">
               <BarChart3 className="h-3.5 w-3.5 text-violet-500" />
             </div>
@@ -608,6 +608,7 @@ export default function AdminAIChatPage() {
             </button>
           </div>
 
+          <div className="max-h-64 overflow-y-auto scroll-styled">
           {loadingOv ? (
             <div className="flex items-center justify-center py-8">
               <Bot className="h-5 w-5 animate-pulse text-muted-foreground/30" />
@@ -684,6 +685,7 @@ export default function AdminAIChatPage() {
               <p className="text-xs text-muted-foreground">Could not load platform data.</p>
             </div>
           )}
+          </div>
         </GlassCard>
 
         {/* Quick Admin Queries */}
