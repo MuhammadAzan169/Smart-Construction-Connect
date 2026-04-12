@@ -1,16 +1,16 @@
 {
   "email": "ahmed@example.com",
-  "status": "complete",
+  "status": "nearly_complete",
   "city": "Lahore",
-  "area": "Dha",
-  "plot_size": "10 marla",
+  "area": "DHA",
+  "plot_size": "5 marla",
   "project_type": "house",
-  "budget_min": 1.0,
-  "budget_max": 30000000.0,
-  "num_floors": 1,
+  "budget_min": null,
+  "budget_max": 8000000,
+  "num_floors": 2,
   "num_rooms": null,
   "design_style": null,
-  "timeline": null,
+  "timeline": "18 months",
   "special_requirements": [
     "basement"
   ],
@@ -18,13 +18,13 @@
   "collected_fields": [
     "area",
     "budget_max",
-    "budget_min",
     "city",
     "construction_type",
     "num_floors",
     "plot_size",
     "project_type",
-    "special_requirements"
+    "special_requirements",
+    "timeline"
   ],
-  "updated_at": "2026-04-12T19:36:15.150155+00:00"
+  "updated_at": "2026-04-12T21:23:05.830825+00:00"
 }

@@ -20,7 +20,7 @@ class ResponseCache:
     """LRU cache with TTL for AI responses."""
 
     def __init__(self, max_size: int = 100, ttl_seconds: int = 600):
-        self._cache: OrderedDict[str, tuple[float, Any]] = OrderedDict()
+        self._cache: OrderedDict[str, tuple[float, Any, frozenset]] = OrderedDict()
         self._lock = threading.Lock()
         self._max_size = max_size
         self._ttl = ttl_seconds
@@ -40,7 +40,7 @@ class ResponseCache:
         key = self._make_key(messages, role, user_email)
         with self._lock:
             if key in self._cache:
-                ts, value = self._cache[key]
+                ts, value, _tags = self._cache[key]
                 if time.time() - ts < self._ttl:
                     self._cache.move_to_end(key)
                     self._hits += 1
@@ -50,20 +50,49 @@ class ResponseCache:
             self._misses += 1
             return None
 
-    def put(self, messages: list[dict], role: str, value: Any, user_email: str = ""):
-        """Cache a response."""
+    def put(
+        self,
+        messages: list[dict],
+        role: str,
+        value: Any,
+        user_email: str = "",
+        tags: set[str] | None = None,
+    ) -> None:
+        """Cache a response, optionally tagging it with entity IDs or city names.
+
+        Tags are used by ``invalidate_by_tag`` for smart partial invalidation.
+        """
         key = self._make_key(messages, role, user_email)
+        tag_frozenset: frozenset[str] = frozenset(tags) if tags else frozenset()
         with self._lock:
             if key in self._cache:
                 del self._cache[key]
-            self._cache[key] = (time.time(), value)
+            self._cache[key] = (time.time(), value, tag_frozenset)
             while len(self._cache) > self._max_size:
                 self._cache.popitem(last=False)
 
-    def invalidate(self):
-        """Clear all cached responses."""
+    def invalidate(self) -> None:
+        """Clear ALL cached responses."""
         with self._lock:
             self._cache.clear()
+
+    def invalidate_by_tag(self, tag: str) -> int:
+        """Remove only cache entries that were tagged with ``tag``.
+
+        Use entity IDs (company_id / supplier_id) or city names as tags.
+        Returns the number of entries removed.
+        """
+        removed = 0
+        with self._lock:
+            keys_to_delete = [
+                k for k, (_, _, tags) in self._cache.items() if tag in tags
+            ]
+            for k in keys_to_delete:
+                del self._cache[k]
+                removed += 1
+        if removed:
+            logger.debug("Cache: removed %d entries tagged '%s'", removed, tag)
+        return removed
 
     def stats(self) -> dict:
         with self._lock:

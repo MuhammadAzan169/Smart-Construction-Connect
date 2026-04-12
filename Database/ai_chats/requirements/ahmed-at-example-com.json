@@ -1,12 +1,12 @@
 {
   "email": "ahmed@example.com",
   "status": "complete",
-  "city": "Lahore",
+  "city": "Karachi",
   "area": null,
   "plot_size": "10 marla",
   "project_type": "house",
-  "budget_min": 1.0,
-  "budget_max": 30000000.0,
+  "budget_min": 21000000.0,
+  "budget_max": 39000000.0,
   "num_floors": 1,
   "num_rooms": null,
   "design_style": null,
@@ -21,5 +21,5 @@
     "plot_size",
     "project_type"
   ],
-  "updated_at": "2026-04-12T19:36:33.753001+00:00"
+  "updated_at": "2026-04-12T21:05:51.835004+00:00"
 }

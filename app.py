@@ -131,6 +131,7 @@ async def lifespan(app: FastAPI):
     from backend.utils.embeddings import initialize_embeddings
     from backend.utils.rag_engine import rebuild_index
     from backend.utils.semantic_embeddings import semantic_index
+    from backend.utils.index_sync import start_background_watcher
 
     # Legacy TF-IDF index (kept for backward compatibility)
     count = initialize_embeddings()
@@ -144,7 +145,11 @@ async def lifespan(app: FastAPI):
         "Semantic index ready: %d entities, mode=%s",
         stats["total_entities"], stats["mode"],
     )
+
+    # Background watcher: auto-refresh index if JSON files change on disk
+    stop_watcher = start_background_watcher()
     yield
+    stop_watcher()
 
 
 app = FastAPI(

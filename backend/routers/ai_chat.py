@@ -325,163 +325,7 @@ async def get_session_files(email: str):
 _CHATS_DIR = DB_DIR / "ai_chats"
 _CHATS_DIR.mkdir(parents=True, exist_ok=True)
 
-_REQUIREMENTS_DIR = DB_DIR / "ai_chats" / "requirements"
-_REQUIREMENTS_DIR.mkdir(parents=True, exist_ok=True)
-
 UPLOADS_ROOT = Path(__file__).resolve().parents[2] / "uploads"
-
-
-def _get_requirements_path(email: str) -> Path:
-    safe = email.replace("@", "-at-").replace(".", "-")[:60]
-    return _REQUIREMENTS_DIR / f"{safe}.json"
-
-
-def _load_requirements(email: str) -> dict:
-    """Load current gathered requirements for a client."""
-    path = _get_requirements_path(email)
-    data = read_json(path)
-    if not isinstance(data, dict) or not data:
-        return {
-            "email": email,
-            "status": "gathering",
-            "city": None,
-            "area": None,
-            "plot_size": None,
-            "project_type": None,
-            "budget_min": None,
-            "budget_max": None,
-            "num_floors": None,
-            "num_rooms": None,
-            "design_style": None,
-            "timeline": None,
-            "special_requirements": [],
-            "construction_type": None,
-            "collected_fields": [],
-            "updated_at": datetime.now(timezone.utc).isoformat(),
-        }
-    return data
-
-
-def _save_requirements(email: str, reqs: dict) -> None:
-    reqs["updated_at"] = datetime.now(timezone.utc).isoformat()
-    write_json(_get_requirements_path(email), reqs)
-
-
-def _extract_requirements_from_messages(messages: list[dict]) -> dict[str, Any]:
-    """Extract structured requirements from conversation using intent + pattern matching."""
-    import re
-
-    combined = " ".join(m.get("content", "") for m in messages if m.get("role") == "user").lower()
-    reqs: dict[str, Any] = {}
-
-    # City
-    from backend.utils.rag_engine import _PAKISTAN_CITIES, _AREA_PATTERNS
-    for city in _PAKISTAN_CITIES:
-        if city in combined:
-            reqs["city"] = city.title()
-            break
-
-    # Area
-    for area in _AREA_PATTERNS:
-        if area in combined:
-            reqs["area"] = area.title()
-            break
-
-    # Plot size
-    m = re.search(r"(\d+)\s*(marla|kanal)", combined)
-    if m:
-        reqs["plot_size"] = f"{m.group(1)} {m.group(2)}"
-
-    # Budget
-    from backend.utils.rag_engine import _parse_budget
-    bmin, bmax = _parse_budget(combined)
-    if bmin is not None:
-        reqs["budget_min"] = bmin
-        reqs["budget_max"] = bmax
-
-    # Floors
-    floor_patterns = [
-        (r"(\d+)\s*(?:floor|storey|manzil)", None),
-        (r"single\s*(?:storey|floor)", "1"),
-        (r"double\s*(?:storey|floor)", "2"),
-        (r"triple\s*(?:storey|floor)", "3"),
-        (r"ground\s*(?:\+|plus)\s*(\d+)", None),
-    ]
-    for pattern, fixed in floor_patterns:
-        fm = re.search(pattern, combined)
-        if fm:
-            if fixed:
-                reqs["num_floors"] = int(fixed)
-            else:
-                val = fm.group(1) if fm.lastindex else "1"
-                reqs["num_floors"] = int(val)
-            break
-
-    # Rooms
-    rm = re.search(r"(\d+)\s*(?:room|bedroom|kamr[ae])", combined)
-    if rm:
-        reqs["num_rooms"] = int(rm.group(1))
-
-    # Design style
-    styles = {
-        "modern": "modern", "contemporary": "modern",
-        "traditional": "traditional", "classic": "traditional",
-        "minimalist": "minimalist", "colonial": "colonial",
-        "spanish": "spanish", "mediterranean": "mediterranean",
-    }
-    for keyword, style in styles.items():
-        if keyword in combined:
-            reqs["design_style"] = style
-            break
-
-    # Timeline
-    tm = re.search(r"(\d+)\s*(month|year|mahine|saal)", combined)
-    if tm:
-        val = int(tm.group(1))
-        unit = tm.group(2)
-        if unit in ("year", "saal"):
-            reqs["timeline"] = f"{val} year{'s' if val > 1 else ''}"
-        else:
-            reqs["timeline"] = f"{val} month{'s' if val > 1 else ''}"
-
-    # Construction type
-    if any(w in combined for w in ["grey structure", "grey", "gray structure"]):
-        reqs["construction_type"] = "grey_structure"
-    elif any(w in combined for w in ["full finish", "complete", "turnkey"]):
-        reqs["construction_type"] = "full_finish"
-    elif any(w in combined for w in ["renovation", "remodel", "repair"]):
-        reqs["construction_type"] = "renovation"
-
-    # Project type
-    project_types = {
-        "house": "house", "home": "house", "ghar": "house", "makaan": "house",
-        "plaza": "plaza", "commercial": "commercial",
-        "villa": "villa", "bungalow": "bungalow",
-        "apartment": "apartment", "flat": "apartment",
-        "farmhouse": "farmhouse",
-    }
-    for keyword, ptype in project_types.items():
-        if keyword in combined:
-            reqs["project_type"] = ptype
-            break
-
-    # Special requirements
-    specials = []
-    special_map = {
-        "basement": "basement", "solar": "solar panels",
-        "smart home": "smart home", "pool": "swimming pool",
-        "swimming": "swimming pool", "lift": "elevator/lift",
-        "elevator": "elevator/lift", "garden": "garden/landscaping",
-        "rooftop": "rooftop", "parking": "parking",
-        "boundary wall": "boundary wall",
-    }
-    for keyword, label in special_map.items():
-        if keyword in combined and label not in specials:
-            specials.append(label)
-    if specials:
-        reqs["special_requirements"] = specials
-
-    return reqs
 
 
 class RequirementsResponse(BaseModel):
@@ -495,48 +339,28 @@ class RequirementsResponse(BaseModel):
 async def extract_requirements(req: ChatRequest):
     """Extract and update client requirements from conversation messages.
 
+    Uses the single RequirementTracker (processes only latest user message).
     Returns current requirement state + whether enough info for recommendations.
     """
     if not req.user_email:
         raise HTTPException(status_code=400, detail="user_email required")
 
     messages = [m.model_dump() for m in req.messages]
-    extracted = _extract_requirements_from_messages(messages)
 
-    # Load and merge with existing requirements
-    current = _load_requirements(req.user_email)
-    collected = set(current.get("collected_fields", []))
+    # Single source of truth: RequirementTracker from conversation_memory
+    current = requirement_tracker.update_from_messages(req.user_email, messages)
 
-    for key, val in extracted.items():
-        if val is not None and val != [] and val != "":
-            current[key] = val
-            collected.add(key)
-
-    current["collected_fields"] = sorted(collected)
-
-    # Determine completeness
-    required_fields = ["city", "budget_min", "plot_size", "project_type"]
-    optional_fields = ["num_floors", "design_style", "timeline", "construction_type", "special_requirements", "area", "num_rooms"]
-    missing = [f for f in required_fields if not current.get(f)]
-    filled_count = len([f for f in required_fields + optional_fields if current.get(f)])
+    missing = requirement_tracker.get_missing_fields(current)
+    filled_count = len([f for f in requirement_tracker.REQUIRED_FIELDS + requirement_tracker.OPTIONAL_FIELDS if current.get(f)])
     is_complete = len(missing) == 0 and filled_count >= 5
-
-    if is_complete:
-        current["status"] = "complete"
-    elif len(missing) <= 2:
-        current["status"] = "nearly_complete"
-    else:
-        current["status"] = "gathering"
-
-    _save_requirements(req.user_email, current)
 
     # Get recommendations if requirements are sufficiently complete
     recommendations = []
-    if len(missing) == 0 and filled_count >= 4:
+    user_msg_count = sum(1 for m in messages if m.get("role") == "user")
+    if requirement_tracker.is_ready_for_recommendations(current, user_msg_count):
         try:
             data = get_recommendations(messages, user_role="client")
             raw_recs = data.get("recommendations", [])
-            # Enrich recommendations with full company data
             recommendations = _enrich_recommendations(raw_recs)
         except Exception as e:
             logger.warning("Recommendation enrichment failed: %s", e)
@@ -552,16 +376,14 @@ async def extract_requirements(req: ChatRequest):
 @router.get("/requirements/{email}")
 async def get_requirements(email: str):
     """Get current requirement state for a client."""
-    reqs = _load_requirements(email)
+    reqs = requirement_tracker.load(email)
     return {"requirements": reqs}
 
 
 @router.delete("/requirements/{email}")
 async def clear_requirements(email: str):
     """Reset client requirements for a new project."""
-    path = _get_requirements_path(email)
-    if path.exists():
-        path.unlink()
+    requirement_tracker.clear(email)
     return {"status": "ok"}
 
 

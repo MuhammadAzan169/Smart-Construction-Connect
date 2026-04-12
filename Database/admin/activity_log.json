@@ -1,5 +1,41 @@
 [
   {
+    "timestamp": "2026-04-12T21:22:58.142875+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): unverified wala bhejain zara"
+  },
+  {
+    "timestamp": "2026-04-12T21:22:43.619087+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): shukria apka"
+  },
+  {
+    "timestamp": "2026-04-12T21:21:54.372374+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): 18 months"
+  },
+  {
+    "timestamp": "2026-04-12T21:21:39.758819+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): 80 lakhs budget with 2 flors one basment in grey structure"
+  },
+  {
+    "timestamp": "2026-04-12T21:20:42.216683+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): I want to build a 5 marla house in Lahore DHA, budget 80 lacs"
+  },
+  {
+    "timestamp": "2026-04-12T21:05:46.593007+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): What's the current construction cost per sqft in Karachi?"
+  },
+  {
     "timestamp": "2026-04-12T19:36:15.140039+00:00",
     "action": "ai_chat",
     "target": "ahmed@example.com",

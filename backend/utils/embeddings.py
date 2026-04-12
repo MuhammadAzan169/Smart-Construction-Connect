@@ -172,22 +172,47 @@ def initialize_embeddings() -> int:
     return stats["total_entities"]
 
 
-def update_entity_embedding(entity_id: str, entity_type: str = "company") -> bool:
-    """Incrementally rebuild the index so the new/updated entity is live immediately.
+def update_entity_embedding(
+    entity_id: str,
+    entity_type: str = "company",
+    record: dict | None = None,
+) -> bool:
+    """Incrementally update the index for a single entity.
 
-    Because HybridSemanticIndex re-reads the JSON files atomically we simply
-    trigger a full rebuild (it is fast: <0.5 s for hundreds of entities).
+    When ``record`` is provided the index is updated in O(1) via
+    ``add_or_update_entity`` — no full rebuild, instant availability.
+    When ``record`` is None (legacy callers) a full rebuild is triggered as
+    a safe fallback so nothing breaks.
     """
     from backend.utils.semantic_embeddings import semantic_index
     from backend.utils.response_cache import response_cache
     try:
-        semantic_index.build(force=True)
-        response_cache.invalidate()  # flush stale AI responses
-        _INITIALIZED  # keep old global in sync
-        logger.info("Index refreshed after %s update: %s", entity_type, entity_id)
+        if record is not None:
+            semantic_index.add_or_update_entity(entity_id, entity_type, record)
+        else:
+            # Legacy path — full rebuild (still fast, kept for safety)
+            semantic_index.build(force=True)
+
+        # Smart cache invalidation: flush entries tagged with this entity
+        response_cache.invalidate_by_tag(entity_id)
+        logger.info("Index updated for %s %s (incremental=%s)", entity_type, entity_id, record is not None)
         return True
     except Exception as exc:
-        logger.error("Failed to refresh index for %s %s: %s", entity_type, entity_id, exc)
+        logger.error("Failed to update index for %s %s: %s", entity_type, entity_id, exc)
+        return False
+
+
+def remove_entity_embedding(entity_id: str) -> bool:
+    """Remove a deleted entity from the live index instantly."""
+    from backend.utils.semantic_embeddings import semantic_index
+    from backend.utils.response_cache import response_cache
+    try:
+        semantic_index.remove_entity(entity_id)
+        response_cache.invalidate_by_tag(entity_id)
+        logger.info("Entity removed from index: %s", entity_id)
+        return True
+    except Exception as exc:
+        logger.error("Failed to remove entity %s: %s", entity_id, exc)
         return False
 
 

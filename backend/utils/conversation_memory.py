@@ -3,7 +3,7 @@
 Stores chat history in JSON files (Database/ai_chats/) with:
 - Per-user session management
 - Context summarization for long conversations
-- Requirement state tracking across sessions
+- LLM-powered requirement extraction across sessions
 - Conversation context injection for LLM calls
 
 Designed to persist across page refreshes and browser restarts.
@@ -13,11 +13,14 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+import httpx
 
 from backend.utils.data_handler import DB_DIR, read_json, write_json
 
@@ -210,7 +213,14 @@ class ConversationMemory:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class RequirementTracker:
-    """Tracks client requirements across conversation turns."""
+    """LLM-powered requirement tracker inspired by multi-agent planning system.
+
+    Instead of naive regex, uses OpenRouter LLM to:
+    1. Decide IF the latest message contains construction requirement info
+    2. Extract structured fields with confidence scores
+    3. Only persist fields above a confidence threshold
+    Regex is kept ONLY as a fast fallback when LLM is unavailable.
+    """
 
     REQUIRED_FIELDS = ["city", "budget_min", "plot_size", "project_type"]
     OPTIONAL_FIELDS = [
@@ -218,6 +228,47 @@ class RequirementTracker:
         "design_style", "timeline", "construction_type",
         "special_requirements",
     ]
+
+    _EXTRACTION_PROMPT = """\
+You are an expert construction project requirement analyst for Pakistan.
+
+Analyze ONLY the LATEST USER MESSAGE below. Determine:
+1. Does this message contain ANY construction project requirement info?  
+2. If yes, extract ONLY the fields explicitly mentioned or clearly implied.
+
+STRICT RULES:
+- ONLY extract what the user EXPLICITLY states. Do NOT infer or guess.
+- If user says "I want a house in Lahore", extract city=Lahore, project_type=house. Nothing else.
+- If user asks a question like "what builders are in Lahore?" do NOT extract city as a requirement.
+- Greetings, questions, small talk → should_extract = false, empty fields.
+- Budget must have explicit monetary values (lakh, crore, million, PKR, or 6+ digit numbers).
+- "grey" alone does NOT mean grey structure — need "grey structure" explicitly.
+- "complete" alone does NOT mean full_finish — need "full finish", "complete construction", or "turnkey".
+- For each extracted field, provide a confidence score (0.0-1.0). Only fields >= 0.7 are accepted.
+
+Respond with ONLY valid JSON, no markdown, no explanation:
+{
+  "should_extract": true/false,
+  "fields": {
+    "city": {"value": "Lahore", "confidence": 0.95},
+    "area": {"value": "DHA Phase 5", "confidence": 0.9},
+    "plot_size": {"value": "10 marla", "confidence": 0.95},
+    "project_type": {"value": "house", "confidence": 0.9},
+    "budget_min": {"value": 5000000, "confidence": 0.8},
+    "budget_max": {"value": 8000000, "confidence": 0.8},
+    "num_floors": {"value": 2, "confidence": 0.85},
+    "num_rooms": {"value": 4, "confidence": 0.8},
+    "design_style": {"value": "modern", "confidence": 0.75},
+    "timeline": {"value": "12 months", "confidence": 0.8},
+    "construction_type": {"value": "grey_structure", "confidence": 0.9},
+    "special_requirements": {"value": ["basement", "parking"], "confidence": 0.85}
+  }
+}
+
+Only include fields that are explicitly mentioned. Omit fields not present in the message.\
+"""
+
+    _CONFIDENCE_THRESHOLD = 0.7
 
     @staticmethod
     def _path(email: str) -> Path:
@@ -253,9 +304,9 @@ class RequirementTracker:
 
     @classmethod
     def update_from_messages(cls, email: str, messages: list[dict]) -> dict:
-        """Extract requirements from messages and merge into stored state."""
+        """Extract requirements from the latest message via LLM and merge."""
         current = cls.load(email)
-        extracted = cls._extract(messages)
+        extracted = cls._extract_with_llm(messages)
         collected = set(current.get("collected_fields", []))
 
         for key, val in extracted.items():
@@ -290,7 +341,6 @@ class RequirementTracker:
             return False
         missing = cls.get_missing_fields(reqs)
         filled = len([f for f in cls.REQUIRED_FIELDS + cls.OPTIONAL_FIELDS if reqs.get(f)])
-        # All required fields must be present, OR at most 1 missing with 4+ filled fields
         return len(missing) == 0 or (len(missing) == 1 and filled >= 4)
 
     @classmethod
@@ -310,40 +360,168 @@ class RequirementTracker:
         questions = [prompts.get(f, f"What is your {f.replace('_', ' ')}?") for f in missing[:2]]
         return "\n\nIMPORTANT — Ask the user these questions naturally:\n" + "\n".join(f"• {q}" for q in questions)
 
-    @staticmethod
-    def _extract(messages: list[dict]) -> dict[str, Any]:
-        """Pattern-match requirements from user messages."""
-        combined = " ".join(
-            m.get("content", "") for m in messages if m.get("role") == "user"
-        ).lower()
+    # ── LLM-powered extraction ───────────────────────────────────────────────
 
+    @classmethod
+    def _extract_with_llm(cls, messages: list[dict]) -> dict[str, Any]:
+        """Use OpenRouter LLM to intelligently extract requirements.
+
+        Falls back to regex if LLM is unavailable.
+        """
+        latest_user_msg = next(
+            (m.get("content", "") for m in reversed(messages) if m.get("role") == "user"),
+            "",
+        )
+        if not latest_user_msg.strip():
+            return {}
+
+        # Build context: last 3 user+assistant exchanges for context awareness
+        recent = messages[-6:] if len(messages) > 6 else messages
+
+        try:
+            result = cls._call_extraction_llm(latest_user_msg, recent)
+            if result is not None:
+                return result
+        except Exception as exc:
+            logger.warning("LLM requirement extraction failed: %s — falling back to regex", exc)
+
+        # Fallback to regex
+        return cls._extract_regex(latest_user_msg)
+
+    @classmethod
+    def _call_extraction_llm(cls, latest_msg: str, recent_messages: list[dict]) -> dict[str, Any] | None:
+        """Call OpenRouter for structured requirement extraction."""
+        from backend.utils.rag_engine import _API_KEYS, _MODELS, _OPENROUTER_BASE
+
+        if not _API_KEYS or not _MODELS:
+            return None
+
+        # Build the user message with context
+        context_lines = []
+        for m in recent_messages[:-1]:  # exclude the latest (we send it separately)
+            role = m.get("role", "user")
+            content = (m.get("content", "") or "")[:200]
+            if content:
+                context_lines.append(f"{role}: {content}")
+
+        user_content = (
+            f"Recent conversation context:\n"
+            + "\n".join(context_lines[-4:])
+            + f"\n\nLATEST USER MESSAGE (extract from this ONLY):\n{latest_msg}"
+        )
+
+        payload_messages = [
+            {"role": "system", "content": cls._EXTRACTION_PROMPT},
+            {"role": "user", "content": user_content},
+        ]
+
+        # Try first available model+key (lightweight call, single attempt)
+        for model in _MODELS[:2]:
+            for key in _API_KEYS[:2]:
+                try:
+                    with httpx.Client(timeout=15.0) as client:
+                        resp = client.post(
+                            f"{_OPENROUTER_BASE}/chat/completions",
+                            headers={
+                                "Authorization": f"Bearer {key}",
+                                "Content-Type": "application/json",
+                                "HTTP-Referer": "https://smartconstructionconnect.com",
+                                "X-Title": "Smart Construction Connect",
+                            },
+                            json={
+                                "model": model,
+                                "messages": payload_messages,
+                                "max_tokens": 500,
+                                "temperature": 0.1,  # Near-deterministic for extraction
+                            },
+                        )
+
+                    if resp.status_code != 200:
+                        continue
+
+                    raw = (
+                        resp.json()
+                        .get("choices", [{}])[0]
+                        .get("message", {})
+                        .get("content", "")
+                        .strip()
+                    )
+                    if not raw:
+                        continue
+
+                    return cls._parse_llm_response(raw)
+
+                except (httpx.TimeoutException, Exception) as exc:
+                    logger.debug("LLM extraction attempt failed: %s", exc)
+                    continue
+
+        return None  # All attempts failed → caller falls back to regex
+
+    @classmethod
+    def _parse_llm_response(cls, raw: str) -> dict[str, Any]:
+        """Parse the LLM JSON response and apply confidence gating."""
+        # Strip markdown fences if present
+        cleaned = raw.strip()
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+            cleaned = re.sub(r"\s*```$", "", cleaned)
+
+        data = json.loads(cleaned)
+
+        if not data.get("should_extract", False):
+            return {}
+
+        fields = data.get("fields", {})
+        result: dict[str, Any] = {}
+
+        for key, spec in fields.items():
+            if not isinstance(spec, dict):
+                continue
+            confidence = spec.get("confidence", 0)
+            value = spec.get("value")
+
+            if confidence < cls._CONFIDENCE_THRESHOLD:
+                logger.debug("Skipping field %s: confidence %.2f < %.2f", key, confidence, cls._CONFIDENCE_THRESHOLD)
+                continue
+
+            if value is None or value == "" or value == []:
+                continue
+
+            # Validate known field names
+            if key in cls.REQUIRED_FIELDS or key in cls.OPTIONAL_FIELDS:
+                result[key] = value
+
+        return result
+
+    # ── Regex fallback (fast, no LLM needed) ─────────────────────────────────
+
+    @staticmethod
+    def _extract_regex(text: str) -> dict[str, Any]:
+        """Fast regex fallback — only used when LLM is unavailable."""
+        combined = text.lower()
         reqs: dict[str, Any] = {}
 
-        # City
         from backend.utils.rag_engine import _PAKISTAN_CITIES, _AREA_PATTERNS, _parse_budget
+
         for city in _PAKISTAN_CITIES:
             if city in combined:
                 reqs["city"] = city.title()
                 break
 
-        # Area
         for area in _AREA_PATTERNS:
             if area in combined:
                 reqs["area"] = area.title()
                 break
 
-        # Plot size
         m = re.search(r"(\d+)\s*(marla|kanal)", combined)
         if m:
             reqs["plot_size"] = f"{m.group(1)} {m.group(2)}"
 
-        # Budget
         bmin, bmax = _parse_budget(combined)
         if bmin is not None:
             reqs["budget_min"] = bmin
             reqs["budget_max"] = bmax
 
-        # Floors
         floor_patterns = [
             (r"(\d+)\s*(?:floor|storey|manzil)", None),
             (r"single\s*(?:storey|floor)", "1"),
@@ -356,12 +534,10 @@ class RequirementTracker:
                 reqs["num_floors"] = int(fixed) if fixed else int(fm.group(1))
                 break
 
-        # Rooms
         rm = re.search(r"(\d+)\s*(?:room|bedroom|kamr[ae])", combined)
         if rm:
             reqs["num_rooms"] = int(rm.group(1))
 
-        # Design style
         styles = {
             "modern": "modern", "contemporary": "modern",
             "traditional": "traditional", "classic": "traditional",
@@ -373,7 +549,6 @@ class RequirementTracker:
                 reqs["design_style"] = style
                 break
 
-        # Timeline
         tm = re.search(r"(\d+)\s*(month|year|mahine|saal)", combined)
         if tm:
             val = int(tm.group(1))
@@ -383,17 +558,15 @@ class RequirementTracker:
             else:
                 reqs["timeline"] = f"{val} month{'s' if val > 1 else ''}"
 
-        # Construction type
-        if any(w in combined for w in ["grey structure", "grey", "gray structure"]):
+        if any(w in combined for w in ["grey structure", "gray structure"]):
             reqs["construction_type"] = "grey_structure"
-        elif any(w in combined for w in ["full finish", "complete", "turnkey"]):
+        elif any(w in combined for w in ["full finish", "complete construction", "turnkey"]):
             reqs["construction_type"] = "full_finish"
         elif any(w in combined for w in ["renovation", "remodel", "repair"]):
             reqs["construction_type"] = "renovation"
 
-        # Project type
         project_types = {
-            "house": "house", "home": "house", "ghar": "house", "makaan": "house",
+            "house": "house", "ghar": "house", "makaan": "house",
             "plaza": "plaza", "commercial": "commercial",
             "villa": "villa", "bungalow": "bungalow",
             "apartment": "apartment", "flat": "apartment",
@@ -404,7 +577,6 @@ class RequirementTracker:
                 reqs["project_type"] = ptype
                 break
 
-        # Special requirements
         specials = []
         special_map = {
             "basement": "basement", "solar": "solar panels",

@@ -46,10 +46,13 @@ async def lifespan(app: FastAPI):
     from backend.utils.embeddings import initialize_embeddings
     from backend.utils.rag_engine import rebuild_index
     from backend.utils.semantic_embeddings import semantic_index
+    from backend.utils.index_sync import start_background_watcher
     initialize_embeddings()
     rebuild_index()
     semantic_index.build()
+    stop_watcher = start_background_watcher()
     yield
+    stop_watcher()
 
 
 app = FastAPI(

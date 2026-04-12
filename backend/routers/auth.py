@@ -162,7 +162,7 @@ def signup(req: SignupRequest):
         new_user["company_slug"] = slug
         # Add empty profile to companies.json
         companies = read_json(companies_dataset_path())
-        companies.append({
+        new_company_record = {
             "company_id": user_id,
             "company_name": req.name,
             "slug": slug,
@@ -189,14 +189,17 @@ def signup(req: SignupRequest):
             "legal_and_contract": {},
             "ideal_customer_profile": {},
             "ai_scores": {"timeline_reliability": 0, "budget_accuracy": 0, "quality_consistency": 0},
-        })
+            "created_at": now_iso,
+            "updated_at": now_iso,
+        }
+        companies.append(new_company_record)
         write_json(companies_dataset_path(), companies)
 
     elif req.role == "supplier":
         new_user["supplier_slug"] = slug
         # Add empty profile to catalog.json
         suppliers = read_json(suppliers_dataset_path())
-        suppliers.append({
+        new_supplier_record = {
             "supplier_id": user_id,
             "supplier_name": req.name,
             "slug": slug,
@@ -210,7 +213,10 @@ def signup(req: SignupRequest):
             "cities_served": [],
             "materials": [],
             "status": "pending",
-        })
+            "created_at": now_iso,
+            "updated_at": now_iso,
+        }
+        suppliers.append(new_supplier_record)
         write_json(suppliers_dataset_path(), suppliers)
 
     add_user(new_user)
@@ -219,10 +225,10 @@ def signup(req: SignupRequest):
     # Emit events + build embeddings for new entities
     event_bus.publish_sync(Events.USER_SIGNUP, {"role": req.role, "name": req.name}, actor=req.email)
     if req.role == "company":
-        update_entity_embedding(user_id, "company")
+        update_entity_embedding(user_id, "company", new_company_record)
         event_bus.publish_sync(Events.COMPANY_REGISTERED, {"slug": slug, "name": req.name}, actor=req.email)
     elif req.role == "supplier":
-        update_entity_embedding(user_id, "supplier")
+        update_entity_embedding(user_id, "supplier", new_supplier_record)
         event_bus.publish_sync(Events.SUPPLIER_REGISTERED, {"slug": slug, "name": req.name}, actor=req.email)
 
     token = create_access_token({"sub": new_user["email"], "role": new_user["role"]})

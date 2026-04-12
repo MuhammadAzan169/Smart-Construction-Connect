@@ -524,6 +524,29 @@ def _extract_intent(messages: list[dict]) -> dict[str, Any]:
 #  Scoring / boosting (applied on top of semantic similarity)
 # ═══════════════════════════════════════════════════════════════════════════════
 
+def _freshness_boost(record: dict) -> float:
+    """Give a small ranking lift to entities updated within the last 30 days.
+
+    - Updated within 7 days  → +4 pts
+    - Updated within 30 days → +2 pts
+    - Older / no timestamp   → 0 pts
+    """
+    updated_at = record.get("updated_at") or record.get("created_at")
+    if not updated_at:
+        return 0.0
+    try:
+        from datetime import datetime, timezone
+        dt = datetime.fromisoformat(updated_at.replace("Z", "+00:00"))
+        age_days = (datetime.now(timezone.utc) - dt).days
+        if age_days <= 7:
+            return 4.0
+        if age_days <= 30:
+            return 2.0
+    except Exception:
+        pass
+    return 0.0
+
+
 def _boost_company(c: dict, intent: dict, embed_score: float) -> float:
     score = embed_score * 60.0
 
@@ -581,6 +604,8 @@ def _boost_company(c: dict, intent: dict, embed_score: float) -> float:
     if c.get("verification_status") == "verified":
         score += 3.0
 
+    score += _freshness_boost(c)
+
     return max(0.0, min(100.0, score))
 
 
@@ -613,6 +638,8 @@ def _boost_supplier(s: dict, intent: dict, embed_score: float) -> float:
 
     if s.get("verification_status") == "verified":
         score += 3.0
+
+    score += _freshness_boost(s)
 
     return max(0.0, min(100.0, score))
 
@@ -989,7 +1016,7 @@ def generate_ai_response(
     # ── Requirement tracking (for clients) ────────────────────────────────────
     requirement_context = ""
     if user_role == "client" and user_email:
-        reqs = requirement_tracker.update_from_messages(user_email, messages)
+        reqs = requirement_tracker.load(user_email)
         follow_up = requirement_tracker.get_follow_up_prompt(reqs)
         if follow_up:
             requirement_context = follow_up
@@ -1063,8 +1090,15 @@ def generate_ai_response(
         "recommendations": recs_to_return,
     }
 
-    # ── Cache the result ─────────────────────────────────────────────────────
-    response_cache.put(messages, user_role, result, user_email)
+    # ── Cache the result, tagged with entity IDs and city so smart invalidation works ──
+    _cache_tags: set[str] = set()
+    for m in top_matches:
+        eid = m.get("company_id") or m.get("supplier_id")
+        if eid:
+            _cache_tags.add(eid)
+    if intent.get("city"):
+        _cache_tags.add(intent["city"].lower())
+    response_cache.put(messages, user_role, result, user_email, tags=_cache_tags)
 
     return result
 
@@ -1121,15 +1155,10 @@ async def generate_ai_response_stream(
     # Requirement tracking
     requirement_context = ""
     if user_role == "client" and user_email:
-        reqs = requirement_tracker.update_from_messages(user_email, messages)
+        reqs = requirement_tracker.load(user_email)
         follow_up = requirement_tracker.get_follow_up_prompt(reqs)
         if follow_up:
             requirement_context = follow_up
-
-    # RAG retrieval
-    top_matches: list[dict] = []
-    intent: dict = {}
-    if user_role in ("client", "company"):
         try:
             data = get_recommendations(messages, user_role)
             top_matches = data.get("recommendations", [])
