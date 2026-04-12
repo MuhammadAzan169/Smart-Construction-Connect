@@ -129,7 +129,7 @@ export default function AdminAIChatPage() {
       } else {
         const newSession = await api.ai.createChatSession(title, msgs.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text })));
         setCurrentSessionId(newSession.session_id);
-        setChatSessions((prev) => [newSession, ...prev]);
+        setChatSessions((prev) => [newSession as ChatSessionMeta, ...prev]);
       }
     } catch { /* silent */ }
   }, [currentSessionId, user?.email]);

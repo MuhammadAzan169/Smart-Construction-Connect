@@ -1800,13 +1800,14 @@ function AdminCompaniesView() {
                   <TableHead>Materials</TableHead>
                   <TableHead>Rating</TableHead>
                   <TableHead>Price Range</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead className="text-end">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {pagedSuppliers.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
+                    <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
                       No suppliers match your search.
                     </TableCell>
                   </TableRow>
@@ -1827,6 +1828,9 @@ function AdminCompaniesView() {
                         <TableCell className="text-foreground">{s.materialCount}</TableCell>
                         <TableCell className="text-foreground">{s.rating > 0 ? s.rating : " - "}</TableCell>
                         <TableCell className="text-muted-foreground">{priceText}</TableCell>
+                        <TableCell>
+                          {s.verified ? <StatusBadge status="verified" /> : <StatusBadge status="pending" />}
+                        </TableCell>
                         <TableCell className="text-end" onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center justify-end gap-2">
                             <Button size="sm" variant="ghost" className="gap-1.5" onClick={() => {
