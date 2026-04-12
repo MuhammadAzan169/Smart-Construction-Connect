@@ -169,9 +169,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["X-User-Email", "X-User-Role"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "Accept"],
 )
 
 # ── API routes ──
@@ -226,8 +225,8 @@ async def spa_fallback(full_path: str, request: Request):
         return JSONResponse({"detail": "Not Found"}, status_code=404)
 
     # Serve existing static files from dist/ (robots.txt, favicon, etc.)
-    candidate = DIST / full_path
-    if candidate.is_file() and ".." not in full_path:
+    candidate = (DIST / full_path).resolve()
+    if candidate.is_file() and candidate.is_relative_to(DIST.resolve()):
         return FileResponse(str(candidate))
 
     # SPA fallback — let React Router handle the path client-side

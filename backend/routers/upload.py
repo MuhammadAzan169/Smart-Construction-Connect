@@ -8,9 +8,11 @@ from pathlib import Path
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
+from backend.config import COMPANY_DATA_DIR, MAX_IMAGE_SIZE, MAX_DOC_SIZE
+
 router = APIRouter(prefix="/api/upload", tags=["upload"])
 
-COMPANY_DATA_ROOT = Path(__file__).resolve().parents[2] / "company_data"
+COMPANY_DATA_ROOT = COMPANY_DATA_DIR
 UPLOADS_ROOT = Path(__file__).resolve().parents[2] / "uploads"
 UPLOADS_ROOT.mkdir(parents=True, exist_ok=True)
 
@@ -26,8 +28,6 @@ ALLOWED_MSG_FILE_TYPES = {
     "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "text/plain", "text/csv",
 }
-MAX_IMAGE_SIZE = 5 * 1024 * 1024   # 5 MB
-MAX_DOC_SIZE = 10 * 1024 * 1024    # 10 MB
 MAX_MSG_FILE_SIZE = 25 * 1024 * 1024  # 25 MB for message attachments
 
 _IMG_EXT_MAP = {

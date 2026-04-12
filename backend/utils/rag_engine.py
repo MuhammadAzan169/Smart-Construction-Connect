@@ -26,7 +26,6 @@ from pathlib import Path
 from typing import Any
 
 import httpx
-from dotenv import load_dotenv
 
 from backend.utils.data_handler import (
     read_json,
@@ -40,7 +39,6 @@ from backend.utils.semantic_embeddings import semantic_index
 from backend.utils.conversation_memory import conversation_memory, requirement_tracker
 from backend.utils.response_cache import response_cache
 
-load_dotenv()
 logger = logging.getLogger(__name__)
 
 # ═══════════════════════════════════════════════════════════════════════════════

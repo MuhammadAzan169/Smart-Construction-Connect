@@ -18,7 +18,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 
 import jwt
-from fastapi import Header, HTTPException, Depends
+from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 
 from backend.config import JWT_SECRET_KEY, JWT_ALGORITHM, JWT_ACCESS_TOKEN_EXPIRE_MINUTES
@@ -55,24 +55,15 @@ def _decode_token(token: str) -> dict:
 
 def get_current_user(
     token: str | None = Depends(_oauth2_scheme),
-    x_user_email: str = Header(default=""),
-    x_user_role: str = Header(default=""),
 ) -> dict:
-    """Resolve the current user — prefers JWT Bearer token, falls back to
-    legacy X-User-Email/X-User-Role headers for backward compatibility.
-    """
+    """Resolve the current user from JWT Bearer token."""
     email: str = ""
     role_claim: str = ""
 
-    # ── Primary: JWT token ────────────────────────────────────────────────
     if token:
         payload = _decode_token(token)
         email = payload.get("sub", "")
         role_claim = payload.get("role", "")
-    # ── Fallback: legacy headers (will be removed in a future release) ────
-    elif x_user_email:
-        email = x_user_email
-        role_claim = x_user_role
     else:
         raise HTTPException(status_code=401, detail="Authentication required")
 

@@ -162,9 +162,9 @@ async def ws_connect(ws: WebSocket, email: str):
         except Exception:
             await ws.close(code=4001, reason="Invalid token")
             return
-    # Allow unauthenticated WS for backward compat but log warning
     else:
-        logger.warning("WS connection without token for %s — consider requiring auth", email)
+        await ws.close(code=4001, reason="Authentication required")
+        return
 
     await manager.connect(email, ws)
     try:

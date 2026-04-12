@@ -35,10 +35,6 @@ from dataclasses import dataclass, asdict
 from abc import ABC, abstractmethod
 from cachetools import TTLCache
 
-# Load environment variables
-from dotenv import load_dotenv
-load_dotenv()
-
 # ==================== CONFIGURATION ====================
 # Disable magic library to avoid Windows issues
 MAGIC_AVAILABLE = False

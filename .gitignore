@@ -73,6 +73,8 @@ Database/clients/
 Database/construction/
 Database/suppliers/
 Database/messages/
+Database/requests/
+Database/ai_chats/
 Database/admin/event_log.json
 Database/admin/activity_log.json
 !Database/admin/
