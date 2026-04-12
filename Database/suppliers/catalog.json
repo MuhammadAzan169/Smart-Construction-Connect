@@ -1873,7 +1873,9 @@
     "contact": {
       "phone": "+92-21-3456789",
       "email": "info@steelhub.pk",
-      "website": ""
+      "website": "",
+      "linkedin": "",
+      "facebook": ""
     },
     "cities_served": [
       "Lahore",
@@ -1922,11 +1924,89 @@
         "notes": "Auto-verified during seed."
       }
     },
-    "dp_url": "/company_data/material_supplier/steel-hub-pk/dp.jpg",
+    "dp_url": "/company_data/material_supplier/steel-hub-pk/dp.png",
     "verification_documents": {
       "secp_certificate_url": "/company_data/material_supplier/steel-hub-pk/documents/secp_certificate.pdf",
       "ntn_certificate_url": "/company_data/material_supplier/steel-hub-pk/documents/ntn_certificate.pdf",
-      "business_license_url": "/company_data/material_supplier/steel-hub-pk/documents/business_license.pdf"
+      "registration_certificate_url": "",
+      "cnic_front_url": "",
+      "cnic_back_url": "",
+      "other_document_url": "",
+      "verification_status": "verified",
+      "verification_notes": ""
+    },
+    "legal_info": {
+      "registered": false,
+      "secp_registered": false,
+      "ntn": "",
+      "year_established": null
+    },
+    "payment_terms": {
+      "advance_percentage": null,
+      "accepted_payments": [],
+      "minimum_order_value": null
+    },
+    "delivery_info": {
+      "delivery_time_days": null,
+      "delivery_charges": "",
+      "free_delivery_above": null
+    },
+    "material_categories": [],
+    "profile_settings": {
+      "public_profile": true,
+      "show_contact": true
+    },
+    "_editor_settings": {
+      "supplier_name": "Steel Hub PK",
+      "description": "General construction materials supplier in Pakistan.",
+      "logo_url": "/company_data/material_supplier/steel-hub-pk/logo.jpg",
+      "dp_url": "/company_data/material_supplier/steel-hub-pk/dp.png",
+      "city": "Lahore",
+      "area": "Gulberg",
+      "cities_served": [
+        "Lahore",
+        "Islamabad",
+        "Rawalpindi"
+      ],
+      "contact": {
+        "phone": "+92-21-3456789",
+        "email": "info@steelhub.pk",
+        "website": "",
+        "linkedin": "",
+        "facebook": ""
+      },
+      "legal_info": {
+        "registered": false,
+        "secp_registered": false,
+        "ntn": "",
+        "year_established": null
+      },
+      "payment_terms": {
+        "advance_percentage": null,
+        "accepted_payments": [],
+        "minimum_order_value": null
+      },
+      "delivery_info": {
+        "delivery_time_days": null,
+        "delivery_charges": "",
+        "free_delivery_above": null
+      },
+      "status": "active",
+      "material_categories": [],
+      "profile_settings": {
+        "public_profile": true,
+        "show_contact": true
+      },
+      "verification_documents": {
+        "secp_certificate_url": "/company_data/material_supplier/steel-hub-pk/documents/secp_certificate.pdf",
+        "ntn_certificate_url": "/company_data/material_supplier/steel-hub-pk/documents/ntn_certificate.pdf",
+        "registration_certificate_url": "",
+        "cnic_front_url": "",
+        "cnic_back_url": "",
+        "other_document_url": "",
+        "verification_status": "verified",
+        "verification_notes": ""
+      }
     }
   },
   {

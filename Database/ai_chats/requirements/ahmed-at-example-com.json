@@ -5,8 +5,8 @@
   "area": "Dha",
   "plot_size": "5 marla",
   "project_type": "house",
-  "budget_min": 2.0,
-  "budget_max": 8000000.0,
+  "budget_min": 1.0,
+  "budget_max": 15000000.0,
   "num_floors": 2,
   "num_rooms": null,
   "design_style": null,
@@ -26,5 +26,5 @@
     "project_type",
     "special_requirements"
   ],
-  "updated_at": "2026-04-12T01:03:11.686661+00:00"
+  "updated_at": "2026-04-12T13:32:06.806411+00:00"
 }

@@ -1,5 +1,59 @@
 [
   {
+    "timestamp": "2026-04-12T13:49:10.995632+00:00",
+    "action": "verification_updated",
+    "target": "sindh-affordable-constructions",
+    "details": "Admin set ntn_certificate to rejected for company sindh-affordable-constructions"
+  },
+  {
+    "timestamp": "2026-04-12T13:48:11.694583+00:00",
+    "action": "verification_updated",
+    "target": "sindh-affordable-constructions",
+    "details": "Admin set secp_certificate to approved for company sindh-affordable-constructions"
+  },
+  {
+    "timestamp": "2026-04-12T13:46:37.791513+00:00",
+    "action": "supplier_profile_updated",
+    "target": "steel-hub-pk",
+    "details": "Supplier steel-hub-pk updated their profile"
+  },
+  {
+    "timestamp": "2026-04-12T13:44:47.058569+00:00",
+    "action": "ai_chat",
+    "target": "info@steelhub.pk",
+    "details": "AI chat (stream): Islam yaar kya haal hai thik ho yaar  kya  material sabse demand mein abhi"
+  },
+  {
+    "timestamp": "2026-04-12T13:44:03.201845+00:00",
+    "action": "ai_chat",
+    "target": "info@steelhub.pk",
+    "details": "AI chat (stream): Compare my prices against market averages"
+  },
+  {
+    "timestamp": "2026-04-12T13:43:42.046437+00:00",
+    "action": "ai_chat",
+    "target": "info@steelhub.pk",
+    "details": "AI chat (stream): Which materials are trending in demand right now?"
+  },
+  {
+    "timestamp": "2026-04-12T13:39:53.571278+00:00",
+    "action": "packages_updated",
+    "target": "karachi-builders",
+    "details": "Company karachi-builders updated packages & pricing"
+  },
+  {
+    "timestamp": "2026-04-12T13:39:53.191999+00:00",
+    "action": "company_profile_updated",
+    "target": "karachi-builders",
+    "details": "Company karachi-builders updated their profile"
+  },
+  {
+    "timestamp": "2026-04-12T13:31:58.759997+00:00",
+    "action": "ai_chat",
+    "target": "ahmed@example.com",
+    "details": "AI chat (stream): i need to construct a grey structure in park view city lahore , the plot is 11.5 marla, my budget is"
+  },
+  {
     "timestamp": "2026-04-12T01:30:50.392889+00:00",
     "action": "packages_updated",
     "target": "karachi-builders",

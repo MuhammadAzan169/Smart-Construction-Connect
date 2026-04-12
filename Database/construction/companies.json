@@ -10228,15 +10228,15 @@
       "budget_accuracy": 0.89,
       "quality_consistency": 0.7
     },
-    "verification_status": "pending",
+    "verification_status": "rejected",
     "verification": {
       "secp_certificate": {
-        "status": "pending",
+        "status": "approved",
         "notes": ""
       },
       "ntn_certificate": {
-        "status": "pending",
-        "notes": ""
+        "status": "rejected",
+        "notes": ",eri ,rzi"
       },
       "registration_certificate": {
         "status": "pending",
@@ -72928,7 +72928,7 @@
         },
         "State Life Housing": {
           "State Life Housing, State Life Housing, Lahore": {
-            "standard": "PKR 3590/sq ft",
+            "standard": "",
             "premium": "PKR 4670/sq ft",
             "executive": "PKR 6430/sq ft"
           }
@@ -73029,8 +73029,8 @@
         "subarea": "State Life Housing",
         "location": "State Life Housing, State Life Housing, Lahore",
         "package": "standard",
-        "price_per_sqft": 3590,
-        "price_raw": "PKR 3590/sq ft"
+        "price_per_sqft": 0,
+        "price_raw": ""
       },
       {
         "city": "Lahore",
