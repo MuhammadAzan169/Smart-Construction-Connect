@@ -13,6 +13,7 @@ from backend.utils.data_handler import (
     suppliers_dataset_path,
     add_activity_log,
 )
+from backend.utils.embeddings import update_entity_embedding
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +115,7 @@ def update_supplier_profile(
 
     _save_suppliers(suppliers)
     add_activity_log("supplier_profile_updated", slug, f"Supplier {slug} updated their profile")
+    update_entity_embedding(supplier.get("supplier_id", slug), "supplier")
     return {"status": "ok"}
 
 
@@ -148,4 +150,5 @@ def update_materials(
     supplier["materials"] = body.materials
     _save_suppliers(suppliers)
     add_activity_log("materials_updated", slug, f"Supplier {slug} updated materials")
+    update_entity_embedding(supplier.get("supplier_id", slug), "supplier")
     return {"status": "ok"}

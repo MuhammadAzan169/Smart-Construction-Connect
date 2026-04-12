@@ -347,7 +347,7 @@ function normalizeSettingsFromRaw(obj: Record<string, unknown>, defaults: Compan
         cnic_front_url: str(vdRaw.cnic_front_url, defaults.verification_documents.cnic_front_url),
         cnic_back_url: str(vdRaw.cnic_back_url, defaults.verification_documents.cnic_back_url),
         other_document_url: str(vdRaw.other_document_url, defaults.verification_documents.other_document_url),
-        verification_status: str(vdRaw.verification_status, defaults.verification_documents.verification_status),
+        verification_status: str((vdRaw.verification_status ?? obj.verification_status) as string, defaults.verification_documents.verification_status),
         verification_notes: str(vdRaw.verification_notes, defaults.verification_documents.verification_notes),
       };
     })(),
@@ -2209,7 +2209,7 @@ function defaultSupplierSettings(profile: Record<string, unknown> | null, email:
       cnic_front_url: str(vDocsSrc.cnic_front_url, ""),
       cnic_back_url: str(vDocsSrc.cnic_back_url, ""),
       other_document_url: str(vDocsSrc.other_document_url, ""),
-      verification_status: str(vDocsSrc.verification_status, "not_submitted"),
+      verification_status: str((vDocsSrc.verification_status ?? profile?.verification_status) as string, "not_submitted"),
       verification_notes: str(vDocsSrc.verification_notes, ""),
     },
   };
