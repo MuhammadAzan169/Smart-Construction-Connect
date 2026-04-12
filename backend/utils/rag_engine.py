@@ -272,20 +272,41 @@ _AREA_PATTERNS = [
 
 
 def _parse_budget(text: str) -> tuple[float | None, float | None]:
-    text = text.lower().replace(",", "").replace("pkr", "").replace("rs", "").strip()
+    """Extract budget from text.
+
+    Only matches numbers that have an explicit monetary unit suffix (lakh, crore,
+    million, k/thousand) or are large bare numbers (6+ digits = ≥100,000 PKR).
+    This prevents plot sizes ("5 marla"), floors ("2 manzil"), or room counts
+    from being mis-read as budget figures.
+    """
+    text = text.lower().replace(",", "").replace("pkr", " ").replace("rs.", " ")
+    # Replace " rs " as a standalone word to avoid partial matches
+    text = re.sub(r"\brs\b", " ", text).strip()
     nums: list[float] = []
-    for m in re.finditer(r"(\d+(?:\.\d+)?)\s*(m|million|k|thousand|lakh|lac|l|crore|cr)?", text):
+
+    # Match numbers WITH explicit monetary unit
+    for m in re.finditer(
+        r"(\d+(?:\.\d+)?)\s*(million|k|thousand|lakh|lac|crore|cr)\b", text
+    ):
         val = float(m.group(1))
-        unit = (m.group(2) or "").strip()
-        if unit in ("m", "million"):
+        unit = m.group(2).strip()
+        if unit == "million":
             val *= 1_000_000
         elif unit in ("k", "thousand"):
             val *= 1_000
-        elif unit in ("lakh", "lac", "l"):
+        elif unit in ("lakh", "lac"):
             val *= 100_000
         elif unit in ("crore", "cr"):
             val *= 10_000_000
         nums.append(val)
+
+    # Match large bare numbers (≥100,000) that are clearly monetary
+    for m in re.finditer(r"\b(\d{6,})\b", text):
+        bare = float(m.group(1))
+        # Avoid duplicating a value already captured via a unit
+        if not any(abs(bare - n) < 1 for n in nums):
+            nums.append(bare)
+
     if len(nums) >= 2:
         return min(nums), max(nums)
     elif len(nums) == 1:
@@ -329,11 +350,25 @@ _ROMAN_URDU_MARKERS: frozenset[str] = frozenset([
 
 
 def _detect_language(text: str) -> str:
+    """Detect language from text.
+
+    Uses only unambiguous Roman Urdu words to avoid false positives from
+    common English words (e.g. 'main', 'to', 'na') that appear in the
+    Roman Urdu marker set but are also everyday English.
+    """
     if any(0x0600 <= ord(c) <= 0x06FF for c in text):
         return "urdu"
+    # Words that look like Roman Urdu but are common English — exclude them
+    _ENGLISH_OVERLAP = frozenset([
+        "main", "to", "na", "ya", "ho", "lo", "a", "ka", "ko",
+        "ke", "par", "se", "tak", "ki", "jo", "so",
+    ])
     words = set(re.findall(r"[a-z]+", text.lower()))
-    roman_hits = len(words & _ROMAN_URDU_MARKERS)
-    if roman_hits >= 2:
+    unambiguous = (words - _ENGLISH_OVERLAP) & _ROMAN_URDU_MARKERS
+    roman_hits = len(unambiguous)
+    # Require ≥3 unambiguous hits AND they must represent ≥15 % of unique words
+    # (prevents a single stray word in an otherwise-English message triggering Urdu mode)
+    if roman_hits >= 3 and (len(words) == 0 or roman_hits / len(words) >= 0.15):
         return "roman_urdu"
     return "english"
 
@@ -369,7 +404,7 @@ def _has_enough_requirements(intent: dict, user_msg_count: int) -> bool:
 
     Ensures the AI gathers requirements conversationally before recommending.
     """
-    if user_msg_count < 2:
+    if user_msg_count < 3:
         return False
     filled = sum([
         bool(intent.get("city")),
@@ -937,8 +972,13 @@ def generate_ai_response(
         return cached
 
     # ── Language detection ────────────────────────────────────────────────────
-    combined_user = " ".join(m.get("content", "") for m in messages if m.get("role") == "user")
-    lang = _detect_language(combined_user)
+    # Use the LAST user message for language detection so one Urdu word in an
+    # older message doesn't flip the language for the current English reply.
+    last_user_msg = next(
+        (m.get("content", "") for m in reversed(messages) if m.get("role") == "user"),
+        "",
+    )
+    lang = _detect_language(last_user_msg)
     lang_directive = _get_language_directive(lang)
 
     # ── Conversation memory: optimize context window ──────────────────────────
@@ -1064,8 +1104,13 @@ async def generate_ai_response_stream(
         return
 
     # Language detection
-    combined_user = " ".join(m.get("content", "") for m in messages if m.get("role") == "user")
-    lang = _detect_language(combined_user)
+    # Use the LAST user message for language detection so one Urdu word in an
+    # older message doesn't flip the language for the current English reply.
+    last_user_msg = next(
+        (m.get("content", "") for m in reversed(messages) if m.get("role") == "user"),
+        "",
+    )
+    lang = _detect_language(last_user_msg)
     lang_directive = _get_language_directive(lang)
 
     # Conversation memory

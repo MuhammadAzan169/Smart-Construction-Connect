@@ -286,11 +286,12 @@ class RequirementTracker:
     @classmethod
     def is_ready_for_recommendations(cls, reqs: dict, user_msg_count: int) -> bool:
         """Check if we have enough info to generate recommendations."""
-        if user_msg_count < 2:
+        if user_msg_count < 3:
             return False
         missing = cls.get_missing_fields(reqs)
         filled = len([f for f in cls.REQUIRED_FIELDS + cls.OPTIONAL_FIELDS if reqs.get(f)])
-        return len(missing) <= 1 and filled >= 3
+        # All required fields must be present, OR at most 1 missing with 4+ filled fields
+        return len(missing) == 0 or (len(missing) == 1 and filled >= 4)
 
     @classmethod
     def get_follow_up_prompt(cls, reqs: dict) -> str:
