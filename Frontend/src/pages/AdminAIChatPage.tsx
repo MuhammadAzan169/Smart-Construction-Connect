@@ -587,10 +587,10 @@ export default function AdminAIChatPage() {
       {/* ═══════════════════════════════════════════════════════════
           Right: Platform Command Center
       ═══════════════════════════════════════════════════════════ */}
-      <div className="hidden lg:flex w-80 flex-col gap-3">
+      <div className="hidden lg:flex w-80 flex-col gap-3 min-h-0">
 
         {/* Platform stats */}
-        <GlassCard interactive={false} className="p-0 overflow-hidden card-shadow flex flex-col">
+        <GlassCard interactive={false} className="p-0 overflow-hidden card-shadow flex flex-col shrink-0">
           <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5 shrink-0">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-500/10">
               <BarChart3 className="h-3.5 w-3.5 text-violet-500" />
@@ -689,7 +689,7 @@ export default function AdminAIChatPage() {
         </GlassCard>
 
         {/* Quick Admin Queries */}
-        <GlassCard interactive={false} className="p-0 overflow-hidden card-shadow flex-1">
+        <GlassCard interactive={false} className="p-0 overflow-hidden card-shadow flex-1 min-h-0 flex flex-col">
           <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
               <Zap className="h-3.5 w-3.5 text-primary" />
@@ -699,7 +699,7 @@ export default function AdminAIChatPage() {
               <p className="text-[11px] text-muted-foreground">Tap to ask instantly</p>
             </div>
           </div>
-          <div className="p-3 space-y-1.5 max-h-64 overflow-y-auto scroll-styled">
+          <div className="flex-1 overflow-y-auto scroll-styled p-3 space-y-1.5">
             {[
               { icon: BarChart3, color: "text-violet-500 bg-violet-500/10", text: "Give me a full platform health summary" },
               { icon: ShieldAlert, color: "text-amber-500 bg-amber-500/10", text: "List all pending company and supplier approvals" },

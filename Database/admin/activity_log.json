@@ -1,5 +1,29 @@
 [
   {
+    "timestamp": "2026-04-12T00:51:44.374691+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation 9be28a21-d44e-43b7-8137-3850533fa2b7"
+  },
+  {
+    "timestamp": "2026-04-12T00:51:40.904199+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation f6efba92-6a5d-42cf-8252-494213b5334a"
+  },
+  {
+    "timestamp": "2026-04-12T00:51:38.037092+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation 6bc80d3e-08eb-4894-91fc-e98f66f93b53"
+  },
+  {
+    "timestamp": "2026-04-12T00:43:33.083869+00:00",
+    "action": "chat_deleted",
+    "target": "info@ravigreybuil1.pk",
+    "details": "info@ravigreybuil1.pk soft-deleted conversation 9be28a21-d44e-43b7-8137-3850533fa2b7"
+  },
+  {
     "timestamp": "2026-04-12T00:21:22.629916+00:00",
     "action": "chat_deleted",
     "target": "admin@smartconnect.pk",

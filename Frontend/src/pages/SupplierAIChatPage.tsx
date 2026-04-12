@@ -605,9 +605,9 @@ export default function SupplierAIChatPage() {
       {/* ═══════════════════════════════════════════════════════════
           Right: Inventory Intelligence Panel
       ═══════════════════════════════════════════════════════════ */}
-      <div className="hidden lg:flex w-80 flex-col gap-3">
+      <div className="hidden lg:flex w-80 flex-col gap-3 min-h-0">
         {/* Inventory stats */}
-        <GlassCard interactive={false} className="p-0 overflow-hidden card-shadow flex flex-col">
+        <GlassCard interactive={false} className="p-0 overflow-hidden card-shadow flex flex-col shrink-0">
           <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5 shrink-0">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500/10">
               <Package className="h-3.5 w-3.5 text-orange-500" />
@@ -731,7 +731,7 @@ export default function SupplierAIChatPage() {
         </GlassCard>
 
         {/* Quick AI Queries */}
-        <GlassCard interactive={false} className="p-0 overflow-hidden card-shadow flex-1">
+        <GlassCard interactive={false} className="p-0 overflow-hidden card-shadow flex-1 min-h-0 flex flex-col">
           <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
               <Zap className="h-3.5 w-3.5 text-primary" />
@@ -741,7 +741,7 @@ export default function SupplierAIChatPage() {
               <p className="text-[11px] text-muted-foreground">Tap to ask instantly</p>
             </div>
           </div>
-          <div className="p-3 space-y-1.5 max-h-64 overflow-y-auto scroll-styled">
+          <div className="flex-1 overflow-y-auto scroll-styled p-3 space-y-1.5">
             {[
               { icon: BadgeDollarSign, color: "text-emerald-500 bg-emerald-500/10", text: "What are current cement prices across Pakistan?" },
               { icon: TrendingUp, color: "text-blue-500 bg-blue-500/10", text: "Which materials are trending in demand right now?" },
