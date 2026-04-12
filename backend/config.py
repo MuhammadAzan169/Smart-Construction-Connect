@@ -37,10 +37,12 @@ if JWT_SECRET_KEY == "scc-dev-secret-change-me-in-production":
         stacklevel=2,
     )
 
-# ── Server port ─────────────────────────────────────────────────────────────
-# Set PORT in .env to control which port the server binds to.
-# Supported portal ports: 8000, 8001, 8002, 8003
-PORT: int = int(os.getenv("PORT", "8000"))
+# ─── Server ports ────────────────────────────────────────────────────────────────
+# Set PORTS in .env as a comma-separated list of ports to listen on simultaneously.
+# Example: PORTS=8000,8001,8002,8003
+_raw_ports = os.getenv("PORTS", os.getenv("PORT", "8000"))
+PORTS: list[int] = [int(p.strip()) for p in _raw_ports.split(",") if p.strip().isdigit()]
+PORT: int = PORTS[0] if PORTS else 8000  # primary port (first in list)
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -55,11 +57,12 @@ CORS_ORIGINS: list[str] = [
     for o in os.getenv("CORS_ORIGINS", _default_origins).split(",")
     if o.strip()
 ]
-# Always ensure the active port is included regardless of CORS_ORIGINS override
-for _h in ("http://localhost", "http://127.0.0.1"):
-    _origin = f"{_h}:{PORT}"
-    if _origin not in CORS_ORIGINS:
-        CORS_ORIGINS.append(_origin)
+# Always ensure every active port is included in CORS regardless of overrides
+for _port in PORTS:
+    for _h in ("http://localhost", "http://127.0.0.1"):
+        _origin = f"{_h}:{_port}"
+        if _origin not in CORS_ORIGINS:
+            CORS_ORIGINS.append(_origin)
 
 # ── Data directories ─────────────────────────────────────────────────────────
 

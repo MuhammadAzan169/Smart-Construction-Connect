@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from backend.config import CORS_ORIGINS, PORT, setup_logging
+from backend.config import CORS_ORIGINS, PORT, PORTS, setup_logging
 
 # Initialise structured logging before anything else
 setup_logging()
@@ -279,7 +279,7 @@ def _run_dev():
         )
         time.sleep(1)
 
-        print("[app] Starting FastAPI backend on http://localhost:8000 …")
+        print(f"[app] Starting FastAPI backend on http://localhost:{PORT} …")
         import uvicorn
         uvicorn.run("app:app", host="127.0.0.1", port=PORT, reload=True)
     except KeyboardInterrupt:
@@ -304,7 +304,7 @@ def _wait_and_open_browser(url: str, health_url: str, timeout: int = 30):
 
 
 def _run_prod():
-    """Serve API + built frontend together on one port."""
+    """Serve API + built frontend on all configured ports simultaneously."""
     _build_frontend()
 
     if not (DIST / "index.html").exists():
@@ -314,29 +314,59 @@ def _run_prod():
 
     import uvicorn
 
-    port = PORT
-    url = f"http://localhost:{port}"
+    ports = PORTS if PORTS else [8000]
+    primary = ports[0]
+    primary_url = f"http://localhost:{primary}"
 
     print()
     print("  ╔══════════════════════════════════════════════════════╗")
     print("  ║  Smart Construction Connect                          ║")
-    print(f"  ║  {url:<52}║")
-    print(f"  ║  API docs: {url}/docs{' ' * 29}║")
-    print(f"  ║  Portal ports available: 8000 · 8001 · 8002 · 8003  ║")
-    print(f"  ║  Change port: set PORT=8001 in your .env file        ║")
-    print("  ║  Opening browser when server is ready…               ║")
+    for p in ports:
+        label = " (primary)" if p == primary else "          "
+        line = f"  http://localhost:{p}{label}"
+        print(f"  ║  {line:<52}║")
+    print(f"  ║  API docs: {primary_url}/docs{' ' * 29}║")
+    print("  ║  All portal ports running simultaneously             ║")
     print("  ╚══════════════════════════════════════════════════════╝")
     print()
 
-    # Open browser automatically once server is accepting connections
+    # Open browser on the primary port once it's ready
     t = threading.Thread(
         target=_wait_and_open_browser,
-        args=(url, f"{url}/api/health"),
+        args=(primary_url, f"{primary_url}/api/health"),
         daemon=True,
     )
     t.start()
 
-    uvicorn.run("app:app", host="127.0.0.1", port=port, reload=False)
+    if len(ports) == 1:
+        # Single port — simple blocking run
+        uvicorn.run("app:app", host="0.0.0.0", port=ports[0], reload=False)
+        return
+
+    # Multiple ports — run each in its own thread
+    stop_event = threading.Event()
+
+    def _serve(port: int):
+        config = uvicorn.Config("app:app", host="0.0.0.0", port=port, reload=False,
+                                log_level="warning")
+        server = uvicorn.Server(config)
+        server.run()
+
+    threads_list = []
+    for port in ports:
+        pt = threading.Thread(target=_serve, args=(port,), daemon=True, name=f"uvicorn-{port}")
+        pt.start()
+        threads_list.append(pt)
+        print(f"[app] ✓ Listening on http://localhost:{port}")
+
+    print(f"[app] {len(ports)} servers running. Press Ctrl+C to stop all.")
+
+    try:
+        # Keep main thread alive; exit when all server threads finish
+        for pt in threads_list:
+            pt.join()
+    except KeyboardInterrupt:
+        print("\n[app] Shutting down all servers…")
 if __name__ == "__main__":
     if "--dev" in sys.argv:
         _run_dev()

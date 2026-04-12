@@ -1,5 +1,17 @@
 [
   {
+    "timestamp": "2026-04-12T22:49:43.609085+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation e9cd20d1-f069-4429-bc00-2b0947fb9134"
+  },
+  {
+    "timestamp": "2026-04-12T22:49:39.532294+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation f2a4f232-e41e-4cee-8820-bda605e6e0ad"
+  },
+  {
     "timestamp": "2026-04-12T22:36:08.381230+00:00",
     "action": "chat_deleted",
     "target": "ahmed@example.com",
