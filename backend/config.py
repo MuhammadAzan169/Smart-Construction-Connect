@@ -37,17 +37,29 @@ if JWT_SECRET_KEY == "scc-dev-secret-change-me-in-production":
         stacklevel=2,
     )
 
+# ── Server port ─────────────────────────────────────────────────────────────
+# Set PORT in .env to control which port the server binds to.
+# Supported portal ports: 8000, 8001, 8002, 8003
+PORT: int = int(os.getenv("PORT", "8000"))
+
 # ── CORS ──────────────────────────────────────────────────────────────────────
+
+# Always include all 4 portal ports plus Vite dev server in CORS origins.
+_DEFAULT_PORTAL_PORTS = ["8000", "8001", "8002", "8003", "5173", "8080"]
+_default_origins = ",".join(
+    f"http://localhost:{p},http://127.0.0.1:{p}" for p in _DEFAULT_PORTAL_PORTS
+)
 
 CORS_ORIGINS: list[str] = [
     o.strip()
-    for o in os.getenv(
-        "CORS_ORIGINS",
-        "http://localhost:8080,http://localhost:5173,http://localhost:8000,"
-        "http://127.0.0.1:8080,http://127.0.0.1:5173,http://127.0.0.1:8000",
-    ).split(",")
+    for o in os.getenv("CORS_ORIGINS", _default_origins).split(",")
     if o.strip()
 ]
+# Always ensure the active port is included regardless of CORS_ORIGINS override
+for _h in ("http://localhost", "http://127.0.0.1"):
+    _origin = f"{_h}:{PORT}"
+    if _origin not in CORS_ORIGINS:
+        CORS_ORIGINS.append(_origin)
 
 # ── Data directories ─────────────────────────────────────────────────────────
 

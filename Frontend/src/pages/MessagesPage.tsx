@@ -10,7 +10,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import {
   ArrowLeft, Check, CheckCheck, MessageSquare, Search, Send, Shield, Trash2, X,
-  Paperclip, FileText, Mic, Image as ImageIcon, Volume2, Download, Play,
+  Paperclip, FileText, Mic, Image as ImageIcon, Volume2, Download, Play, Pause,
   Square, RotateCcw, FileSpreadsheet, Archive, AlertCircle,
   File as FileIcon, Film, ChevronRight, Headphones,
 } from "lucide-react";
@@ -111,6 +111,111 @@ function FileTypeBadge({ kind }: { kind: ReturnType<typeof classifyAttachment> }
   );
 }
 
+// ── Custom Audio Player ───────────────────────────────────────────────────────
+
+function AudioPlayer({ url, label, isMine, downloadName }: { url: string; label: string; isMine: boolean; downloadName: string }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const fmtTime = (s: number) => {
+    if (!isFinite(s) || isNaN(s)) return "0:00";
+    const m = Math.floor(s / 60);
+    return `${m}:${Math.floor(s % 60).toString().padStart(2, "0")}`;
+  };
+
+  const toggle = () => {
+    const a = audioRef.current;
+    if (!a) return;
+    if (playing) { a.pause(); setPlaying(false); }
+    else { a.play().then(() => setPlaying(true)).catch(() => {}); }
+  };
+
+  const seek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const a = audioRef.current;
+    if (!a || !a.duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    a.currentTime = a.duration * pct;
+    setProgress(pct * 100);
+    setCurrentTime(a.currentTime);
+  };
+
+  const trackBg = isMine ? "rgba(255,255,255,0.15)" : "rgba(148,163,184,0.2)";
+  const fillBg = isMine ? "rgba(255,255,255,0.85)" : "rgb(var(--primary))";
+
+  return (
+    <div className={cn("mt-2 flex items-center gap-2.5 rounded-2xl px-3 py-2.5 min-w-[216px] max-w-full",
+      isMine ? "bg-black/20" : "bg-secondary/70 border border-border/40")}>
+      <audio
+        ref={audioRef} src={url} preload="metadata"
+        onLoadedMetadata={(e) => setDuration((e.target as HTMLAudioElement).duration)}
+        onTimeUpdate={(e) => {
+          const a = e.target as HTMLAudioElement;
+          setCurrentTime(a.currentTime);
+          setProgress(a.duration ? (a.currentTime / a.duration) * 100 : 0);
+        }}
+        onEnded={() => { setPlaying(false); setProgress(0); setCurrentTime(0); }}
+      />
+
+      {/* Play / Pause */}
+      <button
+        onClick={toggle}
+        className={cn(
+          "flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors",
+          isMine ? "bg-white/20 hover:bg-white/30 text-white" : "bg-primary/15 hover:bg-primary/25 text-primary",
+        )}>
+        {playing
+          ? <Pause className="h-3.5 w-3.5 fill-current" />
+          : <Play className="h-3.5 w-3.5 fill-current translate-x-px" />}
+      </button>
+
+      {/* Track + meta */}
+      <div className="flex-1 min-w-0 space-y-1.5">
+        <p className={cn("text-[11px] font-semibold leading-none truncate", isMine ? "text-white/65" : "text-muted-foreground")}>
+          {label}
+        </p>
+
+        {/* Progress bar */}
+        <div
+          className="relative h-1 rounded-full cursor-pointer"
+          style={{ background: trackBg }}
+          onClick={seek}>
+          <div
+            className="absolute inset-y-0 start-0 rounded-full transition-[width] duration-100"
+            style={{ width: `${progress}%`, background: fillBg }}
+          />
+          {/* Thumb dot */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 h-2.5 w-2.5 rounded-full shadow-sm border border-black/10"
+            style={{ left: `calc(${progress}% - 5px)`, background: fillBg }}
+          />
+        </div>
+
+        {/* Time */}
+        <div className="flex justify-between">
+          <span className={cn("text-[10px] tabular-nums", isMine ? "text-white/50" : "text-muted-foreground/60")}>
+            {playing || currentTime > 0 ? fmtTime(currentTime) : fmtTime(duration)}
+          </span>
+          <span className={cn("text-[10px] tabular-nums", isMine ? "text-white/35" : "text-muted-foreground/40")}>
+            {fmtTime(duration)}
+          </span>
+        </div>
+      </div>
+
+      {/* Download */}
+      <a href={url} download={downloadName}
+        className={cn("shrink-0 flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
+          isMine ? "text-white/40 hover:text-white/80 hover:bg-white/10" : "text-muted-foreground/40 hover:text-foreground hover:bg-secondary")}
+        title="Download" onClick={(e) => e.stopPropagation()}>
+        <Download className="h-3.5 w-3.5" />
+      </a>
+    </div>
+  );
+}
+
 // ── Attachment Bubble ─────────────────────────────────────────────────────────
 
 interface AttachmentBubbleProps {
@@ -164,21 +269,12 @@ function AttachmentBubble({ attachment, isMine, onLightbox }: AttachmentBubblePr
 
   if (kind === "voice" || kind === "audio") {
     return (
-      <div className={cn("mt-2 flex items-center gap-2.5 rounded-2xl px-3 py-2.5",
-        isMine ? "bg-black/20" : "bg-secondary/60 border border-border/40")}>
-        <div className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-full", isMine ? "bg-white/15" : "bg-primary/15")}>
-          <Headphones className={cn("h-4 w-4", isMine ? "text-white/80" : "text-primary")} />
-        </div>
-        <div className="flex-1 min-w-0 space-y-1">
-          <p className={cn("text-[11px] font-semibold leading-none", isMine ? "text-white/70" : "text-muted-foreground")}>
-            {kind === "voice" ? "Voice message" : "Audio file"}
-          </p>
-          <audio src={attachment.url} controls className="h-7 w-full max-w-[200px] [&::-webkit-media-controls-panel]:bg-transparent" />
-        </div>
-        <a href={attachment.url} download={attachment.filename} className={cn("shrink-0 hover:opacity-100 transition-opacity", isMine ? "opacity-50 text-white" : "opacity-40 text-foreground")} title="Download">
-          <Download className="h-3.5 w-3.5" />
-        </a>
-      </div>
+      <AudioPlayer
+        url={attachment.url}
+        label={kind === "voice" ? "Voice message" : (attachment.filename || "Audio file")}
+        isMine={isMine}
+        downloadName={attachment.filename || "audio"}
+      />
     );
   }
 
@@ -537,7 +633,7 @@ export default function MessagesPage() {
           <div className="relative">
             <Search className="absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search conversations…"
-              className="w-full rounded-xl border border-transparent bg-secondary/60 ps-9 pe-9 h-9 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/30 focus:bg-secondary/80 transition-all" />
+              className="w-full rounded-xl border border-transparent bg-secondary/60 ps-9 pe-9 h-9 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-border/60 focus:bg-secondary/80 transition-all" />
             {search && (
               <button onClick={() => setSearch("")} className="absolute end-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                 <X className="h-3.5 w-3.5" />
@@ -795,7 +891,7 @@ export default function MessagesPage() {
                           <motion.button type="button" onClick={handleVoiceAccept} className="flex h-8 items-center gap-1.5 rounded-xl border border-border bg-secondary px-3 text-xs font-medium" whileTap={{ scale: 0.9 }}><Check className="h-3.5 w-3.5" /> Use Text</motion.button>
                           <motion.button type="button" onClick={sendVoiceNote} disabled={sending} className="flex h-8 items-center gap-1.5 rounded-xl gradient-bg px-3 text-xs font-medium text-primary-foreground disabled:opacity-50" whileTap={{ scale: 0.9 }}><Volume2 className="h-3.5 w-3.5" /> Send Audio</motion.button>
                         </div>
-                        <textarea value={voice.transcript} onChange={(e) => voice.setTranscript(e.target.value)} className="w-full rounded-xl border border-border bg-background/60 px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 resize-none" rows={2} placeholder="Transcript (edit if needed)…" />
+                <textarea value={voice.transcript} onChange={(e) => voice.setTranscript(e.target.value)} className="w-full rounded-xl border border-border bg-background/60 px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-border/70 resize-none" rows={2} placeholder="Transcript (edit if needed)…" />
                       </div>
                     ) : null}
                   </motion.div>
@@ -844,7 +940,7 @@ export default function MessagesPage() {
                   </motion.button>
                 )}
 
-                <div className="flex-1 flex items-end gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-2 focus-within:border-primary/40 transition-all min-w-0">
+                <div className="flex-1 flex items-end gap-2 rounded-2xl border border-border bg-secondary/40 px-4 py-2 focus-within:border-border/70 transition-all min-w-0">
                   <textarea ref={inputRef} rows={1} value={input}
                     onChange={(e) => { setInput(e.target.value); e.target.style.height = "auto"; e.target.style.height = `${Math.min(e.target.scrollHeight, 128)}px`; }}
                     onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); (e.target as HTMLTextAreaElement).style.height = "auto"; } }}

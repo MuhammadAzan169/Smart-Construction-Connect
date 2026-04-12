@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from backend.config import CORS_ORIGINS, setup_logging
+from backend.config import CORS_ORIGINS, PORT, setup_logging
 
 # Initialise structured logging before anything else
 setup_logging()
@@ -281,7 +281,7 @@ def _run_dev():
 
         print("[app] Starting FastAPI backend on http://localhost:8000 …")
         import uvicorn
-        uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+        uvicorn.run("app:app", host="127.0.0.1", port=PORT, reload=True)
     except KeyboardInterrupt:
         print("\n[app] Shutting down…")
     finally:
@@ -314,14 +314,16 @@ def _run_prod():
 
     import uvicorn
 
-    port = 8000
+    port = PORT
     url = f"http://localhost:{port}"
 
     print()
     print("  ╔══════════════════════════════════════════════════════╗")
     print("  ║  Smart Construction Connect                          ║")
     print(f"  ║  {url:<52}║")
-    print(f"  ║  API docs: {url}/docs{' ' * 29}║")                  
+    print(f"  ║  API docs: {url}/docs{' ' * 29}║")
+    print(f"  ║  Portal ports available: 8000 · 8001 · 8002 · 8003  ║")
+    print(f"  ║  Change port: set PORT=8001 in your .env file        ║")
     print("  ║  Opening browser when server is ready…               ║")
     print("  ╚══════════════════════════════════════════════════════╝")
     print()
@@ -335,7 +337,6 @@ def _run_prod():
     t.start()
 
     uvicorn.run("app:app", host="127.0.0.1", port=port, reload=False)
-
 if __name__ == "__main__":
     if "--dev" in sys.argv:
         _run_dev()

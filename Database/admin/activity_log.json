@@ -1,5 +1,77 @@
 [
   {
+    "timestamp": "2026-04-12T22:36:08.381230+00:00",
+    "action": "chat_deleted",
+    "target": "ahmed@example.com",
+    "details": "ahmed@example.com soft-deleted conversation f2a4f232-e41e-4cee-8820-bda605e6e0ad"
+  },
+  {
+    "timestamp": "2026-04-12T22:34:26.252933+00:00",
+    "action": "chat_deleted",
+    "target": "info@steelhub.pk",
+    "details": "info@steelhub.pk soft-deleted conversation e9cd20d1-f069-4429-bc00-2b0947fb9134"
+  },
+  {
+    "timestamp": "2026-04-12T22:33:36.071240+00:00",
+    "action": "verification_updated",
+    "target": "sindh-affordable-constructions",
+    "details": "Admin set registration_certificate to approved for company sindh-affordable-constructions"
+  },
+  {
+    "timestamp": "2026-04-12T22:33:32.437633+00:00",
+    "action": "verification_updated",
+    "target": "sindh-affordable-constructions",
+    "details": "Admin set ntn_certificate to approved for company sindh-affordable-constructions"
+  },
+  {
+    "timestamp": "2026-04-12T22:28:41.004797+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation f6efba92-6a5d-42cf-8252-494213b5334a"
+  },
+  {
+    "timestamp": "2026-04-12T22:28:37.942774+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation 6bc80d3e-08eb-4894-91fc-e98f66f93b53"
+  },
+  {
+    "timestamp": "2026-04-12T22:28:34.522749+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation 9be28a21-d44e-43b7-8137-3850533fa2b7"
+  },
+  {
+    "timestamp": "2026-04-12T22:28:19.618463+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation 2bad7b0f-0e10-4021-b272-68352b641e11"
+  },
+  {
+    "timestamp": "2026-04-12T22:28:17.036702+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation 4ca23a41-854e-4734-a1c9-731e3459ea2b"
+  },
+  {
+    "timestamp": "2026-04-12T22:28:08.958288+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation 2bad7b0f-0e10-4021-b272-68352b641e11"
+  },
+  {
+    "timestamp": "2026-04-12T22:28:06.794571+00:00",
+    "action": "chat_deleted",
+    "target": "admin@smartconnect.pk",
+    "details": "admin@smartconnect.pk soft-deleted conversation 4ca23a41-854e-4734-a1c9-731e3459ea2b"
+  },
+  {
+    "timestamp": "2026-04-12T22:27:45.676141+00:00",
+    "action": "chat_deleted",
+    "target": "info@steelhub.pk",
+    "details": "info@steelhub.pk soft-deleted conversation 4ca23a41-854e-4734-a1c9-731e3459ea2b"
+  },
+  {
     "timestamp": "2026-04-12T22:23:06.169679+00:00",
     "action": "chat_deleted",
     "target": "info@steelhub.pk",

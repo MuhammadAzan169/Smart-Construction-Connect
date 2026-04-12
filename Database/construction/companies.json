@@ -10228,18 +10228,18 @@
       "budget_accuracy": 0.89,
       "quality_consistency": 0.7
     },
-    "verification_status": "rejected",
+    "verification_status": "verified",
     "verification": {
       "secp_certificate": {
         "status": "approved",
         "notes": ""
       },
       "ntn_certificate": {
-        "status": "rejected",
-        "notes": ",eri ,rzi"
+        "status": "approved",
+        "notes": ""
       },
       "registration_certificate": {
-        "status": "pending",
+        "status": "approved",
         "notes": ""
       }
     },

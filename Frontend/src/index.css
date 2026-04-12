@@ -41,7 +41,7 @@
 
     --border: 226 232 240;
     --input: 226 232 240;
-    --ring: 245 158 11;
+    --ring: 148 163 184;
     --radius: 0.75rem;
     --chart-1: 245 158 11;
     --chart-2: 234 88 12;
@@ -106,7 +106,7 @@
 
     --border: 37 42 51; /* ~rgba(255,255,255,0.08) on surface */
     --input: 37 42 51;
-    --ring: 245 158 11;
+    --ring: 100 116 139;
 
     --gradient-primary: linear-gradient(135deg, rgb(var(--primary)), rgb(var(--highlight)));
     --gradient-surface: linear-gradient(135deg, rgb(var(--card)), rgb(var(--background)));
