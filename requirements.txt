@@ -9,13 +9,11 @@ PyJWT
 numpy
 pandas
 cachetools
-
-# Optional: file processing (filereader.py) — conditional imports, won't crash if missing
-# PyMuPDF
-# pdfplumber
-# python-docx
-# openpyxl
-# easyocr
+PyMuPDF
+pdfplumber
+python-docx
+openpyxl
+easyocr
 
 # Semantic embeddings (install for best performance, falls back to BM25 if missing)
 sentence-transformers
