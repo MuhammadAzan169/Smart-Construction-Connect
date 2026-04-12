@@ -72920,62 +72920,77 @@
     "operational_areas": {
       "Lahore": {
         "Model Town": {
-          "standard": 3060,
-          "premium": 4580,
-          "executive": 5250
+          "Model Town, Model Town, Lahore": {
+            "standard": "PKR 3060/sq ft",
+            "premium": "PKR 4580/sq ft",
+            "executive": "PKR 5250/sq ft"
+          }
         },
         "State Life Housing": {
-          "standard": 3590,
-          "premium": 4670,
-          "executive": 6430
+          "State Life Housing, State Life Housing, Lahore": {
+            "standard": "PKR 3590/sq ft",
+            "premium": "PKR 4670/sq ft",
+            "executive": "PKR 6430/sq ft"
+          }
         },
         "AL Kabir Town": {
-          "standard": 3400,
-          "premium": 4160,
-          "executive": 5160
+          "AL Kabir Town, AL Kabir Town, Lahore": {
+            "standard": "PKR 3400/sq ft",
+            "premium": "PKR 4160/sq ft",
+            "executive": "PKR 5160/sq ft"
+          }
         },
         "Sui Gas Housing": {
-          "standard": 3180,
-          "premium": 4040,
-          "executive": 6010
+          "Sui Gas Housing, Sui Gas Housing, Lahore": {
+            "standard": "PKR 3180/sq ft",
+            "premium": "PKR 4040/sq ft",
+            "executive": "PKR 6010/sq ft"
+          }
         }
       },
       "Islamabad": {
         "E-11": {
-          "E-11": {
-            "premium": 5528.0,
-            "standard": 5492.0,
-            "executive": 5427.0
+          "E-11, E-11, Islamabad": {
+            "standard": "PKR 5492/sq ft",
+            "premium": "PKR 5528/sq ft",
+            "executive": "PKR 5427/sq ft"
           }
         },
         "G-13": {
-          "G-13": {
-            "premium": 5183.0,
-            "standard": 5042.0,
-            "executive": 5060.0
+          "G-13, G-13, Islamabad": {
+            "standard": "PKR 5042/sq ft",
+            "premium": "PKR 5183/sq ft",
+            "executive": "PKR 5060/sq ft"
+          }
+        },
+        "F-7": {
+          "Sector B": {
+            "standard": "PKR 4000/sq ft",
+            "premium": "PKR 5500/sq ft",
+            "executive": "PKR 6500/sq ft"
           }
         }
       },
       "Sargodha": {
-        "Cantt": {
-          "Cantt Area": {
-            "premium": 3457.0,
-            "standard": 3379.0,
-            "executive": 3554.0
+        "Cantt Area": {
+          "Cantt Area, Cantt, Sargodha": {
+            "standard": "PKR 3379/sq ft",
+            "premium": "PKR 3457/sq ft",
+            "executive": "PKR 3554/sq ft"
           }
         },
         "University Road": {
-          "University Road": {
-            "premium": 3197.0,
-            "standard": 3393.0,
-            "executive": 3172.0
+          "University Road, University Road, Sargodha": {
+            "standard": "PKR 3393/sq ft",
+            "premium": "PKR 3197/sq ft",
+            "executive": "PKR 3172/sq ft"
           }
         },
         "Satellite Town": {
-          "Satellite Town": {
-            "premium": 3471.0,
-            "standard": 3236.0,
-            "executive": 3173.0
+          "Satellite Town, Satellite Town, Sargodha": {
+            "standard": "PKR 3236/sq ft",
+            "premium": "PKR 3471/sq ft",
+            "executive": "PKR 3173/sq ft"
           }
         }
       }
@@ -72985,118 +73000,109 @@
         "city": "Lahore",
         "area": "Model Town",
         "subarea": "Model Town",
-        "package": "standard",
-        "price_per_sqft": 3060.0,
         "location": "Model Town, Model Town, Lahore",
-        "price_raw": "PKR 3,060/sq ft"
+        "package": "standard",
+        "price_per_sqft": 3060,
+        "price_raw": "PKR 3060/sq ft"
       },
       {
         "city": "Lahore",
         "area": "Model Town",
         "subarea": "Model Town",
-        "package": "premium",
-        "price_per_sqft": 4580.0,
         "location": "Model Town, Model Town, Lahore",
-        "price_raw": "PKR 4,580/sq ft"
+        "package": "premium",
+        "price_per_sqft": 4580,
+        "price_raw": "PKR 4580/sq ft"
       },
       {
         "city": "Lahore",
         "area": "Model Town",
         "subarea": "Model Town",
-        "package": "executive",
-        "price_per_sqft": 5250.0,
         "location": "Model Town, Model Town, Lahore",
-        "price_raw": "PKR 5,250/sq ft"
+        "package": "executive",
+        "price_per_sqft": 5250,
+        "price_raw": "PKR 5250/sq ft"
       },
       {
         "city": "Lahore",
         "area": "State Life Housing",
         "subarea": "State Life Housing",
-        "package": "standard",
-        "price_per_sqft": 3590.0,
         "location": "State Life Housing, State Life Housing, Lahore",
-        "price_raw": "PKR 3,590/sq ft"
+        "package": "standard",
+        "price_per_sqft": 3590,
+        "price_raw": "PKR 3590/sq ft"
       },
       {
         "city": "Lahore",
         "area": "State Life Housing",
         "subarea": "State Life Housing",
-        "package": "premium",
-        "price_per_sqft": 4670.0,
         "location": "State Life Housing, State Life Housing, Lahore",
-        "price_raw": "PKR 4,670/sq ft"
+        "package": "premium",
+        "price_per_sqft": 4670,
+        "price_raw": "PKR 4670/sq ft"
       },
       {
         "city": "Lahore",
         "area": "State Life Housing",
         "subarea": "State Life Housing",
-        "package": "executive",
-        "price_per_sqft": 6430.0,
         "location": "State Life Housing, State Life Housing, Lahore",
-        "price_raw": "PKR 6,430/sq ft"
-      },
-      {
-        "city": "Lahore",
-        "area": "AL Kabir Town",
-        "subarea": "AL Kabir Town",
-        "package": "standard",
-        "price_per_sqft": 3400.0,
-        "location": "AL Kabir Town, AL Kabir Town, Lahore",
-        "price_raw": "PKR 3,400/sq ft"
-      },
-      {
-        "city": "Lahore",
-        "area": "AL Kabir Town",
-        "subarea": "AL Kabir Town",
-        "package": "premium",
-        "price_per_sqft": 4160.0,
-        "location": "AL Kabir Town, AL Kabir Town, Lahore",
-        "price_raw": "PKR 4,160/sq ft"
-      },
-      {
-        "city": "Lahore",
-        "area": "AL Kabir Town",
-        "subarea": "AL Kabir Town",
         "package": "executive",
-        "price_per_sqft": 5160.0,
+        "price_per_sqft": 6430,
+        "price_raw": "PKR 6430/sq ft"
+      },
+      {
+        "city": "Lahore",
+        "area": "AL Kabir Town",
+        "subarea": "AL Kabir Town",
         "location": "AL Kabir Town, AL Kabir Town, Lahore",
-        "price_raw": "PKR 5,160/sq ft"
-      },
-      {
-        "city": "Lahore",
-        "area": "Sui Gas Housing",
-        "subarea": "Sui Gas Housing",
         "package": "standard",
-        "price_per_sqft": 3180.0,
-        "location": "Sui Gas Housing, Sui Gas Housing, Lahore",
-        "price_raw": "PKR 3,180/sq ft"
+        "price_per_sqft": 3400,
+        "price_raw": "PKR 3400/sq ft"
       },
       {
         "city": "Lahore",
-        "area": "Sui Gas Housing",
-        "subarea": "Sui Gas Housing",
+        "area": "AL Kabir Town",
+        "subarea": "AL Kabir Town",
+        "location": "AL Kabir Town, AL Kabir Town, Lahore",
         "package": "premium",
-        "price_per_sqft": 4040.0,
-        "location": "Sui Gas Housing, Sui Gas Housing, Lahore",
-        "price_raw": "PKR 4,040/sq ft"
+        "price_per_sqft": 4160,
+        "price_raw": "PKR 4160/sq ft"
       },
       {
         "city": "Lahore",
-        "area": "Sui Gas Housing",
-        "subarea": "Sui Gas Housing",
+        "area": "AL Kabir Town",
+        "subarea": "AL Kabir Town",
+        "location": "AL Kabir Town, AL Kabir Town, Lahore",
         "package": "executive",
-        "price_per_sqft": 6010.0,
-        "location": "Sui Gas Housing, Sui Gas Housing, Lahore",
-        "price_raw": "PKR 6,010/sq ft"
+        "price_per_sqft": 5160,
+        "price_raw": "PKR 5160/sq ft"
       },
       {
-        "city": "Islamabad",
-        "area": "E-11",
-        "subarea": "E-11",
-        "location": "E-11, E-11, Islamabad",
+        "city": "Lahore",
+        "area": "Sui Gas Housing",
+        "subarea": "Sui Gas Housing",
+        "location": "Sui Gas Housing, Sui Gas Housing, Lahore",
+        "package": "standard",
+        "price_per_sqft": 3180,
+        "price_raw": "PKR 3180/sq ft"
+      },
+      {
+        "city": "Lahore",
+        "area": "Sui Gas Housing",
+        "subarea": "Sui Gas Housing",
+        "location": "Sui Gas Housing, Sui Gas Housing, Lahore",
         "package": "premium",
-        "price_per_sqft": 5528.0,
-        "price_raw": "PKR 5,528/sq ft"
+        "price_per_sqft": 4040,
+        "price_raw": "PKR 4040/sq ft"
+      },
+      {
+        "city": "Lahore",
+        "area": "Sui Gas Housing",
+        "subarea": "Sui Gas Housing",
+        "location": "Sui Gas Housing, Sui Gas Housing, Lahore",
+        "package": "executive",
+        "price_per_sqft": 6010,
+        "price_raw": "PKR 6010/sq ft"
       },
       {
         "city": "Islamabad",
@@ -73104,8 +73110,17 @@
         "subarea": "E-11",
         "location": "E-11, E-11, Islamabad",
         "package": "standard",
-        "price_per_sqft": 5492.0,
-        "price_raw": "PKR 5,492/sq ft"
+        "price_per_sqft": 5492,
+        "price_raw": "PKR 5492/sq ft"
+      },
+      {
+        "city": "Islamabad",
+        "area": "E-11",
+        "subarea": "E-11",
+        "location": "E-11, E-11, Islamabad",
+        "package": "premium",
+        "price_per_sqft": 5528,
+        "price_raw": "PKR 5528/sq ft"
       },
       {
         "city": "Islamabad",
@@ -73113,17 +73128,8 @@
         "subarea": "E-11",
         "location": "E-11, E-11, Islamabad",
         "package": "executive",
-        "price_per_sqft": 5427.0,
-        "price_raw": "PKR 5,427/sq ft"
-      },
-      {
-        "city": "Islamabad",
-        "area": "G-13",
-        "subarea": "G-13",
-        "location": "G-13, G-13, Islamabad",
-        "package": "premium",
-        "price_per_sqft": 5183.0,
-        "price_raw": "PKR 5,183/sq ft"
+        "price_per_sqft": 5427,
+        "price_raw": "PKR 5427/sq ft"
       },
       {
         "city": "Islamabad",
@@ -73131,8 +73137,17 @@
         "subarea": "G-13",
         "location": "G-13, G-13, Islamabad",
         "package": "standard",
-        "price_per_sqft": 5042.0,
-        "price_raw": "PKR 5,042/sq ft"
+        "price_per_sqft": 5042,
+        "price_raw": "PKR 5042/sq ft"
+      },
+      {
+        "city": "Islamabad",
+        "area": "G-13",
+        "subarea": "G-13",
+        "location": "G-13, G-13, Islamabad",
+        "package": "premium",
+        "price_per_sqft": 5183,
+        "price_raw": "PKR 5183/sq ft"
       },
       {
         "city": "Islamabad",
@@ -73140,44 +73155,35 @@
         "subarea": "G-13",
         "location": "G-13, G-13, Islamabad",
         "package": "executive",
-        "price_per_sqft": 5060.0,
-        "price_raw": "PKR 5,060/sq ft"
+        "price_per_sqft": 5060,
+        "price_raw": "PKR 5060/sq ft"
       },
       {
         "city": "Sargodha",
-        "area": "Cantt",
-        "subarea": "Cantt Area",
-        "location": "Cantt Area, Cantt, Sargodha",
-        "package": "premium",
-        "price_per_sqft": 3457.0,
-        "price_raw": "PKR 3,457/sq ft"
-      },
-      {
-        "city": "Sargodha",
-        "area": "Cantt",
+        "area": "Cantt Area",
         "subarea": "Cantt Area",
         "location": "Cantt Area, Cantt, Sargodha",
         "package": "standard",
-        "price_per_sqft": 3379.0,
-        "price_raw": "PKR 3,379/sq ft"
+        "price_per_sqft": 3379,
+        "price_raw": "PKR 3379/sq ft"
       },
       {
         "city": "Sargodha",
-        "area": "Cantt",
+        "area": "Cantt Area",
+        "subarea": "Cantt Area",
+        "location": "Cantt Area, Cantt, Sargodha",
+        "package": "premium",
+        "price_per_sqft": 3457,
+        "price_raw": "PKR 3457/sq ft"
+      },
+      {
+        "city": "Sargodha",
+        "area": "Cantt Area",
         "subarea": "Cantt Area",
         "location": "Cantt Area, Cantt, Sargodha",
         "package": "executive",
-        "price_per_sqft": 3554.0,
-        "price_raw": "PKR 3,554/sq ft"
-      },
-      {
-        "city": "Sargodha",
-        "area": "University Road",
-        "subarea": "University Road",
-        "location": "University Road, University Road, Sargodha",
-        "package": "premium",
-        "price_per_sqft": 3197.0,
-        "price_raw": "PKR 3,197/sq ft"
+        "price_per_sqft": 3554,
+        "price_raw": "PKR 3554/sq ft"
       },
       {
         "city": "Sargodha",
@@ -73185,8 +73191,17 @@
         "subarea": "University Road",
         "location": "University Road, University Road, Sargodha",
         "package": "standard",
-        "price_per_sqft": 3393.0,
-        "price_raw": "PKR 3,393/sq ft"
+        "price_per_sqft": 3393,
+        "price_raw": "PKR 3393/sq ft"
+      },
+      {
+        "city": "Sargodha",
+        "area": "University Road",
+        "subarea": "University Road",
+        "location": "University Road, University Road, Sargodha",
+        "package": "premium",
+        "price_per_sqft": 3197,
+        "price_raw": "PKR 3197/sq ft"
       },
       {
         "city": "Sargodha",
@@ -73194,17 +73209,8 @@
         "subarea": "University Road",
         "location": "University Road, University Road, Sargodha",
         "package": "executive",
-        "price_per_sqft": 3172.0,
-        "price_raw": "PKR 3,172/sq ft"
-      },
-      {
-        "city": "Sargodha",
-        "area": "Satellite Town",
-        "subarea": "Satellite Town",
-        "location": "Satellite Town, Satellite Town, Sargodha",
-        "package": "premium",
-        "price_per_sqft": 3471.0,
-        "price_raw": "PKR 3,471/sq ft"
+        "price_per_sqft": 3172,
+        "price_raw": "PKR 3172/sq ft"
       },
       {
         "city": "Sargodha",
@@ -73212,8 +73218,17 @@
         "subarea": "Satellite Town",
         "location": "Satellite Town, Satellite Town, Sargodha",
         "package": "standard",
-        "price_per_sqft": 3236.0,
-        "price_raw": "PKR 3,236/sq ft"
+        "price_per_sqft": 3236,
+        "price_raw": "PKR 3236/sq ft"
+      },
+      {
+        "city": "Sargodha",
+        "area": "Satellite Town",
+        "subarea": "Satellite Town",
+        "location": "Satellite Town, Satellite Town, Sargodha",
+        "package": "premium",
+        "price_per_sqft": 3471,
+        "price_raw": "PKR 3471/sq ft"
       },
       {
         "city": "Sargodha",
@@ -73221,8 +73236,35 @@
         "subarea": "Satellite Town",
         "location": "Satellite Town, Satellite Town, Sargodha",
         "package": "executive",
-        "price_per_sqft": 3173.0,
-        "price_raw": "PKR 3,173/sq ft"
+        "price_per_sqft": 3173,
+        "price_raw": "PKR 3173/sq ft"
+      },
+      {
+        "city": "Islamabad",
+        "area": "F-7",
+        "subarea": "F-7",
+        "location": "Sector B",
+        "package": "standard",
+        "price_per_sqft": 4000,
+        "price_raw": "PKR 4000/sq ft"
+      },
+      {
+        "city": "Islamabad",
+        "area": "F-7",
+        "subarea": "F-7",
+        "location": "Sector B",
+        "package": "premium",
+        "price_per_sqft": 5500,
+        "price_raw": "PKR 5500/sq ft"
+      },
+      {
+        "city": "Islamabad",
+        "area": "F-7",
+        "subarea": "F-7",
+        "location": "Sector B",
+        "package": "executive",
+        "price_per_sqft": 6500,
+        "price_raw": "PKR 6500/sq ft"
       }
     ],
     "package_scope": {
@@ -73274,50 +73316,7 @@
         "paint": "Dulux"
       }
     },
-    "estimated_cost_range": {
-      "3_marla": {
-        "standard": {
-          "min": 3200000,
-          "max": 3800000
-        },
-        "premium": {
-          "min": 4500000,
-          "max": 5200000
-        },
-        "executive": {
-          "min": 5800000,
-          "max": null
-        }
-      },
-      "5_marla": {
-        "standard": {
-          "min": 5200000,
-          "max": 6000000
-        },
-        "premium": {
-          "min": 7200000,
-          "max": 8000000
-        },
-        "executive": {
-          "min": 9000000,
-          "max": null
-        }
-      },
-      "10_marla": {
-        "standard": {
-          "min": 10500000,
-          "max": 12000000
-        },
-        "premium": {
-          "min": 14500000,
-          "max": 16000000
-        },
-        "executive": {
-          "min": 18000000,
-          "max": null
-        }
-      }
-    },
+    "estimated_cost_range": {},
     "payment_terms": {
       "advance_percentage": 25,
       "installments": "milestone",
