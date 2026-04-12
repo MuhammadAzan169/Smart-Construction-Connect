@@ -1,5 +1,29 @@
 [
   {
+    "timestamp": "2026-04-12T21:32:34.352848+00:00",
+    "action": "packages_updated",
+    "target": "karachi-builders",
+    "details": "Company karachi-builders updated packages & pricing"
+  },
+  {
+    "timestamp": "2026-04-12T21:32:33.923124+00:00",
+    "action": "company_profile_updated",
+    "target": "karachi-builders",
+    "details": "Company karachi-builders updated their profile"
+  },
+  {
+    "timestamp": "2026-04-12T21:32:28.460630+00:00",
+    "action": "packages_updated",
+    "target": "karachi-builders",
+    "details": "Company karachi-builders updated packages & pricing"
+  },
+  {
+    "timestamp": "2026-04-12T21:32:27.270335+00:00",
+    "action": "company_profile_updated",
+    "target": "karachi-builders",
+    "details": "Company karachi-builders updated their profile"
+  },
+  {
     "timestamp": "2026-04-12T21:22:58.142875+00:00",
     "action": "ai_chat",
     "target": "ahmed@example.com",

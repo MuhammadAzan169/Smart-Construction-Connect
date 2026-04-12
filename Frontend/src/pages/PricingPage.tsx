@@ -267,6 +267,8 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
   const [saving, setSaving] = useState(false);
   const [newPackageLabel, setNewPackageLabel] = useState("");
   const [newPlotSize, setNewPlotSize] = useState("");
+  const [customCityRows, setCustomCityRows] = useState<Set<string>>(new Set());
+  const [customSocietyRows, setCustomSocietyRows] = useState<Set<string>>(new Set());
   const profileRef = useRef<Record<string, unknown> | null>(null);
 
   useEffect(() => {
@@ -346,7 +348,7 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
     const id = `op-${Date.now()}`;
     const rates: Record<string, number | null> = {};
     for (const p of pricing.packages) rates[p.id] = null;
-    setPricing((prev) => ({ ...prev, areaRates: [...prev.areaRates, { id, city: "", society: "", phase: "", rates }] }));
+    setPricing((prev) => ({ ...prev, areaRates: [{ id, city: "", society: "", phase: "", rates }, ...prev.areaRates] }));
   };
 
   const removeArea = (id: string) => setPricing((prev) => ({ ...prev, areaRates: prev.areaRates.filter((r) => r.id !== id) }));
@@ -471,10 +473,12 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
               <div className="mt-4 grid gap-4">
                 {pricing.areaRates.map((row, idx) => {
                   const cityKnown = (cityOptions as readonly string[]).includes(row.city);
-                  const citySelectValue = row.city ? (cityKnown ? row.city : "__custom__") : "__none__";
+                  const isCustomCityMode = customCityRows.has(row.id) || (row.city !== "" && !cityKnown);
+                  const citySelectValue = isCustomCityMode ? "__custom__" : (row.city || "__none__");
                   const societyOpts = cityKnown ? (societiesByCity[row.city] ?? []) : [];
                   const societyKnown = cityKnown && societyOpts.includes(row.society);
-                  const societySelectValue = row.society ? (societyKnown ? row.society : "__custom__") : "__none__";
+                  const isCustomSocietyMode = customSocietyRows.has(row.id) || (row.society !== "" && !societyKnown);
+                  const societySelectValue = isCustomSocietyMode ? "__custom__" : (row.society || "__none__");
                   return (
                     <div key={row.id} className="rounded-2xl border border-border bg-background/30 p-4">
                       <div className="flex items-start justify-between">
@@ -486,40 +490,85 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
                       <div className="mt-3 grid gap-3 sm:grid-cols-3">
                         <div className="space-y-2">
                           <Label className="text-xs text-muted-foreground">City</Label>
-                          <Select value={citySelectValue} onValueChange={(v) => {
-                            if (v === "__none__") { patchArea(row.id, { city: "", society: "" }); return; }
-                            if (v === "__custom__") { if (cityKnown) patchArea(row.id, { city: "", society: "" }); return; }
-                            patchArea(row.id, { city: v, society: societiesByCity[v]?.includes(row.society) ? row.society : "" });
-                          }}>
-                            <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select city" /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="__none__">Not set</SelectItem>
-                              {(cityOptions as readonly string[]).map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                              <SelectItem value="__custom__">Other (type manually)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          {citySelectValue === "__custom__" && <Input value={row.city} onChange={(e) => patchArea(row.id, { city: e.target.value, society: "" })} className="bg-background/40" placeholder="Enter city" />}
+                          {citySelectValue === "__custom__" ? (
+                            <div className="space-y-1.5">
+                              <div className="flex items-center gap-1.5">
+                                <Input
+                                  autoFocus
+                                  value={row.city}
+                                  onChange={(e) => patchArea(row.id, { city: e.target.value, society: "" })}
+                                  className="bg-background/40 flex-1"
+                                  placeholder="e.g. Sialkot, Mirpur, Abbottabad…"
+                                />
+                                <Button
+                                  type="button" variant="ghost" size="sm"
+                                  className="h-9 px-2 text-xs text-muted-foreground shrink-0"
+                                  title="Back to list"
+                                  onClick={() => { setCustomCityRows((prev) => { const s = new Set(prev); s.delete(row.id); return s; }); patchArea(row.id, { city: "", society: "" }); }}
+                                >
+                                  <RotateCcw className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                              <p className="text-[11px] text-muted-foreground leading-tight">Type your city name and press Tab to move on.</p>
+                            </div>
+                          ) : (
+                            <Select value={citySelectValue} onValueChange={(v) => {
+                              if (v === "__none__") { patchArea(row.id, { city: "", society: "" }); return; }
+                              if (v === "__custom__") { setCustomCityRows((prev) => new Set([...prev, row.id])); patchArea(row.id, { city: "", society: "" }); return; }
+                              patchArea(row.id, { city: v, society: societiesByCity[v]?.includes(row.society) ? row.society : "" });
+                            }}>
+                              <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select city" /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="__none__">Not set</SelectItem>
+                                {(cityOptions as readonly string[]).map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                <SelectItem value="__custom__" className="text-primary font-medium">✎ Type a custom city…</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label className="text-xs text-muted-foreground">Society / Area</Label>
                           {cityKnown ? (
-                            <>
+                            societySelectValue === "__custom__" ? (
+                              <div className="space-y-1.5">
+                                <div className="flex items-center gap-1.5">
+                                  <Input
+                                    autoFocus
+                                    value={row.society}
+                                    onChange={(e) => patchArea(row.id, { society: e.target.value })}
+                                    className="bg-background/40 flex-1"
+                                    placeholder="e.g. DHA Phase 5, Gulberg III…"
+                                  />
+                                  <Button
+                                    type="button" variant="ghost" size="sm"
+                                    className="h-9 px-2 text-xs text-muted-foreground shrink-0"
+                                    title="Back to list"
+                                    onClick={() => { setCustomSocietyRows((prev) => { const s = new Set(prev); s.delete(row.id); return s; }); patchArea(row.id, { society: "" }); }}
+                                  >
+                                    <RotateCcw className="h-3.5 w-3.5" />
+                                  </Button>
+                                </div>
+                                <p className="text-[11px] text-muted-foreground leading-tight">Type a society, area, or neighbourhood name.</p>
+                              </div>
+                            ) : (
                               <Select value={societySelectValue} onValueChange={(v) => {
                                 if (v === "__none__") { patchArea(row.id, { society: "" }); return; }
-                                if (v === "__custom__") { if (societyKnown) patchArea(row.id, { society: "" }); return; }
+                                if (v === "__custom__") { setCustomSocietyRows((prev) => new Set([...prev, row.id])); patchArea(row.id, { society: "" }); return; }
                                 patchArea(row.id, { society: v });
                               }}>
                                 <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select society" /></SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="__none__">Not set</SelectItem>
                                   {societyOpts.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                                  <SelectItem value="__custom__">Other (type manually)</SelectItem>
+                                  <SelectItem value="__custom__" className="text-primary font-medium">✎ Type a custom society…</SelectItem>
                                 </SelectContent>
                               </Select>
-                              {societySelectValue === "__custom__" && <Input value={row.society} onChange={(e) => patchArea(row.id, { society: e.target.value })} className="bg-background/40" placeholder="Enter society" />}
-                            </>
+                            )
                           ) : (
-                            <Input value={row.society} onChange={(e) => patchArea(row.id, { society: e.target.value })} className="bg-background/40" placeholder="Enter society" />
+                            <div className="space-y-1.5">
+                              <Input value={row.society} onChange={(e) => patchArea(row.id, { society: e.target.value })} className="bg-background/40" placeholder="e.g. DHA Phase 5, Gulberg III…" />
+                              <p className="text-[11px] text-muted-foreground leading-tight">Set city first to see suggestions, or type freely.</p>
+                            </div>
                           )}
                         </div>
                         <div className="space-y-2">
@@ -614,17 +663,25 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
                           <div key={field} className="space-y-2">
                             <Label className="text-xs text-muted-foreground capitalize">{field}</Label>
                             {isCustomVal ? (
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  value={val === "__none__" ? "" : val}
-                                  onChange={(e) => updateScope(pkg.id, field, e.target.value)}
-                                  placeholder="Type custom value…"
-                                  className="bg-background/40 h-9 text-sm flex-1"
-                                  autoFocus
-                                />
-                                <Button type="button" variant="ghost" size="sm" className="h-9 px-2 text-xs text-muted-foreground" onClick={() => updateScope(pkg.id, field, "")}>
-                                  Cancel
-                                </Button>
+                              <div className="space-y-1.5">
+                                <div className="flex items-center gap-1.5">
+                                  <Input
+                                    value={val === "__none__" ? "" : val}
+                                    onChange={(e) => updateScope(pkg.id, field, e.target.value)}
+                                    placeholder={`Custom ${field} description…`}
+                                    className="bg-background/40 h-9 text-sm flex-1"
+                                    autoFocus
+                                  />
+                                  <Button
+                                    type="button" variant="ghost" size="sm"
+                                    className="h-9 px-2 text-xs text-muted-foreground shrink-0"
+                                    title="Back to list"
+                                    onClick={() => updateScope(pkg.id, field, "")}
+                                  >
+                                    <RotateCcw className="h-3.5 w-3.5" />
+                                  </Button>
+                                </div>
+                                <p className="text-[11px] text-muted-foreground leading-tight">Type a custom value, or click <RotateCcw className="inline h-2.5 w-2.5" /> to go back.</p>
                               </div>
                             ) : (
                             <Select value={val} onValueChange={(v) => { if (v === "__custom__") { updateScope(pkg.id, field, " "); } else { updateScope(pkg.id, field, v === "__none__" ? "" : v); } }}>
@@ -632,7 +689,7 @@ function CompanyPricingEditor({ email, companySlug }: { email: string; companySl
                               <SelectContent>
                                 <SelectItem value="__none__">Not set</SelectItem>
                                 {knownOpts.map((opt) => <SelectItem key={opt} value={opt}>{humanizeToken(opt)}</SelectItem>)}
-                                <SelectItem value="__custom__" className="text-primary">Custom…</SelectItem>
+                                <SelectItem value="__custom__" className="text-primary font-medium">✎ Type a custom value…</SelectItem>
                               </SelectContent>
                             </Select>
                             )}

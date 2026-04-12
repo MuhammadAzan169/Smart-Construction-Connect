@@ -447,6 +447,64 @@ const paymentOptions = getPaymentTermOptions(companyDataset);
 
 // ─── SettingsEditor ────────────────────────────────────────────────────────────
 
+/** Select dropdown with a "Custom…" option that reveals an inline text input. */
+function SelectWithCustom({
+  value,
+  onValueChange,
+  placeholder = "Select",
+  notSetLabel = "Not set",
+  options,
+  className = "bg-background/40",
+  customPlaceholder = "Type a custom value…",
+}: {
+  value: string;
+  onValueChange: (v: string) => void;
+  placeholder?: string;
+  notSetLabel?: string;
+  options: { value: string; label: string }[];
+  className?: string;
+  customPlaceholder?: string;
+}) {
+  const [customMode, setCustomMode] = useState(false);
+  const knownValues = useMemo(() => new Set(options.map((o) => o.value)), [options]);
+  const isCustom = customMode || (value !== "__none__" && value !== "" && !knownValues.has(value));
+
+  if (isCustom) {
+    return (
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1.5">
+          <Input
+            value={value === "__none__" ? "" : value}
+            onChange={(e) => onValueChange(e.target.value)}
+            placeholder={customPlaceholder}
+            className={`${className} h-9 text-sm flex-1`}
+            autoFocus
+          />
+          <Button
+            type="button" variant="ghost" size="sm"
+            className="h-9 px-2 text-xs text-muted-foreground shrink-0"
+            title="Back to list"
+            onClick={() => { setCustomMode(false); onValueChange("__none__"); }}
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+        <p className="text-[11px] text-muted-foreground leading-tight">Type a custom value, or click ✕ to choose from the list.</p>
+      </div>
+    );
+  }
+  return (
+    <Select value={value} onValueChange={(v) => { if (v === "__custom__") { setCustomMode(true); onValueChange(""); } else { onValueChange(v); } }}>
+      <SelectTrigger className={className}><SelectValue placeholder={placeholder} /></SelectTrigger>
+      <SelectContent>
+        <SelectItem value="__none__">{notSetLabel}</SelectItem>
+        {options.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+        <SelectItem value="__custom__" className="text-primary font-medium">✎ Type a custom value…</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+}
+
 function SettingsEditor({ email, companySlug }: { email: string; companySlug?: string }) {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -570,6 +628,15 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
   }) {
     const customValues = selected.filter((v) => !options.includes(v));
     const inputKey = `chk-${fieldKey}`;
+    const inputVal = customInputs[inputKey] ?? "";
+    const canAdd = inputVal.trim().length > 0 && !selected.includes(inputVal.trim());
+    const doAdd = () => {
+      const val = inputVal.trim();
+      if (val && !selected.includes(val)) {
+        onToggle(val, true);
+        setCustomInput(inputKey, "");
+      }
+    };
     return (
       <div className={`mt-2 grid gap-2 ${columns}`}>
         {options.map((opt) => (
@@ -584,86 +651,31 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
             <span className="text-primary">{cv}</span>
           </label>
         ))}
-        <div className="flex items-center gap-2 col-span-full">
-          <Input
-            value={customInputs[inputKey] ?? ""}
-            onChange={(e) => setCustomInput(inputKey, e.target.value)}
-            placeholder="Other (type custom)…"
-            className="bg-background/40 h-8 text-xs max-w-[14rem]"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                const val = (customInputs[inputKey] ?? "").trim();
-                if (val && !selected.includes(val)) {
-                  onToggle(val, true);
-                  setCustomInput(inputKey, "");
-                }
-              }
-            }}
-          />
-          <Button
-            type="button" variant="secondary" size="sm" className="h-8 px-2"
-            disabled={!(customInputs[inputKey] ?? "").trim()}
-            onClick={() => {
-              const val = (customInputs[inputKey] ?? "").trim();
-              if (val && !selected.includes(val)) {
-                onToggle(val, true);
-                setCustomInput(inputKey, "");
-              }
-            }}
-          >
-            <Plus className="h-3 w-3" />
-          </Button>
+        <div className="col-span-full mt-1 space-y-1.5">
+          <div className="flex items-center gap-2">
+            <Input
+              value={inputVal}
+              onChange={(e) => setCustomInput(inputKey, e.target.value)}
+              placeholder="Add a custom option and press Enter…"
+              className="bg-background/40 h-9 text-sm flex-1"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") { e.preventDefault(); doAdd(); }
+              }}
+            />
+            <Button
+              type="button" variant="secondary" size="sm"
+              className="h-9 px-3 gap-1.5 text-xs shrink-0"
+              disabled={!canAdd}
+              onClick={doAdd}
+            >
+              <Plus className="h-3.5 w-3.5" /> Add
+            </Button>
+          </div>
+          {inputVal.trim().length > 0 && selected.includes(inputVal.trim()) && (
+            <p className="text-[11px] text-amber-500 leading-tight">"{inputVal.trim()}" is already selected.</p>
+          )}
         </div>
       </div>
-    );
-  }
-
-  /** Select dropdown with a "Custom…" option that reveals an inline text input. */
-  function SelectWithCustom({
-    value,
-    onValueChange,
-    placeholder = "Select",
-    notSetLabel = "Not set",
-    options,
-    className = "bg-background/40",
-  }: {
-    value: string;
-    onValueChange: (v: string) => void;
-    placeholder?: string;
-    notSetLabel?: string;
-    options: { value: string; label: string }[];
-    className?: string;
-  }) {
-    const [customMode, setCustomMode] = useState(false);
-    const knownValues = useMemo(() => new Set(options.map((o) => o.value)), [options]);
-    const isCustom = customMode || (value !== "__none__" && value !== "" && !knownValues.has(value));
-
-    if (isCustom) {
-      return (
-        <div className="flex items-center gap-2">
-          <Input
-            value={value === "__none__" ? "" : value}
-            onChange={(e) => onValueChange(e.target.value)}
-            placeholder="Type custom value…"
-            className={`${className} h-9 text-sm flex-1`}
-            autoFocus
-          />
-          <Button type="button" variant="ghost" size="sm" className="h-9 px-2 text-xs text-muted-foreground" onClick={() => { setCustomMode(false); onValueChange("__none__"); }}>
-            Cancel
-          </Button>
-        </div>
-      );
-    }
-    return (
-      <Select value={value} onValueChange={(v) => { if (v === "__custom__") { setCustomMode(true); onValueChange(""); } else { onValueChange(v); } }}>
-        <SelectTrigger className={className}><SelectValue placeholder={placeholder} /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value="__none__">{notSetLabel}</SelectItem>
-          {options.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-          <SelectItem value="__custom__" className="text-primary">Custom…</SelectItem>
-        </SelectContent>
-      </Select>
     );
   }
 
@@ -671,7 +683,7 @@ function SettingsEditor({ email, companySlug }: { email: string; companySlug?: s
     const id = `op-${Date.now()}`;
     const rates: Record<string, number | null> = {};
     for (const p of packages) rates[p.id] = null;
-    setSettings((prev) => ({ ...prev, operational_area_rates: [...prev.operational_area_rates, { id, city: "", society: "", phase: "", rates }] }));
+    setSettings((prev) => ({ ...prev, operational_area_rates: [{ id, city: "", society: "", phase: "", rates }, ...prev.operational_area_rates] }));
   };
 
   const removeArea = (id: string) =>
@@ -2317,30 +2329,6 @@ function SupplierSettingsEditor({ email, supplierSlug }: { email: string; suppli
           </Button>
         </div>
       </div>
-    );
-  }
-
-  function SelectWithCustom({ value, onValueChange, placeholder = "Select", notSetLabel = "Not set", options, className = "bg-background/40" }: { value: string; onValueChange: (v: string) => void; placeholder?: string; notSetLabel?: string; options: { value: string; label: string }[]; className?: string; }) {
-    const [customMode, setCustomMode] = useState(false);
-    const knownValues = useMemo(() => new Set(options.map((o) => o.value)), [options]);
-    const isCustom = customMode || (value !== "__none__" && value !== "" && !knownValues.has(value));
-    if (isCustom) {
-      return (
-        <div className="flex items-center gap-2">
-          <Input value={value === "__none__" ? "" : value} onChange={(e) => onValueChange(e.target.value)} placeholder="Type custom value…" className={`${className} h-9 text-sm flex-1`} autoFocus />
-          <Button type="button" variant="ghost" size="sm" className="h-9 px-2 text-xs text-muted-foreground" onClick={() => { setCustomMode(false); onValueChange("__none__"); }}>Cancel</Button>
-        </div>
-      );
-    }
-    return (
-      <Select value={value} onValueChange={(v) => { if (v === "__custom__") { setCustomMode(true); onValueChange(""); } else { onValueChange(v); } }}>
-        <SelectTrigger className={className}><SelectValue placeholder={placeholder} /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value="__none__">{notSetLabel}</SelectItem>
-          {options.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-          <SelectItem value="__custom__" className="text-primary">Custom…</SelectItem>
-        </SelectContent>
-      </Select>
     );
   }
 

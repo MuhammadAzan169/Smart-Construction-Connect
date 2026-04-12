@@ -58,6 +58,7 @@ export default function InventoryPage() {
   const [dirty, setDirty] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
   const [editingMaterialIdx, setEditingMaterialIdx] = useState<number>(-1);
+  const [customCategoryMode, setCustomCategoryMode] = useState(false);
   const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
   const materialImageInputRef = useRef<HTMLInputElement>(null);
 
@@ -159,6 +160,7 @@ export default function InventoryPage() {
     setMaterials(newMats);
     setEditingMaterial(null);
     setEditingMaterialIdx(-1);
+    setCustomCategoryMode(false);
     await saveMaterials(newMats);
   };
 
@@ -196,7 +198,7 @@ export default function InventoryPage() {
         <div className="flex flex-wrap gap-2">
           <Button
             type="button"
-            onClick={() => { setEditingMaterial({ ...emptyMaterial }); setEditingMaterialIdx(-1); }}
+            onClick={() => { setCustomCategoryMode(false); setEditingMaterial({ ...emptyMaterial }); setEditingMaterialIdx(-1); }}
           >
             <Plus className="h-4 w-4" /> Add Material
           </Button>
@@ -237,32 +239,46 @@ export default function InventoryPage() {
               {(() => {
                 const catVal = editingMaterial.category || "";
                 const isCustomCat = catVal !== "" && !categoryOptions.includes(catVal);
-                const selectVal = isCustomCat ? "__custom__" : (catVal || "__none__");
+                const selectVal = (isCustomCat || customCategoryMode) ? "__custom__" : (catVal || "__none__");
                 return (
                   <>
-                    <Select
-                      value={selectVal}
-                      onValueChange={(v) => {
-                        if (v === "__none__") setEditingMaterial((prev) => prev ? { ...prev, category: "" } : prev);
-                        else if (v === "__custom__") setEditingMaterial((prev) => prev ? { ...prev, category: "" } : prev);
-                        else setEditingMaterial((prev) => prev ? { ...prev, category: v } : prev);
-                      }}
-                    >
-                      <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select category" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__none__">Select category</SelectItem>
-                        {categoryOptions.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                        <SelectItem value="__custom__" className="text-primary">Custom…</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {(isCustomCat || selectVal === "__custom__") && (
-                      <Input
-                        autoFocus
-                        value={catVal}
-                        onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, category: e.target.value } : prev)}
-                        placeholder="Type custom category…"
-                        className="mt-1.5 bg-background/40"
-                      />
+                    {selectVal === "__custom__" ? (
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-1.5">
+                          <Input
+                            autoFocus
+                            value={catVal}
+                            onChange={(e) => setEditingMaterial((prev) => prev ? { ...prev, category: e.target.value } : prev)}
+                            placeholder="e.g. Electrical, Plumbing, Finishing…"
+                            className="bg-background/40 flex-1"
+                          />
+                          <Button
+                            type="button" variant="ghost" size="sm"
+                            className="h-9 px-2 text-muted-foreground shrink-0"
+                            title="Back to category list"
+                            onClick={() => { setCustomCategoryMode(false); setEditingMaterial((prev) => prev ? { ...prev, category: "" } : prev); }}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-tight">Type a custom category, or click ✕ to choose from the list.</p>
+                      </div>
+                    ) : (
+                      <Select
+                        value={selectVal}
+                        onValueChange={(v) => {
+                          if (v === "__none__") setEditingMaterial((prev) => prev ? { ...prev, category: "" } : prev);
+                          else if (v === "__custom__") setCustomCategoryMode(true);
+                          else setEditingMaterial((prev) => prev ? { ...prev, category: v } : prev);
+                        }}
+                      >
+                        <SelectTrigger className="bg-background/40"><SelectValue placeholder="Select category" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__none__">Select category</SelectItem>
+                          {categoryOptions.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                          <SelectItem value="__custom__" className="text-primary font-medium">✎ Type a custom category…</SelectItem>
+                        </SelectContent>
+                      </Select>
                     )}
                   </>
                 );
@@ -373,7 +389,7 @@ export default function InventoryPage() {
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => { setEditingMaterial(null); setEditingMaterialIdx(-1); }}
+              onClick={() => { setCustomCategoryMode(false); setEditingMaterial(null); setEditingMaterialIdx(-1); }}
             >
               Cancel
             </Button>
@@ -400,7 +416,7 @@ export default function InventoryPage() {
             variant="secondary"
             size="sm"
             className="mt-4"
-            onClick={() => { setEditingMaterial({ ...emptyMaterial }); setEditingMaterialIdx(-1); }}
+            onClick={() => { setCustomCategoryMode(false); setEditingMaterial({ ...emptyMaterial }); setEditingMaterialIdx(-1); }}
           >
             Add your first material
           </Button>
@@ -480,6 +496,7 @@ export default function InventoryPage() {
                       variant="secondary"
                       size="sm"
                       onClick={() => {
+                        setCustomCategoryMode(false);
                         setEditingMaterial({ ...emptyMaterial, ...m, image_urls: [...(m.image_urls || [])] });
                         setEditingMaterialIdx(idx);
                         window.scrollTo({ top: 0, behavior: "smooth" });

@@ -72928,7 +72928,7 @@
         },
         "State Life Housing": {
           "State Life Housing, State Life Housing, Lahore": {
-            "standard": "",
+            "standard": "PKR 0/sq ft",
             "premium": "PKR 4670/sq ft",
             "executive": "PKR 6430/sq ft"
           }
@@ -73030,7 +73030,7 @@
         "location": "State Life Housing, State Life Housing, Lahore",
         "package": "standard",
         "price_per_sqft": 0,
-        "price_raw": ""
+        "price_raw": "PKR 0/sq ft"
       },
       {
         "city": "Lahore",
