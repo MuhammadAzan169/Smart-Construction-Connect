@@ -1,5 +1,23 @@
 [
   {
+    "timestamp": "2026-05-21T19:32:48.201474+00:00",
+    "action": "verification_updated",
+    "target": "arabian-sea-developers",
+    "details": "Admin set registration_certificate to approved for company arabian-sea-developers"
+  },
+  {
+    "timestamp": "2026-05-21T19:32:44.088585+00:00",
+    "action": "verification_updated",
+    "target": "arabian-sea-developers",
+    "details": "Admin set ntn_certificate to approved for company arabian-sea-developers"
+  },
+  {
+    "timestamp": "2026-05-21T19:32:41.333976+00:00",
+    "action": "verification_updated",
+    "target": "arabian-sea-developers",
+    "details": "Admin set secp_certificate to approved for company arabian-sea-developers"
+  },
+  {
     "timestamp": "2026-04-12T22:49:43.609085+00:00",
     "action": "chat_deleted",
     "target": "admin@smartconnect.pk",

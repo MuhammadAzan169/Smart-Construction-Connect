@@ -11141,18 +11141,18 @@
       "budget_accuracy": 0.76,
       "quality_consistency": 0.74
     },
-    "verification_status": "pending",
+    "verification_status": "verified",
     "verification": {
       "secp_certificate": {
-        "status": "pending",
+        "status": "approved",
         "notes": ""
       },
       "ntn_certificate": {
-        "status": "pending",
+        "status": "approved",
         "notes": ""
       },
       "registration_certificate": {
-        "status": "pending",
+        "status": "approved",
         "notes": ""
       }
     },
