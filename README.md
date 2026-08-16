@@ -130,6 +130,11 @@ Full, step-by-step instructions live with each part:
   [`Backend/DEPLOY_SUPABASE.md`](Backend/DEPLOY_SUPABASE.md) for the Supabase
   Postgres + Storage setup and one-time data migration.
 - **Frontend → Vercel:** [`Frontend/README.md`](Frontend/README.md).
+- **Containers / Kubernetes / EKS:**
+  [`docs/Smart-Construction-Connect-Infrastructure-Handbook.pdf`](docs/Smart-Construction-Connect-Infrastructure-Handbook.pdf)
+  — storage architecture (what is durable, what is ephemeral), reference
+  Dockerfiles (the repo ships none), env-var reference, ingress/WebSocket
+  requirements, probes and resource sizing.
 
 ## Data in this repository
 
