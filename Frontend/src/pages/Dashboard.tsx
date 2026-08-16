@@ -22,7 +22,6 @@ import {
   Building2,
   CheckCircle2,
   Clock,
-  Crown,
   Database,
   FileCheck,
   FileText,
@@ -110,7 +109,7 @@ function ClientDashboard() {
       {/* ── Hero Header ─────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card p-6">
         <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-10 start-1/4 h-40 w-72 rounded-full bg-blue-500/8 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-10 left-1/4 h-40 w-72 rounded-full bg-blue-500/8 blur-2xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-amber-400 shadow-lg shadow-primary/25">
@@ -303,44 +302,6 @@ function ClientDashboard() {
             )}
           </GlassCard>
 
-          {/* Upgrade Card */}
-          <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-amber-500/5 to-transparent p-5">
-            <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-primary/15 blur-2xl" />
-            <div className="relative">
-              <div className="mb-3 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/20 text-primary">
-                  <Crown className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">Upgrade to Premium</p>
-                  <p className="text-[10px] text-muted-foreground">Unlock the full platform</p>
-                </div>
-              </div>
-              <div className="mb-4 space-y-1.5">
-                <div className="flex items-center justify-between rounded-lg border border-border/50 bg-background/30 px-2.5 py-2">
-                  <span className="text-xs font-medium text-foreground">Basic</span>
-                  <span className="text-xs font-bold text-muted-foreground">Free</span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-2 ring-1 ring-primary/20">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-medium text-foreground">Pro</span>
-                    <span className="rounded-full bg-primary/20 px-1.5 py-0.5 text-[9px] font-semibold text-primary">Popular</span>
-                  </div>
-                  <span className="text-xs font-bold text-primary">PKR 4,999/mo</span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/8 px-2.5 py-2">
-                  <span className="text-xs font-medium text-foreground">Premium</span>
-                  <span className="text-xs font-bold text-amber-500">PKR 12,999/mo</span>
-                </div>
-              </div>
-              <Button asChild size="sm" className="w-full bg-gradient-to-r from-primary to-amber-500 text-primary-foreground hover:opacity-90">
-                <Link to="/plans" className="flex items-center justify-center gap-1.5">
-                  <Sparkles className="h-3.5 w-3.5" /> View Plans
-                </Link>
-              </Button>
-            </div>
-          </div>
-
         </div>
       </div>
     </motion.div>
@@ -409,7 +370,7 @@ function CompanyDashboard() {
       {/* ── Hero Header ─────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card p-6">
         <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-emerald-500/8 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-8 start-1/4 h-40 w-64 rounded-full bg-cyan-500/6 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-8 left-1/4 h-40 w-64 rounded-full bg-cyan-500/6 blur-2xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/20">
@@ -504,8 +465,8 @@ function CompanyDashboard() {
                 <Button asChild size="sm" variant="secondary"><Link to="/pricing">Set up packages</Link></Button>
               </div>
             ) : (
-              <div className="relative ps-4">
-                <div className="absolute start-[18px] top-2 bottom-2 w-px bg-border" />
+              <div className="relative pl-4">
+                <div className="absolute left-[18px] top-2 bottom-2 w-px bg-border" />
                 <div className="space-y-1">
                   {recentRequests.map((req, i) => {
                     const style = reqStatusStyle[req.status] ?? reqStatusStyle.pending;
@@ -572,43 +533,6 @@ function CompanyDashboard() {
             </div>
           </GlassCard>
 
-          {/* Upgrade Card */}
-          <div className="relative overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-cyan-500/5 to-transparent p-5">
-            <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-emerald-500/15 blur-2xl" />
-            <div className="relative">
-              <div className="mb-3 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
-                  <Crown className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">Upgrade Plan</p>
-                  <p className="text-[10px] text-muted-foreground">Grow your business</p>
-                </div>
-              </div>
-              <div className="mb-4 space-y-1.5">
-                <div className="flex items-center justify-between rounded-lg border border-border/50 bg-background/30 px-2.5 py-2">
-                  <span className="text-xs font-medium text-foreground">Basic</span>
-                  <span className="text-xs font-bold text-muted-foreground">Free</span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-2 ring-1 ring-emerald-500/20">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-medium text-foreground">Pro</span>
-                    <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400">Popular</span>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-400">PKR 4,999/mo</span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg border border-cyan-500/30 bg-cyan-500/8 px-2.5 py-2">
-                  <span className="text-xs font-medium text-foreground">Premium</span>
-                  <span className="text-xs font-bold text-cyan-400">PKR 12,999/mo</span>
-                </div>
-              </div>
-              <Button asChild size="sm" className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 text-white hover:opacity-90">
-                <Link to="/plans" className="flex items-center justify-center gap-1.5">
-                  <Sparkles className="h-3.5 w-3.5" /> View Plans
-                </Link>
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
     </motion.div>
@@ -653,7 +577,7 @@ function SupplierDashboard() {
       {/* ── Hero Header ─────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card p-6">
         <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-amber-500/8 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-8 start-1/3 h-40 w-72 rounded-full bg-purple-500/6 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-8 left-1/3 h-40 w-72 rounded-full bg-purple-500/6 blur-2xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-500/20">
@@ -801,43 +725,6 @@ function SupplierDashboard() {
             </div>
           </GlassCard>
 
-          {/* Upgrade Card */}
-          <div className="relative overflow-hidden rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent p-5">
-            <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-amber-500/15 blur-2xl" />
-            <div className="relative">
-              <div className="mb-3 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
-                  <Crown className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">Upgrade Plan</p>
-                  <p className="text-[10px] text-muted-foreground">Expand your reach</p>
-                </div>
-              </div>
-              <div className="mb-4 space-y-1.5">
-                <div className="flex items-center justify-between rounded-lg border border-border/50 bg-background/30 px-2.5 py-2">
-                  <span className="text-xs font-medium text-foreground">Basic</span>
-                  <span className="text-xs font-bold text-muted-foreground">Free</span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg border border-amber-500/40 bg-amber-500/10 px-2.5 py-2 ring-1 ring-amber-500/20">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-medium text-foreground">Pro</span>
-                    <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-semibold text-amber-400">Popular</span>
-                  </div>
-                  <span className="text-xs font-bold text-amber-400">PKR 4,999/mo</span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg border border-orange-500/30 bg-orange-500/8 px-2.5 py-2">
-                  <span className="text-xs font-medium text-foreground">Premium</span>
-                  <span className="text-xs font-bold text-orange-400">PKR 12,999/mo</span>
-                </div>
-              </div>
-              <Button asChild size="sm" className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:opacity-90">
-                <Link to="/plans" className="flex items-center justify-center gap-1.5">
-                  <Sparkles className="h-3.5 w-3.5" /> View Plans
-                </Link>
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
     </motion.div>
@@ -908,7 +795,7 @@ function AdminDashboard() {
       {/* ── Hero header ─────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card p-6">
         <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-8 start-1/3 h-32 w-64 rounded-full bg-highlight/8 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-8 left-1/3 h-32 w-64 rounded-full bg-highlight/8 blur-2xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-highlight shadow-lg shadow-primary/25">
@@ -1075,9 +962,9 @@ function AdminDashboard() {
                 <p className="text-sm text-muted-foreground">No recent activity.</p>
               </div>
             ) : (
-              <div className="relative ps-4">
+              <div className="relative pl-4">
                 {/* Timeline line */}
-                <div className="absolute start-[18px] top-2 bottom-2 w-px bg-border" />
+                <div className="absolute left-[18px] top-2 bottom-2 w-px bg-border" />
                 <div className="space-y-1">
                   {recentActivity.map((entry, i) => {
                     const { icon: AIcon, color, bg } = activityIcon(entry.action);

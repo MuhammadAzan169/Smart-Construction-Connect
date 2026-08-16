@@ -1,0 +1,41 @@
+[
+  {
+    "id": "b935c853-f654-4ab2-82e7-4037ca005450",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "✅ Document Approved\n\nYour document \"Secp Certificate\" has been reviewed and approved by the platform admin. Your profile verification status has been updated accordingly.\n\nThank you for submitting your documents. Your profile will now appear as verified to clients.",
+    "timestamp": "2026-05-21T19:32:41.345861+00:00",
+    "read": false,
+    "status": "sent",
+    "deleted_by": [],
+    "is_system": true,
+    "doc_type": "secp_certificate",
+    "verification_status": "approved"
+  },
+  {
+    "id": "579665c5-b11b-4a00-96fc-4a69017850ba",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "✅ Document Approved\n\nYour document \"Ntn Certificate\" has been reviewed and approved by the platform admin. Your profile verification status has been updated accordingly.\n\nThank you for submitting your documents. Your profile will now appear as verified to clients.",
+    "timestamp": "2026-05-21T19:32:44.139654+00:00",
+    "read": false,
+    "status": "sent",
+    "deleted_by": [],
+    "is_system": true,
+    "doc_type": "ntn_certificate",
+    "verification_status": "approved"
+  },
+  {
+    "id": "51bc7600-3f2f-4679-a7b0-119ee8daea27",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "✅ Document Approved\n\nYour document \"Registration Certificate\" has been reviewed and approved by the platform admin. Your profile verification status has been updated accordingly.\n\nThank you for submitting your documents. Your profile will now appear as verified to clients.",
+    "timestamp": "2026-05-21T19:32:48.249397+00:00",
+    "read": false,
+    "status": "sent",
+    "deleted_by": [],
+    "is_system": true,
+    "doc_type": "registration_certificate",
+    "verification_status": "approved"
+  }
+]

@@ -1,0 +1,206 @@
+[
+  {
+    "id": "bilal-msg-001",
+    "sender": "bilal@example.com",
+    "sender_name": "Bilal Hussain",
+    "content": "Hello, I need TMT steel bars for my construction project in Lahore. What are your current rates per ton?",
+    "timestamp": "2026-04-03T09:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "bilal-msg-002",
+    "sender": "info@steelhub.pk",
+    "sender_name": "Steel Hub PK",
+    "content": "Hello Bilal! Welcome to Steel Hub PK. Our current rates for TMT steel bars are:\n• Grade 40 (3/8\") — PKR 220,000/ton\n• Grade 60 (1/2\") — PKR 235,000/ton\n• Grade 60 (5/8\") — PKR 240,000/ton\n\nFor orders above 5 tons we offer 3% bulk discount. How much do you need?",
+    "timestamp": "2026-04-03T09:15:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "bilal-msg-003",
+    "sender": "bilal@example.com",
+    "sender_name": "Bilal Hussain",
+    "content": "I need around 8 tons of Grade 60, 1/2\" for a 5 marla house grey structure. Do you deliver to DHA Lahore?",
+    "timestamp": "2026-04-03T09:25:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "bilal-msg-004",
+    "sender": "info@steelhub.pk",
+    "sender_name": "Steel Hub PK",
+    "content": "Yes we deliver to all areas of Lahore including DHA! For 8 tons Grade 60 (1/2\"):\n• Rate: PKR 235,000/ton\n• 3% bulk discount: -PKR 56,400\n• Delivery charge: PKR 15,000\n• **Total: PKR 1,838,600**\n\nDelivery within 2 working days. Shall I prepare a quotation?",
+    "timestamp": "2026-04-03T09:40:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "bilal-msg-005",
+    "sender": "bilal@example.com",
+    "sender_name": "Bilal Hussain",
+    "content": "Good rates! Can you share a sample of your product certificate? I want to confirm the quality.",
+    "timestamp": "2026-04-03T10:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "bilal-msg-006",
+    "sender": "info@steelhub.pk",
+    "sender_name": "Steel Hub PK",
+    "content": "Of course! Here is the PSQCA quality certification document for our Grade 60 TMT bars. Fully certified and tested.",
+    "timestamp": "2026-04-03T10:20:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop",
+      "filename": "steel-quality-cert.jpg",
+      "size": 95000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "bilal-msg-007",
+    "sender": "bilal@example.com",
+    "sender_name": "Bilal Hussain",
+    "content": "Excellent! Looks good. Please send me the formal quotation.",
+    "timestamp": "2026-04-03T10:35:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "bilal-msg-008",
+    "sender": "info@steelhub.pk",
+    "sender_name": "Steel Hub PK",
+    "content": "Quotation for Bilal Hussain (8 tons Grade 60 TMT, DHA Lahore delivery) has been prepared!",
+    "timestamp": "2026-04-04T09:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "bilal-msg-009",
+    "sender": "bilal@example.com",
+    "sender_name": "Bilal Hussain",
+    "content": "Confirmed! I will make a 50% advance payment. What is your bank account?",
+    "timestamp": "2026-04-04T10:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "bilal-msg-010",
+    "sender": "info@steelhub.pk",
+    "sender_name": "Steel Hub PK",
+    "content": "Bank: Meezan Bank\nAccount Title: Steel Hub Pvt Ltd\nAccount No: 0125-0119938-03\nIBAN: PK36MEZN0001250119938031\n\nPayment amount (50%): PKR 919,300. Please share the receipt after transfer.",
+    "timestamp": "2026-04-04T10:15:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "bilal-msg-011",
+    "sender": "bilal@example.com",
+    "sender_name": "Bilal Hussain",
+    "content": "Payment done! Here is the transaction receipt.",
+    "timestamp": "2026-04-06T14:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop",
+      "filename": "payment-receipt.jpg",
+      "size": 72000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "bilal-msg-012",
+    "sender": "info@steelhub.pk",
+    "sender_name": "Steel Hub PK",
+    "content": "Payment received and confirmed! Your order is in processing. Delivery scheduled for April 9th. We will call before dispatch.",
+    "timestamp": "2026-04-06T14:30:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "bilal-msg-013",
+    "sender": "info@steelhub.pk",
+    "sender_name": "Steel Hub PK",
+    "content": "Good news! Your order is loaded and the truck is on its way. Expected arrival at DHA: April 9th 10AM-12PM. Driver contact: 0312-1234567",
+    "timestamp": "2026-04-07T08:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "bilal-msg-014",
+    "sender": "info@steelhub.pk",
+    "sender_name": "Steel Hub PK",
+    "content": "Invoice attached. Please confirm receipt.",
+    "timestamp": "2026-04-07T11:20:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=400&fit=crop",
+      "filename": "invoice-bilal-apr7.jpg",
+      "size": 88000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "bilal-msg-015",
+    "sender": "bilal@example.com",
+    "sender_name": "Bilal Hussain",
+    "content": "Voice message",
+    "timestamp": "2026-04-08T09:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "/uploads/ahmed-example-com/e037df3d-61c4-4b94-830b-24e24ec586e7/voice-1775761100725_1c4129ad.webm",
+      "filename": "voice-note.webm",
+      "size": 169619,
+      "type": "voice",
+      "content_type": "audio/webm"
+    }
+  },
+  {
+    "id": "bilal-msg-016",
+    "sender": "info@steelhub.pk",
+    "sender_name": "Steel Hub PK",
+    "content": "Bilal bhai yeh hamare warehouse mein aapka order loaded hai — 8 tons Grade 60 TMT clearly tagged. Truck DHA ki taraf rawan hai!",
+    "timestamp": "2026-04-09T07:30:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1558618048-fbd3d1e72bc6?w=600&h=400&fit=crop",
+      "filename": "steelhub-order-loaded.jpg",
+      "size": 90000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "bilal-msg-017",
+    "sender": "info@steelhub.pk",
+    "sender_name": "Steel Hub PK",
+    "content": "Delivery truck DHA Phase 5 gate par aa gaya! Yeh confirmation video hai — 8 ton ka truck unloading shuru karne wala hai aapke site par.",
+    "timestamp": "2026-04-09T10:15:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+      "filename": "steelhub-delivery-dha.mp4",
+      "size": 14000000,
+      "type": "video",
+      "content_type": "video/mp4"
+    }
+  },
+  {
+    "id": "bilal-msg-018",
+    "sender": "bilal@example.com",
+    "sender_name": "Bilal Hussain",
+    "content": "Excellent! Sab kuch receive ho gaya. Quality perfect hai. Remaining payment transfer kar raha hun abhi. Aagey bhi kaam ayein ge InshAllah!",
+    "timestamp": "2026-04-09T12:00:00+00:00",
+    "read": true,
+    "status": "read"
+  }
+]

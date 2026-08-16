@@ -1,0 +1,15 @@
+[
+  {
+    "id": "010a08b1-6fb0-4f4b-b5d1-fac04a160c80",
+    "sender": "info@steelhub.pk",
+    "sender_name": "Steel Hub PK",
+    "content": "Hello! I would like to get in touch with the platform admin.",
+    "timestamp": "2026-04-12T22:34:14.897943+00:00",
+    "read": true,
+    "status": "read",
+    "deleted_by": [
+      "info@steelhub.pk",
+      "admin@smartconnect.pk"
+    ]
+  }
+]

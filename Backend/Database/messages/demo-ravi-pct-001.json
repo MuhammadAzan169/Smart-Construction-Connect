@@ -1,0 +1,201 @@
+[
+  {
+    "id": "ravi-pct-msg-001",
+    "sender": "info@ravigreybuil1.pk",
+    "sender_name": "Ravi Grey Builders",
+    "content": "Salaam! We need 500 bags of OPC 53 grade cement for our DHA project. Can you supply this week?",
+    "timestamp": "2026-04-02T08:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-002",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Walaikum Assalam! Yes we have stock available. Current rate for OPC 53 grade: PKR 1,320 per bag. For 500 bags we can offer PKR 1,280/bag (bulk rate). That's PKR 640,000 total. Delivery available in Lahore.",
+    "timestamp": "2026-04-02T08:20:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-003",
+    "sender": "info@ravigreybuil1.pk",
+    "sender_name": "Ravi Grey Builders",
+    "content": "Can you deliver to DHA Phase 5, Canal Road? And do you have Bestway or Maple Leaf brand?",
+    "timestamp": "2026-04-02T08:30:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-004",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Yes, we deliver to DHA Phase 5. We have both Bestway and Maple Leaf. Maple Leaf OPC 53 is very popular with construction companies — excellent strength. Shall I arrange Maple Leaf?",
+    "timestamp": "2026-04-02T08:45:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-005",
+    "sender": "info@ravigreybuil1.pk",
+    "sender_name": "Ravi Grey Builders",
+    "content": "Yes, Maple Leaf. Can you deliver in 2 batches — 250 bags this Thursday and 250 next Monday?",
+    "timestamp": "2026-04-02T09:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-006",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Absolutely! Split delivery works fine:\n• Batch 1: Thursday April 4 — 250 bags\n• Batch 2: Monday April 7 — 250 bags\n\nDelivery charge: PKR 5,000 per delivery (PKR 10,000 total). Final amount: PKR 650,000. Confirm?",
+    "timestamp": "2026-04-02T09:15:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-007",
+    "sender": "info@ravigreybuil1.pk",
+    "sender_name": "Ravi Grey Builders",
+    "content": "Confirmed! We will transfer 30% advance today. Share bank details.",
+    "timestamp": "2026-04-02T09:30:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-008",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Bank: HBL\nAccount: Punjab Cement Traders\nAccount No: 02417900780103\nBranch: Gulberg III Lahore\n\n30% advance = PKR 195,000. Order confirmed on receipt.",
+    "timestamp": "2026-04-02T09:45:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-009",
+    "sender": "info@ravigreybuil1.pk",
+    "sender_name": "Ravi Grey Builders",
+    "content": "Transfer done. Receipt:",
+    "timestamp": "2026-04-02T11:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop",
+      "filename": "advance-payment-pct.jpg",
+      "size": 68000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "ravi-pct-msg-010",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Received! Order confirmed. Batch 1 truck dispatched for Thursday morning delivery.",
+    "timestamp": "2026-04-02T11:30:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-011",
+    "sender": "info@ravigreybuil1.pk",
+    "sender_name": "Ravi Grey Builders",
+    "content": "Batch 1 received! Good quality. Can you also quote me for 2 ton of #4 rebar (Grade 60) for the same project?",
+    "timestamp": "2026-04-04T15:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-012",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Glad it arrived well! For Grade 60 rebar #4: PKR 218,000/ton. 2 tons = PKR 436,000. We have stock ready. Same delivery rate applies.",
+    "timestamp": "2026-04-04T15:30:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-013",
+    "sender": "info@ravigreybuil1.pk",
+    "sender_name": "Ravi Grey Builders",
+    "content": "Let's add it to the same order. We need it with Batch 2 on Monday.",
+    "timestamp": "2026-04-07T08:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-014",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Perfect! Added. Updated total: PKR 1,086,000. We will adjust the balance payment on delivery. Batch 2 truck + rebar scheduled for Monday April 7.",
+    "timestamp": "2026-04-07T08:30:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-015",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "We can deliver 500 bags by Thursday. Shall I book the truck?",
+    "timestamp": "2026-04-09T09:45:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ravi-pct-msg-016",
+    "sender": "info@ravigreybuil1.pk",
+    "sender_name": "Ravi Grey Builders",
+    "content": "Voice message",
+    "timestamp": "2026-04-07T09:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "/uploads/ahmed-example-com/e037df3d-61c4-4b94-830b-24e24ec586e7/voice-1775761100725_1c4129ad.webm",
+      "filename": "voice-note.webm",
+      "size": 169619,
+      "type": "voice",
+      "content_type": "audio/webm"
+    }
+  },
+  {
+    "id": "ravi-pct-msg-017",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Ravi bhai yeh aapka Batch 2 load ho raha hai! 250 bags Maple Leaf + 2 ton rebar. Truck DHA Phase 5 ke liye rawan hai.",
+    "timestamp": "2026-04-07T10:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1575908539614-ff89490f4a78?w=600&h=400&fit=crop",
+      "filename": "pct-batch2-loading.jpg",
+      "size": 90000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "ravi-pct-msg-018",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Batch 2 delivery ka video confirmation — truck ne DHA Phase 5 Canal Road par saman utaar diya. AlhamduLillah!",
+    "timestamp": "2026-04-07T14:30:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+      "filename": "pct-batch2-delivery.mp4",
+      "size": 11300000,
+      "type": "video",
+      "content_type": "video/mp4"
+    }
+  },
+  {
+    "id": "ravi-pct-msg-019",
+    "sender": "info@ravigreybuil1.pk",
+    "sender_name": "Ravi Grey Builders",
+    "content": "Sab kuch theek mila! Cement aur rebar dono perfect quality. Balance payment kal transfer karta hun. Aagey bhi zaroor aana hai hamare projects mein!",
+    "timestamp": "2026-04-07T15:30:00+00:00",
+    "read": true,
+    "status": "read"
+  }
+]

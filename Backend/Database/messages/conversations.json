@@ -1,0 +1,99 @@
+[
+  {
+    "id": "9fe52178-2f1e-4da2-8813-9c308c5b5421",
+    "participants": [
+      "admin@smartconnect.pk",
+      "info@sindhafforda13.pk"
+    ],
+    "participant_names": [
+      "Platform Admin",
+      "Sindh Affordable Constructions"
+    ],
+    "created_at": "2026-04-12T22:33:32.450702+00:00",
+    "updated_at": "2026-04-12T22:33:36.076771+00:00",
+    "last_message": {
+      "content": "✅ Document Approved\n\nYour document \"Registration Certificate\" has been reviewed and approved by the ",
+      "sender": "admin@smartconnect.pk",
+      "timestamp": "2026-04-12T22:33:36.076771+00:00"
+    },
+    "unread": {
+      "admin@smartconnect.pk": 0,
+      "info@sindhafforda13.pk": 0
+    },
+    "deleted_by": []
+  },
+  {
+    "id": "e9cd20d1-f069-4429-bc00-2b0947fb9134",
+    "participants": [
+      "admin@smartconnect.pk",
+      "info@steelhub.pk"
+    ],
+    "participant_names": [
+      "Steel Hub PK",
+      "Platform Admin"
+    ],
+    "created_at": "2026-04-12T22:34:14.890911+00:00",
+    "updated_at": "2026-04-12T22:34:14.897943+00:00",
+    "last_message": {
+      "content": "Hello! I would like to get in touch with the platform admin.",
+      "sender": "info@steelhub.pk",
+      "timestamp": "2026-04-12T22:34:14.897943+00:00"
+    },
+    "unread": {
+      "admin@smartconnect.pk": 0,
+      "info@steelhub.pk": 0
+    },
+    "deleted_by": [
+      "info@steelhub.pk",
+      "admin@smartconnect.pk"
+    ]
+  },
+  {
+    "id": "f2a4f232-e41e-4cee-8820-bda605e6e0ad",
+    "participants": [
+      "admin@smartconnect.pk",
+      "ahmed@example.com"
+    ],
+    "participant_names": [
+      "Ahmed Khan",
+      "Platform Admin"
+    ],
+    "created_at": "2026-04-12T22:34:39.879257+00:00",
+    "updated_at": "2026-04-12T22:49:33.191076+00:00",
+    "last_message": {
+      "content": "hello",
+      "sender": "ahmed@example.com",
+      "timestamp": "2026-04-12T22:49:33.191076+00:00"
+    },
+    "unread": {
+      "admin@smartconnect.pk": 0,
+      "ahmed@example.com": 0
+    },
+    "deleted_by": [
+      "admin@smartconnect.pk"
+    ]
+  },
+  {
+    "id": "a464ede7-b70c-4737-9924-c748904363e9",
+    "participants": [
+      "admin@smartconnect.pk",
+      "info@arabianseade14.pk"
+    ],
+    "participant_names": [
+      "Platform Admin",
+      "Arabian Sea Developers"
+    ],
+    "created_at": "2026-05-21T19:32:41.342944+00:00",
+    "updated_at": "2026-05-21T19:32:48.249397+00:00",
+    "last_message": {
+      "content": "✅ Document Approved\n\nYour document \"Registration Certificate\" has been reviewed and approved by the ",
+      "sender": "admin@smartconnect.pk",
+      "timestamp": "2026-05-21T19:32:48.249397+00:00"
+    },
+    "unread": {
+      "admin@smartconnect.pk": 0,
+      "info@arabianseade14.pk": 3
+    },
+    "deleted_by": []
+  }
+]

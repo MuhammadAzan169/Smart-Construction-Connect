@@ -1,0 +1,206 @@
+[
+  {
+    "id": "admin-elite-msg-001",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "Hello Elite Builders. This is the Smart Construction Connect admin team. We have received your registration. We need to verify your SECP registration and NTN certificate to activate your account.",
+    "timestamp": "2026-04-04T11:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "admin-elite-msg-002",
+    "sender": "contact@elite.com",
+    "sender_name": "Elite Builders",
+    "content": "Hello! Thank you for getting in touch. We are registered with SECP since 2015. I will upload the documents right away.",
+    "timestamp": "2026-04-04T11:20:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "admin-elite-msg-003",
+    "sender": "contact@elite.com",
+    "sender_name": "Elite Builders",
+    "content": "Here are our registration documents.",
+    "timestamp": "2026-04-04T11:35:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=600&h=400&fit=crop",
+      "filename": "secp-certificate.jpg",
+      "size": 110000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "admin-elite-msg-004",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "Thank you for uploading the SECP certificate. We also need your NTN (National Tax Number) certificate to complete verification.",
+    "timestamp": "2026-04-04T13:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "admin-elite-msg-005",
+    "sender": "contact@elite.com",
+    "sender_name": "Elite Builders",
+    "content": "Here is the NTN certificate.",
+    "timestamp": "2026-04-04T13:30:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=400&fit=crop",
+      "filename": "ntn-certificate.jpg",
+      "size": 98000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "admin-elite-msg-006",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "Documents received. Our team is reviewing your application. You will hear back within 24 hours.",
+    "timestamp": "2026-04-04T14:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "admin-elite-msg-007",
+    "sender": "contact@elite.com",
+    "sender_name": "Elite Builders",
+    "content": "We also have completed 200+ projects since 2010. Here is a portfolio photo.",
+    "timestamp": "2026-04-04T14:15:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop",
+      "filename": "portfolio-project.jpg",
+      "size": 145000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "admin-elite-msg-008",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "Thank you for sharing! Your portfolio looks impressive. Review is in progress — we will notify you via email and here as well.",
+    "timestamp": "2026-04-04T15:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "admin-elite-msg-009",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "Good news! Your documents have been verified. Your account has been approved. A few things to note:\n\n✅ Your profile is now visible to clients\n✅ You can receive project requests\n✅ AI matching is enabled for your company\n\nWelcome to Smart Construction Connect!",
+    "timestamp": "2026-04-05T10:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "admin-elite-msg-010",
+    "sender": "contact@elite.com",
+    "sender_name": "Elite Builders",
+    "content": "JazakAllah Khair! Very excited to be on the platform. We look forward to connecting with clients.",
+    "timestamp": "2026-04-05T10:30:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "admin-elite-msg-011",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "Please complete your profile by adding your service packages, operational areas, and pricing. A complete profile gets 3x more client inquiries.",
+    "timestamp": "2026-04-06T11:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "admin-elite-msg-012",
+    "sender": "contact@elite.com",
+    "sender_name": "Elite Builders",
+    "content": "We have updated our profile with 3 service packages and 12 operational areas. Does everything look good?",
+    "timestamp": "2026-04-06T14:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "admin-elite-msg-013",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "Profile looks great! You have a 92% completeness score. One suggestion: add 3-4 project photos to your gallery to make the profile even stronger.",
+    "timestamp": "2026-04-06T15:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "admin-elite-msg-014",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "Account verified. Your profile is now live on the platform.",
+    "timestamp": "2026-04-07T16:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "admin-elite-msg-015",
+    "sender": "contact@elite.com",
+    "sender_name": "Elite Builders",
+    "content": "Admin team! Yeh hamare top 5 projects ka portfolio video hai — residential, commercial, DHA aur Gulberg projects included.",
+    "timestamp": "2026-04-07T10:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+      "filename": "elite-portfolio-reel.mp4",
+      "size": 10900000,
+      "type": "video",
+      "content_type": "video/mp4"
+    }
+  },
+  {
+    "id": "admin-elite-msg-016",
+    "sender": "contact@elite.com",
+    "sender_name": "Elite Builders",
+    "content": "Aur yeh ek aur completed project photo — Gulberg III, 1 kanal commercial building, 2 years mein complete.",
+    "timestamp": "2026-04-07T10:10:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop",
+      "filename": "elite-gulberg-commercial.jpg",
+      "size": 90000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "admin-elite-msg-017",
+    "sender": "contact@elite.com",
+    "sender_name": "Elite Builders",
+    "content": "Voice message",
+    "timestamp": "2026-04-08T09:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "/uploads/ahmed-example-com/e037df3d-61c4-4b94-830b-24e24ec586e7/voice-1775761100725_1c4129ad.webm",
+      "filename": "voice-note.webm",
+      "size": 169619,
+      "type": "voice",
+      "content_type": "audio/webm"
+    }
+  },
+  {
+    "id": "admin-elite-msg-018",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "Elite Builders team! Portfolio video aur photos dekhe — impressive work! Aapke profile pe 4 star rating already show ho rahi hai. Premium Plan upgrade kar ke aap featured listings aur priority AI recommendations le sakte hain. Recommend karta hun!",
+    "timestamp": "2026-04-08T10:00:00+00:00",
+    "read": false,
+    "status": "delivered"
+  }
+]

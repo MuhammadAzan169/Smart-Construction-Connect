@@ -1,0 +1,55 @@
+# Render Blueprint — deploy this backend as a Web Service (FREE plan compatible).
+# Docs: https://render.com/docs/blueprint-spec
+#
+# You can either connect the repo and let Render read this file, or configure
+# the same settings manually in the Render dashboard.
+#
+# Durability: this app persists to Supabase (Postgres + Storage). Render's free
+# disk is ephemeral, so DATABASE_URL + SUPABASE_* MUST be set for data to
+# survive restarts/deploys.
+services:
+  - type: web
+    name: smart-construction-connect-api
+    runtime: python
+    plan: free                      # ML deps removed → fits in 512MB
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: JWT_SECRET_KEY
+        generateValue: true         # Render generates a strong random secret
+
+      # ── CORS: set to your Vercel URL in the dashboard ──
+      - key: CORS_ORIGINS
+        sync: false
+
+      # ── Supabase Postgres (durable document store) ──
+      # Use the Supabase "Transaction pooler" URI (host ...pooler.supabase.com:6543)
+      - key: DATABASE_URL
+        sync: false
+
+      # ── Supabase Storage (images, documents, attachments) ──
+      - key: SUPABASE_URL
+        sync: false                 # https://<project-ref>.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false                 # service_role key (backend only — keep secret)
+      - key: SUPABASE_BUCKET
+        value: media
+
+      # ── AI chat (OpenRouter) ──
+      - key: OPENROUTER_API_KEY1
+        sync: false
+
+      # ── Semantic search embeddings (OpenAI-compatible API; low RAM) ──
+      # Leave blank to fall back to BM25 keyword search. Recommended: Cohere's
+      # light multilingual model (cheapest, 384-dim, handles English + Urdu).
+      - key: EMBEDDINGS_API_URL
+        sync: false                 # https://api.cohere.ai/compatibility/v1
+      - key: EMBEDDINGS_API_KEY
+        sync: false
+      - key: EMBEDDINGS_MODEL
+        value: embed-multilingual-light-v3.0

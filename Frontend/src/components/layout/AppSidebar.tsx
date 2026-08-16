@@ -59,7 +59,6 @@ const roleMenus: Record<UserRole, { labelKey: string; icon: React.ElementType; p
     { labelKey: "sidebar.aiAnalyst",   icon: Bot,              path: "/supplier-ai" },
     { labelKey: "sidebar.messages",     icon: MessageSquare,    path: "/messages" },
     { labelKey: "sidebar.requests",     icon: FileText,         path: "/requests" },
-    { labelKey: "sidebar.plansAndPricing", icon: CreditCard,    path: "/plans" },
     { labelKey: "sidebar.settings",     icon: Settings,         path: "/settings" },
   ],
   admin: [

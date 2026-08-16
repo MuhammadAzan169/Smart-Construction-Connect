@@ -1,0 +1,399 @@
+[
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "gulberg-elite-developers",
+      "entity_type": "company",
+      "doc_type": "secp_certificate",
+      "status": "rejected"
+    },
+    "actor": "",
+    "timestamp": "2026-04-09T23:25:49.997722+00:00"
+  },
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "gulberg-elite-developers",
+      "entity_type": "company",
+      "doc_type": "secp_certificate",
+      "status": "approved"
+    },
+    "actor": "",
+    "timestamp": "2026-04-09T23:25:53.742978+00:00"
+  },
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "gulberg-elite-developers",
+      "entity_type": "company",
+      "doc_type": "ntn_certificate",
+      "status": "rejected"
+    },
+    "actor": "",
+    "timestamp": "2026-04-09T23:25:58.196785+00:00"
+  },
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "gulberg-elite-developers",
+      "entity_type": "company",
+      "doc_type": "registration_certificate",
+      "status": "approved"
+    },
+    "actor": "",
+    "timestamp": "2026-04-09T23:25:59.457458+00:00"
+  },
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "gulberg-elite-developers",
+      "entity_type": "company",
+      "doc_type": "ntn_certificate",
+      "status": "approved"
+    },
+    "actor": "",
+    "timestamp": "2026-04-09T23:26:01.041874+00:00"
+  },
+  {
+    "type": "company.updated",
+    "data": {
+      "slug": "karachi-builders",
+      "fields": [
+        "company_id",
+        "company_name",
+        "slug",
+        "description",
+        "logo_url",
+        "rating",
+        "review_count",
+        "city",
+        "contact",
+        "legal_info",
+        "construction_capability",
+        "services",
+        "operational_areas",
+        "flattened_operational_areas",
+        "package_scope",
+        "materials_used",
+        "estimated_cost_range",
+        "payment_terms",
+        "timeline_estimates",
+        "experience",
+        "customer_feedback",
+        "quality_control",
+        "after_handover_support",
+        "legal_and_contract",
+        "ideal_customer_profile",
+        "ai_scores",
+        "verification_status",
+        "verification",
+        "status",
+        "dp_url",
+        "verification_documents",
+        "projects",
+        "cities",
+        "estimated_total_cost_range",
+        "_editor_pricing_v3"
+      ]
+    },
+    "actor": "info@001builders.com",
+    "timestamp": "2026-04-12T01:30:12.306006+00:00"
+  },
+  {
+    "type": "package.updated",
+    "data": {
+      "slug": "karachi-builders"
+    },
+    "actor": "info@001builders.com",
+    "timestamp": "2026-04-12T01:30:12.696977+00:00"
+  },
+  {
+    "type": "company.updated",
+    "data": {
+      "slug": "karachi-builders",
+      "fields": [
+        "company_id",
+        "company_name",
+        "slug",
+        "description",
+        "logo_url",
+        "rating",
+        "review_count",
+        "city",
+        "contact",
+        "legal_info",
+        "construction_capability",
+        "services",
+        "operational_areas",
+        "flattened_operational_areas",
+        "package_scope",
+        "materials_used",
+        "estimated_cost_range",
+        "payment_terms",
+        "timeline_estimates",
+        "experience",
+        "customer_feedback",
+        "quality_control",
+        "after_handover_support",
+        "legal_and_contract",
+        "ideal_customer_profile",
+        "ai_scores",
+        "verification_status",
+        "verification",
+        "status",
+        "dp_url",
+        "verification_documents",
+        "projects",
+        "cities",
+        "estimated_total_cost_range",
+        "_editor_pricing_v3"
+      ]
+    },
+    "actor": "info@001builders.com",
+    "timestamp": "2026-04-12T01:30:50.076118+00:00"
+  },
+  {
+    "type": "package.updated",
+    "data": {
+      "slug": "karachi-builders"
+    },
+    "actor": "info@001builders.com",
+    "timestamp": "2026-04-12T01:30:50.438713+00:00"
+  },
+  {
+    "type": "company.updated",
+    "data": {
+      "slug": "karachi-builders",
+      "fields": [
+        "company_id",
+        "company_name",
+        "slug",
+        "description",
+        "logo_url",
+        "rating",
+        "review_count",
+        "city",
+        "contact",
+        "legal_info",
+        "construction_capability",
+        "services",
+        "operational_areas",
+        "flattened_operational_areas",
+        "package_scope",
+        "materials_used",
+        "estimated_cost_range",
+        "payment_terms",
+        "timeline_estimates",
+        "experience",
+        "customer_feedback",
+        "quality_control",
+        "after_handover_support",
+        "legal_and_contract",
+        "ideal_customer_profile",
+        "ai_scores",
+        "verification_status",
+        "verification",
+        "status",
+        "dp_url",
+        "verification_documents",
+        "projects",
+        "cities",
+        "estimated_total_cost_range",
+        "_editor_pricing_v3"
+      ]
+    },
+    "actor": "info@001builders.com",
+    "timestamp": "2026-04-12T13:39:53.233667+00:00"
+  },
+  {
+    "type": "package.updated",
+    "data": {
+      "slug": "karachi-builders"
+    },
+    "actor": "info@001builders.com",
+    "timestamp": "2026-04-12T13:39:53.625345+00:00"
+  },
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "sindh-affordable-constructions",
+      "entity_type": "company",
+      "doc_type": "secp_certificate",
+      "status": "approved"
+    },
+    "actor": "",
+    "timestamp": "2026-04-12T13:48:11.703225+00:00"
+  },
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "sindh-affordable-constructions",
+      "entity_type": "company",
+      "doc_type": "ntn_certificate",
+      "status": "rejected"
+    },
+    "actor": "",
+    "timestamp": "2026-04-12T13:49:10.999650+00:00"
+  },
+  {
+    "type": "company.updated",
+    "data": {
+      "slug": "karachi-builders",
+      "fields": [
+        "company_id",
+        "company_name",
+        "slug",
+        "description",
+        "logo_url",
+        "rating",
+        "review_count",
+        "city",
+        "contact",
+        "legal_info",
+        "construction_capability",
+        "services",
+        "operational_areas",
+        "flattened_operational_areas",
+        "package_scope",
+        "materials_used",
+        "estimated_cost_range",
+        "payment_terms",
+        "timeline_estimates",
+        "experience",
+        "customer_feedback",
+        "quality_control",
+        "after_handover_support",
+        "legal_and_contract",
+        "ideal_customer_profile",
+        "ai_scores",
+        "verification_status",
+        "verification",
+        "status",
+        "dp_url",
+        "verification_documents",
+        "projects",
+        "cities",
+        "estimated_total_cost_range",
+        "_editor_pricing_v3"
+      ]
+    },
+    "actor": "info@001builders.com",
+    "timestamp": "2026-04-12T21:32:28.100473+00:00"
+  },
+  {
+    "type": "package.updated",
+    "data": {
+      "slug": "karachi-builders"
+    },
+    "actor": "info@001builders.com",
+    "timestamp": "2026-04-12T21:32:29.609979+00:00"
+  },
+  {
+    "type": "company.updated",
+    "data": {
+      "slug": "karachi-builders",
+      "fields": [
+        "company_id",
+        "company_name",
+        "slug",
+        "description",
+        "logo_url",
+        "rating",
+        "review_count",
+        "city",
+        "contact",
+        "legal_info",
+        "construction_capability",
+        "services",
+        "operational_areas",
+        "flattened_operational_areas",
+        "package_scope",
+        "materials_used",
+        "estimated_cost_range",
+        "payment_terms",
+        "timeline_estimates",
+        "experience",
+        "customer_feedback",
+        "quality_control",
+        "after_handover_support",
+        "legal_and_contract",
+        "ideal_customer_profile",
+        "ai_scores",
+        "verification_status",
+        "verification",
+        "status",
+        "dp_url",
+        "verification_documents",
+        "projects",
+        "cities",
+        "estimated_total_cost_range",
+        "_editor_pricing_v3"
+      ]
+    },
+    "actor": "info@001builders.com",
+    "timestamp": "2026-04-12T21:32:33.988557+00:00"
+  },
+  {
+    "type": "package.updated",
+    "data": {
+      "slug": "karachi-builders"
+    },
+    "actor": "info@001builders.com",
+    "timestamp": "2026-04-12T21:32:34.410067+00:00"
+  },
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "sindh-affordable-constructions",
+      "entity_type": "company",
+      "doc_type": "ntn_certificate",
+      "status": "approved"
+    },
+    "actor": "",
+    "timestamp": "2026-04-12T22:33:32.442639+00:00"
+  },
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "sindh-affordable-constructions",
+      "entity_type": "company",
+      "doc_type": "registration_certificate",
+      "status": "approved"
+    },
+    "actor": "",
+    "timestamp": "2026-04-12T22:33:36.073238+00:00"
+  },
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "arabian-sea-developers",
+      "entity_type": "company",
+      "doc_type": "secp_certificate",
+      "status": "approved"
+    },
+    "actor": "",
+    "timestamp": "2026-05-21T19:32:41.336861+00:00"
+  },
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "arabian-sea-developers",
+      "entity_type": "company",
+      "doc_type": "ntn_certificate",
+      "status": "approved"
+    },
+    "actor": "",
+    "timestamp": "2026-05-21T19:32:44.094567+00:00"
+  },
+  {
+    "type": "verification.updated",
+    "data": {
+      "slug": "arabian-sea-developers",
+      "entity_type": "company",
+      "doc_type": "registration_certificate",
+      "status": "approved"
+    },
+    "actor": "",
+    "timestamp": "2026-05-21T19:32:48.204388+00:00"
+  }
+]

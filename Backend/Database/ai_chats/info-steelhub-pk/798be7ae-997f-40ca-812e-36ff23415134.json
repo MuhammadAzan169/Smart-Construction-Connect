@@ -1,0 +1,30 @@
+[
+  {
+    "role": "assistant",
+    "content": "Hello! 👋 I'm your AI Market Analyst.\n\nI can help you with:\n• Current **market prices** across Pakistan\n• **Pricing strategy** — are you competitive?\n• **Demand trends** — what are buyers looking for?\n• **Stock optimization** suggestions\n\nWhat would you like to know?"
+  },
+  {
+    "role": "user",
+    "content": "Which materials are trending in demand right now?"
+  },
+  {
+    "role": "assistant",
+    "content": "I don't have that specific information in my database. Let me help you with what I do know—current market prices and pricing strategies—if that would be useful."
+  },
+  {
+    "role": "user",
+    "content": "Compare my prices against market averages"
+  },
+  {
+    "role": "assistant",
+    "content": "Sure, I can run a price‑competitiveness check for you.\n\nPlease upload (or paste) your material price list—e.g., cement, steel grades, bricks, sand, tiles, etc.—and let me know the city or region you’re serving. Once I have that information, I’ll compare each item to the current market averages from our database and highlight where you’re above, at, or below the market rate."
+  },
+  {
+    "role": "user",
+    "content": "Islam yaar kya haal hai thik ho yaar  kya  material sabse demand mein abhi"
+  },
+  {
+    "role": "assistant",
+    "content": "I don't have that specific information in my database. Let me help you with what I do know—current market prices and pricing strategies—if that would be useful."
+  }
+]

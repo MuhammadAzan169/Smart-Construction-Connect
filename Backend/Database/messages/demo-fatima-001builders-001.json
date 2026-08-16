@@ -1,0 +1,242 @@
+[
+  {
+    "id": "fatima-msg-001",
+    "sender": "fatima@example.com",
+    "sender_name": "Fatima Ali",
+    "content": "As-salamu alaykum! I saw your profile on Smart Construction Connect. I need a 10 marla house in DHA Karachi Phase 4. Can you help?",
+    "timestamp": "2026-04-01T10:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-002",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "Walaikum Assalam Fatima ji! Yes, we specialize in DHA Karachi. A 10 marla house in Phase 4 — are you looking for grey structure or full finish?",
+    "timestamp": "2026-04-01T10:15:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-003",
+    "sender": "fatima@example.com",
+    "sender_name": "Fatima Ali",
+    "content": "Full finish please. 2 floors, 4 bedrooms. Budget around 1.5 crore. Also want solar panels installed.",
+    "timestamp": "2026-04-01T10:22:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-004",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "Perfect! For 10 marla, 2-floor full finish in DHA Phase 4 our estimate is PKR 1.2 - 1.45 crore. Solar 5kW system adds another PKR 8-10 lacs. This fits well within your budget of 1.5 crore. We have completed 45+ projects in DHA Phase 4 alone.",
+    "timestamp": "2026-04-01T10:35:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-005",
+    "sender": "fatima@example.com",
+    "sender_name": "Fatima Ali",
+    "content": "That sounds good! Can you share some photos of your recent projects in DHA?",
+    "timestamp": "2026-04-01T10:40:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-006",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "Sure! Here is a photo of a project we completed in DHA Phase 4 last month. Double storey, full finish with modern kitchen and solar. Client was very happy!",
+    "timestamp": "2026-04-01T11:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop",
+      "filename": "dha-phase4-project.jpg",
+      "size": 85000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "fatima-msg-007",
+    "sender": "fatima@example.com",
+    "sender_name": "Fatima Ali",
+    "content": "MashAllah, looks amazing! I want to go ahead. What are the next steps?",
+    "timestamp": "2026-04-01T11:10:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-008",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "JazakAllah! Next steps:\n1. Site visit to assess your plot — free of charge\n2. We provide detailed cost breakdown within 3 days\n3. Sign agreement and pay 15% advance\n4. Construction begins within 2 weeks\n\nShall I schedule the site visit this week?",
+    "timestamp": "2026-04-01T11:20:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-009",
+    "sender": "fatima@example.com",
+    "sender_name": "Fatima Ali",
+    "content": "Yes please, can you come on Saturday April 5th around 11am?",
+    "timestamp": "2026-04-02T09:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-010",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "Confirmed! Our engineer Usman will visit your plot on Saturday April 5th at 11:00 AM. Please share the exact plot number and phase.",
+    "timestamp": "2026-04-02T09:30:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-011",
+    "sender": "fatima@example.com",
+    "sender_name": "Fatima Ali",
+    "content": "Plot 45-C, Street 8, Phase 4. Here is the map screenshot.",
+    "timestamp": "2026-04-02T09:45:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400&fit=crop",
+      "filename": "plot-location-map.jpg",
+      "size": 120000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "fatima-msg-012",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "Got it, thank you Fatima ji. Usman confirmed the visit. We will prepare a detailed estimate and design proposals after the site assessment.",
+    "timestamp": "2026-04-02T10:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-013",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "Fatima ji, Usman visited the site today. The plot is ready for construction. Here is the detailed cost estimate PDF for your review.",
+    "timestamp": "2026-04-05T15:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-014",
+    "sender": "fatima@example.com",
+    "sender_name": "Fatima Ali",
+    "content": "Thank you! I reviewed the estimate — looks fair. I will discuss with my family and confirm by Monday.",
+    "timestamp": "2026-04-05T16:30:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-015",
+    "sender": "fatima@example.com",
+    "sender_name": "Fatima Ali",
+    "content": "We are going ahead! Please prepare the agreement. We will pay the advance next week.",
+    "timestamp": "2026-04-07T11:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-016",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "Excellent news Fatima ji! AlhamduLillah! We will have the agreement ready by tomorrow. Great to have you as our client. We will build your dream home!",
+    "timestamp": "2026-04-07T11:15:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-017",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "Great, we will start the foundation work on April 15th. Please arrange the access.",
+    "timestamp": "2026-04-08T14:30:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "fatima-msg-018",
+    "sender": "fatima@example.com",
+    "sender_name": "Fatima Ali",
+    "content": "Voice message",
+    "timestamp": "2026-04-08T16:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "/uploads/ahmed-example-com/e037df3d-61c4-4b94-830b-24e24ec586e7/voice-1775761100725_1c4129ad.webm",
+      "filename": "voice-note.webm",
+      "size": 169619,
+      "type": "voice",
+      "content_type": "audio/webm"
+    }
+  },
+  {
+    "id": "fatima-msg-019",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "Fatima ji yeh hamare architect ke 3 design options hain aapke liye. Option A modern minimalist, Option B traditional, Option C semi-classical.",
+    "timestamp": "2026-04-08T16:30:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop",
+      "filename": "design-options-karachi.jpg",
+      "size": 90000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "fatima-msg-020",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "Fatima ji yeh hamare last DHA Phase 4 full-finish project ka virtual tour hai. Interior + exterior dono dekh sakti hain!",
+    "timestamp": "2026-04-08T17:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+      "filename": "dha-fullfinish-virtual-tour.mp4",
+      "size": 14000000,
+      "type": "video",
+      "content_type": "video/mp4"
+    }
+  },
+  {
+    "id": "fatima-msg-021",
+    "sender": "info@001builders.com",
+    "sender_name": "Karachi Builders",
+    "content": "Voice message",
+    "timestamp": "2026-04-09T10:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "/uploads/ahmed-example-com/e037df3d-61c4-4b94-830b-24e24ec586e7/voice-1775761100725_1c4129ad.webm",
+      "filename": "voice-note.webm",
+      "size": 169619,
+      "type": "voice",
+      "content_type": "audio/webm"
+    }
+  },
+  {
+    "id": "fatima-msg-022",
+    "sender": "fatima@example.com",
+    "sender_name": "Fatima Ali",
+    "content": "Option A bilkul pasand aaya! Virtual tour dekh ke 100% confirm ho gai. Foundation April 15 se shuru karein. JazakAllah Khair!",
+    "timestamp": "2026-04-09T11:00:00+00:00",
+    "read": true,
+    "status": "read"
+  }
+]

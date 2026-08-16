@@ -1,153 +1,39 @@
 # ══════════════════════════════════════════════════════════════
-# Smart Construction Connect .gitignore
+# Smart Construction Connect — repository-wide ignores
+# (Backend/.gitignore and Frontend/.gitignore add per-part rules)
 # ══════════════════════════════════════════════════════════════
 
-# ── Environment & Secrets ────────────────────────────────────
+# ── Environment & secrets — never commit these ───────────────
 .env
 .env.*
-*.local
 !.env.example
-!.env.template
+*.local
+secrets.json
+*.pem
+*.key
 
 # ── Python ───────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-*.egg
-*.egg-info/
-.eggs/
-.installed.cfg
-MANIFEST
-wheels/
-sdist/
-
-# Python virtual environments
 .venv/
 venv/
-env/
-ENV/
-env.bak/
-venv.bak/
 
-# Python tools
-.mypy_cache/
-.pytest_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-.tox/
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.ipynb_checkpoints
-.python-version
-
-# ── Node.js ──────────────────────────────────────────────────
+# ── Node ─────────────────────────────────────────────────────
 node_modules/
-.npm
-.eslintcache
-.node_repl_history
-.yarn/cache
-.yarn/install-state.gz
-*.tgz
-*.pid
-*.pid.lock
-
-# ── Build Output ─────────────────────────────────────────────
 dist/
-dist-ssr/
-build/
-Frontend/dist/
-backend/dist/
-*.tsbuildinfo
 
 # ── Logs ─────────────────────────────────────────────────────
 logs/
 *.log
-*.log.*
 
-# ── Database & User Data ─────────────────────────────────────
-Database/clients/
-Database/construction/
-Database/suppliers/
-Database/messages/
-Database/requests/
-Database/ai_chats/
-Database/admin/event_log.json
-Database/admin/activity_log.json
-!Database/admin/
-!Database/admin/.gitkeep
-
-# ── Company Data ─────────────────────────────────────────────
-company_data/
-!company_data/.gitkeep
-
-# ── Testing ──────────────────────────────────────────────────
-coverage/
-.nyc_output/
-test-results/
-playwright-report/
-playwright/.cache/
-
-# ── IDE ──────────────────────────────────────────────────────
+# ── OS / editor ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini
+*.swp
+.idea/
 .vscode/*
 !.vscode/extensions.json
-!.vscode/settings.json
-!.vscode/launch.json
-!.vscode/tasks.json
-.idea/
-*.swp
-*.swo
-*.sublime-project
-*.sublime-workspace
 
-# ── OS Files ─────────────────────────────────────────────────
-.DS_Store
-._*
-.Spotlight-V100
-.Trashes
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-[Dd]esktop.ini
-$RECYCLE.BIN/
-*~
-.fuse_hidden*
-.directory
-.Trash-*
-
-# ── Temporary Files ──────────────────────────────────────────
-*.tmp
-*.temp
-*.bak
-*.backup
-*.old
-*.orig
-
-# Vercel
-.vercel
-
-# Sentry Config File
-.sentryclirc
-
-# ── Project Specific ─────────────────────────────────────────
-# Uploaded files during development
-uploads/
-temp/
-cache/
-
-# API keys and secrets (double-check)
-secrets.json
-config.local.json
-
-# Development databases
-*.db
-*.sqlite
-*.sqlite3
-
-# ── Keep These Empty Directories ─────────────────────────────
-!.gitkeep
-!.gitignore
+# ── Personal / non-project notes (kept locally, not published) ─
+CV_PROJECT_DESCRIPTION.md

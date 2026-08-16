@@ -417,8 +417,16 @@ export default function MessagesPage() {
     let alive = true;
     function connect() {
       if (!alive) return;
-      const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const ws = new WebSocket(`${proto}//${window.location.host}/api/messages/ws/${encodeURIComponent(email)}?token=${encodeURIComponent(token!)}`);
+      // In production the frontend (Vercel) and backend (Render) are separate
+      // origins, and Vercel's rewrites do NOT proxy WebSockets — so connect the
+      // socket straight to the backend when VITE_API_URL is set. Locally it's
+      // unset and we use the same origin (Vite dev-server proxies ws).
+      const apiUrl = import.meta.env.VITE_API_URL as string | undefined;
+      const path = `/api/messages/ws/${encodeURIComponent(email)}?token=${encodeURIComponent(token!)}`;
+      const wsUrl = apiUrl
+        ? `${apiUrl.replace(/^http/, "ws").replace(/\/$/, "")}${path}`
+        : `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}${path}`;
+      const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
       ws.onopen = () => setWsConnected(true);
       ws.onmessage = (evt) => {

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Bot, X, Send, Sparkles, ArrowRight, Building2, Users, Package, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { API_BASE } from "@/lib/api";
 
 interface Message {
   id: number;
@@ -17,10 +18,7 @@ const QUICK_ACTIONS = [
   { icon: Sparkles, label: "How does AI matching work?" },
 ];
 
-const AI_API =
-  typeof window !== "undefined" && ["5173", "8080"].includes(window.location.port)
-    ? "http://localhost:8000/api/ai/chat"
-    : "/api/ai/chat";
+const AI_API = `${API_BASE}/ai/chat`;
 
 async function fetchLandingResponse(history: { role: string; content: string }[]): Promise<string> {
   const res = await fetch(AI_API, {

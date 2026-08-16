@@ -1,0 +1,165 @@
+[
+  {
+    "id": "ahmed-pct-msg-001",
+    "sender": "ahmed@example.com",
+    "sender_name": "Ahmed Khan",
+    "content": "Hi, I need cement for my house construction in Lahore. What brands do you currently have in stock?",
+    "timestamp": "2026-04-06T12:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ahmed-pct-msg-002",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Hello Ahmed! We currently have:\n• Maple Leaf OPC 53 — PKR 1,290/bag\n• Lucky OPC 43 — PKR 1,240/bag\n• Bestway OPC 53 — PKR 1,280/bag\n• DG Khan OPC 43 — PKR 1,220/bag\n\nHow many bags do you need and for which area?",
+    "timestamp": "2026-04-06T12:15:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ahmed-pct-msg-003",
+    "sender": "ahmed@example.com",
+    "sender_name": "Ahmed Khan",
+    "content": "I need around 200 bags for a 5 marla house grey structure in DHA Phase 5. Which brand do you recommend?",
+    "timestamp": "2026-04-06T12:25:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ahmed-pct-msg-004",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "For grey structure I strongly recommend Maple Leaf OPC 53 — best strength and consistently used by top builders in DHA. For 200 bags we can give bulk rate: PKR 1,265/bag = PKR 253,000 with free delivery to DHA Phase 5.",
+    "timestamp": "2026-04-06T12:35:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ahmed-pct-msg-005",
+    "sender": "ahmed@example.com",
+    "sender_name": "Ahmed Khan",
+    "content": "Free delivery? That's great! Can you deliver in 2 days? I start construction on April 9.",
+    "timestamp": "2026-04-06T12:45:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ahmed-pct-msg-006",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Yes! We can deliver on April 8th (day before you start). Payment required to confirm: 50% advance = PKR 126,500. Remaining on delivery.",
+    "timestamp": "2026-04-06T13:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ahmed-pct-msg-007",
+    "sender": "ahmed@example.com",
+    "sender_name": "Ahmed Khan",
+    "content": "OK deal. Share your payment details.",
+    "timestamp": "2026-04-06T13:10:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ahmed-pct-msg-008",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Bank: HBL Gulberg\nAcc Title: Punjab Cement Traders\nAcc No: 02417900780103\n\nPlease share screenshot after transfer.",
+    "timestamp": "2026-04-06T13:20:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ahmed-pct-msg-009",
+    "sender": "ahmed@example.com",
+    "sender_name": "Ahmed Khan",
+    "content": "Thank you! I'll place the order for 200 bags.",
+    "timestamp": "2026-04-08T10:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ahmed-pct-msg-010",
+    "sender": "ahmed@example.com",
+    "sender_name": "Ahmed Khan",
+    "content": "Transfer ho gaya! Yeh raha payment receipt — PKR 126,500 advance.",
+    "timestamp": "2026-04-07T12:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop",
+      "filename": "ahmed-advance-receipt.jpg",
+      "size": 90000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  },
+  {
+    "id": "ahmed-pct-msg-011",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Payment confirm ho gaya Ahmed bhai! 200 bags Maple Leaf OPC 53 packed and ready. April 8th delivery, morning 9AM-12PM. Driver number: 0312-5551234",
+    "timestamp": "2026-04-07T12:30:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ahmed-pct-msg-012",
+    "sender": "ahmed@example.com",
+    "sender_name": "Ahmed Khan",
+    "content": "Voice message",
+    "timestamp": "2026-04-08T08:00:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "/uploads/ahmed-example-com/e037df3d-61c4-4b94-830b-24e24ec586e7/voice-1775761100725_1c4129ad.webm",
+      "filename": "voice-note.webm",
+      "size": 169619,
+      "type": "voice",
+      "content_type": "audio/webm"
+    }
+  },
+  {
+    "id": "ahmed-pct-msg-013",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Ahmed bhai yeh raha delivery confirmation video — 200 bags aapke DHA Phase 5 site par unload ho gaye. Check karein please!",
+    "timestamp": "2026-04-08T11:30:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+      "filename": "pct-ahmed-delivery.mp4",
+      "size": 17800000,
+      "type": "video",
+      "content_type": "video/mp4"
+    }
+  },
+  {
+    "id": "ahmed-pct-msg-014",
+    "sender": "ahmed@example.com",
+    "sender_name": "Ahmed Khan",
+    "content": "Sab kuch receive ho gaya! Quality fresh lag rahi hai. Remaining PKR 126,500 aaj transfer karta hun. Invoice share karo please.",
+    "timestamp": "2026-04-08T13:00:00+00:00",
+    "read": true,
+    "status": "read"
+  },
+  {
+    "id": "ahmed-pct-msg-015",
+    "sender": "sales@pct.com",
+    "sender_name": "Punjab Cement Traders",
+    "content": "Shukriya Ahmed bhai! Yeh raha final invoice. Dobara zaroor aana hamare paas!",
+    "timestamp": "2026-04-08T13:30:00+00:00",
+    "read": true,
+    "status": "read",
+    "attachment": {
+      "url": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=400&fit=crop",
+      "filename": "pct-invoice-ahmed.jpg",
+      "size": 90000,
+      "type": "image",
+      "content_type": "image/jpeg"
+    }
+  }
+]

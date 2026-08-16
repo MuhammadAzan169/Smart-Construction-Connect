@@ -1,0 +1,28 @@
+[
+  {
+    "id": "2535bf9e-81cd-4ed2-ab25-d13fcf2f07e4",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "✅ Document Approved\n\nYour document \"Ntn Certificate\" has been reviewed and approved by the platform admin. Your profile verification status has been updated accordingly.\n\nThank you for submitting your documents. Your profile will now appear as verified to clients.",
+    "timestamp": "2026-04-12T22:33:32.455299+00:00",
+    "read": true,
+    "status": "read",
+    "deleted_by": [],
+    "is_system": true,
+    "doc_type": "ntn_certificate",
+    "verification_status": "approved"
+  },
+  {
+    "id": "0b5b965a-c580-417e-8d48-54659b744dae",
+    "sender": "admin@smartconnect.pk",
+    "sender_name": "Platform Admin",
+    "content": "✅ Document Approved\n\nYour document \"Registration Certificate\" has been reviewed and approved by the platform admin. Your profile verification status has been updated accordingly.\n\nThank you for submitting your documents. Your profile will now appear as verified to clients.",
+    "timestamp": "2026-04-12T22:33:36.076771+00:00",
+    "read": true,
+    "status": "read",
+    "deleted_by": [],
+    "is_system": true,
+    "doc_type": "registration_certificate",
+    "verification_status": "approved"
+  }
+]

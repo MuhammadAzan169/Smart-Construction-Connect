@@ -1,0 +1,61 @@
+# ══════════════════════════════════════════════════════════════
+# Smart Construction Connect — BACKEND .gitignore
+# ══════════════════════════════════════════════════════════════
+
+# ── Environment & Secrets ────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.local
+secrets.json
+
+# ── Python ───────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python tools
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# ── Logs ─────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── Derived / runtime data ───────────────────────────────────
+# The semantic index is rebuilt from the JSON data on every startup.
+index_data/*
+!index_data/.gitkeep
+
+# Runtime user uploads (message attachments, voice notes).
+# NOTE: Render's filesystem is ephemeral — these do not persist across
+# deploys/restarts. Keep the folder, ignore its contents.
+uploads/*
+!uploads/.gitkeep
+
+# ── OS / editor ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini
+*.swp
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# ── Keep marker files ────────────────────────────────────────
+!.gitkeep
+!.gitignore

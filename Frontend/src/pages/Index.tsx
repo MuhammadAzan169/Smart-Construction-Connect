@@ -23,77 +23,6 @@ import { useThemeStore } from "@/stores/themeStore";
 import { cn } from "@/lib/utils";
 
 /* ─── Data ──────────────────────────────────────────────────── */
-type Plan = {
-  name: string;
-  monthly: string;
-  annual: string;
-  annualSavings?: string;
-  description: string;
-  features: { text: string; included: boolean }[];
-  tone: "base" | "primary" | "premium";
-  cta: string;
-  badge?: string;
-  icon: React.ElementType;
-};
-
-const plans: Plan[] = [
-  {
-    name: "Basic",
-    monthly: "Free",
-    annual: "Free",
-    description: "Explore companies and submit your first request.",
-    features: [
-      { text: "Browse verified companies", included: true },
-      { text: "Up to 5 project requests/mo", included: true },
-      { text: "Standard support", included: true },
-      { text: "AI consultant access", included: false },
-      { text: "Priority matching", included: false },
-      { text: "Advanced analytics", included: false },
-    ],
-    tone: "base",
-    icon: Users,
-    cta: "Get started",
-  },
-  {
-    name: "Pro",
-    monthly: "PKR 4,999",
-    annual: "PKR 3,999",
-    annualSavings: "Save PKR 12,000/yr",
-    description: "For active projects and faster vendor matching.",
-    features: [
-      { text: "Browse verified companies", included: true },
-      { text: "Unlimited project requests", included: true },
-      { text: "Priority support", included: true },
-      { text: "AI consultant access", included: true },
-      { text: "Smart vendor matching", included: true },
-      { text: "Advanced analytics", included: false },
-    ],
-    tone: "primary",
-    icon: Zap,
-    badge: "Most Popular",
-    cta: "Choose Pro",
-  },
-  {
-    name: "Premium",
-    monthly: "PKR 12,999",
-    annual: "PKR 10,499",
-    annualSavings: "Save PKR 30,000/yr",
-    description: "Gold-tier control, visibility, and analytics.",
-    features: [
-      { text: "Browse verified companies", included: true },
-      { text: "Unlimited project requests", included: true },
-      { text: "Dedicated account manager", included: true },
-      { text: "AI consultant access (unlimited)", included: true },
-      { text: "Smart vendor matching", included: true },
-      { text: "Advanced analytics & reports", included: true },
-    ],
-    tone: "premium",
-    icon: Crown,
-    badge: "Gold Tier",
-    cta: "Go Premium",
-  },
-];
-
 const stats = [
   { label: "Verified Companies", value: 120, suffix: "+" },
   { label: "Projects Completed", value: 3500, suffix: "+" },
@@ -169,7 +98,6 @@ export default function Index() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const heroRef = useRef<HTMLDivElement>(null);
-  const [annualBilling, setAnnualBilling] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -254,7 +182,7 @@ export default function Index() {
               <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 {t("landing.heroTitle").split(",")[0]},{" "}
                 <br />
-                <span className="animated-gradient-text">{t("landing.heroTitle").split(",")[1]?.replace(" Find ", "").trim() || "Find Better"}</span>
+                <span className="animated-gradient-text">{t("landing.heroTitle").split(",")[1]?.replace("Partners", "").trim() || "Find Better"}</span>
                 <br />
                 Partners
               </h1>
@@ -386,7 +314,7 @@ export default function Index() {
               Built for Every Role
             </div>
             <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              {t("landing.whoIsFor")} <span className="gradient-text">{t("landing.whoIsFor").split(" ").pop()}</span>
+              {t("landing.whoIsFor").split(" ").slice(0, -1).join(" ")} <span className="gradient-text">{t("landing.whoIsFor").split(" ").pop()}</span>
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
               {t("landing.whoIsForDesc")}
@@ -554,210 +482,6 @@ export default function Index() {
               </StaggerList>
             </div>
           </GlassCard>
-        </SectionReveal>
-
-        <div className="section-divider max-w-5xl" />
-
-        {/* ─── Pricing Section ──────────────────────────────── */}
-        <SectionReveal className="w-full max-w-5xl py-16">
-          <div className="mb-10 text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              {t("landing.transparentPricing")}
-            </div>
-            <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              {t("landing.simplePricing")} <span className="gradient-text">{t("plans.title")}</span>
-            </h2>
-            <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-              {t("landing.choosePlan")}
-            </p>
-
-            {/* Billing Toggle */}
-            <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-border/60 bg-card/60 px-4 py-2 backdrop-blur-sm">
-              <button
-                onClick={() => setAnnualBilling(false)}
-                className={cn(
-                  "rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200",
-                  !annualBilling
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {t("common.monthly")}
-              </button>
-              <button
-                onClick={() => setAnnualBilling(true)}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200",
-                  annualBilling
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {t("common.annual")}
-                <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400">
-                  Save 20%
-                </span>
-              </button>
-            </div>
-          </div>
-
-          <StaggerList className="grid gap-6 sm:grid-cols-3" stagger={0.12}>
-            {plans.map((plan) => {
-              const isPremium = plan.tone === "premium";
-              const isPro = plan.tone === "primary";
-              const isBase = plan.tone === "base";
-              const PlanIcon = plan.icon;
-              const price = annualBilling ? plan.annual : plan.monthly;
-              return (
-                <StaggerItem key={plan.name}>
-                  <div className="relative flex h-full">
-                    {/* Glow */}
-                    {isPro && (
-                      <div className="pointer-events-none absolute -inset-px rounded-2xl bg-gradient-to-b from-primary/30 to-amber-500/20 blur-xl opacity-60" />
-                    )}
-                    {isPremium && (
-                      <div className="pointer-events-none absolute -inset-px rounded-2xl bg-gradient-to-b from-[#D4AF37]/30 to-orange-500/20 blur-xl opacity-50" />
-                    )}
-                    <TiltCard tiltMaxAngleX={5} tiltMaxAngleY={5} className="w-full">
-                      <GlassCard
-                        className={cn(
-                          "relative flex w-full flex-col p-6 h-full",
-                          isPro && "ring-2 ring-primary/50 bg-primary/5",
-                          isPremium && "ring-2 ring-[#D4AF37]/40 bg-[#D4AF37]/5",
-                        )}
-                      >
-                        {plan.badge && (
-                          <div className="absolute -top-3.5 start-1/2 -translate-x-1/2 z-10">
-                            <Badge
-                              className={cn(
-                                "rounded-full px-3 py-0.5 text-[11px] font-semibold shadow-lg",
-                                isPro && "bg-primary text-primary-foreground",
-                                isPremium && "bg-[#D4AF37] text-black",
-                              )}
-                            >
-                              {plan.badge}
-                            </Badge>
-                          </div>
-                        )}
-
-                        {/* Header */}
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={cn(
-                              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-                              isBase && "bg-secondary text-muted-foreground",
-                              isPro && "bg-primary/15 text-primary",
-                              isPremium && "bg-[#D4AF37]/15 text-[#D4AF37]",
-                            )}
-                          >
-                            <PlanIcon className="h-5 w-5" />
-                          </div>
-                          <div>
-                            <p className="text-base font-bold text-foreground">{plan.name}</p>
-                            <p className="text-xs text-muted-foreground leading-snug">{plan.description}</p>
-                          </div>
-                        </div>
-
-                        {/* Price */}
-                        <div className="mt-5">
-                          <AnimatePresence mode="wait">
-                            <motion.div
-                              key={annualBilling ? "annual" : "monthly"}
-                              initial={{ opacity: 0, y: -6 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: 6 }}
-                              transition={{ duration: 0.18 }}
-                            >
-                              <div className="flex items-end gap-1.5">
-                                <span
-                                  className={cn(
-                                    "text-3xl font-extrabold leading-none",
-                                    isBase && "text-foreground",
-                                    isPro && "text-primary",
-                                    isPremium && "text-[#D4AF37]",
-                                  )}
-                                >
-                                  {price}
-                                </span>
-                                {price !== "Free" && (
-                                  <span className="mb-0.5 text-xs text-muted-foreground">/mo</span>
-                                )}
-                              </div>
-                              {annualBilling && plan.annualSavings && price !== "Free" && (
-                                <p className="mt-1 text-xs font-medium text-emerald-400">{plan.annualSavings}</p>
-                              )}
-                              <p className="mt-1 text-xs text-muted-foreground">
-                                {price === "Free" ? "No credit card required." : annualBilling ? "Billed annually." : "Billed monthly. Cancel anytime."}
-                              </p>
-                            </motion.div>
-                          </AnimatePresence>
-                        </div>
-
-                        {/* Features */}
-                        <div className="mt-5 flex-1 space-y-2.5">
-                          {plan.features.map((f) => (
-                            <div key={f.text} className={cn("flex items-start gap-2.5", !f.included && "opacity-40")}>
-                              <div
-                                className={cn(
-                                  "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md",
-                                  f.included && isPro ? "bg-primary/15" : "",
-                                  f.included && isPremium ? "bg-[#D4AF37]/15" : "",
-                                  f.included && isBase ? "bg-secondary" : "",
-                                  !f.included ? "bg-secondary" : "",
-                                )}
-                              >
-                                <Check
-                                  className={cn(
-                                    "h-3 w-3",
-                                    f.included && isPro ? "text-primary" : "",
-                                    f.included && isPremium ? "text-[#D4AF37]" : "",
-                                    f.included && isBase ? "text-muted-foreground" : "",
-                                    !f.included ? "text-muted-foreground/50" : "",
-                                  )}
-                                />
-                              </div>
-                              <span className="text-sm text-foreground leading-tight">{f.text}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* CTA */}
-                        <div className="mt-6">
-                          <Button
-                            size="lg"
-                            className={cn(
-                              "h-11 w-full rounded-xl font-semibold transition-all duration-200",
-                              isBase && "border border-border/60 bg-background/50 text-foreground hover:bg-accent/50 hover:border-primary/25 hover:text-primary",
-                              isPro && "bg-gradient-to-r from-primary to-amber-500 text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 hover:brightness-110",
-                              isPremium && "bg-gradient-to-r from-[#D4AF37] to-orange-400 text-black shadow-lg shadow-[#D4AF37]/25 hover:shadow-xl hover:shadow-[#D4AF37]/35 hover:brightness-110",
-                            )}
-                            variant={isBase ? "outline" : "default"}
-                            onClick={() => navigate("/signup")}
-                          >
-                            {plan.cta}
-                            {isPro && <ArrowRight className="ms-1.5 h-4 w-4" />}
-                            {isPremium && <Crown className="ms-1.5 h-4 w-4" />}
-                          </Button>
-                        </div>
-                      </GlassCard>
-                    </TiltCard>
-                  </div>
-                </StaggerItem>
-              );
-            })}
-          </StaggerList>
-
-          {/* Annual note */}
-          {annualBilling && (
-            <motion.p
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-6 text-center text-xs text-muted-foreground"
-            >
-              Annual plans are billed as a single payment. Switch back to monthly anytime.
-            </motion.p>
-          )}
         </SectionReveal>
 
         <div className="section-divider max-w-5xl" />

@@ -1,3 +1,6 @@
+import { API_BASE } from "@/lib/api";
+import { supplierImage } from "@/lib/entityImage";
+
 export type SupplierMaterial = {
   name: string;
   category: string;
@@ -50,10 +53,7 @@ export type SupplierDirectoryItem = {
   raw: SupplierDatasetItem;
 };
 
-const SUPPLIER_API =
-  window.location.port === "5173" || window.location.port === "8080"
-    ? "http://localhost:8000/api/suppliers/"
-    : "/api/suppliers/";
+const SUPPLIER_API = `${API_BASE}/suppliers/`;
 
 let _cachedSuppliers: SupplierDatasetItem[] | null = null;
 let _cachedDirectory: SupplierDirectoryItem[] | null = null;
@@ -76,6 +76,11 @@ export async function fetchSuppliers(): Promise<SupplierDatasetItem[]> {
 export async function fetchSupplierDirectory(): Promise<SupplierDirectoryItem[]> {
   if (_cachedDirectory) return _cachedDirectory;
   const suppliers = await fetchSuppliers();
+  // Only cache the built directory if the underlying fetch actually succeeded
+  // (fetchSuppliers sets _cachedSuppliers only on success). Otherwise a single
+  // transient failure — e.g. Render's cold start — would permanently lock the
+  // directory to an empty list for the rest of the browser session.
+  const fetchSucceeded = _cachedSuppliers !== null;
   const dir = suppliers
     .filter((s) => s && s.supplier_id && s.supplier_name)
     .map((s) => {
@@ -85,8 +90,8 @@ export async function fetchSupplierDirectory(): Promise<SupplierDirectoryItem[]>
         id: s.supplier_id,
         name: s.supplier_name,
         description: s.description || "",
-        logo: s.logo_url || "",
-        dpUrl: s.dp_url || "",
+        logo: supplierImage(s.slug || s.supplier_id || s.supplier_name),
+        dpUrl: supplierImage((s.slug || s.supplier_id || s.supplier_name) + "-cover", 1200),
         city: s.city || s.location?.city || "",
         area: s.area || s.location?.area || "",
         verified: s.verification_status === "verified",
@@ -102,7 +107,9 @@ export async function fetchSupplierDirectory(): Promise<SupplierDirectoryItem[]>
         raw: s,
       };
     });
-  _cachedDirectory = dir;
+  if (fetchSucceeded) {
+    _cachedDirectory = dir;
+  }
   return dir;
 }
 

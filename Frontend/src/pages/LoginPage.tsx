@@ -70,6 +70,35 @@ export default function LoginPage() {
     }
   };
 
+  // ── One-click demo accounts (seeded with cross-account chats, AI history & requests) ──
+  const demoAccounts: {
+    role: UserRole; email: string; password: string;
+    name: string; desc: string; icon: ElementType; gradient: string;
+  }[] = [
+    { role: "client", email: "ahmed@example.com", password: "Demo@1234", name: "Ahmed Khan", desc: "Homeowner building a house", icon: UserRound, gradient: "from-blue-500/25 to-cyan-500/10" },
+    { role: "company", email: "contact@elite.com", password: "Demo@1234", name: "Elite Builders", desc: "Verified contractor", icon: Building2, gradient: "from-amber-500/25 to-orange-500/10" },
+    { role: "supplier", email: "info@steelhub.pk", password: "Demo@1234", name: "Steel Hub PK", desc: "Material supplier", icon: Package, gradient: "from-emerald-500/25 to-green-500/10" },
+    { role: "admin", email: "admin@smartconnect.pk", password: "Demo@1234", name: "Platform Admin", desc: "Full platform control", icon: ShieldCheck, gradient: "from-purple-500/25 to-violet-500/10" },
+  ];
+  const [demoLoadingEmail, setDemoLoadingEmail] = useState<string | null>(null);
+
+  const handleDemoLogin = async (acc: (typeof demoAccounts)[number]) => {
+    setError("");
+    setDemoLoadingEmail(acc.email);
+    // Reflect the choice in the form for clarity
+    setRole(acc.role);
+    setEmail(acc.email);
+    setPassword(acc.password);
+    try {
+      await login(acc.email, acc.password, acc.role);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(err.message || t("auth.signInFailed"));
+    } finally {
+      setDemoLoadingEmail(null);
+    }
+  };
+
   const stats = [
     { icon: Building2, value: "500+", label: t("auth.verifiedCompanies") },
     { icon: TrendingUp, value: "12K+", label: t("auth.projectsCompleted") },
@@ -397,6 +426,59 @@ export default function LoginPage() {
                     </motion.div>
                   </motion.div>
                 </form>
+
+                {/* ── One-click demo accounts ── */}
+                <div className="mt-6">
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="h-px flex-1 bg-border/60" />
+                    <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                      <Sparkles className="h-3 w-3 text-primary" />
+                      Explore a live demo
+                    </span>
+                    <div className="h-px flex-1 bg-border/60" />
+                  </div>
+                  <p className="mb-3 text-center text-[11px] text-muted-foreground">
+                    One click to sign in as any role — each account has real chats, AI history &amp; requests.
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {demoAccounts.map((acc) => {
+                      const Icon = acc.icon;
+                      const busy = demoLoadingEmail === acc.email;
+                      const anyBusy = demoLoadingEmail !== null;
+                      return (
+                        <motion.button
+                          key={acc.email}
+                          type="button"
+                          onClick={() => handleDemoLogin(acc)}
+                          disabled={anyBusy}
+                          whileHover={{ scale: anyBusy ? 1 : 1.02 }}
+                          whileTap={{ scale: anyBusy ? 1 : 0.97 }}
+                          className={cn(
+                            "relative flex items-center gap-2.5 overflow-hidden rounded-2xl border border-border/60 bg-background/20 p-3 text-start transition-all duration-200",
+                            "hover:border-primary/40 hover:bg-background/40 disabled:cursor-not-allowed",
+                            busy ? "opacity-100" : anyBusy ? "opacity-50" : "opacity-100",
+                          )}
+                        >
+                          <div className={cn("absolute inset-0 bg-gradient-to-br opacity-25", acc.gradient)} />
+                          <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                            {busy ? (
+                              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                              </svg>
+                            ) : (
+                              <Icon className="h-4 w-4" />
+                            )}
+                          </div>
+                          <div className="relative min-w-0">
+                            <p className="truncate text-sm font-semibold leading-tight text-foreground">{acc.name}</p>
+                            <p className="truncate text-[11px] text-muted-foreground">{acc.desc}</p>
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
 
                 <p className="mt-6 text-center text-sm text-muted-foreground">
                   {t("auth.signUpInstead")}{" "}

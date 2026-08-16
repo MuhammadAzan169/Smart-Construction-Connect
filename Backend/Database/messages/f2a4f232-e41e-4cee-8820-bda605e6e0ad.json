@@ -1,0 +1,39 @@
+[
+  {
+    "id": "58eb6b6e-2c15-4fc6-9917-498c932771b1",
+    "sender": "ahmed@example.com",
+    "sender_name": "Ahmed Khan",
+    "content": "Hello! I would like to get in touch with the platform admin.",
+    "timestamp": "2026-04-12T22:34:39.884954+00:00",
+    "read": true,
+    "status": "read",
+    "deleted_by": [
+      "ahmed@example.com",
+      "admin@smartconnect.pk"
+    ]
+  },
+  {
+    "id": "478de6cc-82a3-4b07-9e08-ecb54301e3a2",
+    "sender": "ahmed@example.com",
+    "sender_name": "Ahmed Khan",
+    "content": "Hello! I would like to get in touch with the platform admin.",
+    "timestamp": "2026-04-12T22:49:29.113686+00:00",
+    "read": true,
+    "status": "read",
+    "deleted_by": [
+      "admin@smartconnect.pk"
+    ]
+  },
+  {
+    "id": "25648a62-e171-48ed-9470-0de8858c137d",
+    "sender": "ahmed@example.com",
+    "sender_name": "Ahmed Khan",
+    "content": "hello",
+    "timestamp": "2026-04-12T22:49:33.191076+00:00",
+    "read": true,
+    "status": "read",
+    "deleted_by": [
+      "admin@smartconnect.pk"
+    ]
+  }
+]

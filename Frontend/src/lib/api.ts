@@ -1,5 +1,7 @@
 // API base always uses relative path — Vite dev proxy and production both route /api correctly.
-const API_BASE = "/api";
+import { withEntityImage, withEntityImages } from "./entityImage";
+
+export const API_BASE = "/api";
 const REQUEST_TIMEOUT_MS = 15_000;
 
 function _authHeaders(): Record<string, string> {
@@ -226,11 +228,14 @@ export const api = {
       if (params?.city) qs.set("city", params.city);
       if (params?.verified !== undefined) qs.set("verified", String(params.verified));
       const suffix = qs.toString() ? `?${qs.toString()}` : "";
-      return request<{ items: Record<string, unknown>[]; total: number; page: number; limit: number }>(`/companies/${suffix}`);
+      return request<{ items: Record<string, unknown>[]; total: number; page: number; limit: number }>(`/companies/${suffix}`)
+        .then((res) => ({ ...res, items: withEntityImages(res.items, "company") }));
     },
-    get: (id: string) => request<Record<string, unknown>>(`/companies/${encodeURIComponent(id)}`),
+    get: (id: string) => request<Record<string, unknown>>(`/companies/${encodeURIComponent(id)}`)
+      .then((c) => withEntityImage(c, "company") as Record<string, unknown>),
     getProfile: (slug: string) =>
-      request<Record<string, unknown>>(`/companies/profile/${encodeURIComponent(slug)}`),
+      request<Record<string, unknown>>(`/companies/profile/${encodeURIComponent(slug)}`)
+        .then((c) => withEntityImage(c, "company") as Record<string, unknown>),
     updateProfile: (slug: string, data: Record<string, unknown>) =>
       request<{ status: string }>(`/companies/profile/${encodeURIComponent(slug)}`, {
         method: "PUT",
@@ -256,11 +261,14 @@ export const api = {
       if (params?.city) qs.set("city", params.city);
       if (params?.verified !== undefined) qs.set("verified", String(params.verified));
       const suffix = qs.toString() ? `?${qs.toString()}` : "";
-      return request<{ items: Record<string, unknown>[]; total: number; page: number; limit: number }>(`/suppliers/${suffix}`);
+      return request<{ items: Record<string, unknown>[]; total: number; page: number; limit: number }>(`/suppliers/${suffix}`)
+        .then((res) => ({ ...res, items: withEntityImages(res.items, "supplier") }));
     },
-    get: (id: string) => request<Record<string, unknown>>(`/suppliers/${encodeURIComponent(id)}`),
+    get: (id: string) => request<Record<string, unknown>>(`/suppliers/${encodeURIComponent(id)}`)
+      .then((s) => withEntityImage(s, "supplier") as Record<string, unknown>),
     getProfile: (slug: string) =>
-      request<Record<string, unknown>>(`/suppliers/profile/${encodeURIComponent(slug)}`),
+      request<Record<string, unknown>>(`/suppliers/profile/${encodeURIComponent(slug)}`)
+        .then((s) => withEntityImage(s, "supplier") as Record<string, unknown>),
     updateProfile: (slug: string, data: Record<string, unknown>) =>
       request<{ status: string }>(`/suppliers/profile/${encodeURIComponent(slug)}`, {
         method: "PUT",
@@ -290,8 +298,10 @@ export const api = {
         body: JSON.stringify({ user_id: userId, status }),
       }),
     getStats: () => request<Record<string, unknown>>("/admin/stats"),
-    getCompanies: () => request<Record<string, unknown>[]>("/admin/companies"),
-    getSuppliers: () => request<Record<string, unknown>[]>("/admin/suppliers"),
+    getCompanies: () => request<Record<string, unknown>[]>("/admin/companies")
+      .then((items) => withEntityImages(items, "company")),
+    getSuppliers: () => request<Record<string, unknown>[]>("/admin/suppliers")
+      .then((items) => withEntityImages(items, "supplier")),
     updateVerification: (slug: string, entityType: string, docType: string, status: string, notes = "") =>
       request<{ status: string; verification_status: string }>("/admin/verification", {
         method: "PUT",

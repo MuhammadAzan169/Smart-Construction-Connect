@@ -1,3 +1,6 @@
+import { API_BASE } from "@/lib/api";
+import { companyImage } from "@/lib/entityImage";
+
 type PackageScopeFields = {
   design_included?: boolean;
   fixtures?: string;
@@ -101,10 +104,13 @@ export type CompanyDatasetCompany = {
   projects?: CompanyProject[];
 };
 
-// Import the provided dataset JSON from the workspace Database folder.
+// Bundled snapshot of the company dataset (build-time fallback). Live data is
+// fetched from the backend API at runtime via COMPANY_API below. Refresh this
+// file from the backend's Database/construction/companies.json when the seed
+// data changes.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import companiesJson from "../../../Database/construction/companies.json";
+import companiesJson from "./companies.json";
 
 
 export const companyDataset = (companiesJson as unknown as CompanyDatasetCompany[]).filter(
@@ -336,16 +342,17 @@ export function humanizeToken(value: string) {
 
 // ── Async API-based fetcher (production) ──
 
-const COMPANY_API =
-  window.location.port === "5173" || window.location.port === "8080"
-    ? "http://localhost:8000/api/companies/"
-    : "/api/companies/";
+const COMPANY_API = `${API_BASE}/companies/`;
 
 let _cachedDirectory: CompanyDirectoryItem[] | null = null;
 
 function _buildDirectoryItem(raw: CompanyDatasetCompany): CompanyDirectoryItem {
   const price = computePriceRange(raw);
   const coverage = computeCoverage(raw);
+  const seed = raw.slug || raw.company_id || raw.company_name;
+  // Replace the seeded/random imagery with on-brand construction photos so
+  // everything reading `raw.logo_url` / `raw.dp_url` stays consistent too.
+  raw = { ...raw, logo_url: companyImage(seed), dp_url: companyImage(seed + "-cover", 1200) };
   return {
     id: raw.company_id,
     name: raw.company_name,
@@ -360,7 +367,7 @@ function _buildDirectoryItem(raw: CompanyDatasetCompany): CompanyDirectoryItem {
     priceRange: price ? formatSqFtRange(price.min, price.max) : "Pricing —",
     verified: (raw as Record<string, unknown>).verification_status === "verified" || computeVerified(raw),
     matchScore: computeMatchScore(raw),
-    image: (raw as Record<string, unknown>).dp_url as string || raw.logo_url || placeholderImages[hashToIndex(raw.company_id, placeholderImages.length)],
+    image: companyImage(raw.slug || raw.company_id || raw.company_name, 800),
     yearEstablished: raw.legal_info?.year_established,
     completedProjects: raw.experience?.houses_completed,
     raw,

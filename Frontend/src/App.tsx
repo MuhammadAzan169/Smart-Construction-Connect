@@ -20,7 +20,6 @@ const AdminAIChatPage = lazy(() => import("./pages/AdminAIChatPage"));
 const ClientAIChatPage = lazy(() => import("./pages/ClientAIChatPage"));
 const CompanyAIChatPage = lazy(() => import("./pages/CompanyAIChatPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
-const SaaSPlansPage = lazy(() => import("./pages/SaaSPlansPage"));
 const CompaniesPage = lazy(() => import("./pages/CompaniesPage"));
 const CompanyProfilePage = lazy(() => import("./pages/CompanyProfilePage"));
 const SupplierProfilePage = lazy(() => import("./pages/SupplierProfilePage"));
@@ -104,7 +103,6 @@ const App = () => (
                 <Route path="/client-ai" element={<LazyPage><ClientAIChatPage /></LazyPage>} />
                 <Route path="/company-ai" element={<LazyPage><CompanyAIChatPage /></LazyPage>} />
                 <Route path="/pricing" element={<LazyPage><PricingPage /></LazyPage>} />
-                <Route path="/plans" element={<LazyPage><SaaSPlansPage /></LazyPage>} />
                 <Route path="/products" element={<LazyPage><InventoryPage /></LazyPage>} />
                 <Route path="/users" element={<LazyPage><UsersPage /></LazyPage>} />
                 <Route path="/approvals" element={<LazyPage><ApprovalsPage /></LazyPage>} />
