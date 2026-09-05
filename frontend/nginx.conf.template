@@ -1,0 +1,95 @@
+# =============================================================================
+# Smart Construction Connect — frontend nginx config
+#
+# Reproduces what frontend/vercel.json does in the Vercel deployment: serve the
+# SPA, and proxy the API paths to the backend so the browser only ever talks to
+# one origin (no CORS configuration needed).
+#
+# ${BACKEND_ORIGIN} is substituted at container start by the nginx image's
+# envsubst entrypoint. nginx's own $variables are left untouched, because they
+# are not present in the environment.
+# =============================================================================
+
+# WebSocket upgrade helper. conf.d files are included inside the http block, so
+# this map belongs here; without it $connection_upgrade is undefined and nginx
+# refuses to start.
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+server {
+    listen       8080;
+    server_name  _;
+
+    root  /usr/share/nginx/html;
+    index index.html;
+
+    # Uploads are capped at 10 MB server-side (MAX_DOC_SIZE); allow a little
+    # headroom for multipart overhead so large documents are not rejected here.
+    client_max_body_size 12m;
+
+    gzip              on;
+    gzip_comp_level   5;
+    gzip_min_length   1024;
+    gzip_proxied      any;
+    gzip_vary         on;
+    gzip_types        text/plain text/css application/javascript application/json
+                      image/svg+xml application/xml font/woff2;
+
+    # ── API ────────────────────────────────────────────────────────────────
+    # Also carries the chat WebSocket at /api/messages/ws/{email}, hence the
+    # Upgrade headers and the long read timeout.
+    location /api/ {
+        proxy_pass         ${BACKEND_ORIGIN};
+
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade           $http_upgrade;
+        proxy_set_header   Connection        $connection_upgrade;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+
+        # AI responses stream token by token and a cold backend can take ~60s;
+        # buffering would hold the whole reply back and break the typing effect.
+        proxy_buffering    off;
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+    }
+
+    # ── Legacy static files still served by the backend ─────────────────────
+    location /uploads/ {
+        proxy_pass       ${BACKEND_ORIGIN};
+        proxy_set_header Host              $host;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /company_data/ {
+        proxy_pass       ${BACKEND_ORIGIN};
+        proxy_set_header Host              $host;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # ── Static assets ──────────────────────────────────────────────────────
+    # Filenames carry a content hash (see vite.config.ts), so they can be
+    # cached forever. index.html must never be cached or clients would keep
+    # loading the previous build's asset URLs after a deploy.
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    location = /index.html {
+        add_header Cache-Control "no-store";
+    }
+
+    # ── SPA fallback ───────────────────────────────────────────────────────
+    # Client-side routing: unknown paths must return index.html, not 404.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

@@ -45,6 +45,7 @@ starts **both** parts with one command.
 Smart-Construction-Connect/
 ├── app.py                  ← LOCAL runner: starts backend + frontend together
 ├── README.md  .gitignore
+├── docs/                   ← infrastructure & containerisation handbook (PDF)
 ├── backend/                ← FastAPI service → Render
 │   ├── app.py              ← ASGI entry point (uvicorn app:app)
 │   ├── backend/            ← application package (config, routers, utils)
@@ -54,18 +55,18 @@ Smart-Construction-Connect/
 │   ├── render.yaml  Procfile  runtime.txt
 │   ├── .env.example
 │   ├── Database/  company_data/  uploads/  index_data/
-│   ├── docs/               ← infrastructure handbook (PDF)
 │   └── README.md  DEPLOY_SUPABASE.md
 └── frontend/               ← React + Vite SPA → Vercel
     ├── src/  public/  index.html
     ├── package.json  vite.config.ts  vercel.json  .nvmrc
+    ├── Dockerfile  nginx.conf.template  .dockerignore
     ├── .env.example
     └── README.md
 ```
 
 Everything lives inside `backend/` or `frontend/` — the repository root holds
-only the local runner, this README and `.gitignore`, so Vercel and Render each
-point at one self-contained folder.
+only the local runner, this README, `docs/` and `.gitignore`, so Vercel and
+Render each point at one self-contained folder.
 
 ## Architecture
 
@@ -414,4 +415,4 @@ personal information is stored in this repository.
 Further reading: [`backend/README.md`](backend/README.md),
 [`frontend/README.md`](frontend/README.md),
 [`backend/DEPLOY_SUPABASE.md`](backend/DEPLOY_SUPABASE.md), and
-[`backend/docs/Smart-Construction-Connect-Infrastructure-Handbook.pdf`](backend/docs/Smart-Construction-Connect-Infrastructure-Handbook.pdf).
+[`docs/Smart-Construction-Connect-Infrastructure-Handbook.pdf`](docs/Smart-Construction-Connect-Infrastructure-Handbook.pdf).

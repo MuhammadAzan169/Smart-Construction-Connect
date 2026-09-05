@@ -1,0 +1,22 @@
+# Keep the build context small and free of secrets
+.env
+.env.*
+!.env.example
+
+node_modules
+dist
+.vercel
+
+# Test + tooling output
+coverage
+test-results
+playwright-report
+playwright/.cache
+*.tsbuildinfo
+
+*.log
+.git
+.gitignore
+README.md
+.DS_Store
+Thumbs.db
