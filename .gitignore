@@ -1,6 +1,6 @@
 # ══════════════════════════════════════════════════════════════
 # Smart Construction Connect — repository-wide ignores
-# (Backend/.gitignore and Frontend/.gitignore add per-part rules)
+# (backend/.gitignore and frontend/.gitignore add per-part rules)
 # ══════════════════════════════════════════════════════════════
 
 # ── Environment & secrets — never commit these ───────────────
@@ -37,3 +37,16 @@ Thumbs.db
 
 # ── Personal / non-project notes (kept locally, not published) ─
 CV_PROJECT_DESCRIPTION.md
+
+# -- Local runner artefacts (created by `python app.py`) -------
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# -- Local model caches (downloaded by sentence-transformers/easyocr) --
+.cache/
+**/.cache/huggingface/
+
+# -- Vercel --------------------------------------------------
+.vercel

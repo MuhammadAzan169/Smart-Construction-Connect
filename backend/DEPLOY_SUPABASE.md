@@ -34,7 +34,7 @@ Auth stays as-is (custom JWT + bcrypt); user records just live in Postgres now.
 
 ## 2. Migrate your existing local data (one time)
 
-From the `Backend/` directory, fill `.env` (copy from `.env.example`) with
+From the `backend/` directory, fill `.env` (copy from `.env.example`) with
 `DATABASE_URL` + the `SUPABASE_*` vars, then:
 
 ```bash
@@ -47,7 +47,7 @@ Re-runnable and non-destructive (local files are never modified).
 
 ## 3. Deploy the backend to Render
 
-Render reads `render.yaml`; set the service's **Root Directory** to `Backend`.
+Render reads `render.yaml`; set the service's **Root Directory** to `backend`.
 The live service is https://smart-contruction-connect-backend.onrender.com.
 In the service's **Environment** tab set (marked `sync: false`):
 
@@ -64,7 +64,7 @@ In the service's **Environment** tab set (marked `sync: false`):
 
 ## 4. Frontend (Vercel)
 
-1. Set the Vercel project's **Root Directory** to `Frontend`. Its `vercel.json`
+1. Set the Vercel project's **Root Directory** to `frontend`. Its `vercel.json`
    already points at the Render backend; if that URL changes, update all three
    rewrites. The `/api`, `/uploads`, `/company_data` rewrites proxy HTTP to the
    backend and serve legacy static files; new uploads return absolute Supabase

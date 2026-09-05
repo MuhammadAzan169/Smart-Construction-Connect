@@ -1,0 +1,34 @@
+# =============================================================================
+# Smart Construction Connect — LOCAL-ONLY extras
+#
+# Install these ON TOP of requirements.txt when developing locally:
+#     pip install -r requirements.txt -r requirements-local.txt
+# (the repo-root `python app.py` runner does this automatically).
+#
+# NEVER install these on Render's free plan — PyTorch alone is >2 GB and the
+# 512 MB instance will fail to build or be OOM-killed. Production reaches the
+# same functionality through API-based alternatives:
+#     local sentence-transformers  →  EMBEDDINGS_API_URL / EMBEDDINGS_API_KEY
+#     local FAISS vector index     →  in-memory numpy cosine search
+#     local EasyOCR                →  disabled (PDF/Word/Excel/text still work)
+#
+# What these enable locally (with ENABLE_LOCAL_SBERT=1, set by app.py):
+#   • offline semantic search with the all-MiniLM-L6-v2 model — no API key,
+#     no per-query cost, no network
+#   • FAISS approximate nearest-neighbour index for fast retrieval
+#   • OCR of scanned images / image-only PDFs in the AI assistant
+# =============================================================================
+
+# ── Local embedding model (downloads all-MiniLM-L6-v2 on first run, ~90 MB) ──
+sentence-transformers>=3.0,<6.0
+torch>=2.2,<3.0
+
+# ── Local vector index ───────────────────────────────────────────────────────
+faiss-cpu>=1.8,<2.0
+
+# ── Local OCR for scanned images and image-only PDFs ─────────────────────────
+# easyocr pulls in torchvision + opencv; skip with `python app.py --skip-local-ml`
+# if you do not need OCR (everything else keeps working).
+easyocr>=1.7,<2.0
+opencv-python-headless>=4.9,<5.0
+Pillow>=10.0,<12.0

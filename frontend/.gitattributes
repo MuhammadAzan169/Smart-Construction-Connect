@@ -1,0 +1,31 @@
+# Text normalisation + binary protection for the frontend tree.
+* text=auto
+
+*.ts   text
+*.tsx  text
+*.js   text
+*.jsx  text
+*.json text
+*.css  text
+*.html text
+*.md   text
+*.svg  text
+
+# ── Binary assets — never EOL-convert or diff these ──
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.mp3   binary
+*.wav   binary
+*.webm  binary
+*.lockb binary
+
+# Lockfiles: keep them out of diffs/reviews
+package-lock.json linguist-generated=true -diff
+bun.lock          linguist-generated=true -diff

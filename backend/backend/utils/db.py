@@ -82,13 +82,26 @@ def _init() -> None:
             _state = "enabled"
             logger.info("Database enabled — using Postgres document store")
         except Exception as exc:
-            # Fail loud: if DATABASE_URL is set the operator expects durability.
+            # DATABASE_URL being set means the operator expects durability.
             _state = "disabled"
             logger.error(
-                "DATABASE_URL is set but the connection failed: %s. "
-                "Falling back to local JSON files (NOT durable on Render). "
-                "Fix the connection string to enable persistence.",
+                "DATABASE_URL is set but the connection failed: %s.",
                 exc,
+            )
+            if os.getenv("ENV", "development") == "production":
+                # On an ephemeral host (Render, a container) falling back to local
+                # JSON silently loses every write on the next restart, and nothing
+                # surfaces that to users. Refuse to start instead, the same way
+                # config.py refuses a default JWT secret in production.
+                raise RuntimeError(
+                    "DATABASE_URL is set but unreachable, and ENV=production. "
+                    "Refusing to start with non-durable local-file storage - "
+                    "data would be lost on every restart. Check the Supabase "
+                    "project is running and the transaction-pooler URI is correct."
+                ) from exc
+            logger.error(
+                "Falling back to local JSON files (development only - NOT durable). "
+                "Fix the connection string to enable persistence."
             )
 
 

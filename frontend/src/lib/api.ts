@@ -2,7 +2,10 @@
 import { withEntityImage, withEntityImages } from "./entityImage";
 
 export const API_BASE = "/api";
-const REQUEST_TIMEOUT_MS = 15_000;
+// Render's free plan spins the backend down when idle: the first request after
+// a cold start can take 30-60s. A shorter timeout aborts that request and the
+// UI shows a spurious "Request timed out" on the user's first action.
+const REQUEST_TIMEOUT_MS = 60_000;
 
 function _authHeaders(): Record<string, string> {
   try {
@@ -441,7 +444,7 @@ export const api = {
       formData.append("user_role", userRole);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30_000);
+      const timeoutId = setTimeout(() => controller.abort(), 120_000);
       try {
         const res = await fetch(`${API_BASE}/ai/chat-with-file`, {
           method: "POST",
@@ -559,7 +562,7 @@ export const api = {
       form.append("image_type", imageType);
       form.append("role", role);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30_000);
+      const timeoutId = setTimeout(() => controller.abort(), 120_000);
       try {
         const res = await fetch(`${API_BASE}/upload/image`, {
           method: "POST",
@@ -588,7 +591,7 @@ export const api = {
       form.append("doc_type", docType);
       form.append("role", role);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30_000);
+      const timeoutId = setTimeout(() => controller.abort(), 120_000);
       try {
         const res = await fetch(`${API_BASE}/upload/document`, {
           method: "POST",
@@ -618,7 +621,7 @@ export const api = {
       form.append("item_id", itemId);
       form.append("role", role);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30_000);
+      const timeoutId = setTimeout(() => controller.abort(), 120_000);
       try {
         const res = await fetch(`${API_BASE}/upload/gallery`, {
           method: "POST",

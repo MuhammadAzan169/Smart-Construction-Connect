@@ -28,8 +28,15 @@ function inlineFormat(s: string): React.ReactNode {
 }
 
 function parseTableRow(line: string): string[] | null {
-  if (!line.trim().startsWith("|")) return null;
-  return line.split("|").slice(1, -1);
+  const trimmed = line.trim();
+  if (!trimmed.startsWith("|")) return null;
+  // Drop the leading pipe, and the trailing one only if it is actually there —
+  // models frequently emit rows like `| a | b` without the closing pipe, and
+  // slicing it off unconditionally silently dropped the last column.
+  let inner = trimmed.slice(1);
+  if (inner.endsWith("|")) inner = inner.slice(0, -1);
+  if (!inner.trim()) return null;
+  return inner.split("|");
 }
 
 export function renderMarkdown(text: string): React.ReactNode {
@@ -159,6 +166,20 @@ export function renderMarkdown(text: string): React.ReactNode {
 
     // Normal paragraph
     elements.push(<p key={i} className="text-sm leading-relaxed break-words">{inlineFormat(line)}</p>);
+  }
+  // A truncated or still-streaming response can leave a fence open. Without this
+  // the buffered lines are dropped and the rest of the message never renders.
+  if (codeBlock !== null && codeBlock.length) {
+    elements.push(
+      <div key={`code-${elements.length}`} className="my-2 rounded-lg border border-border bg-muted/30 overflow-x-auto">
+        {codeLang && (
+          <div className="px-3 py-1 text-[10px] font-medium text-muted-foreground border-b border-border/50 bg-muted/50">{codeLang}</div>
+        )}
+        <pre className="p-3 text-xs font-mono text-foreground whitespace-pre-wrap break-words">
+          <code>{codeBlock.join("\n")}</code>
+        </pre>
+      </div>
+    );
   }
   flushList();
   flushTable();

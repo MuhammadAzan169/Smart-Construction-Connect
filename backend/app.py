@@ -183,6 +183,12 @@ def health():
     return {"status": "ok", "version": "1.0.0"}
 
 
+# Alias — Render's health check and most uptime monitors default to /health.
+@app.get("/health")
+def health_alias():
+    return health()
+
+
 # ── Static: uploaded company images + documents ──
 COMPANY_DATA_DIR = ROOT / "company_data"
 COMPANY_DATA_DIR.mkdir(exist_ok=True)

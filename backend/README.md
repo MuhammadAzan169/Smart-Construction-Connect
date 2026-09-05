@@ -9,16 +9,16 @@ files (`/company_data/…`, `/uploads/…`).
   health check at `/api/health`)
 - **Data & files:** Supabase Postgres + Supabase Storage
 - **Consumed by:** the React frontend, deployed on Vercel — see
-  [`../Frontend/README.md`](../Frontend/README.md)
+  [`../frontend/README.md`](../frontend/README.md)
 
-This is the `Backend/` directory of the
+This is the `backend/` directory of the
 [`Smart-Construction-Connect`](https://github.com/MuhammadAzan169/Smart-Construction-Connect)
 repository; Render is pointed at this directory as its **Root Directory**.
 
 ## Layout
 
 ```
-Backend/                  ← Render root directory
+backend/                  ← Render root directory
 ├── app.py                ← production entry point (uvicorn app:app)
 ├── backend/              ← Python package
 │   ├── config.py         ← settings loaded from env / .env
@@ -77,7 +77,7 @@ data migration are covered in [`DEPLOY_SUPABASE.md`](DEPLOY_SUPABASE.md).
    `Smart-Construction-Connect` repository (or use the included `render.yaml`
    Blueprint).
 2. Settings:
-   - **Root directory:** `Backend`
+   - **Root directory:** `backend`
    - **Build command:** `pip install -r requirements.txt`
    - **Start command:** `uvicorn app:app --host 0.0.0.0 --port $PORT`
    - **Health check path:** `/api/health`
@@ -97,7 +97,7 @@ data migration are covered in [`DEPLOY_SUPABASE.md`](DEPLOY_SUPABASE.md).
 
    Do **not** set `PORT` — Render injects it.
 4. Point the frontend at the deployed URL: the rewrites in
-   `../Frontend/vercel.json` and the `VITE_API_URL` variable in Vercel.
+   `../frontend/vercel.json` and the `VITE_API_URL` variable in Vercel.
 
 ## Notes & caveats
 

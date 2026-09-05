@@ -1,20 +1,27 @@
-# Render Blueprint — deploy this backend as a Web Service (FREE plan compatible).
-# Docs: https://render.com/docs/blueprint-spec
+# =============================================================================
+# Render Blueprint — BACKEND service (FREE plan compatible).
 #
-# You can either connect the repo and let Render read this file, or configure
-# the same settings manually in the Render dashboard.
+# This repository holds the frontend and the backend side by side, so point
+# Render at this folder: set the service's "Root Directory" to `backend`
+# (Blueprint) or configure the same values manually in the dashboard. The
+# frontend is deployed separately on Vercel from ../frontend.
 #
-# Durability: this app persists to Supabase (Postgres + Storage). Render's free
-# disk is ephemeral, so DATABASE_URL + SUPABASE_* MUST be set for data to
-# survive restarts/deploys.
+# FREE PLAN NOTES
+#   • 512 MB RAM  → only requirements.txt is installed (no PyTorch/FAISS/OCR)
+#   • ephemeral disk → DATABASE_URL + SUPABASE_* are REQUIRED for durable data
+#   • spins down when idle → first request after ~15 min takes 30–60 s
+# =============================================================================
 services:
   - type: web
     name: smart-construction-connect-api
-    runtime: python
-    plan: free                      # ML deps removed → fits in 512MB
+    runtime: python                 # switch to `docker` to build the Dockerfile
+    plan: free
+    region: oregon
+    branch: main
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/health
+    autoDeploy: true
     envVars:
       - key: ENV
         value: production
@@ -23,7 +30,12 @@ services:
       - key: JWT_SECRET_KEY
         generateValue: true         # Render generates a strong random secret
 
+      # ── Local ML is OFF on Render (512 MB cannot load PyTorch) ──
+      - key: ENABLE_LOCAL_SBERT
+        value: "0"
+
       # ── CORS: set to your Vercel URL in the dashboard ──
+      #   e.g. https://your-frontend.vercel.app
       - key: CORS_ORIGINS
         sync: false
 
@@ -53,3 +65,6 @@ services:
         sync: false
       - key: EMBEDDINGS_MODEL
         value: embed-multilingual-light-v3.0
+
+      - key: LOG_LEVEL
+        value: INFO

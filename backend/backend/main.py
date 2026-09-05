@@ -1,7 +1,7 @@
 """FastAPI entry point for Smart Construction Connect backend.
 
 NOTE: The primary entry point is app.py at the repo root, which includes
-all routers (including upload) and serves the built frontend.  This file
+all routers (including upload) and static uploads. This file
 exists as a convenience for running the API standalone during development:
 
     uvicorn backend.main:app --reload

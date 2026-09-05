@@ -1,0 +1,45 @@
+# =============================================================================
+# Smart Construction Connect — BACKEND runtime dependencies
+#
+# This file is what RENDER installs. It is deliberately CPU/RAM-light so the
+# service fits the free plan (512 MB RAM, no persistent disk):
+#   • no PyTorch, no sentence-transformers, no FAISS, no EasyOCR
+#   • semantic search uses an external embeddings API (EMBEDDINGS_* env vars)
+#     and falls back to built-in BM25 keyword search when they are unset
+#
+# For LOCAL development also install requirements-local.txt, which adds the
+# local models (SBERT + FAISS + OCR). `python app.py` at the repo root does
+# that for you automatically.
+# =============================================================================
+
+# ── Web framework ────────────────────────────────────────────────────────────
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30,<1.0        # includes websockets + httptools + uvloop
+pydantic>=2.7,<3.0
+python-multipart>=0.0.9,<0.1
+# starlette is intentionally NOT listed: fastapi pins a compatible range itself
+
+# ── Auth & security ──────────────────────────────────────────────────────────
+bcrypt>=4.1,<5.0
+PyJWT>=2.8,<3.0
+
+# ── HTTP client (OpenRouter, embeddings API, Supabase Storage) ───────────────
+httpx>=0.27,<1.0
+
+# ── Config ───────────────────────────────────────────────────────────────────
+python-dotenv>=1.0,<2.0
+
+# ── Data / caching ───────────────────────────────────────────────────────────
+numpy>=1.26,<3.0
+pandas>=2.2,<3.0
+cachetools>=5.3,<7.0
+
+# ── Document extraction (pure-Python — safe on the 512 MB free tier) ─────────
+PyMuPDF>=1.24,<2.0
+pdfplumber>=0.11,<1.0
+python-docx>=1.1,<2.0
+openpyxl>=3.1,<4.0
+
+# ── Postgres document store (Supabase) ───────────────────────────────────────
+psycopg[binary]>=3.1,<4.0
+psycopg-pool>=3.2,<4.0

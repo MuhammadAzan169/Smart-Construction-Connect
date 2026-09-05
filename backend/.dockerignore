@@ -1,0 +1,29 @@
+# Keep the image small and free of secrets
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.log
+logs/
+
+# Rebuilt at startup / stored in Supabase in production
+index_data/*
+!index_data/.gitkeep
+uploads/*
+!uploads/.gitkeep
+
+# Local-only ML extras must never be installed in the image
+requirements-local.txt
+
+.git/
+.gitignore
+README.md
+DEPLOY_SUPABASE.md
+.DS_Store
+Thumbs.db

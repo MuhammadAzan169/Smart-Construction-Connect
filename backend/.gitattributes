@@ -1,0 +1,27 @@
+# Text normalisation + binary protection for the backend tree.
+* text=auto
+
+*.py        text diff=python
+*.json      text
+*.md        text
+*.yaml      text
+*.yml       text
+*.sql       text
+*.txt       text
+Dockerfile  text
+Procfile    text
+*.sh        text eol=lf
+
+# ── Binary assets — never EOL-convert or diff these ──
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.mp3   binary
+*.wav   binary
+*.webm  binary
+*.pkl   binary
+*.index binary

@@ -6,9 +6,9 @@ TanStack Query, i18next with English/Urdu RTL support).
 - **Deployed on Vercel:** https://smart-contruction-connect-frontend.vercel.app
 - **Talks to** the FastAPI backend deployed on Render:
   https://smart-contruction-connect-backend.onrender.com — see
-  [`../Backend/README.md`](../Backend/README.md)
+  [`../backend/README.md`](../backend/README.md)
 
-This is the `Frontend/` directory of the
+This is the `frontend/` directory of the
 [`Smart-Construction-Connect`](https://github.com/MuhammadAzan169/Smart-Construction-Connect)
 repository; Vercel is pointed at this directory as its **Root Directory**.
 
@@ -37,7 +37,7 @@ backend locally too. No `.env` is needed for local development.
 ## Layout
 
 ```
-Frontend/               ← Vercel root directory
+frontend/               ← Vercel root directory
 ├── src/                ← pages, components, stores, hooks, i18n, data
 ├── public/             ← static assets copied verbatim
 ├── index.html          ← SPA shell
@@ -50,7 +50,7 @@ Frontend/               ← Vercel root directory
 ## Deploying to Vercel
 
 1. Import the `Smart-Construction-Connect` repository in Vercel and set the
-   project's **Root Directory** to `Frontend`. Vercel auto-detects Vite:
+   project's **Root Directory** to `frontend`. Vercel auto-detects Vite:
    - **Build command:** `vite build`
    - **Output directory:** `dist`
 2. Set the environment variable **`VITE_API_URL`** to the Render backend origin

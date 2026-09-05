@@ -1139,7 +1139,7 @@ function CompanyCard({
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             {company.yearEstablished && <span>Est. {company.yearEstablished}</span>}
-            {company.completedProjects != null && <span>Â·</span>}
+            {company.completedProjects != null && <span>·</span>}
             {company.completedProjects != null && <span>{company.completedProjects} projects</span>}
           </div>
         </div>
@@ -1181,8 +1181,8 @@ function CompanyCard({
                     const avg = vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
                     return (
                       <div key={pkg} className="flex flex-col items-center rounded-lg bg-secondary/50 py-1.5 px-1 gap-0.5">
-                        <span className="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground leading-none">
-                          {humanizeToken(pkg).slice(0, 6)}
+                        <span title={humanizeToken(pkg)} className="w-full truncate text-center text-[9px] font-semibold uppercase tracking-wide text-muted-foreground leading-none">
+                          {humanizeToken(pkg)}
                         </span>
                         <span className="text-[11px] font-bold text-foreground leading-none">
                           {avg != null ? `${formatPKRShort(avg)}k`.replace("kk", "k") : " - "}

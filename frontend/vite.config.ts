@@ -2,6 +2,11 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
+// Local API target for the dev-server proxy. The repo-root `app.py` runner sets
+// DEV_API_TARGET so a custom --backend-port still proxies to the right place;
+// standalone `npm run dev` falls back to the default :8000.
+const API_TARGET = process.env.DEV_API_TARGET ?? "http://localhost:8000";
+
 export default defineConfig({
   server: {
     host: "::",
@@ -11,20 +16,20 @@ export default defineConfig({
     },
     proxy: {
       "/api": {
-        target: "http://localhost:8000",
+        target: API_TARGET,
         changeOrigin: true,
         ws: true,
       },
       "/images": {
-        target: "http://localhost:8000",
+        target: API_TARGET,
         changeOrigin: true,
       },
       "/company_data": {
-        target: "http://localhost:8000",
+        target: API_TARGET,
         changeOrigin: true,
       },
       "/uploads": {
-        target: "http://localhost:8000",
+        target: API_TARGET,
         changeOrigin: true,
       },
     },
