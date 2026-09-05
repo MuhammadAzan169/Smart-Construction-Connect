@@ -88,7 +88,10 @@ def _init() -> None:
                 "DATABASE_URL is set but the connection failed: %s.",
                 exc,
             )
-            if os.getenv("ENV", "development") == "production":
+            _allow_ephemeral = os.getenv("ALLOW_EPHEMERAL_STORAGE", "").strip().lower() in (
+                "1", "true", "yes",
+            )
+            if os.getenv("ENV", "development") == "production" and not _allow_ephemeral:
                 # On an ephemeral host (Render, a container) falling back to local
                 # JSON silently loses every write on the next restart, and nothing
                 # surfaces that to users. Refuse to start instead, the same way
@@ -97,8 +100,16 @@ def _init() -> None:
                     "DATABASE_URL is set but unreachable, and ENV=production. "
                     "Refusing to start with non-durable local-file storage - "
                     "data would be lost on every restart. Check the Supabase "
-                    "project is running and the transaction-pooler URI is correct."
+                    "project is running and the transaction-pooler URI is correct. "
+                    "To run anyway on throwaway local-file storage (demos only), "
+                    "set ALLOW_EPHEMERAL_STORAGE=1."
                 ) from exc
+            if _allow_ephemeral:
+                logger.warning(
+                    "ALLOW_EPHEMERAL_STORAGE is set: starting WITHOUT a database. "
+                    "All data is written to local files and WILL BE LOST on the "
+                    "next restart or deploy. Never use this for real data."
+                )
             logger.error(
                 "Falling back to local JSON files (development only - NOT durable). "
                 "Fix the connection string to enable persistence."
